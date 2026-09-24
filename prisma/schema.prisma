@@ -1,0 +1,725 @@
+// WebRocz Agency OS — data model
+// SQLite for dev; swap datasource provider to "postgresql" for production.
+// Note: SQLite doesn't support Prisma enums, so status/role/service are strings
+// constrained by TypeScript constants in src/lib/domain.ts.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  role         String // SUPER_ADMIN | AM_HEAD | ACCOUNT_MANAGER | SEO_HEAD | SEO | DESIGNER | EDITOR
+  email        String?  @unique
+  phone        String?
+  passwordHash String?
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  managedClients Client[]     @relation("AccountManager")
+  assignments    Assignment[]
+  updates        WorkUpdate[]
+  devProjects    DevProject[] @relation("DevAssignee")
+  timeSessions   TimeSession[]
+  tasksAssigned  Task[]       @relation("TaskAssigner")
+  tasksReceived  Task[]       @relation("TaskAssignee")
+  creativeTasks  CreativeTask[] @relation("CreativeAssignee")
+  salesLeads     Lead[]       @relation("LeadOwner")
+}
+
+model Task {
+  id           String   @id @default(cuid())
+  title        String
+  detail       String   @default("")
+  assignedById String
+  assignedBy   User     @relation("TaskAssigner", fields: [assignedById], references: [id], onDelete: Cascade)
+  assignedToId String
+  assignedTo   User     @relation("TaskAssignee", fields: [assignedToId], references: [id], onDelete: Cascade)
+  clientId     String?
+  client       Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  priority     String   @default("MEDIUM") // HIGH | MEDIUM | LOW
+  status       String   @default("TODO") // TODO | IN_PROGRESS | DONE
+  dueDate      String   @default("")
+  seen         Boolean  @default(false) // has the assignee opened it
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([assignedToId])
+  @@index([assignedById])
+  @@index([status])
+}
+
+model TimeSession {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      String // "2026-08-29" (local day the session started)
+  startedAt DateTime  @default(now())
+  endedAt   DateTime?
+  seconds   Int       @default(0) // filled on clock-out
+  note      String    @default("")
+
+  @@index([userId])
+  @@index([date])
+}
+
+model Client {
+  id              String   @id @default(cuid())
+  code            String   @unique // CLI-1000
+  name            String
+  website         String?
+  industry        String? // Real Estate, Healthcare, ...
+  monthlyRetainer Int      @default(0) // INR / month
+  googleBudget    Int      @default(0) // monthly Google Ads budget (INR)
+  // --- SEO master fields (mirror the SEO team's Google Sheet) ---
+  seoPriority     String   @default("") // A | B | C
+  seoScheduleDays String   @default("") // "Mon, Wed, Fri" / "Daily 8 X 25 Days"
+  blogTarget      Int      @default(8)  // blogs / month
+  backlinkTarget  Int      @default(0)  // backlinks / month
+  keywordTarget   Int      @default(0)  // keywords tracked
+  gscLink         String   @default("") // Google Search Console URL
+  gaLink          String   @default("") // Google Analytics URL
+  domainAuthority Int      @default(0)  // DA (client website)
+  pocName         String?
+  pocMobile       String?
+  pocEmail        String?
+  onboardDate     DateTime @default(now())
+  renewalDate     String   @default("") // "2026-12-01" — contract renewal
+  status          String   @default("ACTIVE") // ACTIVE | ON_HOLD | UPCOMING
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  accountManagerId String?
+  accountManager   User?   @relation("AccountManager", fields: [accountManagerId], references: [id])
+
+  services     ClientService[]
+  deliverables Deliverable[]
+  assignments  Assignment[]
+  updates      WorkUpdate[]
+  adsMetrics   AdsPerformance[]
+  invoices     Invoice[]
+  campaigns    CampaignEntry[]
+  socialPosts  SocialPost[]
+  devProjects  DevProject[]
+  contacts     ClientContact[]
+  tasks        Task[]
+  googleCampaigns GoogleAdsCampaign[]
+  creativeTasks   CreativeTask[]
+  seoAnalytics    SeoAnalytics[]
+  seoBlogSlots    SeoBlogSlot[]
+  seoKeywords     SeoKeyword[]
+  seoBacklinks    SeoBacklink[]
+  gmbLocations    GmbClient[]
+  seoReports      SeoReport[]
+
+  @@index([status])
+  @@index([accountManagerId])
+}
+
+model ClientContact {
+  id       String  @id @default(cuid())
+  clientId String
+  client   Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  name     String
+  role     String  @default("") // Owner, Marketing Head, Finance, ...
+  phone    String  @default("")
+  email    String  @default("")
+  primary  Boolean @default(false)
+
+  @@index([clientId])
+}
+
+// Which services a client has taken (SEO, SMO, VIDEO, META_ADS, ...)
+model ClientService {
+  id       String  @id @default(cuid())
+  clientId String
+  client   Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  service  String // see SERVICES in domain.ts
+  detail   String? // e.g. website type, branding requirements, "other" specify
+
+  @@unique([clientId, service])
+  @@index([clientId])
+}
+
+// Agreed monthly deliverable target per client + metric (blogs, keywords, static, reels...)
+model Deliverable {
+  id       String @id @default(cuid())
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  service  String // SEO | SMO | VIDEO | ...
+  metric   String // blogs | keywords | static | carousel | reels | aiVideos | reelsEdit
+  agreed   Int    @default(0)
+
+  @@unique([clientId, service, metric])
+  @@index([clientId])
+}
+
+// Team member assigned to a client for a department
+model Assignment {
+  id         String @id @default(cuid())
+  clientId   String
+  client     Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department String // SEO | DESIGN | VIDEO | ACCOUNT | ADS
+
+  @@unique([clientId, userId, department])
+  @@index([clientId])
+  @@index([userId])
+}
+
+// Activity log — every unit of work, dated. Drives targets/reports.
+model WorkUpdate {
+  id       String   @id @default(cuid())
+  clientId String
+  client   Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User     @relation(fields: [userId], references: [id])
+  date     DateTime @default(now())
+  workType String // blog | keyword | static | carousel | reel | aiVideo | reelEdit | meeting | ...
+  quantity Int      @default(1)
+  status   String   @default("COMPLETED") // PLANNED | IN_PROGRESS | COMPLETED | APPROVED | PENDING_APPROVAL
+  title    String?
+  detail   String?
+  proofLink String?
+  notes    String?
+
+  // SEO-specific ranking fields
+  keyword      String?
+  prevPosition Int?
+  currPosition Int?
+  followUpDate DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([clientId])
+  @@index([userId])
+  @@index([date])
+}
+
+// Monthly invoice / payment per client — Super Admin billing only
+model Invoice {
+  id        String    @id @default(cuid())
+  clientId  String
+  client    Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  number    String    @unique // INV-2026-08-0001
+  month     String // "2026-08"
+  amount    Int
+  status    String    @default("PENDING") // PENDING | PAID | OVERDUE
+  paidAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@unique([clientId, month])
+  @@index([clientId])
+  @@index([month])
+}
+
+// One-time sales invoice generated when a lead is onboarded (printable + emailable).
+// Scalar refs only (no FK relations) to stay fully additive on db push.
+model SalesInvoice {
+  id            String   @id @default(cuid())
+  number        String   @unique // WR-INV-2026-0001
+  leadId        String?
+  clientId      String?
+  pipeline      String   @default("WEBROCZ")
+  billTo        String // client / company name
+  contact       String?
+  phone         String?
+  email         String?
+  items         String   @default("[]") // JSON: [{ name, qty, rate, amount }]
+  subtotal      Int      @default(0)
+  taxPct        Int      @default(18)
+  taxAmount     Int      @default(0)
+  total         Int      @default(0)
+  received      Int      @default(0)
+  paymentStatus String   @default("Pending")
+  notes         String?
+  issueDate     String // "2026-09-18"
+  // GST / client billing details (match the tax-invoice format)
+  clientGstin   String?
+  clientState   String?   @default("36-Telangana")
+  clientAddress String?
+  placeOfSupply String?   @default("36-Telangana")
+  // Super Admin approval gate — download only allowed once approved
+  approved      Boolean   @default(false)
+  approvedBy    String?
+  approvedAt    DateTime?
+  // Accountant follow-up log (visible to Super Admin): JSON [{ date, by, note }]
+  notesLog      String    @default("[]")
+  nextFollowup  String?
+  emailedAt     DateTime?
+  createdAt     DateTime @default(now())
+
+  @@index([leadId])
+  @@index([clientId])
+}
+
+// Recruitment / hiring pipeline — candidates for employee positions (separate from sales).
+model Candidate {
+  id         String   @id @default(cuid())
+  code       String   @unique // CAND-0001
+  name       String
+  phone      String   @default("")
+  email      String   @default("")
+  position   String   @default("") // role applying for
+  department String   @default("")
+  source     String   @default("")
+  experience String   @default("")
+  expectedCtc Int     @default(0)
+  resumeUrl  String   @default("")
+  notes      String   @default("")
+  notesLog   String   @default("[]") // JSON: [{date, by, note}]
+  stage      String   @default("APPLIED") // APPLIED | INTERVIEW | SHORTLISTED | OFFER | HIRED | REJECTED
+  rejectReason String @default("")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([stage])
+}
+
+// Per-client, per-day Meta Ads campaign entry (AM daily update mode)
+model CampaignEntry {
+  id              String   @id @default(cuid())
+  clientId        String
+  client          Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  date            String // "2026-08-27"
+  type            String // LEAD | CALLS | WHATSAPP | AWARENESS | SALE
+  results         Int      @default(0) // leads / calls / whatsapp / reach / orders
+  spent           Int      @default(0)
+  conversions     Int      @default(0)
+  saleValue       Int      @default(0) // Sale campaigns only
+  ordersConverted Int      @default(0) // Sale campaigns only
+  updatedAt       DateTime @updatedAt
+
+  @@unique([clientId, date, type])
+  @@index([date])
+  @@index([clientId])
+}
+
+model DevProject {
+  id           String   @id @default(cuid())
+  name         String
+  clientId     String?
+  client       Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  assignedToId String?
+  assignedTo   User?    @relation("DevAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  projectType  String   @default("WEBSITE") // WEBSITE | LANDING
+  platform     String   @default("WORDPRESS") // WORDPRESS | SHOPIFY | REACT | NEXTJS | NODEJS | HTML
+  status       String   @default("PLANNING") // PLANNING | IN_PROGRESS | REVIEW | LIVE | ON_HOLD
+  priority     String   @default("MEDIUM") // HIGH | MEDIUM | LOW
+  progress     Int      @default(0) // 0-100
+  dueDate      String   @default("") // "2026-09-15"
+  liveUrl      String   @default("")
+  repoUrl      String   @default("")
+  notes        String   @default("")
+  shareId      String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tasks      DevTask[]
+  activities DevActivity[]
+
+  @@index([assignedToId])
+  @@index([status])
+  @@index([shareId])
+}
+
+model DevTask {
+  id        String     @id @default(cuid())
+  projectId String
+  project   DevProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title     String
+  done      Boolean    @default(false)
+  slot      Int        @default(0)
+  createdAt DateTime   @default(now())
+
+  @@index([projectId])
+}
+
+model DevActivity {
+  id        String     @id @default(cuid())
+  projectId String
+  project   DevProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  actor     String     @default("")
+  message   String
+  createdAt DateTime   @default(now())
+
+  @@index([projectId])
+  @@index([createdAt])
+}
+
+model SocialPost {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  date      String // "2026-08-27"
+  platform  String // INSTAGRAM | FACEBOOK | LINKEDIN | YOUTUBE
+  postType  String // POST | REEL | STORY | CAROUSEL
+  link      String   @default("")
+  status    String   @default("SCHEDULED") // POSTED | SCHEDULED
+  slot      Int      @default(0) // ordering within a client+platform
+  updatedAt DateTime @updatedAt
+
+  @@index([date])
+  @@index([clientId])
+}
+
+// Google Search Console + Google Analytics monthly numbers per SEO client.
+model SeoAnalytics {
+  id             String @id @default(cuid())
+  clientId       String
+  client         Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  month          String // "2026-08"
+  gscClicks      Int    @default(0)
+  gscImpressions Int    @default(0)
+  gscCtr         Float  @default(0) // %
+  gscPosition    Float  @default(0) // avg position
+  gaUsers        Int    @default(0) // active users
+  gaNewUsers     Int    @default(0)
+  gaOrganic      Int    @default(0) // organic search users
+  gaOrganicSocial Int   @default(0) // organic social users
+  gaSessions     Int    @default(0)
+  gaBounce       Float  @default(0) // %
+  gaEngagement   String @default("") // avg engagement time "2m 34s"
+  gaConversions  Int    @default(0)
+
+  @@unique([clientId, month])
+  @@index([clientId])
+}
+
+// Blogs Report tracker — 8 slots per client per month, each slot has 3 stages
+// (Blog written · Image done · Website live). Mirrors the "Blogs Report Data" tab.
+model SeoBlogSlot {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  month     String // "2026-08"
+  slot      Int // 1..N (week·position, e.g. 1 = W1·1)
+  writer    String   @default("") // blog writer name (Shruthi, Sneha, Bhavani, ...)
+  blog      String   @default("PENDING") // PENDING | REVIEW | PUBLISHED  (Draft | Pending Review | Published)
+  image     String   @default("PENDING") // PENDING | DONE
+  web       String   @default("PENDING") // PENDING | LIVE
+  title     String   @default("")
+  link      String   @default("")
+  blogDate  String   @default("") // "2026-08-14"
+  updatedAt DateTime @updatedAt
+
+  @@unique([clientId, month, slot])
+  @@index([clientId, month])
+}
+
+// Per-client monthly keyword position tracking (mirrors the dashboard Keywords tab).
+model SeoKeyword {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  month     String // "2026-08"
+  slot      Int      @default(0)
+  keyword   String   @default("")
+  lastPos   Int      @default(0)
+  currPos   Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@index([clientId, month])
+}
+
+// Per-client monthly backlinks (mirrors the dashboard Backlinks tab).
+model SeoBacklink {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  month     String // "2026-08"
+  slot      Int      @default(0)
+  type      String   @default("Guest Post")
+  status    String   @default("Live") // Live | Pending | Removed
+  link      String   @default("")
+  da        Int      @default(0) // domain authority
+  date      String   @default("")
+  updatedAt DateTime @updatedAt
+
+  @@index([clientId, month])
+}
+
+// Local SEO / Google Business Profile — one row per GMB location (a client can
+// have several). Mirrors the "Local SEO (GMB) Clients" tab.
+model GmbClient {
+  id           String   @id @default(cuid())
+  name         String
+  clientId     String?
+  client       Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  assigned     String   @default("") // GMB owner (Kishore, Veni, Sowji, ...)
+  gmbLink      String   @default("")
+  monthlyPosts Int      @default(0) // target posts / month
+  postsDone    Int      @default(0)
+  lastPostDate String   @default("")
+  citations    Int      @default(0)
+  reviews      Int      @default(0)
+  reviewsNote  String   @default("") // "No commitment" / "10" ...
+  localo       Boolean  @default(false)
+  active       Boolean  @default(true)
+  updatedAt    DateTime @updatedAt
+
+  @@index([assigned])
+  @@index([clientId])
+}
+
+// Monthly report delivery — mirrors the "SEO Reports Data" tab.
+model SeoReport {
+  id            String  @id @default(cuid())
+  clientId      String
+  client        Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  month         String // "2026-08"
+  reportDate    String  @default("") // "10th" / "1st"
+  status        String  @default("PENDING") // SENT | PENDING
+  gscDone       Boolean @default(false)
+  gaDone        Boolean @default(false)
+  assigned      String  @default("") // who prepares the report
+  keywordStatus String  @default("") // Done | Pending
+  note          String  @default("")
+  updatedAt     DateTime @updatedAt
+
+  @@unique([clientId, month])
+  @@index([clientId])
+}
+
+// Creative task board — one row per design / video assigned to a designer or editor.
+model CreativeTask {
+  id           String   @id @default(cuid())
+  kind         String // DESIGN | VIDEO
+  code         String // DSG-001 / VID-001
+  title        String
+  clientId     String?
+  client       Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  assignedToId String
+  assignedTo   User     @relation("CreativeAssignee", fields: [assignedToId], references: [id], onDelete: Cascade)
+  type         String // Logo|Social Creative|... (design) or Testimonial|Reel|YouTube|Intro|Ad Video (video)
+  priority     String   @default("MEDIUM") // HIGH | MEDIUM | LOW
+  status       String   @default("PENDING") // PENDING | IN_PROGRESS | REVIEW | COMPLETED
+  source       String   @default("ONBOARDING") // ONBOARDING | ADDITIONAL
+  assignedDate String   @default("") // "2026-08-24"
+  dueDate      String   @default("") // "2026-08-27"
+  dimensions   String   @default("") // "1080×1080 px" / duration
+  brief        String   @default("")
+  notes        String   @default("")
+  refLink      String   @default("")
+  rawLink      String   @default("")
+  finalLink    String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([assignedToId])
+  @@index([kind])
+  @@index([status])
+}
+
+// Google Ads — one row per campaign per client per day (daily-entry AM workflow)
+model GoogleAdsCampaign {
+  id          String   @id @default(cuid())
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  date        String // "2026-08-30"
+  name        String // "Search - Skin Treatment"
+  type        String // SEARCH | DISPLAY | PMAX | SMART
+  spent       Int      @default(0)
+  leads       Int      @default(0)
+  conversions Int      @default(0)
+  status      String   @default("ACTIVE") // ACTIVE | PAUSED
+  updatedBy   String   @default("")
+  updatedAt   DateTime @updatedAt
+
+  @@index([date])
+  @@index([clientId])
+}
+
+// Monthly ads numbers per client — entered separately from onboarding
+model AdsPerformance {
+  id        String @id @default(cuid())
+  clientId  String
+  client    Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  month     String // "2026-08"
+  platform  String // META | GOOGLE
+  spend     Int    @default(0)
+  leads     Int    @default(0)
+  clicks    Int    @default(0)
+  impressions Int  @default(0)
+  conversions Int  @default(0)
+  ctr       Float  @default(0)
+  cpl       Float  @default(0)
+
+  @@unique([clientId, month, platform])
+  @@index([clientId])
+}
+
+// In-app notification — one row per recipient per event (client onboarding assignment,
+// a creative task assigned by an Account Manager, etc.). Kept lightweight: no FK relation
+// so it can be written from any action without touching the User model.
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String // recipient
+  title     String
+  body      String   @default("")
+  link      String   @default("/")
+  tone      String   @default("violet") // violet | rose | amber | emerald
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+  @@index([createdAt])
+}
+
+// ============================================================
+//  SALES CRM — pipeline: Positive Lead → … → Onboarded / Lost
+// ============================================================
+model Lead {
+  id            String  @id @default(cuid())
+  code          String  @unique // LEAD-0001
+  pipeline      String  @default("WEBROCZ") // WEBROCZ | DIGITALHAT — separate sales pipelines
+  name          String
+  company       String  @default("")
+  contactPerson String  @default("")
+  phone         String  @default("")
+  whatsapp      String  @default("")
+  email         String  @default("")
+  source        String  @default("")
+  services      String  @default("") // JSON array of service names (multi-select)
+  value         Int     @default(0) // expected budget (INR)
+  stage         String  @default("POSITIVE_LEAD")
+  assignedToId  String?
+  assignedTo    User?   @relation("LeadOwner", fields: [assignedToId], references: [id], onDelete: SetNull)
+  notes         String  @default("")
+  // Interested stage
+  requirements  String  @default("")
+  budget        Int     @default(0)
+  expectedStart String  @default("")
+  decisionMaker String  @default("")
+  timeline      String  @default("")
+  nextAction    String  @default("")
+  // Lost stage
+  lostReason    String  @default("")
+  lostNotes     String  @default("")
+  lostDate      String  @default("")
+  // Onboarding link — a Lead becomes a single Client on onboard (no duplicate clients)
+  clientId      String?
+  paymentStatus String  @default("")
+  startDate     String  @default("")
+  finalAmount   Int     @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  followups   Followup[]
+  quotations  Quotation[]
+  proposals   Proposal[]
+  reminders   Reminder[]
+  meetings    Meeting[]
+  activities  LeadActivity[]
+
+  @@index([stage])
+  @@index([assignedToId])
+  @@index([pipeline])
+}
+
+model LeadActivity {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  actor     String   @default("")
+  action    String
+  detail    String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([leadId])
+}
+
+model Followup {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  date      String   @default("") // "2026-09-20"
+  time      String   @default("")
+  type      String   @default("Call")
+  notes     String   @default("")
+  nextDate  String   @default("")
+  nextTime  String   @default("")
+  status    String   @default("PENDING") // PENDING | COMPLETED | RESCHEDULED | NO_RESPONSE
+  createdAt DateTime @default(now())
+
+  @@index([leadId])
+  @@index([status])
+  @@index([date])
+}
+
+model Quotation {
+  id          String   @id @default(cuid())
+  leadId      String
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  number      String   @default("")
+  services    String   @default("")
+  amount      Int      @default(0)
+  tax         Int      @default(0)
+  finalAmount Int      @default(0)
+  date        String   @default("")
+  validUntil  String   @default("")
+  fileUrl     String   @default("")
+  status      String   @default("DRAFT")
+  createdAt   DateTime @default(now())
+
+  @@index([leadId])
+}
+
+model Proposal {
+  id             String   @id @default(cuid())
+  leadId         String
+  lead           Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  number         String   @default("")
+  fileUrl        String   @default("")
+  sharedDate     String   @default("")
+  amount         Int      @default(0)
+  expectedDate   String   @default("")
+  notes          String   @default("")
+  status         String   @default("SHARED")
+  createdAt      DateTime @default(now())
+
+  @@index([leadId])
+}
+
+model Reminder {
+  id         String   @id @default(cuid())
+  leadId     String
+  lead       Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  date       String   @default("")
+  time       String   @default("")
+  type       String   @default("Call")
+  notes      String   @default("")
+  nextAction String   @default("")
+  status     String   @default("PENDING")
+  createdAt  DateTime @default(now())
+
+  @@index([leadId])
+  @@index([status])
+}
+
+model Meeting {
+  id         String   @id @default(cuid())
+  leadId     String
+  lead       Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  type       String   @default("ONLINE") // OFFICE_VISIT | CLIENT_LOCATION | ONLINE
+  date       String   @default("")
+  time       String   @default("")
+  person     String   @default("")
+  link       String   @default("")
+  location   String   @default("")
+  notes      String   @default("")
+  outcome    String   @default("")
+  nextAction String   @default("")
+  createdAt  DateTime @default(now())
+
+  @@index([leadId])
+  @@index([date])
+}
