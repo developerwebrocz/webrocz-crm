@@ -609,11 +609,13 @@ export async function addClientFromFinance(fd: FormData) {
   const lastNum = last ? parseInt(last.code.replace(/\D/g, ""), 10) : 999;
   const code = `CLI-${lastNum + 1}`;
 
-  const client = await prisma.client.create({ data: { code, ...scalars } });
+  const gst = Math.max(0, n(fd, "gst")); // 0 = no GST, else rate %
+  const gstin = s(fd, "gstin");
+  const client = await prisma.client.create({ data: { code, ...scalars, gstApplicable: gst > 0, gstRate: gst > 0 ? gst : 18, gstin } });
 
   // A client who takes both services gets a SEPARATE invoice per service, so the
   // Website-vs-DM split stays exact (no lumped "Both" invoice). Amounts are entered
-  // per service; "amount paid" is distributed across them, Website first.
+  // per service (before GST); "amount paid" is distributed across them, Website first.
   const webAmt = Math.max(0, n(fd, "webAmount"));
   const dmAmt = Math.max(0, n(fd, "dmAmount"));
   const specs = [
@@ -633,15 +635,17 @@ export async function addClientFromFinance(fd: FormData) {
     const lastInv = await prisma.salesInvoice.findFirst({ where: { number: { startsWith: `${fy}/` } }, orderBy: { createdAt: "desc" }, select: { number: true } });
     let seq = lastInv ? parseInt(lastInv.number.split("/").pop() || "0", 10) + 1 : 1;
     for (const sp of specs) {
-      const received = Math.min(paidLeft, sp.amount); paidLeft -= received;
+      const taxAmount = Math.round((sp.amount * gst) / 100);
+      const total = sp.amount + taxAmount;
+      const received = Math.min(paidLeft, total); paidLeft -= received;
       const inv = await prisma.salesInvoice.create({
         data: {
           number: `${fy}/${seq++}`, clientId: client.id, pipeline: "WEBROCZ",
-          billTo: client.name, contact: scalars.pocName ?? "", phone: scalars.pocMobile ?? "", email: scalars.pocEmail ?? "",
+          billTo: client.name, contact: scalars.pocName ?? "", phone: scalars.pocMobile ?? "", email: scalars.pocEmail ?? "", clientGstin: gstin,
           items: JSON.stringify([{ name: sp.label, qty: 1, rate: sp.amount, amount: sp.amount }]),
-          subtotal: sp.amount, taxPct: 0, taxAmount: 0, total: sp.amount,
+          subtotal: sp.amount, taxPct: gst, taxAmount, total,
           received,
-          paymentStatus: received >= sp.amount ? "Fully Received" : received > 0 ? "Partially Received" : "Pending",
+          paymentStatus: received >= total ? "Fully Received" : received > 0 ? "Partially Received" : "Pending",
           issueDate, dueDate,
         },
       });
@@ -678,6 +682,9 @@ export async function updateClientFinance(fd: FormData) {
       monthlyRetainer: n(fd, "monthlyRetainer"),
       status: STATUS_OK.includes(s(fd, "status")) ? s(fd, "status") : "ACTIVE",
       renewalDate: s(fd, "renewalDate"),
+      gstApplicable: n(fd, "gst") > 0,
+      gstRate: n(fd, "gst") > 0 ? n(fd, "gst") : 18,
+      gstin: s(fd, "gstin"),
       notes: s(fd, "notes") || null,
     },
   });

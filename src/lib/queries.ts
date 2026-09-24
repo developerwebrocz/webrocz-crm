@@ -2222,7 +2222,7 @@ export async function getRetainers() {
 export async function getFinanceClientDetail(clientId: string) {
   const client = await prisma.client.findUnique({
     where: { id: clientId },
-    select: { id: true, code: true, name: true, website: true, industry: true, pocName: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true, renewalDate: true, onboardDate: true, notes: true },
+    select: { id: true, code: true, name: true, website: true, industry: true, pocName: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true, renewalDate: true, gstApplicable: true, gstRate: true, gstin: true, onboardDate: true, notes: true },
   });
   if (!client) return null;
   const [invoicesRaw, leads] = await Promise.all([

@@ -476,14 +476,14 @@ export async function billRetainer(fd: FormData) {
   const existing = await prisma.salesInvoice.findFirst({ where: { clientId, issueDate: { startsWith: month }, items: { contains: "Retainer" } } });
   if (existing) redirect(back);
   const base = client.monthlyRetainer;
-  const taxPct = 18;
+  const taxPct = client.gstApplicable ? client.gstRate : 0; // per-client GST
   const taxAmount = Math.round((base * taxPct) / 100);
   const [y, mo] = month.split("-");
   const label = `${MONTH_NAMES[parseInt(mo, 10) - 1] ?? mo} ${y}`;
   await prisma.salesInvoice.create({
     data: {
       number: await invoiceNumber(), clientId, pipeline: "WEBROCZ",
-      billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "",
+      billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "", clientGstin: client.gstin,
       items: JSON.stringify([{ name: `Digital Marketing Retainer — ${label}`, qty: 1, rate: base, amount: base }]),
       subtotal: base, taxPct, taxAmount, total: base + taxAmount, received: 0,
       paymentStatus: "Pending", issueDate, dueDate: addDaysISO(issueDate, 15),
@@ -538,7 +538,7 @@ export async function createClientInvoice(fd: FormData) {
   const inv = await prisma.salesInvoice.create({
     data: {
       number: await invoiceNumber(), clientId, pipeline: "WEBROCZ",
-      billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "",
+      billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "", clientGstin: client.gstin,
       items: JSON.stringify([{ name: desc, qty: 1, rate: base, amount: base }]),
       subtotal: base, taxPct, taxAmount, total, received,
       paymentStatus: received >= total ? "Fully Received" : received > 0 ? "Partially Received" : "Pending",

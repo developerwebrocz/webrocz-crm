@@ -10,7 +10,7 @@ const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split("-"); return d ? `${d}-${m}-${y}` : iso; };
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
-type Client = { id: string; code: string; name: string; website: string | null; industry: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; monthlyRetainer: number; status: string; renewalDate: string; onboardDate: string; notes: string | null };
+type Client = { id: string; code: string; name: string; website: string | null; industry: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; monthlyRetainer: number; status: string; renewalDate: string; gstApplicable: boolean; gstRate: number; gstin: string; onboardDate: string; notes: string | null };
 type Inv = { id: string; number: string; total: number; received: number; balance: number; approved: boolean; paymentStatus: string; issueDate: string; dueDate: string; leadId: string | null; category: string; overdue: boolean };
 type Pay = { id: string; invoiceId: string; invoiceNumber: string; amount: number; date: string; mode: string; ref: string; note: string; by: string };
 type Totals = { billed: number; received: number; pending: number; overdue: number; invoices: number };
@@ -116,7 +116,7 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
       </div>
 
       {payInv && <PaymentModal inv={payInv} clientName={client.name} back={backUrl} close={() => setPayInv(null)} />}
-      {newInv && <NewInvoiceModal clientId={client.id} clientName={client.name} close={() => setNewInv(false)} />}
+      {newInv && <NewInvoiceModal clientId={client.id} clientName={client.name} defaultTaxPct={client.gstApplicable ? client.gstRate : 0} close={() => setNewInv(false)} />}
       {editOpen && <EditModal client={client} close={() => setEditOpen(false)} />}
     </div>
   );
@@ -149,7 +149,17 @@ function EditModal({ client, close }: { client: Client; close: () => void }) {
             <label className="block"><span className="eyebrow">Status</span><select name="status" defaultValue={client.status} className="select mt-1"><option value="ACTIVE">Active</option><option value="ON_HOLD">On hold</option><option value="UPCOMING">Upcoming</option></select></label>
             <label className="block"><span className="eyebrow">Renewal date</span><input name="renewalDate" type="date" defaultValue={client.renewalDate || ""} className="input mt-1" /></label>
           </div>
-          <label className="block"><span className="eyebrow">Industry</span><input name="industry" defaultValue={client.industry ?? ""} className="input mt-1" placeholder="optional" /></label>
+          <div className="rounded-[10px] border border-[var(--line)] p-3">
+            <div className="eyebrow mb-2">GST / tax</div>
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block"><span className="text-[12px] font-semibold">GST on invoices</span><select name="gst" defaultValue={client.gstApplicable ? "18" : "0"} className="select mt-1"><option value="0">Without GST</option><option value="18">With GST 18%</option></select></label>
+              <label className="block"><span className="text-[12px] font-semibold">Client GSTIN</span><input name="gstin" defaultValue={client.gstin} className="input mt-1" placeholder="optional" /></label>
+            </div>
+            <p className="mt-2 text-[11.5px] text-[var(--faint)]">This sets the default GST for every new invoice you raise for this client.</p>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block"><span className="eyebrow">Industry</span><input name="industry" defaultValue={client.industry ?? ""} className="input mt-1" placeholder="optional" /></label>
+          </div>
           <label className="block"><span className="eyebrow">Notes</span><textarea name="notes" rows={2} defaultValue={client.notes ?? ""} className="input mt-1" placeholder="optional" /></label>
           <div className="flex justify-end gap-2 pt-1">
             <button type="button" onClick={close} className="btn btn-ghost">Cancel</button>
@@ -161,9 +171,10 @@ function EditModal({ client, close }: { client: Client; close: () => void }) {
   );
 }
 
-function NewInvoiceModal({ clientId, clientName, close }: { clientId: string; clientName: string; close: () => void }) {
+function NewInvoiceModal({ clientId, clientName, defaultTaxPct, close }: { clientId: string; clientName: string; defaultTaxPct: number; close: () => void }) {
   const today = todayISO();
   const due = (() => { const d = new Date(today + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + 15); return d.toISOString().slice(0, 10); })();
+  const GST_OPTS = [0, 18];
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
       <div className="flex max-h-[92vh] w-full max-w-[480px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
@@ -182,7 +193,7 @@ function NewInvoiceModal({ clientId, clientName, close }: { clientId: string; cl
           </div>
           <label className="block"><span className="eyebrow">Description (on invoice)</span><input name="desc" className="input mt-1" placeholder="optional — defaults to the service name" /></label>
           <div className="grid grid-cols-3 gap-3">
-            <label className="block"><span className="eyebrow">GST %</span><input name="taxPct" type="number" min={0} defaultValue={18} className="input mt-1" /></label>
+            <label className="block"><span className="eyebrow">GST</span><select name="taxPct" defaultValue={String(defaultTaxPct)} className="select mt-1"><option value="0">Without GST</option>{GST_OPTS.filter((g) => g > 0).map((g) => <option key={g} value={String(g)}>With GST {g}%</option>)}</select></label>
             <label className="block"><span className="eyebrow">Issue date</span><input name="issueDate" type="date" defaultValue={today} className="input mt-1" /></label>
             <label className="block"><span className="eyebrow">Due date</span><input name="dueDate" type="date" defaultValue={due} className="input mt-1" /></label>
           </div>

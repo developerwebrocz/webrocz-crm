@@ -92,6 +92,10 @@ model Client {
   onboardDate     DateTime @default(now())
   renewalDate     String   @default("") // "2026-12-01" — contract renewal
   status          String   @default("ACTIVE") // ACTIVE | ON_HOLD | UPCOMING
+  // --- Billing / GST ---
+  gstApplicable   Boolean  @default(true)  // whether invoices for this client carry GST
+  gstRate         Int      @default(18)    // GST % applied when applicable
+  gstin           String   @default("")    // client's GSTIN (for the tax invoice)
   notes           String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

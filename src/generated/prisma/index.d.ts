@@ -8093,6 +8093,7 @@ export namespace Prisma {
     backlinkTarget: number | null
     keywordTarget: number | null
     domainAuthority: number | null
+    gstRate: number | null
   }
 
   export type ClientSumAggregateOutputType = {
@@ -8102,6 +8103,7 @@ export namespace Prisma {
     backlinkTarget: number | null
     keywordTarget: number | null
     domainAuthority: number | null
+    gstRate: number | null
   }
 
   export type ClientMinAggregateOutputType = {
@@ -8126,6 +8128,9 @@ export namespace Prisma {
     onboardDate: Date | null
     renewalDate: string | null
     status: string | null
+    gstApplicable: boolean | null
+    gstRate: number | null
+    gstin: string | null
     notes: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -8154,6 +8159,9 @@ export namespace Prisma {
     onboardDate: Date | null
     renewalDate: string | null
     status: string | null
+    gstApplicable: boolean | null
+    gstRate: number | null
+    gstin: string | null
     notes: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -8182,6 +8190,9 @@ export namespace Prisma {
     onboardDate: number
     renewalDate: number
     status: number
+    gstApplicable: number
+    gstRate: number
+    gstin: number
     notes: number
     createdAt: number
     updatedAt: number
@@ -8197,6 +8208,7 @@ export namespace Prisma {
     backlinkTarget?: true
     keywordTarget?: true
     domainAuthority?: true
+    gstRate?: true
   }
 
   export type ClientSumAggregateInputType = {
@@ -8206,6 +8218,7 @@ export namespace Prisma {
     backlinkTarget?: true
     keywordTarget?: true
     domainAuthority?: true
+    gstRate?: true
   }
 
   export type ClientMinAggregateInputType = {
@@ -8230,6 +8243,9 @@ export namespace Prisma {
     onboardDate?: true
     renewalDate?: true
     status?: true
+    gstApplicable?: true
+    gstRate?: true
+    gstin?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -8258,6 +8274,9 @@ export namespace Prisma {
     onboardDate?: true
     renewalDate?: true
     status?: true
+    gstApplicable?: true
+    gstRate?: true
+    gstin?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -8286,6 +8305,9 @@ export namespace Prisma {
     onboardDate?: true
     renewalDate?: true
     status?: true
+    gstApplicable?: true
+    gstRate?: true
+    gstin?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -8401,6 +8423,9 @@ export namespace Prisma {
     onboardDate: Date
     renewalDate: string
     status: string
+    gstApplicable: boolean
+    gstRate: number
+    gstin: string
     notes: string | null
     createdAt: Date
     updatedAt: Date
@@ -8448,6 +8473,9 @@ export namespace Prisma {
     onboardDate?: boolean
     renewalDate?: boolean
     status?: boolean
+    gstApplicable?: boolean
+    gstRate?: boolean
+    gstin?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -8497,6 +8525,9 @@ export namespace Prisma {
     onboardDate?: boolean
     renewalDate?: boolean
     status?: boolean
+    gstApplicable?: boolean
+    gstRate?: boolean
+    gstin?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -8526,6 +8557,9 @@ export namespace Prisma {
     onboardDate?: boolean
     renewalDate?: boolean
     status?: boolean
+    gstApplicable?: boolean
+    gstRate?: boolean
+    gstin?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -8555,13 +8589,16 @@ export namespace Prisma {
     onboardDate?: boolean
     renewalDate?: boolean
     status?: boolean
+    gstApplicable?: boolean
+    gstRate?: boolean
+    gstin?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     accountManagerId?: boolean
   }
 
-  export type ClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "name" | "website" | "industry" | "monthlyRetainer" | "googleBudget" | "seoPriority" | "seoScheduleDays" | "blogTarget" | "backlinkTarget" | "keywordTarget" | "gscLink" | "gaLink" | "domainAuthority" | "pocName" | "pocMobile" | "pocEmail" | "onboardDate" | "renewalDate" | "status" | "notes" | "createdAt" | "updatedAt" | "accountManagerId", ExtArgs["result"]["client"]>
+  export type ClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "name" | "website" | "industry" | "monthlyRetainer" | "googleBudget" | "seoPriority" | "seoScheduleDays" | "blogTarget" | "backlinkTarget" | "keywordTarget" | "gscLink" | "gaLink" | "domainAuthority" | "pocName" | "pocMobile" | "pocEmail" | "onboardDate" | "renewalDate" | "status" | "gstApplicable" | "gstRate" | "gstin" | "notes" | "createdAt" | "updatedAt" | "accountManagerId", ExtArgs["result"]["client"]>
   export type ClientInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     accountManager?: boolean | Client$accountManagerArgs<ExtArgs>
     services?: boolean | Client$servicesArgs<ExtArgs>
@@ -8638,6 +8675,9 @@ export namespace Prisma {
       onboardDate: Date
       renewalDate: string
       status: string
+      gstApplicable: boolean
+      gstRate: number
+      gstin: string
       notes: string | null
       createdAt: Date
       updatedAt: Date
@@ -9106,6 +9146,9 @@ export namespace Prisma {
     readonly onboardDate: FieldRef<"Client", 'DateTime'>
     readonly renewalDate: FieldRef<"Client", 'String'>
     readonly status: FieldRef<"Client", 'String'>
+    readonly gstApplicable: FieldRef<"Client", 'Boolean'>
+    readonly gstRate: FieldRef<"Client", 'Int'>
+    readonly gstin: FieldRef<"Client", 'String'>
     readonly notes: FieldRef<"Client", 'String'>
     readonly createdAt: FieldRef<"Client", 'DateTime'>
     readonly updatedAt: FieldRef<"Client", 'DateTime'>
@@ -46644,6 +46687,9 @@ export namespace Prisma {
     onboardDate: 'onboardDate',
     renewalDate: 'renewalDate',
     status: 'status',
+    gstApplicable: 'gstApplicable',
+    gstRate: 'gstRate',
+    gstin: 'gstin',
     notes: 'notes',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -47535,6 +47581,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFilter<"Client"> | Date | string
     renewalDate?: StringFilter<"Client"> | string
     status?: StringFilter<"Client"> | string
+    gstApplicable?: BoolFilter<"Client"> | boolean
+    gstRate?: IntFilter<"Client"> | number
+    gstin?: StringFilter<"Client"> | string
     notes?: StringNullableFilter<"Client"> | string | null
     createdAt?: DateTimeFilter<"Client"> | Date | string
     updatedAt?: DateTimeFilter<"Client"> | Date | string
@@ -47583,6 +47632,9 @@ export namespace Prisma {
     onboardDate?: SortOrder
     renewalDate?: SortOrder
     status?: SortOrder
+    gstApplicable?: SortOrder
+    gstRate?: SortOrder
+    gstin?: SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -47634,6 +47686,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFilter<"Client"> | Date | string
     renewalDate?: StringFilter<"Client"> | string
     status?: StringFilter<"Client"> | string
+    gstApplicable?: BoolFilter<"Client"> | boolean
+    gstRate?: IntFilter<"Client"> | number
+    gstin?: StringFilter<"Client"> | string
     notes?: StringNullableFilter<"Client"> | string | null
     createdAt?: DateTimeFilter<"Client"> | Date | string
     updatedAt?: DateTimeFilter<"Client"> | Date | string
@@ -47682,6 +47737,9 @@ export namespace Prisma {
     onboardDate?: SortOrder
     renewalDate?: SortOrder
     status?: SortOrder
+    gstApplicable?: SortOrder
+    gstRate?: SortOrder
+    gstin?: SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -47718,6 +47776,9 @@ export namespace Prisma {
     onboardDate?: DateTimeWithAggregatesFilter<"Client"> | Date | string
     renewalDate?: StringWithAggregatesFilter<"Client"> | string
     status?: StringWithAggregatesFilter<"Client"> | string
+    gstApplicable?: BoolWithAggregatesFilter<"Client"> | boolean
+    gstRate?: IntWithAggregatesFilter<"Client"> | number
+    gstin?: StringWithAggregatesFilter<"Client"> | string
     notes?: StringNullableWithAggregatesFilter<"Client"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Client"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Client"> | Date | string
@@ -50814,6 +50875,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -50861,6 +50925,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -50908,6 +50975,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -50955,6 +51025,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51002,6 +51075,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -51030,6 +51106,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51057,6 +51136,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54733,6 +54815,9 @@ export namespace Prisma {
     onboardDate?: SortOrder
     renewalDate?: SortOrder
     status?: SortOrder
+    gstApplicable?: SortOrder
+    gstRate?: SortOrder
+    gstin?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -54746,6 +54831,7 @@ export namespace Prisma {
     backlinkTarget?: SortOrder
     keywordTarget?: SortOrder
     domainAuthority?: SortOrder
+    gstRate?: SortOrder
   }
 
   export type ClientMaxOrderByAggregateInput = {
@@ -54770,6 +54856,9 @@ export namespace Prisma {
     onboardDate?: SortOrder
     renewalDate?: SortOrder
     status?: SortOrder
+    gstApplicable?: SortOrder
+    gstRate?: SortOrder
+    gstin?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -54798,6 +54887,9 @@ export namespace Prisma {
     onboardDate?: SortOrder
     renewalDate?: SortOrder
     status?: SortOrder
+    gstApplicable?: SortOrder
+    gstRate?: SortOrder
+    gstin?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -54811,6 +54903,7 @@ export namespace Prisma {
     backlinkTarget?: SortOrder
     keywordTarget?: SortOrder
     domainAuthority?: SortOrder
+    gstRate?: SortOrder
   }
 
   export type ClientScalarRelationFilter = {
@@ -58976,6 +59069,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -59022,6 +59118,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -59450,6 +59549,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFilter<"Client"> | Date | string
     renewalDate?: StringFilter<"Client"> | string
     status?: StringFilter<"Client"> | string
+    gstApplicable?: BoolFilter<"Client"> | boolean
+    gstRate?: IntFilter<"Client"> | number
+    gstin?: StringFilter<"Client"> | string
     notes?: StringNullableFilter<"Client"> | string | null
     createdAt?: DateTimeFilter<"Client"> | Date | string
     updatedAt?: DateTimeFilter<"Client"> | Date | string
@@ -59839,6 +59941,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -59885,6 +59990,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60045,6 +60153,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60091,6 +60202,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61501,6 +61615,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61547,6 +61664,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61609,6 +61729,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61655,6 +61778,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61701,6 +61827,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61747,6 +61876,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61809,6 +61941,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61855,6 +61990,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61901,6 +62039,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61947,6 +62088,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62009,6 +62153,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62055,6 +62202,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62101,6 +62251,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62147,6 +62300,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62252,6 +62408,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62298,6 +62457,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62393,6 +62555,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62439,6 +62604,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62544,6 +62712,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62590,6 +62761,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62685,6 +62859,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62731,6 +62908,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62793,6 +62973,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62839,6 +63022,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63095,6 +63281,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63141,6 +63330,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63203,6 +63395,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63249,6 +63444,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63295,6 +63493,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63341,6 +63542,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63494,6 +63698,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63540,6 +63747,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63882,6 +64092,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63928,6 +64141,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63990,6 +64206,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64036,6 +64255,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64082,6 +64304,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64128,6 +64353,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64190,6 +64418,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64236,6 +64467,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64282,6 +64516,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64328,6 +64565,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64390,6 +64630,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64436,6 +64679,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64482,6 +64728,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64528,6 +64777,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64590,6 +64842,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64636,6 +64891,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64682,6 +64940,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64728,6 +64989,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64790,6 +65054,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64836,6 +65103,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64882,6 +65152,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64928,6 +65201,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64990,6 +65266,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65036,6 +65315,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65082,6 +65364,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65128,6 +65413,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65190,6 +65478,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65236,6 +65527,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65282,6 +65576,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65328,6 +65625,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65433,6 +65733,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65479,6 +65782,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65574,6 +65880,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65620,6 +65929,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65682,6 +65994,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65728,6 +66043,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65774,6 +66092,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65820,6 +66141,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65882,6 +66206,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65928,6 +66255,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67461,6 +67791,9 @@ export namespace Prisma {
     onboardDate?: Date | string
     renewalDate?: string
     status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67621,6 +67954,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67667,6 +68003,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67713,6 +68052,9 @@ export namespace Prisma {
     onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
     renewalDate?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

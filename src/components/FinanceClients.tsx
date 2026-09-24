@@ -196,8 +196,12 @@ function AddClientModal({ close }: { close: () => void }) {
             <label className="block"><span className="eyebrow">Phone</span><input name="pocMobile" className="input mt-1" /></label>
           </div>
           <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" className="input mt-1" /></label>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block"><span className="eyebrow">GST</span><select name="gst" defaultValue="18" className="select mt-1"><option value="0">Without GST</option><option value="18">With GST 18%</option></select></label>
+            <label className="block"><span className="eyebrow">Client GSTIN</span><input name="gstin" className="input mt-1" placeholder="optional" /></label>
+          </div>
           <div className="rounded-[10px] border border-[var(--line)] p-3">
-            <div className="eyebrow mb-2">Amount to be paid — per service</div>
+            <div className="eyebrow mb-2">Amount to be paid — per service (before GST)</div>
             <div className="grid grid-cols-2 gap-3">
               <label className="block"><span className="text-[12px] font-semibold text-[var(--indigo)]">Website Development (₹)</span><input name="webAmount" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>
               <label className="block"><span className="text-[12px] font-semibold text-[var(--magenta)]">Digital Marketing (₹)</span><input name="dmAmount" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>
