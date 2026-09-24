@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { financialYear } from "@/lib/domain";
+import { financialYear, stateFromGstin } from "@/lib/domain";
 
 // local form helpers
 function s(fd: FormData, k: string) { return (fd.get(k) as string | null)?.toString().trim() ?? ""; }
@@ -484,6 +484,7 @@ export async function billRetainer(fd: FormData) {
     data: {
       number: await invoiceNumber(), clientId, pipeline: "WEBROCZ",
       billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "", clientGstin: client.gstin,
+      clientState: stateFromGstin(client.gstin), placeOfSupply: stateFromGstin(client.gstin),
       items: JSON.stringify([{ name: `Digital Marketing Retainer — ${label}`, qty: 1, rate: base, amount: base }]),
       subtotal: base, taxPct, taxAmount, total: base + taxAmount, received: 0,
       paymentStatus: "Pending", issueDate, dueDate: addDaysISO(issueDate, 15),
@@ -534,11 +535,17 @@ export async function createClientInvoice(fd: FormData) {
   const issueDate = s(fd, "issueDate") || new Date().toISOString().slice(0, 10);
   const dueDate = s(fd, "dueDate") || addDaysISO(issueDate, 15);
   const received = Math.min(Math.max(0, n(fd, "received")), total);
+  const gstin = s(fd, "gstin") || client.gstin;
+  // remember an updated GSTIN on the client for next time
+  if (gstin && gstin !== client.gstin) { try { await prisma.client.update({ where: { id: clientId }, data: { gstin } }); } catch { /* ignore */ } }
+  // Place of supply from the GSTIN's state code, so the tax splits CGST/SGST vs IGST correctly.
+  const clientState = stateFromGstin(gstin);
 
   const inv = await prisma.salesInvoice.create({
     data: {
       number: await invoiceNumber(), clientId, pipeline: "WEBROCZ",
-      billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "", clientGstin: client.gstin,
+      billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "", clientGstin: gstin,
+      clientState, placeOfSupply: clientState,
       items: JSON.stringify([{ name: desc, qty: 1, rate: base, amount: base }]),
       subtotal: base, taxPct, taxAmount, total, received,
       paymentStatus: received >= total ? "Fully Received" : received > 0 ? "Partially Received" : "Pending",

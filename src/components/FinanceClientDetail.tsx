@@ -116,7 +116,7 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
       </div>
 
       {payInv && <PaymentModal inv={payInv} clientName={client.name} back={backUrl} close={() => setPayInv(null)} />}
-      {newInv && <NewInvoiceModal clientId={client.id} clientName={client.name} defaultTaxPct={client.gstApplicable ? client.gstRate : 0} close={() => setNewInv(false)} />}
+      {newInv && <NewInvoiceModal clientId={client.id} clientName={client.name} defaultTaxPct={client.gstApplicable ? client.gstRate : 0} defaultGstin={client.gstin} close={() => setNewInv(false)} />}
       {editOpen && <EditModal client={client} close={() => setEditOpen(false)} />}
     </div>
   );
@@ -171,7 +171,7 @@ function EditModal({ client, close }: { client: Client; close: () => void }) {
   );
 }
 
-function NewInvoiceModal({ clientId, clientName, defaultTaxPct, close }: { clientId: string; clientName: string; defaultTaxPct: number; close: () => void }) {
+function NewInvoiceModal({ clientId, clientName, defaultTaxPct, defaultGstin, close }: { clientId: string; clientName: string; defaultTaxPct: number; defaultGstin: string; close: () => void }) {
   const today = todayISO();
   const due = (() => { const d = new Date(today + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + 15); return d.toISOString().slice(0, 10); })();
   const GST_OPTS = [0, 18];
@@ -192,8 +192,11 @@ function NewInvoiceModal({ clientId, clientName, defaultTaxPct, close }: { clien
             <label className="block"><span className="eyebrow">Amount (₹, before GST)</span><input name="amount" type="number" min={1} required className="input mt-1" placeholder="0" /></label>
           </div>
           <label className="block"><span className="eyebrow">Description (on invoice)</span><input name="desc" className="input mt-1" placeholder="optional — defaults to the service name" /></label>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">GST</span><select name="taxPct" defaultValue={String(defaultTaxPct)} className="select mt-1"><option value="0">Without GST</option>{GST_OPTS.filter((g) => g > 0).map((g) => <option key={g} value={String(g)}>With GST {g}%</option>)}</select></label>
+            <label className="block"><span className="eyebrow">Client GSTIN</span><input name="gstin" defaultValue={defaultGstin} className="input mt-1" placeholder="e.g. 36AABC…" /></label>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Issue date</span><input name="issueDate" type="date" defaultValue={today} className="input mt-1" /></label>
             <label className="block"><span className="eyebrow">Due date</span><input name="dueDate" type="date" defaultValue={due} className="input mt-1" /></label>
           </div>

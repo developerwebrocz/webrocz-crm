@@ -34,6 +34,30 @@ export const SELLER = {
   terms: "Thanks for doing business with us!",
 } as const;
 
+// ---- GST state codes (first 2 digits of a GSTIN) → canonical "code-Name" label ----
+// Stored on invoices as clientState/placeOfSupply; both the printable invoice and the
+// GST summary read this same "36-Telangana" shape to split CGST/SGST (intra) vs IGST.
+export const GST_STATE_BY_CODE: Record<string, string> = {
+  "01": "01-Jammu & Kashmir", "02": "02-Himachal Pradesh", "03": "03-Punjab",
+  "04": "04-Chandigarh", "05": "05-Uttarakhand", "06": "06-Haryana", "07": "07-Delhi",
+  "08": "08-Rajasthan", "09": "09-Uttar Pradesh", "10": "10-Bihar", "11": "11-Sikkim",
+  "12": "12-Arunachal Pradesh", "13": "13-Nagaland", "14": "14-Manipur", "15": "15-Mizoram",
+  "16": "16-Tripura", "17": "17-Meghalaya", "18": "18-Assam", "19": "19-West Bengal",
+  "20": "20-Jharkhand", "21": "21-Odisha", "22": "22-Chhattisgarh", "23": "23-Madhya Pradesh",
+  "24": "24-Gujarat", "25": "25-Daman & Diu", "26": "26-Dadra & Nagar Haveli", "27": "27-Maharashtra",
+  "28": "28-Andhra Pradesh (Old)", "29": "29-Karnataka", "30": "30-Goa", "31": "31-Lakshadweep",
+  "32": "32-Kerala", "33": "33-Tamil Nadu", "34": "34-Puducherry", "35": "35-Andaman & Nicobar",
+  "36": "36-Telangana", "37": "37-Andhra Pradesh", "38": "38-Ladakh",
+};
+
+// Derive the canonical "code-Name" state label from a GSTIN's leading 2 digits.
+// Returns "" when the GSTIN is blank or its state code is unknown — callers then
+// leave clientState unset, which both consumers treat as the seller's home state.
+export function stateFromGstin(gstin: string | null | undefined): string {
+  const code = (gstin || "").trim().slice(0, 2);
+  return GST_STATE_BY_CODE[code] ?? "";
+}
+
 // Indian financial-year label for a date (Apr–Mar), e.g. 2026-09 → "2026-27".
 export function financialYear(d = new Date()): string {
   const y = d.getFullYear();
