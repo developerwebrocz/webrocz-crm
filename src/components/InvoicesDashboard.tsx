@@ -11,6 +11,7 @@ const STATUS = [
   { k: "pending_approval", label: "Pending approval" },
   { k: "approved", label: "Approved" },
   { k: "unpaid", label: "Balance due" },
+  { k: "overdue", label: "Overdue" },
   { k: "paid", label: "Fully paid" },
 ];
 
@@ -36,7 +37,7 @@ export default function InvoicesDashboard({ rows, totals, q, status }: { rows: a
         <input name="q" defaultValue={q} placeholder="Search invoice no. / client / phone…" className="input !w-auto min-w-[240px]" />
         <select name="status" defaultValue={status} className="select !w-auto">{STATUS.map((s) => <option key={s.k} value={s.k}>{s.label}</option>)}</select>
         <button className="btn btn-ghost btn-sm">Apply</button>
-        {(q || status) && <a href="/invoices" className="btn btn-ghost btn-sm">Clear</a>}
+        {(q || status) && <Link href="/invoices" className="btn btn-ghost btn-sm">Clear</Link>}
       </form>
 
       {/* table */}
@@ -44,7 +45,7 @@ export default function InvoicesDashboard({ rows, totals, q, status }: { rows: a
         <div className="overflow-x-auto">
           <table className="w-full text-[13px]">
             <thead><tr className="border-b border-[var(--line)] text-left text-[var(--muted)]">
-              <th className="th">Invoice</th><th className="th">Client</th><th className="th">Date</th><th className="th text-right">Total</th><th className="th text-right">Balance</th><th className="th">Payment</th><th className="th">Approval</th><th className="th"></th>
+              <th className="th">Invoice</th><th className="th">Client</th><th className="th">Date</th><th className="th !text-right">Total</th><th className="th !text-right">Balance</th><th className="th !pl-10">Payment</th><th className="th">Approval</th><th className="th"></th>
             </tr></thead>
             <tbody>
               {rows.length === 0 && <tr><td colSpan={8} className="px-4 py-10 text-center text-[13px] text-[var(--muted)]">No invoices found.</td></tr>}
@@ -55,7 +56,7 @@ export default function InvoicesDashboard({ rows, totals, q, status }: { rows: a
                   <td className="px-4 py-3 text-[var(--ink-2)]">{r.issueDate}</td>
                   <td className="px-4 py-3 text-right tnum">{inr(r.total)}</td>
                   <td className="px-4 py-3 text-right tnum" style={{ color: r.balance > 0 ? "var(--amber)" : "var(--emerald)" }}>{inr(r.balance)}</td>
-                  <td className="px-4 py-3">{r.paymentStatus}</td>
+                  <td className="py-3 pl-10 pr-4">{r.paymentStatus}</td>
                   <td className="px-4 py-3">
                     {r.approved
                       ? <span className="inline-flex items-center gap-1 text-[12px] font-semibold" style={{ color: "var(--emerald)" }}><ShieldCheck size={13} /> Approved</span>

@@ -242,6 +242,7 @@ model SalesInvoice {
   paymentStatus String   @default("Pending")
   notes         String?
   issueDate     String // "2026-09-18"
+  dueDate       String   @default("") // "2026-10-03" — payment due date (Net-15 from issue by default)
   // GST / client billing details (match the tax-invoice format)
   clientGstin   String?
   clientState   String?   @default("36-Telangana")
@@ -257,8 +258,28 @@ model SalesInvoice {
   emailedAt     DateTime?
   createdAt     DateTime @default(now())
 
+  payments      Payment[]
+
   @@index([leadId])
   @@index([clientId])
+}
+
+// Payment ledger — one row per collection against a SalesInvoice. The invoice's
+// `received` field is kept as the running total so existing reads stay unchanged.
+model Payment {
+  id        String       @id @default(cuid())
+  invoiceId String
+  invoice   SalesInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  amount    Int
+  date      String       @default("") // "2026-09-24"
+  mode      String       @default("BANK") // UPI | BANK | CHEQUE | CASH | CARD | OTHER
+  ref       String       @default("") // txn id / cheque no / UTR
+  note      String       @default("")
+  by        String       @default("") // who recorded it
+  createdAt DateTime     @default(now())
+
+  @@index([invoiceId])
+  @@index([date])
 }
 
 // Recruitment / hiring pipeline — candidates for employee positions (separate from sales).

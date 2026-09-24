@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Users, UserCog, Megaphone, ClipboardList,
   FileBarChart, Search, UsersRound, Wallet, Images, Code2,
   CalendarDays, ClipboardCheck, ListChecks, Target, Palette, Clapperboard,
-  Contact, CalendarClock, ReceiptText, FileText, CheckCircle2, XCircle, UserPlus,
+  Contact, CalendarClock, ReceiptText, FileText, CheckCircle2, XCircle, UserPlus, Repeat, Landmark,
 } from "lucide-react";
 
 type Item = { href: string; label: string; icon: React.ElementType; badge?: number; badgeTone?: "red" };
@@ -59,7 +59,14 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
 
   if (isSales) groups.push(...salesGroups);
   if (isDmHead) groups.push({ label: "Digital Marketing", items: [{ href: "/dm", label: "Marketing Clients", icon: UserCog }] });
-  if (isAccountant) groups.push({ label: "Finance", items: [{ href: "/invoices", label: "Invoices", icon: ReceiptText }] });
+  if (isAccountant) groups.push({ label: "Finance", items: [
+    { href: "/accounts", label: "Clients", icon: Users },
+    { href: "/payments", label: "Payments", icon: Wallet },
+    { href: "/renewals", label: "Renewals", icon: Repeat },
+    { href: "/gst", label: "GST Summary", icon: Landmark },
+    { href: "/statements", label: "Reports", icon: FileBarChart },
+    { href: "/invoices", label: "Invoices", icon: ReceiptText },
+  ] });
 
   if (isAdmin) {
     groups.push(...salesGroups);

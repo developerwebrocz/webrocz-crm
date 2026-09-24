@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { SERVICES, SERVICE_KEYS, type ServiceKey } from "@/lib/domain";
+import { SERVICES, SERVICE_KEYS, type ServiceKey, financialYear } from "@/lib/domain";
 import { hashPassword, verifyPassword, getCurrentUser, getRealUser } from "@/lib/auth";
 import { sendEmail, inviteEmailHtml } from "@/lib/email";
 import { SESSION_COOKIE, IMPERSONATE_COOKIE, signSession, signImpersonation } from "@/lib/session";
@@ -595,6 +595,107 @@ export async function createClient(fd: FormData) {
   revalidatePath("/");
   revalidatePath("/clients");
   redirect(`/clients/${client.id}`);
+}
+
+// Accountant (or admin) adds a client directly from the finance dashboard.
+// Lightweight: captures billing-relevant fields only, then returns to the dashboard.
+export async function addClientFromFinance(fd: FormData) {
+  const u = await getCurrentUser();
+  if (!u || !["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"].includes(u.role)) redirect("/");
+  const scalars = clientScalars(fd);
+  if (!scalars.name) redirect("/?client=missingname");
+
+  const last = await prisma.client.findFirst({ orderBy: { code: "desc" }, select: { code: true } });
+  const lastNum = last ? parseInt(last.code.replace(/\D/g, ""), 10) : 999;
+  const code = `CLI-${lastNum + 1}`;
+
+  const client = await prisma.client.create({ data: { code, ...scalars } });
+
+  // A client who takes both services gets a SEPARATE invoice per service, so the
+  // Website-vs-DM split stays exact (no lumped "Both" invoice). Amounts are entered
+  // per service; "amount paid" is distributed across them, Website first.
+  const webAmt = Math.max(0, n(fd, "webAmount"));
+  const dmAmt = Math.max(0, n(fd, "dmAmount"));
+  const specs = [
+    ...(webAmt > 0 ? [{ label: "Website Development", amount: webAmt }] : []),
+    ...(dmAmt > 0 ? [{ label: "Digital Marketing", amount: dmAmt }] : []),
+  ];
+
+  if (specs.length) {
+    // Tag the client's services (drives Website vs DM elsewhere).
+    await prisma.clientService.createMany({ data: specs.map((sp) => ({ clientId: client.id, service: sp.label })) });
+
+    let paidLeft = Math.max(0, n(fd, "paid"));
+    const issueDate = new Date().toISOString().slice(0, 10);
+    const dd = new Date(issueDate + "T00:00:00Z"); dd.setUTCDate(dd.getUTCDate() + 15);
+    const dueDate = dd.toISOString().slice(0, 10);
+    const fy = financialYear();
+    const lastInv = await prisma.salesInvoice.findFirst({ where: { number: { startsWith: `${fy}/` } }, orderBy: { createdAt: "desc" }, select: { number: true } });
+    let seq = lastInv ? parseInt(lastInv.number.split("/").pop() || "0", 10) + 1 : 1;
+    for (const sp of specs) {
+      const received = Math.min(paidLeft, sp.amount); paidLeft -= received;
+      const inv = await prisma.salesInvoice.create({
+        data: {
+          number: `${fy}/${seq++}`, clientId: client.id, pipeline: "WEBROCZ",
+          billTo: client.name, contact: scalars.pocName ?? "", phone: scalars.pocMobile ?? "", email: scalars.pocEmail ?? "",
+          items: JSON.stringify([{ name: sp.label, qty: 1, rate: sp.amount, amount: sp.amount }]),
+          subtotal: sp.amount, taxPct: 0, taxAmount: 0, total: sp.amount,
+          received,
+          paymentStatus: received >= sp.amount ? "Fully Received" : received > 0 ? "Partially Received" : "Pending",
+          issueDate, dueDate,
+        },
+      });
+      if (received > 0) await prisma.payment.create({ data: { invoiceId: inv.id, amount: received, date: issueDate, mode: "OTHER", note: "Opening balance", by: u.name } });
+    }
+  }
+
+  revalidatePath("/");
+  revalidatePath("/clients");
+  revalidatePath("/accounts");
+  const ret = s(fd, "return");
+  redirect(ret ? `${ret}${ret.includes("?") ? "&" : "?"}client=added` : "/?client=added");
+}
+
+// Accountant edits a client's core info from the finance area (only the billing-relevant
+// fields — leaves onboardDate / team assignments / services untouched).
+export async function updateClientFinance(fd: FormData) {
+  const u = await getCurrentUser();
+  if (!u || !["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"].includes(u.role)) redirect("/");
+  const id = s(fd, "id");
+  if (!id) redirect("/accounts");
+  const name = s(fd, "name");
+  if (!name) redirect(`/accounts/${id}?err=name`);
+  const STATUS_OK = ["ACTIVE", "ON_HOLD", "UPCOMING"];
+  await prisma.client.update({
+    where: { id },
+    data: {
+      name,
+      pocName: s(fd, "pocName") || null,
+      pocMobile: s(fd, "pocMobile") || null,
+      pocEmail: s(fd, "pocEmail") || null,
+      website: s(fd, "website") || null,
+      industry: s(fd, "industry") || null,
+      monthlyRetainer: n(fd, "monthlyRetainer"),
+      status: STATUS_OK.includes(s(fd, "status")) ? s(fd, "status") : "ACTIVE",
+      renewalDate: s(fd, "renewalDate"),
+      notes: s(fd, "notes") || null,
+    },
+  });
+  revalidatePath("/accounts");
+  revalidatePath(`/accounts/${id}`);
+  redirect(`/accounts/${id}?saved=1`);
+}
+
+// Accountant deletes a client from the finance area. Cascades to invoices/payments —
+// destructive, so the UI confirms first.
+export async function deleteClientFinance(fd: FormData) {
+  const u = await getCurrentUser();
+  if (!u || !["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"].includes(u.role)) redirect("/");
+  const id = s(fd, "id");
+  if (id) { try { await prisma.client.delete({ where: { id } }); } catch { /* already gone */ } }
+  revalidatePath("/accounts");
+  revalidatePath("/");
+  redirect("/accounts?deleted=1");
 }
 
 export async function updateClient(fd: FormData) {

@@ -262,6 +262,7 @@ exports.Prisma.SalesInvoiceScalarFieldEnum = {
   paymentStatus: 'paymentStatus',
   notes: 'notes',
   issueDate: 'issueDate',
+  dueDate: 'dueDate',
   clientGstin: 'clientGstin',
   clientState: 'clientState',
   clientAddress: 'clientAddress',
@@ -272,6 +273,18 @@ exports.Prisma.SalesInvoiceScalarFieldEnum = {
   notesLog: 'notesLog',
   nextFollowup: 'nextFollowup',
   emailedAt: 'emailedAt',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PaymentScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  amount: 'amount',
+  date: 'date',
+  mode: 'mode',
+  ref: 'ref',
+  note: 'note',
+  by: 'by',
   createdAt: 'createdAt'
 };
 
@@ -639,6 +652,7 @@ exports.Prisma.ModelName = {
   WorkUpdate: 'WorkUpdate',
   Invoice: 'Invoice',
   SalesInvoice: 'SalesInvoice',
+  Payment: 'Payment',
   Candidate: 'Candidate',
   CampaignEntry: 'CampaignEntry',
   DevProject: 'DevProject',

@@ -1790,6 +1790,22 @@ export async function getReport(
 //  SALES CRM queries — all numbers DB-driven, real dates
 // ============================================================
 function salesToday() { return new Date().toISOString().slice(0, 10); }
+// Add N days to a "YYYY-MM-DD" string, returning the same format ("" stays "").
+function addDays(iso: string, days: number): string {
+  if (!iso) return "";
+  const d = new Date(iso + "T00:00:00Z");
+  if (isNaN(d.getTime())) return "";
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+// Whole days from `from` to `to` (both "YYYY-MM-DD"); positive when `to` is later.
+function daysBetween(from: string, to: string): number {
+  if (!from || !to) return 0;
+  const a = new Date(from + "T00:00:00Z").getTime();
+  const b = new Date(to + "T00:00:00Z").getTime();
+  if (isNaN(a) || isNaN(b)) return 0;
+  return Math.round((b - a) / 86400000);
+}
 function parseServices(s: string): string[] { try { const a = JSON.parse(s || "[]"); return Array.isArray(a) ? a : []; } catch { return []; } }
 const SALES_ADMIN = ["SUPER_ADMIN", "SUB_ADMIN", "SALES_HEAD"];
 
@@ -1881,8 +1897,11 @@ export async function getLeadInvoice(leadId: string) {
 export async function getInvoiceById(id: string) {
   const invoice = await prisma.salesInvoice.findUnique({ where: { id } });
   if (!invoice) return null;
-  const lead = invoice.leadId ? await prisma.lead.findUnique({ where: { id: invoice.leadId }, select: { id: true, code: true, startDate: true } }) : null;
-  return { invoice: hydrateInvoice(invoice as unknown as Record<string, unknown>), lead };
+  const [lead, payments] = await Promise.all([
+    invoice.leadId ? prisma.lead.findUnique({ where: { id: invoice.leadId }, select: { id: true, code: true, startDate: true } }) : Promise.resolve(null),
+    prisma.payment.findMany({ where: { invoiceId: id }, orderBy: { date: "desc" } }),
+  ]);
+  return { invoice: hydrateInvoice(invoice as unknown as Record<string, unknown>), lead, payments };
 }
 
 // Recruitment / hiring pipeline — all candidates with stage counts.
@@ -1907,25 +1926,32 @@ export async function getCandidates() {
 // split by Website Development vs Digital Marketing, with a monthly breakdown.
 export async function getAccountantDashboard() {
   const today = salesToday();
-  const [invoices, clients, employees, leads] = await Promise.all([
+  const thisMonth = today.slice(0, 7);
+  const [ty, tmo] = thisMonth.split("-").map(Number);
+  const lastMonth = new Date(Date.UTC(ty, tmo - 2, 1)).toISOString().slice(0, 7); // previous calendar month
+  const [invoices, clients, employees, leads, monthPay, lastMonthPay] = await Promise.all([
     prisma.salesInvoice.findMany({ orderBy: { createdAt: "desc" } }),
-    prisma.client.findMany({ select: { id: true, name: true, monthlyRetainer: true } }),
+    prisma.client.findMany({ select: { id: true, code: true, name: true, monthlyRetainer: true } }),
     prisma.user.findMany({ where: { active: true }, select: { id: true, name: true, role: true, email: true, phone: true }, orderBy: [{ role: "asc" }, { name: "asc" }] }),
     prisma.lead.findMany({ select: { id: true, services: true } }),
+    prisma.payment.aggregate({ where: { date: { startsWith: thisMonth } }, _sum: { amount: true } }),
+    prisma.payment.aggregate({ where: { date: { startsWith: lastMonth } }, _sum: { amount: true } }),
   ]);
   const leadSvc = new Map(leads.map((l) => [l.id, parseServices(l.services)]));
-  const catOf = (inv: { leadId: string | null; items: string }): string => {
-    let svc = inv.leadId ? (leadSvc.get(inv.leadId) ?? []) : [];
-    if (svc.length === 0) { try { const items = JSON.parse(inv.items || "[]"); svc = Array.isArray(items) ? items.map((it: { name?: string }) => it.name || "") : []; } catch { /* ignore */ } }
-    const k = serviceKind(svc);
-    return k.web && k.dm ? "Both" : k.web ? "Website" : k.dm ? "Digital Marketing" : "Other";
-  };
-  const invoiceRows = invoices.map((i) => ({
-    id: i.id, number: i.number, billTo: i.billTo, contact: i.contact, phone: i.phone, email: i.email,
-    total: i.total, received: i.received, balance: i.total - i.received, approved: i.approved,
-    paymentStatus: i.paymentStatus, issueDate: i.issueDate, month: (i.issueDate || "").slice(0, 7),
-    category: catOf(i), overdue: i.total - i.received > 0 && !!i.issueDate && i.issueDate < today,
-  }));
+  const clientCode = new Map(clients.map((c) => [c.id, c.code]));
+  // effective due date: explicit dueDate, else Net-15 from issue date (keeps old rows sane)
+  const dueOf = (i: { dueDate: string; issueDate: string }) => i.dueDate || addDays(i.issueDate, 15);
+  const invoiceRows = invoices.map((i) => {
+    const balance = i.total - i.received;
+    const due = dueOf(i);
+    return {
+      id: i.id, clientId: i.clientId, code: (i.clientId && clientCode.get(i.clientId)) || "", number: i.number, billTo: i.billTo, contact: i.contact, phone: i.phone, email: i.email,
+      total: i.total, received: i.received, balance, approved: i.approved,
+      paymentStatus: i.paymentStatus, issueDate: i.issueDate, dueDate: due, nextFollowup: i.nextFollowup,
+      month: (i.issueDate || "").slice(0, 7),
+      category: catOfInvoice(i, leadSvc), overdue: balance > 0 && !!due && due < today,
+    };
+  });
 
   const totals = {
     invoices: invoices.length,
@@ -1933,11 +1959,30 @@ export async function getAccountantDashboard() {
     received: invoices.reduce((s, i) => s + i.received, 0),
     pending: invoices.reduce((s, i) => s + (i.total - i.received), 0),
     overdue: invoiceRows.filter((r) => r.overdue).length,
+    overdueAmount: invoiceRows.filter((r) => r.overdue).reduce((s, r) => s + r.balance, 0),
+    monthReceived: monthPay._sum.amount ?? 0, // payments actually dated this month (from the ledger)
+    lastMonthReceived: lastMonthPay._sum.amount ?? 0, // payments dated last month — for the vs-last-month comparison
+    monthBilled: invoiceRows.filter((r) => r.month === thisMonth).reduce((s, r) => s + r.total, 0),
+    // Website Development (project) payments — billed vs received across Website/Both invoices.
+    webBilled: invoiceRows.filter((r) => r.category === "Website" || r.category === "Both").reduce((s, r) => s + r.total, 0),
+    webReceived: invoiceRows.filter((r) => r.category === "Website" || r.category === "Both").reduce((s, r) => s + r.received, 0),
     pendingApproval: invoices.filter((i) => !i.approved).length,
     clients: clients.length,
     employees: employees.length,
     monthlyDm: clients.reduce((s, c) => s + (c.monthlyRetainer || 0), 0), // recurring DM retainers / month
   };
+
+  // Receivables aging — bucket each outstanding balance by days past its due date.
+  const aging = { current: 0, d30: 0, d60: 0, d90: 0, d90plus: 0 };
+  for (const r of invoiceRows) {
+    if (r.balance <= 0) continue;
+    const over = daysBetween(r.dueDate, today); // >0 means overdue by that many days
+    if (over <= 0) aging.current += r.balance;
+    else if (over <= 30) aging.d30 += r.balance;
+    else if (over <= 60) aging.d60 += r.balance;
+    else if (over <= 90) aging.d90 += r.balance;
+    else aging.d90plus += r.balance;
+  }
 
   // monthly breakdown (by invoice date) — billed / received / pending + Website vs DM split
   const byMonth: Record<string, { month: string; billed: number; received: number; pending: number; web: number; dm: number }> = {};
@@ -1950,17 +1995,281 @@ export async function getAccountantDashboard() {
   }
   const monthlyRows = Object.values(byMonth).sort((a, b) => (a.month < b.month ? 1 : -1));
 
-  return { totals, invoiceRows, monthlyRows, employees };
+  return { totals, invoiceRows, monthlyRows, employees, aging };
+}
+
+// Category of a set of services → Website / Digital Marketing / Both / Other.
+// Tolerant of the plain category labels ("Website Development" / "Digital Marketing")
+// used on accountant-raised single-service invoices, in addition to the specific
+// SERVICE_GROUPS members recognised by serviceKind().
+function catOfServices(svc: string[]): string {
+  const k = serviceKind(svc);
+  const norm = svc.map((s) => (s || "").trim().toLowerCase());
+  const web = k.web || norm.some((s) => s.includes("website"));
+  const dm = k.dm || norm.some((s) => s.includes("digital marketing") || s.includes("retainer") || s === "dm");
+  return web && dm ? "Both" : web ? "Website" : dm ? "Digital Marketing" : "Other";
+}
+// Invoice category from its lead services or line items.
+function catOfInvoice(inv: { leadId: string | null; items: string }, leadSvc: Map<string, string[]>): string {
+  let svc = inv.leadId ? (leadSvc.get(inv.leadId) ?? []) : [];
+  if (svc.length === 0) { try { const items = JSON.parse(inv.items || "[]"); svc = Array.isArray(items) ? items.map((it: { name?: string }) => it.name || "") : []; } catch { /* ignore */ } }
+  return catOfServices(svc);
+}
+
+// Finance → Clients section: every client with their invoices (per-invoice detail),
+// so the list can filter by category / date and recompute totals dynamically.
+export async function getFinanceClients() {
+  const today = salesToday();
+  const [clients, invoices, leads] = await Promise.all([
+    prisma.client.findMany({ orderBy: { name: "asc" }, select: { id: true, code: true, name: true, pocName: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true } }),
+    prisma.salesInvoice.findMany({ orderBy: { createdAt: "desc" }, select: { id: true, number: true, clientId: true, billTo: true, total: true, received: true, issueDate: true, dueDate: true, leadId: true, items: true, notesLog: true } }),
+    prisma.lead.findMany({ select: { id: true, services: true } }),
+  ]);
+  const leadSvc = new Map(leads.map((l) => [l.id, parseServices(l.services)]));
+  const nameToId = new Map(clients.map((c) => [c.name.trim().toLowerCase(), c.id]));
+  const dueOf = (i: { dueDate: string; issueDate: string }) => i.dueDate || addDays(i.issueDate, 15);
+
+  type MiniInv = { category: string; total: number; received: number; balance: number; overdue: boolean; issueDate: string };
+  type Note = { invId: string; invNumber: string; date: string; by: string; note: string };
+  const byClient = new Map<string, MiniInv[]>();
+  const notesByClient = new Map<string, Note[]>();
+  const recentByClient = new Map<string, { id: string; number: string }>();      // most recent invoice
+  const outstandingByClient = new Map<string, { id: string; number: string }>();  // most recent outstanding invoice
+  for (const inv of invoices) { // ordered createdAt desc → first seen is most recent
+    const cid = inv.clientId || nameToId.get((inv.billTo || "").trim().toLowerCase());
+    if (!cid) continue;
+    const bal = inv.total - inv.received;
+    const due = dueOf(inv);
+    const list = byClient.get(cid) ?? [];
+    list.push({ category: catOfInvoice(inv, leadSvc), total: inv.total, received: inv.received, balance: bal, overdue: bal > 0 && !!due && due < today, issueDate: inv.issueDate });
+    byClient.set(cid, list);
+    // collect this invoice's follow-up notes under the client
+    try { const arr = JSON.parse(inv.notesLog || "[]"); if (Array.isArray(arr)) { const ns = notesByClient.get(cid) ?? []; for (const n of arr) ns.push({ invId: inv.id, invNumber: inv.number, date: n.date ?? "", by: n.by ?? "", note: n.note ?? "" }); notesByClient.set(cid, ns); } } catch { /* ignore */ }
+    if (!recentByClient.has(cid)) recentByClient.set(cid, { id: inv.id, number: inv.number });
+    if (bal > 0 && !outstandingByClient.has(cid)) outstandingByClient.set(cid, { id: inv.id, number: inv.number });
+  }
+
+  const rows = clients.map((c) => {
+    const invs = byClient.get(c.id) ?? [];
+    const web = invs.some((i) => i.category === "Website" || i.category === "Both");
+    const dm = invs.some((i) => i.category === "Digital Marketing" || i.category === "Both");
+    const category = web && dm ? "Both" : web ? "Website" : dm ? "Digital Marketing" : "—";
+    const notes = (notesByClient.get(c.id) ?? []).sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 30);
+    return {
+      id: c.id, code: c.code, name: c.name, contact: c.pocName ?? "", phone: c.pocMobile ?? "", email: c.pocEmail ?? "",
+      status: c.status, retainer: c.monthlyRetainer || 0, category, invs,
+      notes, noteTarget: outstandingByClient.get(c.id) ?? recentByClient.get(c.id) ?? null,
+    };
+  });
+  return { rows };
+}
+
+// Finance → Payments ledger: every recorded payment across all clients, with the
+// client + invoice it belongs to, so you can drill into a single client's info.
+export async function getFinancePayments() {
+  const [payments, invoices, clients, leads] = await Promise.all([
+    prisma.payment.findMany({ orderBy: [{ date: "desc" }, { createdAt: "desc" }] }),
+    prisma.salesInvoice.findMany({ select: { id: true, number: true, clientId: true, billTo: true, items: true, leadId: true } }),
+    prisma.client.findMany({ select: { id: true, name: true } }),
+    prisma.lead.findMany({ select: { id: true, services: true } }),
+  ]);
+  const invMap = new Map(invoices.map((i) => [i.id, i]));
+  const clientName = new Map(clients.map((c) => [c.id, c.name]));
+  const leadSvc = new Map(leads.map((l) => [l.id, parseServices(l.services)]));
+  const rows = payments.map((p) => {
+    const inv = invMap.get(p.invoiceId);
+    const clientId = inv?.clientId ?? null;
+    const name = (clientId && clientName.get(clientId)) || inv?.billTo || "—";
+    const category = inv ? catOfInvoice(inv, leadSvc) : "—";
+    return {
+      id: p.id, date: p.date, amount: p.amount, mode: p.mode, ref: p.ref, note: p.note, by: p.by,
+      invoiceNumber: inv?.number ?? "", clientId, clientName: name, category,
+    };
+  });
+  return { rows };
+}
+
+// Finance → GST summary: month-wise GST collected, split CGST/SGST (intra-state) vs
+// IGST (inter-state) based on the invoice's place of supply vs the agency's home state.
+const GST_SUPPLIER_STATE_CODE = "36"; // Telangana
+export async function getGstSummary() {
+  const invoices = await prisma.salesInvoice.findMany({ select: { subtotal: true, taxAmount: true, total: true, placeOfSupply: true, clientState: true, issueDate: true } });
+  const stateCode = (s: string) => { const m = (s || "").trim().match(/^(\d+)/); return m ? m[1] : ""; };
+  type M = { month: string; count: number; taxable: number; cgst: number; sgst: number; igst: number; tax: number; total: number };
+  const byMonth = new Map<string, M>();
+  for (const i of invoices) {
+    const month = (i.issueDate || "").slice(0, 7);
+    if (!month) continue;
+    const code = stateCode(i.placeOfSupply || i.clientState || "");
+    // Default (no place of supply set) is treated as intra-state (Telangana).
+    const intra = !code || code === GST_SUPPLIER_STATE_CODE;
+    const m = byMonth.get(month) ?? { month, count: 0, taxable: 0, cgst: 0, sgst: 0, igst: 0, tax: 0, total: 0 };
+    m.count += 1; m.taxable += i.subtotal; m.tax += i.taxAmount; m.total += i.total;
+    if (intra) { const half = Math.floor(i.taxAmount / 2); m.cgst += half; m.sgst += i.taxAmount - half; }
+    else m.igst += i.taxAmount;
+    byMonth.set(month, m);
+  }
+  const rows = [...byMonth.values()].sort((a, b) => (a.month < b.month ? 1 : -1));
+  return { rows, supplierState: "Telangana (36)" };
+}
+
+// Finance → Reports: monthly financials, top clients by revenue, and collections by mode.
+// Optional date range (issueDate for invoices, payment date for collections) scopes everything.
+export async function getFinanceReports(opts: { from?: string; to?: string } = {}) {
+  const from = opts.from || "", to = opts.to || "";
+  const inRange = (d: string) => (!from || d >= from) && (!to || d <= to);
+  const [invoicesAll, paymentsAll, clients] = await Promise.all([
+    prisma.salesInvoice.findMany({ select: { total: true, received: true, issueDate: true, clientId: true, billTo: true } }),
+    prisma.payment.findMany({ select: { amount: true, date: true, mode: true } }),
+    prisma.client.findMany({ select: { id: true, name: true } }),
+  ]);
+  const invoices = invoicesAll.filter((i) => inRange(i.issueDate || ""));
+  const payments = paymentsAll.filter((p) => inRange(p.date || ""));
+  const clientName = new Map(clients.map((c) => [c.id, c.name]));
+  const nameToId = new Map(clients.map((c) => [c.name.trim().toLowerCase(), c.id]));
+
+  // monthly: billed / received / pending by invoice issue month
+  type M = { month: string; invoices: number; billed: number; received: number; pending: number; collected: number };
+  const byMonth = new Map<string, M>();
+  const blank = (month: string): M => ({ month, invoices: 0, billed: 0, received: 0, pending: 0, collected: 0 });
+  for (const i of invoices) {
+    const m = (i.issueDate || "").slice(0, 7);
+    if (!m) continue;
+    const row = byMonth.get(m) ?? blank(m);
+    row.invoices += 1; row.billed += i.total; row.received += i.received; row.pending += i.total - i.received;
+    byMonth.set(m, row);
+  }
+  // collected: payments by their own month
+  const byMode = new Map<string, number>();
+  for (const p of payments) {
+    const m = (p.date || "").slice(0, 7);
+    if (m) { const row = byMonth.get(m) ?? blank(m); row.collected += p.amount; byMonth.set(m, row); }
+    byMode.set(p.mode, (byMode.get(p.mode) ?? 0) + p.amount);
+  }
+  const monthly = [...byMonth.values()].sort((a, b) => (a.month < b.month ? 1 : -1));
+
+  // top clients by billed
+  const byClient = new Map<string, { name: string; billed: number; received: number; pending: number; invoices: number }>();
+  for (const i of invoices) {
+    const cid = i.clientId || nameToId.get((i.billTo || "").trim().toLowerCase()) || i.billTo || "—";
+    const name = (i.clientId && clientName.get(i.clientId)) || i.billTo || "—";
+    const row = byClient.get(cid) ?? { name, billed: 0, received: 0, pending: 0, invoices: 0 };
+    row.billed += i.total; row.received += i.received; row.pending += i.total - i.received; row.invoices += 1;
+    byClient.set(cid, row);
+  }
+  const topClients = [...byClient.values()].sort((a, b) => b.billed - a.billed).slice(0, 10);
+  const modes = [...byMode.entries()].map(([mode, amount]) => ({ mode, amount })).sort((a, b) => b.amount - a.amount);
+
+  const totals = {
+    billed: invoices.reduce((s, i) => s + i.total, 0),
+    received: invoices.reduce((s, i) => s + i.received, 0),
+    pending: invoices.reduce((s, i) => s + (i.total - i.received), 0),
+    collected: payments.reduce((s, p) => s + p.amount, 0),
+  };
+  return { monthly, topClients, modes, totals };
+}
+
+// Finance → Retainers / Renewals: recurring (monthly retainer) clients, their contract
+// renewal dates, and whether this month's retainer has been invoiced yet.
+export async function getRetainers() {
+  const today = salesToday();
+  const thisMonth = today.slice(0, 7);
+  const [clients, invoices, leads] = await Promise.all([
+    prisma.client.findMany({ where: { monthlyRetainer: { gt: 0 } }, orderBy: { name: "asc" }, select: { id: true, code: true, name: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true, renewalDate: true } }),
+    prisma.salesInvoice.findMany({ where: { issueDate: { startsWith: thisMonth } }, select: { clientId: true, number: true, total: true, received: true, items: true, leadId: true } }),
+    prisma.lead.findMany({ select: { id: true, services: true } }),
+  ]);
+  const leadSvc = new Map(leads.map((l) => [l.id, parseServices(l.services)]));
+  // this-month DM invoice per client (counts as the retainer being billed)
+  const dmThisMonth = new Map<string, { number: string; total: number; received: number }>();
+  for (const inv of invoices) {
+    if (!inv.clientId) continue;
+    const cat = catOfInvoice(inv, leadSvc);
+    if (cat === "Digital Marketing" || cat === "Both") {
+      if (!dmThisMonth.has(inv.clientId)) dmThisMonth.set(inv.clientId, { number: inv.number, total: inv.total, received: inv.received });
+    }
+  }
+
+  const rows = clients.map((c) => {
+    const inv = dmThisMonth.get(c.id);
+    const renewalDate = c.renewalDate || "";
+    const daysToRenewal = renewalDate ? daysBetween(today, renewalDate) : null; // + future, - past
+    return {
+      id: c.id, code: c.code, name: c.name, phone: c.pocMobile ?? "", email: c.pocEmail ?? "",
+      retainer: c.monthlyRetainer, status: c.status, renewalDate, daysToRenewal,
+      billedThisMonth: !!inv, invReceived: inv?.received ?? 0, invTotal: inv?.total ?? 0, invNumber: inv?.number ?? "",
+    };
+  });
+
+  const isActive = (s: string) => s === "ACTIVE";
+  const renewingSoon = (r: { daysToRenewal: number | null }) => r.daysToRenewal !== null && r.daysToRenewal <= 30;
+  const counts = {
+    all: rows.length,
+    active: rows.filter((r) => isActive(r.status)).length,
+    onHold: rows.filter((r) => r.status === "ON_HOLD").length,
+    unbilled: rows.filter((r) => isActive(r.status) && !r.billedThisMonth).length,
+    renewing: rows.filter(renewingSoon).length,
+  };
+  const totals = {
+    mrr: rows.filter((r) => isActive(r.status)).reduce((s, r) => s + r.retainer, 0),
+    unbilledAmt: rows.filter((r) => isActive(r.status) && !r.billedThisMonth).reduce((s, r) => s + r.retainer, 0),
+    clients: rows.length,
+  };
+  return { rows, counts, totals };
+}
+
+// Finance → single client detail: profile, invoices, and the payment ledger.
+export async function getFinanceClientDetail(clientId: string) {
+  const client = await prisma.client.findUnique({
+    where: { id: clientId },
+    select: { id: true, code: true, name: true, website: true, industry: true, pocName: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true, renewalDate: true, onboardDate: true, notes: true },
+  });
+  if (!client) return null;
+  const [invoicesRaw, leads] = await Promise.all([
+    prisma.salesInvoice.findMany({ where: { OR: [{ clientId }, { billTo: client.name }] }, orderBy: { createdAt: "desc" } }),
+    prisma.lead.findMany({ select: { id: true, services: true } }),
+  ]);
+  const leadSvc = new Map(leads.map((l) => [l.id, parseServices(l.services)]));
+  const today = salesToday();
+  const dueOf = (i: { dueDate: string; issueDate: string }) => i.dueDate || addDays(i.issueDate, 15);
+  const invoices = invoicesRaw.map((i) => {
+    const balance = i.total - i.received;
+    const due = dueOf(i);
+    return {
+      id: i.id, number: i.number, total: i.total, received: i.received, balance, approved: i.approved,
+      paymentStatus: i.paymentStatus, issueDate: i.issueDate, dueDate: due, leadId: i.leadId,
+      category: catOfInvoice(i, leadSvc), overdue: balance > 0 && !!due && due < today,
+    };
+  });
+  const invIds = invoices.map((i) => i.id);
+  const paymentsRaw = invIds.length ? await prisma.payment.findMany({ where: { invoiceId: { in: invIds } }, orderBy: [{ date: "desc" }, { createdAt: "desc" }] }) : [];
+  const numById = new Map(invoices.map((i) => [i.id, i.number]));
+  const payments = paymentsRaw.map((p) => ({ id: p.id, invoiceId: p.invoiceId, invoiceNumber: numById.get(p.invoiceId) ?? "", amount: p.amount, date: p.date, mode: p.mode, ref: p.ref, note: p.note, by: p.by }));
+
+  const totals = {
+    billed: invoices.reduce((s, i) => s + i.total, 0),
+    received: invoices.reduce((s, i) => s + i.received, 0),
+    pending: invoices.reduce((s, i) => s + i.balance, 0),
+    overdue: invoices.filter((i) => i.overdue).reduce((s, i) => s + i.balance, 0),
+    invoices: invoices.length,
+  };
+  return { client: { ...client, onboardDate: client.onboardDate.toISOString().slice(0, 10) }, invoices, payments, totals };
 }
 
 // All invoices for the accountant / finance dashboard.
 export async function getInvoices(opts: { q?: string; status?: string } = {}) {
+  const today = salesToday();
   const rows = await prisma.salesInvoice.findMany({ orderBy: { createdAt: "desc" } });
-  const list = rows.map((r) => ({
-    id: r.id, number: r.number, billTo: r.billTo, contact: r.contact, phone: r.phone, email: r.email,
-    total: r.total, received: r.received, balance: r.total - r.received, paymentStatus: r.paymentStatus,
-    approved: r.approved, issueDate: r.issueDate, pipeline: r.pipeline, leadId: r.leadId, nextFollowup: r.nextFollowup,
-  }));
+  const list = rows.map((r) => {
+    const balance = r.total - r.received;
+    const dueDate = r.dueDate || addDays(r.issueDate, 15);
+    return {
+      id: r.id, number: r.number, billTo: r.billTo, contact: r.contact, phone: r.phone, email: r.email,
+      total: r.total, received: r.received, balance, paymentStatus: r.paymentStatus,
+      approved: r.approved, issueDate: r.issueDate, dueDate, overdue: balance > 0 && !!dueDate && dueDate < today,
+      pipeline: r.pipeline, leadId: r.leadId, nextFollowup: r.nextFollowup,
+    };
+  });
   const q = (opts.q || "").toLowerCase().trim();
   const filtered = list.filter((r) => {
     if (q && !(`${r.number} ${r.billTo} ${r.contact ?? ""} ${r.phone ?? ""}`.toLowerCase().includes(q))) return false;
@@ -1968,6 +2277,7 @@ export async function getInvoices(opts: { q?: string; status?: string } = {}) {
     if (opts.status === "pending_approval" && r.approved) return false;
     if (opts.status === "unpaid" && r.balance <= 0) return false;
     if (opts.status === "paid" && r.balance > 0) return false;
+    if (opts.status === "overdue" && !r.overdue) return false;
     return true;
   });
   const totals = {

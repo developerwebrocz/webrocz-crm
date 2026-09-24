@@ -227,6 +227,9 @@ h3 { font-size: 15px; font-weight: 600; line-height: 1.3; letter-spacing: -0.014
 .btn-violet { background: var(--violet); color: #fff; box-shadow: 0 1px 2px rgba(109,40,217,0.28), inset 0 1px 0 rgba(255,255,255,0.12); }
 .btn-violet:hover { background: var(--violet-soft); }
 .btn-violet:active { transform: translateY(0.5px); }
+.btn-emerald { background: var(--emerald); color: #fff; box-shadow: 0 1px 2px rgba(16,185,129,0.28), inset 0 1px 0 rgba(255,255,255,0.14); }
+.btn-emerald:hover { filter: brightness(1.06); }
+.btn-emerald:active { transform: translateY(0.5px); }
 .btn-sm { padding: 6px 11px; font-size: 12.5px; }
 
 .input,

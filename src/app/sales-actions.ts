@@ -9,6 +9,14 @@ import { financialYear } from "@/lib/domain";
 // local form helpers
 function s(fd: FormData, k: string) { return (fd.get(k) as string | null)?.toString().trim() ?? ""; }
 function n(fd: FormData, k: string) { const v = parseInt(s(fd, k).replace(/[^\d-]/g, ""), 10); return Number.isFinite(v) ? v : 0; }
+// Add N days to a "YYYY-MM-DD" string ("" stays "").
+function addDaysISO(iso: string, days: number): string {
+  if (!iso) return "";
+  const d = new Date(iso + "T00:00:00Z");
+  if (isNaN(d.getTime())) return "";
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
 
 const SALES_MANAGE = ["SUPER_ADMIN", "SUB_ADMIN", "SALES_HEAD", "SALES_EXEC"];
 const SALES_ADMIN_ROLES = ["SUPER_ADMIN", "SUB_ADMIN", "SALES_HEAD"];
@@ -74,12 +82,14 @@ async function createInvoiceForLead(lead: InvoiceLead, opts: { billTo: string; c
   const taxAmount = Math.round((base * taxPct) / 100);
   const items = [{ name: desc, qty: 1, rate: base, amount: base }];
   const received = (opts.paymentStatus || "").toLowerCase().includes("fully") ? base + taxAmount : 0;
+  const issueDate = new Date().toISOString().slice(0, 10);
   return prisma.salesInvoice.create({
     data: {
       number: await invoiceNumber(), leadId: lead.id, clientId: opts.clientId ?? lead.clientId ?? null,
       pipeline: opts.pipeline, billTo: opts.billTo, contact: opts.contact, phone: opts.phone, email: opts.email,
       items: JSON.stringify(items), subtotal: base, taxPct, taxAmount, total: base + taxAmount, received,
-      paymentStatus: opts.paymentStatus || "Pending", notes: opts.notes ?? "", issueDate: new Date().toISOString().slice(0, 10),
+      paymentStatus: opts.paymentStatus || "Pending", notes: opts.notes ?? "", issueDate,
+      dueDate: addDaysISO(issueDate, 15), // Net-15 payment term by default
     },
   });
 }
@@ -411,10 +421,136 @@ export async function saveInvoice(fd: FormData) {
       items: JSON.stringify([{ name: svcLine, qty: 1, rate: base, amount: base }]),
       subtotal: base, taxPct, taxAmount, total: base + taxAmount, received: n(fd, "received"),
       paymentStatus: s(fd, "paymentStatus") || inv.paymentStatus, notes: s(fd, "notes"), issueDate: s(fd, "issueDate") || inv.issueDate,
+      dueDate: s(fd, "dueDate") || inv.dueDate || addDaysISO(s(fd, "issueDate") || inv.issueDate, 15),
     },
   });
   revalidatePath(invoiceReturn(leadId, invId));
   redirect(invoiceReturn(leadId, invId));
+}
+
+const PAY_MODES = ["UPI", "BANK", "CHEQUE", "CASH", "CARD", "OTHER"];
+// Record a payment against an invoice — appends to the Payment ledger and keeps
+// the invoice's `received` running total + paymentStatus in sync. Used by the
+// accountant dashboard (modal) and the invoice detail page.
+export async function recordPayment(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me || !INVOICE_MANAGE.includes(me.role)) redirect("/");
+  const invId = s(fd, "invoiceId");
+  const back = s(fd, "return") || "/";
+  const inv = await prisma.salesInvoice.findUnique({ where: { id: invId } });
+  if (!inv) redirect(back);
+  // Never let the ledger exceed the invoice total — cap at the outstanding balance.
+  const amount = Math.min(n(fd, "amount"), inv.total - inv.received);
+  if (amount <= 0) redirect(back);
+  const mode = PAY_MODES.includes(s(fd, "mode")) ? s(fd, "mode") : "BANK";
+  const date = s(fd, "date") || new Date().toISOString().slice(0, 10);
+  await prisma.payment.create({
+    data: { invoiceId: invId, amount, date, mode, ref: s(fd, "ref"), note: s(fd, "note"), by: me.name },
+  });
+  // Recompute received from the ledger + any pre-ledger opening balance, capped at total.
+  const agg = await prisma.payment.aggregate({ where: { invoiceId: invId }, _sum: { amount: true } });
+  const ledger = agg._sum.amount ?? 0;
+  // Pre-ledger `received` (e.g. "fully paid" set at onboarding) that has no Payment rows:
+  const opening = Math.max(0, inv.received - (ledger - amount));
+  const received = Math.min(inv.total, opening + ledger);
+  const paymentStatus = received >= inv.total ? "Fully Received" : received > 0 ? "Partially Received" : "Pending";
+  await prisma.salesInvoice.update({ where: { id: invId }, data: { received, paymentStatus } });
+  await notifyRole("SUPER_ADMIN", `Payment recorded: ${inv.number}`, `${me.name} · ₹${amount.toLocaleString("en-IN")} (${mode})`, invoiceReturn(inv.leadId ?? "", invId), "emerald");
+  revalidatePath("/");
+  revalidatePath(invoiceReturn(inv.leadId ?? "", invId));
+  redirect(back);
+}
+
+// One-click: raise this month's Digital Marketing retainer invoice for a client.
+const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+export async function billRetainer(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me || !INVOICE_MANAGE.includes(me.role)) redirect("/");
+  const clientId = s(fd, "clientId");
+  const back = "/renewals";
+  const client = await prisma.client.findUnique({ where: { id: clientId } });
+  if (!client || client.monthlyRetainer <= 0) redirect(back);
+  const issueDate = new Date().toISOString().slice(0, 10);
+  const month = issueDate.slice(0, 7);
+  // Guard against double-billing the retainer this month.
+  const existing = await prisma.salesInvoice.findFirst({ where: { clientId, issueDate: { startsWith: month }, items: { contains: "Retainer" } } });
+  if (existing) redirect(back);
+  const base = client.monthlyRetainer;
+  const taxPct = 18;
+  const taxAmount = Math.round((base * taxPct) / 100);
+  const [y, mo] = month.split("-");
+  const label = `${MONTH_NAMES[parseInt(mo, 10) - 1] ?? mo} ${y}`;
+  await prisma.salesInvoice.create({
+    data: {
+      number: await invoiceNumber(), clientId, pipeline: "WEBROCZ",
+      billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "",
+      items: JSON.stringify([{ name: `Digital Marketing Retainer — ${label}`, qty: 1, rate: base, amount: base }]),
+      subtotal: base, taxPct, taxAmount, total: base + taxAmount, received: 0,
+      paymentStatus: "Pending", issueDate, dueDate: addDaysISO(issueDate, 15),
+    },
+  });
+  revalidatePath("/renewals");
+  redirect(back);
+}
+
+// Log a collections follow-up on an invoice: appends to its notesLog history and
+// sets the next-follow-up date. Used by the Follow-ups / Collections pipeline.
+export async function logFollowup(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me || !INVOICE_MANAGE.includes(me.role)) redirect("/");
+  const invId = s(fd, "invoiceId");
+  const back = s(fd, "return") || "/accounts";
+  const inv = await prisma.salesInvoice.findUnique({ where: { id: invId } });
+  if (!inv) redirect(back);
+  const type = s(fd, "type");
+  const note = s(fd, "note");
+  const nextFollowup = s(fd, "nextFollowup");
+  if (!note && !nextFollowup) redirect(back); // nothing to record
+  let log: { date: string; by: string; note: string }[] = [];
+  try { const a = JSON.parse(inv.notesLog || "[]"); if (Array.isArray(a)) log = a; } catch { /* ignore */ }
+  if (note) log.unshift({ date: new Date().toISOString().slice(0, 16).replace("T", " "), by: me.name, note: type ? `[${type}] ${note}` : note });
+  await prisma.salesInvoice.update({ where: { id: invId }, data: { notesLog: JSON.stringify(log.slice(0, 100)), nextFollowup: nextFollowup || inv.nextFollowup } });
+  if (note) await notifyRole("SUPER_ADMIN", `Follow-up: ${inv.number}`, `${me.name}: ${note.slice(0, 80)}`, "/accounts", "amber");
+  revalidatePath("/accounts");
+  redirect(back);
+}
+
+// Raise a new single-service invoice for a client (Website OR Digital Marketing) —
+// so a client who takes both gets separate, cleanly-categorised invoices.
+export async function createClientInvoice(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me || !INVOICE_MANAGE.includes(me.role)) redirect("/");
+  const clientId = s(fd, "clientId");
+  const back = `/accounts/${clientId}`;
+  const client = await prisma.client.findUnique({ where: { id: clientId } });
+  const base = n(fd, "amount");
+  if (!client || base <= 0) redirect(back);
+
+  const serviceLabel = s(fd, "category") === "DM" ? "Digital Marketing" : "Website Development";
+  const desc = s(fd, "desc") || serviceLabel;
+  const taxPct = Math.max(0, n(fd, "taxPct"));
+  const taxAmount = Math.round((base * taxPct) / 100);
+  const total = base + taxAmount;
+  const issueDate = s(fd, "issueDate") || new Date().toISOString().slice(0, 10);
+  const dueDate = s(fd, "dueDate") || addDaysISO(issueDate, 15);
+  const received = Math.min(Math.max(0, n(fd, "received")), total);
+
+  const inv = await prisma.salesInvoice.create({
+    data: {
+      number: await invoiceNumber(), clientId, pipeline: "WEBROCZ",
+      billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "",
+      items: JSON.stringify([{ name: desc, qty: 1, rate: base, amount: base }]),
+      subtotal: base, taxPct, taxAmount, total, received,
+      paymentStatus: received >= total ? "Fully Received" : received > 0 ? "Partially Received" : "Pending",
+      issueDate, dueDate,
+    },
+  });
+  if (received > 0) {
+    await prisma.payment.create({ data: { invoiceId: inv.id, amount: received, date: issueDate, mode: PAY_MODES.includes(s(fd, "mode")) ? s(fd, "mode") : "OTHER", note: "Invoice opening", by: me.name } });
+  }
+  revalidatePath("/");
+  revalidatePath(back);
+  redirect(back);
 }
 
 // Super Admin approves an invoice → unlocks download / send for sales + accountant.
