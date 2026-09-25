@@ -2337,11 +2337,15 @@ export async function getFinanceClientDetail(clientId: string) {
 // All invoices for the accountant / finance dashboard.
 export async function getInvoices(opts: { q?: string; status?: string; company?: string } = {}) {
   const today = salesToday();
-  const [rows, invLeads] = await Promise.all([
+  const [rows, invLeads, clients] = await Promise.all([
     prisma.salesInvoice.findMany({ orderBy: { createdAt: "desc" } }),
     prisma.lead.findMany({ select: { id: true, services: true } }),
+    prisma.client.findMany({ select: { id: true, name: true } }),
   ]);
   const invLeadSvc = new Map(invLeads.map((l) => [l.id, parseServices(l.services)]));
+  // Resolve invoices with no clientId to a client by exact (case-insensitive) name, so the
+  // client name in the list can still deep-link to the detail page where possible.
+  const nameToId = new Map(clients.map((c) => [c.name.trim().toLowerCase(), c.id]));
   const list = rows.map((r) => {
     const balance = r.total - r.received;
     const dueDate = r.dueDate || addDays(r.issueDate, 15);
@@ -2349,8 +2353,9 @@ export async function getInvoices(opts: { q?: string; status?: string; company?:
     const company = r.company || (r.taxPct > 0 ? "WEB_ROCZ_PVT" : (catOfInvoice(r, invLeadSvc) === "Digital Marketing" ? "WEB_ROCZ" : "WEB_SOLUTIONS"));
     let followups: { date: string; by: string; note: string }[] = [];
     try { const arr = JSON.parse(r.notesLog || "[]"); if (Array.isArray(arr)) followups = arr; } catch { /* ignore */ }
+    const clientId = r.clientId || nameToId.get((r.billTo || "").trim().toLowerCase()) || null;
     return {
-      id: r.id, number: r.number, billTo: r.billTo, contact: r.contact, phone: r.phone, email: r.email,
+      id: r.id, number: r.number, billTo: r.billTo, clientId, contact: r.contact, phone: r.phone, email: r.email,
       total: r.total, received: r.received, balance, paymentStatus: r.paymentStatus,
       approved: r.approved, issueDate: r.issueDate, dueDate, overdue: balance > 0 && !!dueDate && dueDate < today,
       pipeline: r.pipeline, company, gst: r.taxPct > 0, leadId: r.leadId, nextFollowup: r.nextFollowup, followups,

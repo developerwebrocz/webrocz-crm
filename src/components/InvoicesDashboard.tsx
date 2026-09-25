@@ -86,7 +86,7 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, q, stat
                 <tr key={r.id} className="border-b border-[var(--line)] hover:bg-[var(--surface-2)]">
                   <td className="px-4 py-3 font-semibold">{r.number}</td>
                   <td className="px-4 py-3"><div className="text-[12px] font-semibold">{companyLabel(r.company)}</div><span className={`text-[10px] font-bold ${r.gst ? "text-[var(--violet)]" : "text-[var(--faint)]"}`}>{r.gst ? "GST" : "No GST"}</span></td>
-                  <td className="px-4 py-3">{r.billTo}<div className="text-[11.5px] text-[var(--faint)]">{r.phone || r.email || ""}</div></td>
+                  <td className="px-4 py-3">{r.clientId ? <Link href={`/accounts/${r.clientId}`} prefetch className="font-semibold text-[var(--violet)] hover:underline">{r.billTo}</Link> : r.billTo}<div className="text-[11.5px] text-[var(--faint)]">{r.phone || r.email || ""}</div></td>
                   <td className="px-4 py-3 text-[var(--ink-2)]">{r.issueDate}</td>
                   <td className="px-4 py-3 text-right tnum">{inr(r.total)}</td>
                   <td className="px-4 py-3 text-right tnum" style={{ color: r.balance > 0 ? "var(--amber)" : "var(--emerald)" }}>{inr(r.balance)}</td>
