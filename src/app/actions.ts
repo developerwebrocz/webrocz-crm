@@ -754,6 +754,41 @@ export async function updateClientWebsite(fd: FormData) {
   redirect(back);
 }
 
+// Add a website by typing the client name: match an existing client (case-insensitive)
+// or create a new one, then save the website/hosting/renewal details onto it.
+export async function addClientWebsite(fd: FormData) {
+  const u = await getCurrentUser();
+  if (!u || !["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"].includes(u.role)) redirect("/");
+  const clientName = s(fd, "clientName");
+  const back = s(fd, "return") || "/renewals";
+  if (!clientName) redirect(`${back}?err=client`);
+  const key = clientName.trim().toLowerCase();
+  const match = (await prisma.client.findMany({ select: { id: true, name: true } })).find((c) => c.name.trim().toLowerCase() === key);
+  let clientId: string;
+  if (match) {
+    clientId = match.id;
+  } else {
+    const last = await prisma.client.findFirst({ orderBy: { code: "desc" }, select: { code: true } });
+    const num = last ? parseInt(last.code.replace(/\D/g, ""), 10) + 1 : 1000;
+    const created = await prisma.client.create({ data: { code: `CLI-${num}`, name: clientName, status: "ACTIVE" } });
+    clientId = created.id;
+  }
+  await prisma.client.update({
+    where: { id: clientId },
+    data: {
+      websiteName: s(fd, "websiteName"),
+      websiteDomain: s(fd, "websiteDomain"),
+      hostingTaken: s(fd, "hostingTaken") === "yes",
+      websiteTakenDate: s(fd, "websiteTakenDate"),
+      websiteExpiryDate: s(fd, "websiteExpiryDate"),
+      websiteRenewAmount: n(fd, "websiteRenewAmount"),
+    },
+  });
+  revalidatePath("/renewals");
+  revalidatePath(`/accounts/${clientId}`);
+  redirect(back);
+}
+
 // Accountant deletes a client from the finance area. Cascades to invoices/payments —
 // destructive, so the UI confirms first.
 export async function deleteClientFinance(fd: FormData) {

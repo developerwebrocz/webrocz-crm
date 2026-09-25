@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { updateClientWebsite } from "@/app/actions";
+import { updateClientWebsite, addClientWebsite } from "@/app/actions";
 import { downloadCsv } from "@/lib/csv";
 import { Globe, Search, ChevronLeft, ChevronRight, Download, Pencil, X, ServerCog, CalendarClock, Plus, IndianRupee } from "lucide-react";
 
@@ -186,26 +186,22 @@ function WebsiteModal({ r, close }: { r: Row; close: () => void }) {
 
 // Add website: pick a client (those without a website first) and fill the details.
 function AddWebsiteModal({ rows, close }: { rows: Row[]; close: () => void }) {
-  const noWeb = rows.filter((r) => !r.hasWebsite);
-  const withWeb = rows.filter((r) => r.hasWebsite);
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
       <div className="flex max-h-[92vh] w-full max-w-[480px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
           <div>
             <h2 className="text-[16px] font-bold">Add website</h2>
-            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">Pick a client and record their website, hosting &amp; renewal.</p>
+            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">Type the client name and record their website, hosting &amp; renewal.</p>
           </div>
           <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
         </div>
-        <form action={updateClientWebsite} className="space-y-3 overflow-y-auto scroll-thin px-6 py-5">
+        <form action={addClientWebsite} className="space-y-3 overflow-y-auto scroll-thin px-6 py-5">
           <input type="hidden" name="return" value="/renewals" />
-          <label className="block"><span className="eyebrow">Client</span>
-            <select name="id" required defaultValue="" className="select mt-1">
-              <option value="" disabled>Select a client…</option>
-              {noWeb.length > 0 && <optgroup label="No website yet">{noWeb.map((r) => <option key={r.id} value={r.id}>{r.name} ({r.code})</option>)}</optgroup>}
-              {withWeb.length > 0 && <optgroup label="Already has a website">{withWeb.map((r) => <option key={r.id} value={r.id}>{r.name} ({r.code})</option>)}</optgroup>}
-            </select>
+          <label className="block"><span className="eyebrow">Client name *</span>
+            <input name="clientName" required list="client-names" className="input mt-1" placeholder="Type the client / company name" />
+            <datalist id="client-names">{rows.map((r) => <option key={r.id} value={r.name} />)}</datalist>
+            <span className="mt-1 block text-[11px] text-[var(--faint)]">Matches an existing client, or creates a new one if the name is new.</span>
           </label>
           <label className="block"><span className="eyebrow">Website name</span><input name="websiteName" className="input mt-1" placeholder="e.g. Acme Corporate Site" /></label>
           <label className="block"><span className="eyebrow">Domain</span><input name="websiteDomain" className="input mt-1" placeholder="e.g. acme.com" /></label>
