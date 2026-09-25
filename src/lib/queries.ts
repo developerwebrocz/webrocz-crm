@@ -2290,7 +2290,9 @@ export async function getFinanceClientDetail(clientId: string) {
   });
   if (!client) return null;
   const [invoicesRaw, leads, amUsers, slasRaw] = await Promise.all([
-    prisma.salesInvoice.findMany({ where: { OR: [{ clientId }, { billTo: client.name }] }, orderBy: { createdAt: "desc" } }),
+    // Match by clientId, or by billTo name ONLY for unlinked invoices (no clientId) —
+    // so a same-named client's invoices aren't over-counted here.
+    prisma.salesInvoice.findMany({ where: { OR: [{ clientId }, { AND: [{ clientId: null }, { billTo: client.name }] }] }, orderBy: { createdAt: "desc" } }),
     prisma.lead.findMany({ select: { id: true, services: true } }),
     // AM-eligible team members the accountant can assign as the account manager.
     prisma.user.findMany({ where: { active: true, role: { in: ["ACCOUNT_MANAGER", "AM_HEAD", "DM_EXEC"] } }, orderBy: { name: "asc" }, select: { id: true, name: true } }),

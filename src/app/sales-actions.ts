@@ -397,9 +397,15 @@ export async function generateInvoice(fd: FormData) {
   const g = await salesGuard(s(fd, "id"));
   if (!g) redirect("/sales");
   const lead = g.lead;
+  // Honour the onboarded client's GST setting (falls back to With GST when unknown).
+  let gst = true;
+  if (lead.clientId) {
+    const c = await prisma.client.findUnique({ where: { id: lead.clientId }, select: { gstApplicable: true } });
+    if (c) gst = c.gstApplicable;
+  }
   await createInvoiceForLead(lead, {
     billTo: lead.company || lead.name, contact: lead.contactPerson || "", phone: lead.phone || "", email: lead.email || "",
-    total: lead.finalAmount || lead.value || 0, paymentStatus: lead.paymentStatus || "Pending", pipeline: lead.pipeline, clientId: lead.clientId,
+    total: lead.finalAmount || lead.value || 0, paymentStatus: lead.paymentStatus || "Pending", pipeline: lead.pipeline, clientId: lead.clientId, gst,
   });
   await logLead(lead.id, g.me.name, "Invoice generated (manual)");
   revalidatePath(`/sales/${lead.id}/invoice`); revalidatePath(leadPath(lead.id));

@@ -11,8 +11,6 @@ const inr = (v: number) => "₨ " + (v || 0).toLocaleString("en-IN", { minimumFr
 export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, approvalOff, sent, backHref }: { lead: any; invoice: any; canManage: boolean; isSuperAdmin: boolean; approvalOff?: boolean; sent: string; backHref: string }) {
   const [edit, setEdit] = useState(false);
   const leadId = lead?.id ?? "";
-  // In the accountant CRM there's no approval gate — treat invoices as ready to download/send.
-  const ready = invoice.approved || approvalOff;
 
   if (!invoice) {
     return (
@@ -35,6 +33,8 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
   const items = invoice.itemsArr ?? [];
   const notes = invoice.notesArr ?? [];
   const balance = invoice.total - (invoice.received || 0);
+  // In the accountant CRM there's no approval gate — treat invoices as ready to download/send.
+  const ready = invoice.approved || approvalOff;
   // The billing entity (company) that issued this invoice drives the seller block details.
   const seller = companySeller(invoice.company || "");
   const intraState = (invoice.clientState || seller.state) === seller.state;
@@ -188,7 +188,7 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
           <div>
             <Bar>Amounts</Bar>
             <div className="px-4 py-2 text-[12px]">
-              <Row k="Sub Total" v={inr(invoice.subtotal + invoice.taxAmount)} />
+              <Row k="Sub Total" v={inr(invoice.subtotal)} />
               <Row k="Total" v={inr(invoice.total)} bold />
               <Row k="Received" v={inr(invoice.received || 0)} />
               <Row k="Balance" v={inr(balance)} />
