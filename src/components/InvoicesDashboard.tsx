@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { FileText, ShieldCheck, Clock, MessageSquarePlus, X, Pencil, Trash2 } from "lucide-react";
+import { FileText, ShieldCheck, Clock, MessageSquarePlus, X, Pencil, Trash2, Plus } from "lucide-react";
 import { companyLabel, COMPANY_KEYS } from "@/lib/domain";
-import { addInvoiceNote, deleteSalesInvoice } from "@/app/sales-actions";
+import { addInvoiceNote, deleteSalesInvoice, addInvoice } from "@/app/sales-actions";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
@@ -22,10 +22,11 @@ const STATUS = [
 
 const COMPANY_TABS = [{ k: "", label: "All companies" }, ...COMPANY_KEYS.map((k) => ({ k, label: companyLabel(k) }))];
 
-export default function InvoicesDashboard({ rows, totals, companyCounts, q, status, company, hideApproval }: { rows: any[]; totals: any; companyCounts: Record<string, { count: number; billed: number }>; q: string; status: string; company: string; hideApproval?: boolean }) {
+export default function InvoicesDashboard({ rows, totals, companyCounts, clientNames = [], q, status, company, hideApproval }: { rows: any[]; totals: any; companyCounts: Record<string, { count: number; billed: number }>; clientNames?: string[]; q: string; status: string; company: string; hideApproval?: boolean }) {
   const statusOptions = hideApproval ? STATUS.filter((s) => s.k !== "pending_approval" && s.k !== "approved") : STATUS;
   const [fuInv, setFuInv] = useState<any>(null); // invoice whose follow-ups modal is open
   const [delInv, setDelInv] = useState<any>(null); // invoice pending delete confirmation
+  const [addOpen, setAddOpen] = useState(false); // "add new invoice" modal
   const tabHref = (co: string) => {
     const p = new URLSearchParams();
     if (q) p.set("q", q);
@@ -36,9 +37,12 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, q, stat
   };
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-[26px] font-extrabold tracking-tight">Invoices</h1>
-        <p className="text-[13px] text-[var(--muted)]">All client invoices — track {hideApproval ? "payments &amp; follow-ups" : "approval, payments &amp; follow-ups"}.</p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-[26px] font-extrabold tracking-tight">Invoices</h1>
+          <p className="text-[13px] text-[var(--muted)]">All client invoices — track {hideApproval ? "payments &amp; follow-ups" : "approval, payments &amp; follow-ups"}.</p>
+        </div>
+        <button onClick={() => setAddOpen(true)} className="btn btn-violet"><Plus size={16} /> Add new invoice</button>
       </div>
 
       {/* company tabs — as buttons */}
@@ -113,6 +117,62 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, q, stat
 
       {fuInv && <InvoiceFollowupModal inv={fuInv} close={() => setFuInv(null)} />}
       {delInv && <DeleteInvoiceModal inv={delInv} close={() => setDelInv(null)} />}
+      {addOpen && <AddInvoiceModal clientNames={clientNames} close={() => setAddOpen(false)} />}
+    </div>
+  );
+}
+
+// Create a brand-new invoice from the Invoices page. Client is typed (matches an existing
+// client or creates a new one); GST + service pick the billing entity & serial series.
+function AddInvoiceModal({ clientNames, close }: { clientNames: string[]; close: () => void }) {
+  const [category, setCategory] = useState("WEBSITE");
+  const [gst, setGst] = useState(false);
+  return (
+    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
+      <div className="flex max-h-[92vh] w-full max-w-[520px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
+          <div>
+            <h2 className="text-[16px] font-bold">Add new invoice</h2>
+            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">Type the client name — an existing client is reused, a new name creates one. Company &amp; serial follow GST + service.</p>
+          </div>
+          <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
+        </div>
+        <form action={addInvoice} className="space-y-3 overflow-y-auto scroll-thin px-6 py-4">
+          <input type="hidden" name="return" value="/invoices" />
+          <label className="block">
+            <span className="eyebrow">Client / company name</span>
+            <input name="clientName" required list="inv-client-names" className="input mt-1" placeholder="Type the client / company name" />
+            <datalist id="inv-client-names">{clientNames.map((nm) => <option key={nm} value={nm} />)}</datalist>
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block"><span className="eyebrow">Service</span>
+              <select name="category" value={category} onChange={(e) => setCategory(e.target.value)} className="select mt-1">
+                <option value="WEBSITE">Website</option>
+                <option value="DM">Digital Marketing</option>
+              </select>
+            </label>
+            <label className="block"><span className="eyebrow">GST</span>
+              <select name="gst" value={gst ? "1" : "0"} onChange={(e) => setGst(e.target.value === "1")} className="select mt-1">
+                <option value="0">Without GST</option>
+                <option value="1">With GST (18%)</option>
+              </select>
+            </label>
+          </div>
+          <label className="block"><span className="eyebrow">Description (optional)</span><input name="desc" className="input mt-1" placeholder={category === "DM" ? "Digital Marketing" : "Website Development"} /></label>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block"><span className="eyebrow">Amount (before GST)</span><input name="amount" type="number" min={1} required className="input mt-1" placeholder="e.g. 50000" /></label>
+            <label className="block"><span className="eyebrow">Amount received (optional)</span><input name="received" type="number" min={0} className="input mt-1" placeholder="0" /></label>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block"><span className="eyebrow">Invoice date</span><input name="issueDate" type="date" defaultValue={todayISO()} className="input mt-1" /></label>
+            <label className="block"><span className="eyebrow">Due date (optional)</span><input name="dueDate" type="date" className="input mt-1" /></label>
+          </div>
+          <p className="rounded-[10px] bg-[var(--surface-2)] px-3 py-2 text-[11.5px] text-[var(--muted)]">
+            → <b>{gst ? "Web Rocz Pvt Ltd" : category === "DM" ? "Web Rocz" : "Web Solutions"}</b> · {gst ? "GST" : "Non-GST"} serial series
+          </p>
+          <div className="flex justify-end gap-2 pt-1"><button type="button" onClick={close} className="btn btn-ghost">Cancel</button><button type="submit" className="btn btn-violet"><Plus size={15} /> Create invoice</button></div>
+        </form>
+      </div>
     </div>
   );
 }

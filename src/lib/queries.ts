@@ -1911,6 +1911,14 @@ export async function getInvoiceById(id: string) {
   return { invoice: hydrateInvoice(invoice as unknown as Record<string, unknown>), lead, payments };
 }
 
+// Public (no-auth) invoice fetch for the /share/invoice/[id] link sent to clients.
+// Returns only the printable invoice fields — no lead / payment / internal data.
+export async function getPublicInvoice(id: string) {
+  const invoice = await prisma.salesInvoice.findUnique({ where: { id } });
+  if (!invoice) return null;
+  return hydrateInvoice(invoice as unknown as Record<string, unknown>);
+}
+
 // Recruitment / hiring pipeline — all candidates with stage counts.
 export async function getCandidates() {
   const rows = await prisma.candidate.findMany({ orderBy: { updatedAt: "desc" } });
@@ -2387,7 +2395,8 @@ export async function getInvoices(opts: { q?: string; status?: string; company?:
     balance: filtered.reduce((s, r) => s + r.balance, 0),
     pendingApproval: list.filter((r) => !r.approved).length,
   };
-  return { rows: filtered, totals, companyCounts };
+  const clientNames = clients.map((c) => c.name).sort((a, b) => a.localeCompare(b));
+  return { rows: filtered, totals, companyCounts, clientNames };
 }
 
 // SLA board: every uploaded SLA (with client + generated-invoice number) plus the

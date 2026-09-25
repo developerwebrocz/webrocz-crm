@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { generateInvoice, saveInvoice, emailInvoice, approveInvoice, addInvoiceNote } from "@/app/sales-actions";
-import { SELLER, amountInWords, companySeller } from "@/lib/domain";
-import { ArrowLeft, Download, Mail, Pencil, FileText, CheckCircle2, Lock, ShieldCheck } from "lucide-react";
+import { SELLER } from "@/lib/domain";
+import InvoicePrintable from "@/components/InvoicePrintable";
+import { ArrowLeft, Download, Mail, Pencil, FileText, CheckCircle2, Lock, ShieldCheck, MessageCircle } from "lucide-react";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const inr = (v: number) => "₨ " + (v || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, approvalOff, sent, backHref }: { lead: any; invoice: any; canManage: boolean; isSuperAdmin: boolean; approvalOff?: boolean; sent: string; backHref: string }) {
   const [edit, setEdit] = useState(false);
@@ -33,15 +33,33 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
   const items = invoice.itemsArr ?? [];
   const notes = invoice.notesArr ?? [];
   const balance = invoice.total - (invoice.received || 0);
+
+  // Open WhatsApp (web/app) with the invoice details pre-filled to the client's number.
+  // Click-to-send: the accountant reviews and taps Send (no messages leave without a person).
+  const sendWhatsApp = () => {
+    const digits = (invoice.phone || "").replace(/\D/g, "");
+    if (!digits) return;
+    const phone = digits.length === 10 ? `91${digits}` : digits; // default to India country code
+    const rupees = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
+    // Public, no-login invoice link (opens the printable PDF invoice directly for the client).
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const link = `${origin}/share/invoice/${invoice.id}`;
+    const lines = [
+      `Dear ${invoice.contact || invoice.billTo},`,
+      "",
+      `Please find your invoice *${invoice.number}* from Web Rocz.`,
+      `Amount: ${rupees(invoice.total)}`,
+      balance > 0 ? `Balance due: ${rupees(balance)}` : "Status: Paid in full",
+      "",
+      `Open / download your invoice PDF: ${link}`,
+      "",
+      "Thank you for choosing us.",
+    ];
+    const msg = encodeURIComponent(lines.join("\n"));
+    window.open(`https://wa.me/${phone}?text=${msg}`, "_blank", "noopener,noreferrer");
+  };
   // In the accountant CRM there's no approval gate — treat invoices as ready to download/send.
   const ready = invoice.approved || approvalOff;
-  // The billing entity (company) that issued this invoice drives the seller block details.
-  const seller = companySeller(invoice.company || "");
-  const intraState = (invoice.clientState || seller.state) === seller.state;
-  const hasGst = invoice.taxPct > 0; // no GST → hide the GST column, tax split, and "Tax" in the title
-  const halfPct = invoice.taxPct / 2;
-  const halfTax = Math.round(invoice.taxAmount / 2);
-  const V = "var(--violet)";
 
   return (
     <div className="mx-auto max-w-[900px] space-y-4">
@@ -109,142 +127,21 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
         </div>
       )}
 
-      {/* ============ printable GST tax invoice ============ */}
-      <div id="invoice" className="card overflow-hidden !p-0 text-[12px]">
-        <div className="border-b-2 py-2 text-center text-[15px] font-bold" style={{ borderColor: V, color: "var(--ink)" }}>{hasGst ? "Tax Invoice" : "Invoice"}</div>
+      {/* ============ printable GST tax invoice (shared with the public share link) ============ */}
+      <InvoicePrintable invoice={invoice} />
 
-        {/* seller header */}
-        <div className="flex items-start justify-between gap-4 px-6 py-4">
-          {/* Web Rocz logo on every invoice, regardless of the billing entity. */}
-          <img src="/webrocz-horizontal.png" alt="Web Rocz" className="h-[40px] w-auto object-contain" />
-          <div className="text-right leading-relaxed">
-            <div className="text-[15px] font-extrabold">{seller.name}</div>
-            <div className="text-[11px] text-[var(--ink-2)]">{seller.address}</div>
-            <div className="text-[11px] text-[var(--ink-2)]">Phone no.: {seller.phone} &nbsp; Email: {seller.email}</div>
-            <div className="text-[11px] text-[var(--ink-2)]">{seller.gstin ? `GSTIN: ${seller.gstin}, ` : ""}State: {seller.state}</div>
-          </div>
-        </div>
-
-        {/* bill-to + invoice details */}
-        <div className="grid grid-cols-2">
-          <div className="border-t border-r border-[var(--line)]">
-            <Bar>Bill To</Bar>
-            <div className="px-4 py-3 leading-relaxed">
-              <div className="text-[13px] font-bold">{invoice.billTo}</div>
-              {invoice.clientAddress && <div className="text-[11.5px] text-[var(--ink-2)]">{invoice.clientAddress}</div>}
-              {invoice.phone && <div className="text-[11.5px] text-[var(--ink-2)]">Contact No. : {invoice.phone}</div>}
-              {invoice.clientGstin && <div className="text-[11.5px] text-[var(--ink-2)]">GSTIN : {invoice.clientGstin}</div>}
-              <div className="text-[11.5px] text-[var(--ink-2)]">State: {invoice.clientState || seller.state}</div>
-            </div>
-          </div>
-          <div className="border-t border-[var(--line)]">
-            <Bar>Invoice Details</Bar>
-            <div className="px-4 py-3 text-right leading-relaxed">
-              <div className="text-[12px]">Invoice No. : <b>{invoice.number}</b></div>
-              <div className="text-[12px]">Date : {fmt(invoice.issueDate)}</div>
-              <div className="text-[12px]">Place of supply: {invoice.placeOfSupply || seller.state}</div>
-            </div>
-          </div>
-        </div>
-
-        {/* items */}
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="text-white" style={{ background: V }}>
-              <th className="px-3 py-2 text-left font-semibold">#</th>
-              <th className="px-3 py-2 text-left font-semibold">Item name</th>
-              <th className="px-3 py-2 text-right font-semibold">Price/ Unit</th>
-              {hasGst && <th className="px-3 py-2 text-right font-semibold">GST</th>}
-              <th className="px-3 py-2 text-right font-semibold">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((it: any, i: number) => {
-              const gst = Math.round((it.amount * invoice.taxPct) / 100);
-              return (
-                <tr key={i} className="border-b border-[var(--line)]">
-                  <td className="px-3 py-2.5">{i + 1}</td>
-                  <td className="px-3 py-2.5 font-medium">{it.name}</td>
-                  <td className="px-3 py-2.5 text-right tnum">{inr(it.rate)}</td>
-                  {hasGst && <td className="px-3 py-2.5 text-right tnum">{inr(gst)} ({invoice.taxPct}%)</td>}
-                  <td className="px-3 py-2.5 text-right tnum">{inr(it.amount + gst)}</td>
-                </tr>
-              );
-            })}
-            <tr className="font-bold">
-              <td className="px-3 py-2.5" colSpan={3}>Total</td>
-              {hasGst && <td className="px-3 py-2.5 text-right tnum">{inr(invoice.taxAmount)}</td>}
-              <td className="px-3 py-2.5 text-right tnum">{inr(invoice.total)}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        {/* words + amounts */}
-        <div className="grid grid-cols-2 border-t border-[var(--line)]">
-          <div className="border-r border-[var(--line)]">
-            <Bar>Invoice Amount In Words</Bar>
-            <div className="px-4 py-3 text-[12px] font-medium italic">{amountInWords(invoice.total)}</div>
-          </div>
-          <div>
-            <Bar>Amounts</Bar>
-            <div className="px-4 py-2 text-[12px]">
-              <Row k="Sub Total" v={inr(invoice.subtotal)} />
-              <Row k="Total" v={inr(invoice.total)} bold />
-              <Row k="Received" v={inr(invoice.received || 0)} />
-              <Row k="Balance" v={inr(balance)} />
-            </div>
-          </div>
-        </div>
-
-        {/* tax split — only for GST invoices */}
-        {hasGst && (
-        <table className="w-full border-collapse border-t border-[var(--line)]">
-          <thead><tr className="text-white text-left" style={{ background: V }}>
-            <th className="px-3 py-1.5 font-semibold">Tax type</th><th className="px-3 py-1.5 text-right font-semibold">Taxable amount</th><th className="px-3 py-1.5 text-right font-semibold">Rate</th><th className="px-3 py-1.5 text-right font-semibold">Tax amount</th>
-          </tr></thead>
-          <tbody>
-            {intraState ? (<>
-              <tr className="border-b border-[var(--line)]"><td className="px-3 py-2">SGST</td><td className="px-3 py-2 text-right tnum">{inr(invoice.subtotal)}</td><td className="px-3 py-2 text-right tnum">{halfPct}%</td><td className="px-3 py-2 text-right tnum">{inr(halfTax)}</td></tr>
-              <tr><td className="px-3 py-2">CGST</td><td className="px-3 py-2 text-right tnum">{inr(invoice.subtotal)}</td><td className="px-3 py-2 text-right tnum">{halfPct}%</td><td className="px-3 py-2 text-right tnum">{inr(invoice.taxAmount - halfTax)}</td></tr>
-            </>) : (
-              <tr><td className="px-3 py-2">IGST</td><td className="px-3 py-2 text-right tnum">{inr(invoice.subtotal)}</td><td className="px-3 py-2 text-right tnum">{invoice.taxPct}%</td><td className="px-3 py-2 text-right tnum">{inr(invoice.taxAmount)}</td></tr>
-            )}
-          </tbody>
-        </table>
-        )}
-
-        {/* bank + terms + signatory */}
-        <div className="grid grid-cols-3 border-t border-[var(--line)]">
-          <div className="border-r border-[var(--line)]">
-            <Bar>Bank Details</Bar>
-            <div className="px-4 py-3 text-[11.5px] leading-relaxed">
-              <div>Name : {seller.bankName}</div>
-              <div>Account No. : {seller.bankAccount}</div>
-              <div>IFSC code : {seller.bankIfsc}</div>
-              <div>Account holder&apos;s name : {seller.bankHolder}</div>
-            </div>
-          </div>
-          <div className="border-r border-[var(--line)]">
-            <Bar>Terms and Conditions</Bar>
-            <div className="px-4 py-3 text-[11.5px] leading-relaxed">{invoice.notes || seller.terms}</div>
-          </div>
-          <div className="flex flex-col items-center justify-between px-4 py-3 text-center">
-            <div className="text-[11.5px]">For : {seller.name}</div>
-            <div className="mt-6 text-[11.5px] font-semibold">Authorized Signatory</div>
-          </div>
-        </div>
-      </div>
-
-      {/* email to client */}
+      {/* send to client — email + WhatsApp */}
       {canManage && (
         <div className="no-print card card-pad">
           <h3 className="text-[14px] font-bold">Send to client</h3>
-          <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">{ready ? "Emails the client a branded copy with a link to view / download." : "Locked — needs Super Admin approval first."}{invoice.emailedAt ? ` Last sent: ${new Date(invoice.emailedAt).toLocaleString("en-IN")}.` : ""}</p>
+          <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">{ready ? "Email a branded copy, or open WhatsApp with the invoice details ready to send." : "Locked — needs Super Admin approval first."}{invoice.emailedAt ? ` Last emailed: ${new Date(invoice.emailedAt).toLocaleString("en-IN")}.` : ""}</p>
           <form action={emailInvoice} className="mt-3 flex flex-wrap items-end gap-2">
             <input type="hidden" name="invoiceId" value={invoice.id} /><input type="hidden" name="leadId" value={leadId} />
             <div className="flex-1 min-w-[240px]"><L label="Client email"><input name="to" type="email" required defaultValue={invoice.email ?? lead?.email ?? ""} placeholder="client@example.com" className="input" /></L></div>
             <button disabled={!ready} className="btn btn-violet disabled:opacity-40"><Mail size={15} /> Email invoice</button>
+            <button type="button" onClick={sendWhatsApp} disabled={!ready} title={invoice.phone ? `Open WhatsApp to ${invoice.phone}` : "No phone number on this invoice"} className="btn btn-ghost disabled:opacity-40" style={{ borderColor: "color-mix(in srgb, #25D366 55%, white)", color: "#128C4B" }}><MessageCircle size={15} /> Send on WhatsApp</button>
           </form>
+          {!invoice.phone && <p className="mt-1.5 text-[11.5px] text-[var(--amber)]">Add the client&apos;s phone (Edit above) to enable WhatsApp.</p>}
         </div>
       )}
 
@@ -272,13 +169,6 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
   );
 }
 
-function Bar({ children }: { children: React.ReactNode }) {
-  return <div className="px-4 py-1.5 text-[11.5px] font-bold text-white" style={{ background: "var(--violet)" }}>{children}</div>;
-}
-function Row({ k, v, bold }: { k: string; v: string; bold?: boolean }) {
-  return <div className={`flex justify-between border-b border-[var(--line)] py-1.5 ${bold ? "font-bold" : ""}`}><span>{k}</span><span className="tnum">{v}</span></div>;
-}
 function L({ label, children }: { label: string; children: React.ReactNode }) {
   return <label className="block"><span className="eyebrow">{label}</span><div className="mt-1.5">{children}</div></label>;
 }
-function fmt(iso: string) { if (!iso) return "—"; const [y, m, d] = iso.split("-"); return d ? `${d}-${m}-${y}` : iso; }

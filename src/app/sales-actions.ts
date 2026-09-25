@@ -523,6 +523,62 @@ export async function createClientInvoice(fd: FormData) {
   redirect(back);
 }
 
+// Add a brand-new invoice straight from the Invoices page. The client is typed by name:
+// an existing client (case-insensitive match) is reused, otherwise a new one is created.
+// GST flag + service category drive the billing entity and serial series (companyFor).
+export async function addInvoice(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me || !INVOICE_MANAGE.includes(me.role)) redirect("/");
+  const back = s(fd, "return") || "/invoices";
+  const clientName = s(fd, "clientName");
+  const base = n(fd, "amount");
+  if (!clientName || base <= 0) redirect(back);
+
+  const category = s(fd, "category") === "DM" ? "DM" : "WEBSITE";
+  const serviceLabel = category === "DM" ? "Digital Marketing" : "Website Development";
+  const desc = s(fd, "desc") || serviceLabel;
+  const gst = s(fd, "gst") === "1";
+
+  // Match an existing client by name, else create a fresh one (CLI-#### like the finance flow).
+  const all = await prisma.client.findMany({ select: { id: true, name: true, gstin: true, gstRate: true, pocName: true, pocMobile: true, pocEmail: true } });
+  let client = all.find((c) => c.name.trim().toLowerCase() === clientName.toLowerCase()) || null;
+  if (!client) {
+    const last = await prisma.client.findFirst({ orderBy: { code: "desc" }, select: { code: true } });
+    const num = (last ? parseInt(last.code.replace(/\D/g, ""), 10) : 999) + 1;
+    const created = await prisma.client.create({ data: { code: `CLI-${num}`, name: clientName, status: "ACTIVE", gstApplicable: gst, gstRate: gst ? 18 : 0 } });
+    client = { id: created.id, name: created.name, gstin: created.gstin, gstRate: created.gstRate, pocName: created.pocName, pocMobile: created.pocMobile, pocEmail: created.pocEmail };
+  }
+
+  const taxPct = gst ? (client.gstRate > 0 ? client.gstRate : 18) : 0;
+  const taxAmount = Math.round((base * taxPct) / 100);
+  const total = base + taxAmount;
+  const issueDate = s(fd, "issueDate") || new Date().toISOString().slice(0, 10);
+  const dueDate = s(fd, "dueDate") || addDaysISO(issueDate, 15);
+  const received = Math.min(Math.max(0, n(fd, "received")), total);
+  const gstin = client.gstin || "";
+  const clientState = stateFromGstin(gstin);
+  const company = companyFor(gst, category);
+
+  const inv = await prisma.salesInvoice.create({
+    data: {
+      number: await invoiceNumber(gst), clientId: client.id, pipeline: "WEBROCZ", company,
+      billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "", clientGstin: gstin,
+      clientState, placeOfSupply: clientState,
+      items: JSON.stringify([{ name: desc, qty: 1, rate: base, amount: base }]),
+      subtotal: base, taxPct, taxAmount, total, received,
+      paymentStatus: received >= total ? "Fully Received" : received > 0 ? "Partially Received" : "Pending",
+      issueDate, dueDate,
+    },
+  });
+  if (received > 0) {
+    await prisma.payment.create({ data: { invoiceId: inv.id, amount: received, date: issueDate, mode: "OTHER", note: "Invoice opening", by: me.name } });
+  }
+  revalidatePath("/invoices");
+  revalidatePath(`/accounts/${client.id}`);
+  // Land on the invoice page so it can be sent to the client (WhatsApp / email) right away.
+  redirect(`/invoices/${inv.id}`);
+}
+
 // Super Admin approves an invoice → unlocks download / send for sales + accountant.
 export async function approveInvoice(fd: FormData) {
   const me = await getCurrentUser();
