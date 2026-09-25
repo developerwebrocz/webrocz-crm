@@ -22,7 +22,8 @@ type Aging = { current: number; d30: number; d60: number; d90: number; d90plus: 
 // Where a client name / Pay button should take you: the client's finance page (deep-open Pay if given).
 const clientHref = (r: Inv, pay = false) => r.clientId ? `/accounts/${r.clientId}${pay ? `?pay=${r.id}` : ""}` : `/invoices/${r.id}`;
 
-export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, employees, aging, userName }: { totals: any; invoiceRows: Inv[]; monthlyRows: MonthRow[]; employees: Emp[]; aging: Aging; userName: string }) {
+type AmUser = { id: string; name: string };
+export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, employees, aging, amUsers, userName }: { totals: any; invoiceRows: Inv[]; monthlyRows: MonthRow[]; employees: Emp[]; aging: Aging; amUsers: AmUser[]; userName: string }) {
   const [tab, setTab] = useState<"invoices" | "monthly" | "employees">("invoices");
   const [cat, setCat] = useState("ALL");
   const [pay, setPay] = useState("ALL"); // ALL | pending | paid | overdue
@@ -91,7 +92,6 @@ export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, 
           <div className="flex items-center gap-2">
             <button onClick={() => setAddClient(true)} className="btn btn-ghost"><UserPlus size={16} /> Add Client</button>
             <Link href="/accounts" prefetch className="btn btn-ghost"><Users size={16} /> Clients</Link>
-            <Link href="/payments" prefetch className="btn btn-ghost"><Wallet size={16} /> Payments</Link>
             <Link href="/invoices" prefetch className="btn btn-violet"><ReceiptText size={16} /> All Invoices</Link>
           </div>
         </div>
@@ -206,7 +206,7 @@ export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, 
         </div>
       )}
 
-      {addClient && <AddClientModal close={() => setAddClient(false)} />}
+      {addClient && <AddClientModal amUsers={amUsers} close={() => setAddClient(false)} />}
 
       {/* Employees */}
       {tab === "employees" && (
@@ -232,7 +232,9 @@ export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, 
   );
 }
 
-function AddClientModal({ close }: { close: () => void }) {
+function AddClientModal({ amUsers, close }: { amUsers: AmUser[]; close: () => void }) {
+  const [gst, setGst] = useState("18");
+  const noGst = gst === "0"; // Without GST → no GSTIN to capture
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
       <div className="flex max-h-[92vh] w-full max-w-[520px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
@@ -250,9 +252,15 @@ function AddClientModal({ close }: { close: () => void }) {
             <label className="block"><span className="eyebrow">Phone</span><input name="pocMobile" className="input mt-1" /></label>
           </div>
           <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" className="input mt-1" /></label>
+          <label className="block"><span className="eyebrow">Account manager</span>
+            <select name="accountManagerId" defaultValue="" className="select mt-1">
+              <option value="">— Unassigned —</option>
+              {amUsers.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+            </select>
+          </label>
           <div className="grid grid-cols-2 gap-3">
-            <label className="block"><span className="eyebrow">GST</span><select name="gst" defaultValue="18" className="select mt-1"><option value="0">Without GST</option><option value="18">With GST 18%</option></select></label>
-            <label className="block"><span className="eyebrow">Client GSTIN</span><input name="gstin" className="input mt-1" placeholder="optional" /></label>
+            <label className="block"><span className="eyebrow">GST</span><select name="gst" value={gst} onChange={(e) => setGst(e.target.value)} className="select mt-1"><option value="0">Without GST</option><option value="18">With GST 18%</option></select></label>
+            <label className="block"><span className="eyebrow">Client GSTIN</span><input name="gstin" disabled={noGst} className="input mt-1 disabled:opacity-50 disabled:cursor-not-allowed" placeholder={noGst ? "Not applicable" : "optional"} /></label>
           </div>
           <div className="rounded-[10px] border border-[var(--line)] p-3">
             <div className="eyebrow mb-2">Amount to be paid — per service (before GST)</div>

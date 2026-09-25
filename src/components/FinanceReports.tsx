@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { downloadCsv } from "@/lib/csv";
-import { FileBarChart, ReceiptText, Wallet, CheckCircle2, IndianRupee, Download, Trophy } from "lucide-react";
+import { FileBarChart, ReceiptText, Wallet, CheckCircle2, IndianRupee, Download, Trophy, Building2 } from "lucide-react";
+import { companyLabel } from "@/lib/domain";
 
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const monthLabel = (m: string) => { if (!m) return "—"; const [y, mo] = m.split("-"); const names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; return `${names[parseInt(mo, 10) - 1] ?? mo} ${y}`; };
@@ -13,8 +14,9 @@ type M = { month: string; invoices: number; billed: number; received: number; pe
 type TC = { name: string; billed: number; received: number; pending: number; invoices: number };
 type Mode = { mode: string; amount: number };
 type Totals = { billed: number; received: number; pending: number; collected: number };
+type Comp = { company: string; billed: number; received: number; pending: number; invoices: number };
 
-export default function FinanceReports({ monthly, topClients, modes, totals, period, from, to }: { monthly: M[]; topClients: TC[]; modes: Mode[]; totals: Totals; period: string; from: string; to: string }) {
+export default function FinanceReports({ monthly, topClients, modes, totals, companies, period, from, to }: { monthly: M[]; topClients: TC[]; modes: Mode[]; totals: Totals; companies: Comp[]; period: string; from: string; to: string }) {
   const router = useRouter();
   const go = (p: string, f = "", t = "") => {
     const params = new URLSearchParams();
@@ -33,6 +35,11 @@ export default function FinanceReports({ monthly, topClients, modes, totals, per
     `top-clients-${new Date().toISOString().slice(0, 10)}.csv`,
     ["Client", "Invoices", "Billed", "Received", "Pending"],
     topClients.map((r) => [r.name, r.invoices, r.billed, r.received, r.pending]),
+  );
+  const exportCompanies = () => downloadCsv(
+    `company-report-${new Date().toISOString().slice(0, 10)}.csv`,
+    ["Company", "Invoices", "Billed", "Received", "Pending"],
+    companies.map((r) => [companyLabel(r.company), r.invoices, r.billed, r.received, r.pending]),
   );
   const modeTotal = modes.reduce((s, m) => s + m.amount, 0);
 
@@ -73,6 +80,30 @@ export default function FinanceReports({ monthly, topClients, modes, totals, per
         <Kpi label="Received" value={inr(totals.received)} tone="var(--emerald)" icon={<CheckCircle2 size={15} />} />
         <Kpi label="Pending" value={inr(totals.pending)} tone="var(--amber)" icon={<Wallet size={15} />} />
         <Kpi label="Collected (ledger)" value={inr(totals.collected)} tone="var(--indigo)" icon={<IndianRupee size={15} />} />
+      </div>
+
+      {/* By company (Web Solutions / Web Rocz / Web Rocz Pvt Ltd) */}
+      <div className="card !p-0 overflow-hidden">
+        <div className="flex items-center justify-between border-b border-[var(--line)] px-5 py-3">
+          <h2 className="flex items-center gap-1.5 text-[13.5px] font-bold"><Building2 size={14} className="text-[var(--indigo)]" /> By company</h2>
+          <button onClick={exportCompanies} className="btn btn-ghost btn-sm"><Download size={14} /> Export</button>
+        </div>
+        <div className="grid gap-3 p-4 sm:grid-cols-3">
+          {companies.map((c) => (
+            <div key={c.company} className="rounded-[12px] border border-[var(--line)] p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-[13px] font-bold">{companyLabel(c.company)}</span>
+                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${c.company === "WEB_ROCZ_PVT" ? "bg-[color-mix(in_srgb,var(--violet)_14%,white)] text-[var(--violet)]" : "bg-[var(--surface-2)] text-[var(--muted)]"}`}>{c.company === "WEB_ROCZ_PVT" ? "GST" : "No GST"}</span>
+              </div>
+              <div className="mt-2 text-[22px] font-extrabold tnum">{inr(c.billed)}</div>
+              <div className="text-[11.5px] text-[var(--muted)]">{c.invoices} invoice{c.invoices !== 1 ? "s" : ""} billed</div>
+              <div className="mt-2 flex justify-between border-t border-[var(--line)] pt-2 text-[12px]">
+                <span className="tnum" style={{ color: "var(--emerald)" }}>Recd {inr(c.received)}</span>
+                <span className="tnum" style={{ color: c.pending > 0 ? "var(--amber)" : "var(--emerald)" }}>Pend {inr(c.pending)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Monthly financials */}

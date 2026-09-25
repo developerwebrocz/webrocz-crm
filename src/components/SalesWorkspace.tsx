@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import Link from "next/link";
 import { createLead, setLeadStage, addLeadNote, deleteLead } from "@/app/sales-actions";
 import { SALES_STAGES, SALES_STAGE_KEYS, FUNNEL_KEYS, SALES_STAGE_TONE, serviceGroupsFor, LEAD_SOURCES, serviceKind } from "@/lib/domain";
@@ -28,18 +28,24 @@ export default function SalesWorkspace({
   const [exec, setExec] = useState("ALL");
   const [source, setSource] = useState("ALL");
   const [category, setCategory] = useState(initialCategory || "ALL"); // ALL | WEBSITE | DM
-  useEffect(() => { setCategory(initialCategory || "ALL"); }, [initialCategory]);
   const [stage, setStage] = useState(initialStage || "ALL");
-  // Sidebar links change the URL (?stage=…) via SPA navigation — keep the table filter in sync
-  // so "Leads" shows only Leads, "Follow-up" shows only Follow-up, etc.
-  useEffect(() => { setStage(initialStage || "ALL"); }, [initialStage]);
+  // Sidebar links change the URL (?stage=… / ?category=…) via SPA navigation — keep the table
+  // filters in sync at render time (no setState-in-effect) so each nav item scopes the list.
+  const [prevNav, setPrevNav] = useState(`${initialCategory}|${initialStage}`);
+  const navSig = `${initialCategory}|${initialStage}`;
+  if (prevNav !== navSig) { setPrevNav(navSig); setCategory(initialCategory || "ALL"); setStage(initialStage || "ALL"); }
   const [range, setRange] = useState("ALL");
   const [month, setMonth] = useState("");
   const [view, setView] = useState<"board" | "list" | "funnel">("list");
   const [modal, setModal] = useState(false);
   const [noteRow, setNoteRow] = useState<string | null>(null);
 
-  const sourceOptions = useMemo(() => [...new Set(rows.filter((r) => r.pipeline === pipeline).map((r) => r.source).filter(Boolean))].sort(), [rows, pipeline]);
+  // Show the full known source list plus any custom sources already present in the leads,
+  // so the filter is always usable even when the current leads have no source set.
+  const sourceOptions = useMemo(() => {
+    const present = rows.filter((r) => r.pipeline === pipeline).map((r) => r.source).filter(Boolean);
+    return [...new Set([...LEAD_SOURCES, ...present])];
+  }, [rows, pipeline]);
 
   const inRange = (created: string) => {
     if (range === "ALL") return true;

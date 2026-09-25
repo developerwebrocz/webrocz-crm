@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Users, UserCog, Megaphone, ClipboardList,
   FileBarChart, Search, UsersRound, Wallet, Images, Code2,
   CalendarDays, ClipboardCheck, ListChecks, Target, Palette, Clapperboard,
-  Contact, CalendarClock, ReceiptText, FileText, CheckCircle2, XCircle, UserPlus, Repeat, Landmark,
+  Contact, CalendarClock, ReceiptText, FileText, CheckCircle2, XCircle, UserPlus, Repeat, Landmark, Building2, Globe, FileSignature,
 } from "lucide-react";
 
 type Item = { href: string; label: string; icon: React.ElementType; badge?: number; badgeTone?: "red" };
@@ -44,7 +44,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
 
   // Sales nav split into two clear groups + reports.
   const leadsGroup: Group = { label: "Leads", items: [
-    { href: "/sales?stage=POSITIVE_LEAD", label: "Leads", icon: Contact },
+    { href: "/sales?stage=POSITIVE_LEAD", label: "Positive Leads", icon: Contact },
     { href: "/sales?stage=FOLLOW_UP", label: "Follow-up", icon: CalendarClock },
     { href: "/sales?stage=ALL", label: "All Leads", icon: UsersRound },
   ] };
@@ -53,20 +53,33 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     { href: "/sales?stage=REMINDER", label: "Reminder", icon: CalendarClock, badge: reminderCount || undefined, badgeTone: "red" },
     { href: "/sales?stage=MEETING", label: "Meetings", icon: CalendarDays },
     { href: "/sales?stage=ONBOARDED", label: "Client Onboarding", icon: CheckCircle2 },
+    { href: "/sla", label: "Upload SLA", icon: FileSignature },
     { href: "/sales?stage=LOST", label: "Lost", icon: XCircle },
   ] };
   const salesGroups: Group[] = [leadsGroup, pipelineGroup, ...(isAdmin || isSales ? [{ label: "Insights", items: [{ href: "/sales/reports", label: "Sales Reports", icon: FileBarChart }] }] : [])];
 
   if (isSales) groups.push(...salesGroups);
   if (isDmHead) groups.push({ label: "Digital Marketing", items: [{ href: "/dm", label: "Marketing Clients", icon: UserCog }] });
-  if (isAccountant) groups.push({ label: "Finance", items: [
-    { href: "/accounts", label: "Clients", icon: Users },
-    { href: "/payments", label: "Payments", icon: Wallet },
-    { href: "/renewals", label: "Renewals", icon: Repeat },
-    { href: "/gst", label: "GST Summary", icon: Landmark },
-    { href: "/statements", label: "Reports", icon: FileBarChart },
-    { href: "/invoices", label: "Invoices", icon: ReceiptText },
-  ] });
+  // Accountant finance suite — also shown to Super/Sub Admin (they oversee finance).
+  const financeGroups: Group[] = [
+    { label: "Companies", items: [
+      { href: "/pipeline/web-solutions", label: "Web Solutions", icon: Globe },
+      { href: "/pipeline/web-rocz", label: "Web Rocz", icon: Megaphone },
+      { href: "/pipeline/web-rocz-pvt", label: "Web Rocz Pvt Ltd", icon: Building2 },
+    ] },
+    { label: "Finance", items: [
+      { href: "/accounts", label: "All Clients", icon: Users },
+      { href: "/dm-clients", label: "DM Clients", icon: Megaphone },
+      { href: "/sla", label: "SLAs", icon: FileSignature },
+      // Payments hidden for now — re-add when needed:
+      // { href: "/payments", label: "Payments", icon: Wallet },
+      { href: "/renewals", label: "Website renewals", icon: Repeat },
+      { href: "/gst", label: "GST Summary", icon: Landmark },
+      { href: "/statements", label: "Reports", icon: FileBarChart },
+      { href: "/invoices", label: "Invoices", icon: ReceiptText },
+    ] },
+  ];
+  if (isAccountant) groups.push(...financeGroups);
 
   if (isAdmin) {
     groups.push(...salesGroups);
@@ -87,7 +100,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     groups.push({ label: "Clients", items: [
       { href: "/clients", label: "Clients", icon: Users, badge: clientCount },
       { href: "/am", label: "AM Panel", icon: UserCog },
-      { href: "/invoices", label: "Invoices", icon: ReceiptText },
+      // Invoices now live in the Finance group below (added for admins too).
     ] });
     groups.push({ label: "Team", items: [
       { href: "/tasks", label: "Tasks", icon: ListChecks, badge: taskCount || undefined },
@@ -97,6 +110,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
       { href: "/hiring", label: "Hiring", icon: UserPlus },
       { href: "/billing", label: "Billing", icon: Wallet },
     ] });
+    groups.push(...financeGroups); // Super/Sub Admin also oversee the accountant finance suite
   } else if (isSales) {
     // Sales team → clean, pipeline-only sidebar (Sales group already added above).
   } else if (isAccountant) {

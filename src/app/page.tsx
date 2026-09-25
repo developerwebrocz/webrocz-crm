@@ -43,7 +43,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/">) {
   // Accountant → a dedicated finance dashboard (clients + invoices + employees).
   if (user.role === "ACCOUNTANT") {
     const d = await getAccountantDashboard();
-    return <AccountantDashboard totals={d.totals} invoiceRows={d.invoiceRows} monthlyRows={d.monthlyRows} employees={d.employees} aging={d.aging} userName={user.name} />;
+    return <AccountantDashboard totals={d.totals} invoiceRows={d.invoiceRows} monthlyRows={d.monthlyRows} employees={d.employees} aging={d.aging} amUsers={d.amUsers} userName={user.name} />;
   }
   if (ADMIN_ROLES.includes(user.role)) {
     const period = (typeof sp.period === "string" ? sp.period : "month") as PeriodKey;

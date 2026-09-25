@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { financialYear, stateFromGstin } from "@/lib/domain";
+import { financialYear, stateFromGstin, companyFor } from "@/lib/domain";
 
 // local form helpers
 function s(fd: FormData, k: string) { return (fd.get(k) as string | null)?.toString().trim() ?? ""; }
@@ -62,31 +62,36 @@ async function logLead(leadId: string, actor: string, action: string, detail = "
 }
 
 // ---- Invoice generation (auto on onboarding, GST tax-invoice, printable + emailable) ----
-// Financial-year sequential number, e.g. 2026-27/135.
-async function invoiceNumber() {
+// Two independent financial-year serial series: GST bills vs non-GST bills.
+//   GST  → "GST/2026-27/001"     Non-GST → "NG/2026-27/001"
+async function invoiceNumber(gst: boolean) {
   const fy = financialYear();
-  const last = await prisma.salesInvoice.findFirst({ where: { number: { startsWith: `${fy}/` } }, orderBy: { createdAt: "desc" }, select: { number: true } });
+  const prefix = `${gst ? "GST" : "NG"}/${fy}/`;
+  const last = await prisma.salesInvoice.findFirst({ where: { number: { startsWith: prefix } }, orderBy: { createdAt: "desc" }, select: { number: true } });
   const seq = last ? parseInt(last.number.split("/").pop() || "0", 10) + 1 : 1;
-  return `${fy}/${seq}`;
+  return `${prefix}${String(seq).padStart(3, "0")}`;
 }
 type InvoiceLead = { id: string; services: string; clientId?: string | null };
-async function createInvoiceForLead(lead: InvoiceLead, opts: { billTo: string; contact: string; phone: string; email: string; total: number; paymentStatus: string; pipeline: string; clientId?: string | null; notes?: string }) {
+async function createInvoiceForLead(lead: InvoiceLead, opts: { billTo: string; contact: string; phone: string; email: string; total: number; paymentStatus: string; pipeline: string; clientId?: string | null; notes?: string; gst?: boolean }) {
   const existing = await prisma.salesInvoice.findFirst({ where: { leadId: lead.id } });
   if (existing) return existing;
   const brand = opts.pipeline === "DIGITALHAT" ? "Digital Hat" : "WebRocz";
   const services = parseSvc(lead.services);
   const desc = services.length ? services.join(", ") : `${brand} Services`;
-  // opts.total is the agreed amount — treat it as taxable base, add 18% GST on top.
-  const taxPct = 18;
+  // opts.total is the agreed amount (taxable base). GST is chosen at onboarding (default With GST).
+  const gst = opts.gst ?? true;
+  const taxPct = gst ? 18 : 0;
   const base = opts.total;
   const taxAmount = Math.round((base * taxPct) / 100);
   const items = [{ name: desc, qty: 1, rate: base, amount: base }];
   const received = (opts.paymentStatus || "").toLowerCase().includes("fully") ? base + taxAmount : 0;
   const issueDate = new Date().toISOString().slice(0, 10);
+  const isDM = /digital|market|dm|smo|seo|social/i.test(lead.services || "");
+  const company = companyFor(gst, isDM ? "DM" : "WEBSITE");
   return prisma.salesInvoice.create({
     data: {
-      number: await invoiceNumber(), leadId: lead.id, clientId: opts.clientId ?? lead.clientId ?? null,
-      pipeline: opts.pipeline, billTo: opts.billTo, contact: opts.contact, phone: opts.phone, email: opts.email,
+      number: await invoiceNumber(gst), leadId: lead.id, clientId: opts.clientId ?? lead.clientId ?? null,
+      pipeline: opts.pipeline, company, billTo: opts.billTo, contact: opts.contact, phone: opts.phone, email: opts.email,
       items: JSON.stringify(items), subtotal: base, taxPct, taxAmount, total: base + taxAmount, received,
       paymentStatus: opts.paymentStatus || "Pending", notes: opts.notes ?? "", issueDate,
       dueDate: addDaysISO(issueDate, 15), // Net-15 payment term by default
@@ -281,12 +286,14 @@ export async function onboardLead(fd: FormData) {
   const g = await salesGuard(s(fd, "id"));
   if (!g) redirect("/sales");
   const lead = g.lead;
+  // GST chosen at onboarding: "0" = Without GST, anything else = With GST (default).
+  const gst = s(fd, "gst") !== "0";
 
   // Digital Hat = course enrolment → no website/DM agency project, just mark onboarded.
   if (lead.pipeline === "DIGITALHAT") {
     await prisma.lead.update({ where: { id: lead.id }, data: { stage: "ONBOARDED", paymentStatus: s(fd, "paymentStatus"), startDate: s(fd, "startDate"), finalAmount: n(fd, "finalAmount"), requirements: s(fd, "requirements") || lead.requirements } });
     await logLead(lead.id, g.me.name, "Enrolled — Digital Hat", `INR ${n(fd, "finalAmount")}`);
-    await createInvoiceForLead(lead, { billTo: s(fd, "company") || lead.company || lead.name, contact: s(fd, "contactPerson") || lead.contactPerson || "", phone: s(fd, "phone") || lead.phone || "", email: s(fd, "email") || lead.email || "", total: n(fd, "finalAmount"), paymentStatus: s(fd, "paymentStatus"), pipeline: "DIGITALHAT" });
+    await createInvoiceForLead(lead, { billTo: s(fd, "company") || lead.company || lead.name, contact: s(fd, "contactPerson") || lead.contactPerson || "", phone: s(fd, "phone") || lead.phone || "", email: s(fd, "email") || lead.email || "", total: n(fd, "finalAmount"), paymentStatus: s(fd, "paymentStatus"), pipeline: "DIGITALHAT", gst });
     await logLead(lead.id, "System", "Invoice generated");
     await notifyRole("SALES_HEAD", `New Digital Hat enrolment: ${s(fd, "company") || lead.name}`, "Course enrolled", leadPath(lead.id), "emerald");
     revalidatePath("/sales"); revalidatePath(leadPath(lead.id));
@@ -308,6 +315,7 @@ export async function onboardLead(fd: FormData) {
         code: `CLI-${num}`, name: company, monthlyRetainer: hasDm ? finalAmount : 0,
         pocName: s(fd, "contactPerson") || lead.contactPerson || null, pocMobile: s(fd, "phone") || lead.phone || null, pocEmail: s(fd, "email") || lead.email || null,
         status: "ACTIVE", notes: `Onboarded from ${lead.code}. ${s(fd, "notes")}`.trim(),
+        gstApplicable: gst, gstRate: 18, // GST preference set at onboarding
       },
     });
     clientId = client.id;
@@ -317,7 +325,7 @@ export async function onboardLead(fd: FormData) {
 
   await prisma.lead.update({ where: { id: lead.id }, data: { stage: "ONBOARDED", clientId, paymentStatus: s(fd, "paymentStatus"), startDate: s(fd, "startDate"), finalAmount, requirements: s(fd, "requirements") || lead.requirements } });
   await logLead(lead.id, g.me.name, "Client onboarded", `INR ${finalAmount}`);
-  await createInvoiceForLead(lead, { billTo: company, contact: s(fd, "contactPerson") || lead.contactPerson || "", phone: s(fd, "phone") || lead.phone || "", email: s(fd, "email") || lead.email || "", total: finalAmount, paymentStatus: s(fd, "paymentStatus"), pipeline: "WEBROCZ", clientId });
+  await createInvoiceForLead(lead, { billTo: company, contact: s(fd, "contactPerson") || lead.contactPerson || "", phone: s(fd, "phone") || lead.phone || "", email: s(fd, "email") || lead.email || "", total: finalAmount, paymentStatus: s(fd, "paymentStatus"), pipeline: "WEBROCZ", clientId, gst });
   await logLead(lead.id, "System", "Invoice generated");
 
   if (hasWeb) {
@@ -461,61 +469,6 @@ export async function recordPayment(fd: FormData) {
   redirect(back);
 }
 
-// One-click: raise this month's Digital Marketing retainer invoice for a client.
-const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-export async function billRetainer(fd: FormData) {
-  const me = await getCurrentUser();
-  if (!me || !INVOICE_MANAGE.includes(me.role)) redirect("/");
-  const clientId = s(fd, "clientId");
-  const back = "/renewals";
-  const client = await prisma.client.findUnique({ where: { id: clientId } });
-  if (!client || client.monthlyRetainer <= 0) redirect(back);
-  const issueDate = new Date().toISOString().slice(0, 10);
-  const month = issueDate.slice(0, 7);
-  // Guard against double-billing the retainer this month.
-  const existing = await prisma.salesInvoice.findFirst({ where: { clientId, issueDate: { startsWith: month }, items: { contains: "Retainer" } } });
-  if (existing) redirect(back);
-  const base = client.monthlyRetainer;
-  const taxPct = client.gstApplicable ? client.gstRate : 0; // per-client GST
-  const taxAmount = Math.round((base * taxPct) / 100);
-  const [y, mo] = month.split("-");
-  const label = `${MONTH_NAMES[parseInt(mo, 10) - 1] ?? mo} ${y}`;
-  await prisma.salesInvoice.create({
-    data: {
-      number: await invoiceNumber(), clientId, pipeline: "WEBROCZ",
-      billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "", clientGstin: client.gstin,
-      clientState: stateFromGstin(client.gstin), placeOfSupply: stateFromGstin(client.gstin),
-      items: JSON.stringify([{ name: `Digital Marketing Retainer — ${label}`, qty: 1, rate: base, amount: base }]),
-      subtotal: base, taxPct, taxAmount, total: base + taxAmount, received: 0,
-      paymentStatus: "Pending", issueDate, dueDate: addDaysISO(issueDate, 15),
-    },
-  });
-  revalidatePath("/renewals");
-  redirect(back);
-}
-
-// Log a collections follow-up on an invoice: appends to its notesLog history and
-// sets the next-follow-up date. Used by the Follow-ups / Collections pipeline.
-export async function logFollowup(fd: FormData) {
-  const me = await getCurrentUser();
-  if (!me || !INVOICE_MANAGE.includes(me.role)) redirect("/");
-  const invId = s(fd, "invoiceId");
-  const back = s(fd, "return") || "/accounts";
-  const inv = await prisma.salesInvoice.findUnique({ where: { id: invId } });
-  if (!inv) redirect(back);
-  const type = s(fd, "type");
-  const note = s(fd, "note");
-  const nextFollowup = s(fd, "nextFollowup");
-  if (!note && !nextFollowup) redirect(back); // nothing to record
-  let log: { date: string; by: string; note: string }[] = [];
-  try { const a = JSON.parse(inv.notesLog || "[]"); if (Array.isArray(a)) log = a; } catch { /* ignore */ }
-  if (note) log.unshift({ date: new Date().toISOString().slice(0, 16).replace("T", " "), by: me.name, note: type ? `[${type}] ${note}` : note });
-  await prisma.salesInvoice.update({ where: { id: invId }, data: { notesLog: JSON.stringify(log.slice(0, 100)), nextFollowup: nextFollowup || inv.nextFollowup } });
-  if (note) await notifyRole("SUPER_ADMIN", `Follow-up: ${inv.number}`, `${me.name}: ${note.slice(0, 80)}`, "/accounts", "amber");
-  revalidatePath("/accounts");
-  redirect(back);
-}
-
 // Raise a new single-service invoice for a client (Website OR Digital Marketing) —
 // so a client who takes both gets separate, cleanly-categorised invoices.
 export async function createClientInvoice(fd: FormData) {
@@ -527,7 +480,8 @@ export async function createClientInvoice(fd: FormData) {
   const base = n(fd, "amount");
   if (!client || base <= 0) redirect(back);
 
-  const serviceLabel = s(fd, "category") === "DM" ? "Digital Marketing" : "Website Development";
+  const category = s(fd, "category") === "DM" ? "DM" : "WEBSITE";
+  const serviceLabel = category === "DM" ? "Digital Marketing" : "Website Development";
   const desc = s(fd, "desc") || serviceLabel;
   const taxPct = Math.max(0, n(fd, "taxPct"));
   const taxAmount = Math.round((base * taxPct) / 100);
@@ -540,10 +494,13 @@ export async function createClientInvoice(fd: FormData) {
   if (gstin && gstin !== client.gstin) { try { await prisma.client.update({ where: { id: clientId }, data: { gstin } }); } catch { /* ignore */ } }
   // Place of supply from the GSTIN's state code, so the tax splits CGST/SGST vs IGST correctly.
   const clientState = stateFromGstin(gstin);
+  // Billing entity + serial series follow the GST flag & service.
+  const gst = taxPct > 0;
+  const company = companyFor(gst, category);
 
   const inv = await prisma.salesInvoice.create({
     data: {
-      number: await invoiceNumber(), clientId, pipeline: "WEBROCZ",
+      number: await invoiceNumber(gst), clientId, pipeline: "WEBROCZ", company,
       billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "", clientGstin: gstin,
       clientState, placeOfSupply: clientState,
       items: JSON.stringify([{ name: desc, qty: 1, rate: base, amount: base }]),
@@ -600,7 +557,8 @@ export async function emailInvoice(fd: FormData) {
   const inv = await prisma.salesInvoice.findUnique({ where: { id: invId } });
   if (!inv || !to) redirect(invoiceReturn(leadId, invId));
   // Approval gate — cannot send to client until a Super Admin has approved.
-  if (!inv.approved) redirect(`${invoiceReturn(leadId, invId)}?sent=locked`);
+  // The accountant CRM has no approval gate, so accountants can send without it.
+  if (!inv.approved && me.role !== "ACCOUNTANT") redirect(`${invoiceReturn(leadId, invId)}?sent=locked`);
   const { sendEmail, APP_URL } = await import("@/lib/email");
   const brand = inv.pipeline === "DIGITALHAT" ? "Digital Hat" : "WebRocz";
   const link = `${APP_URL}${invoiceReturn(leadId, invId)}`;
@@ -632,4 +590,99 @@ export async function emailInvoice(fd: FormData) {
   }
   revalidatePath(invoiceReturn(leadId, invId));
   redirect(`${invoiceReturn(leadId, invId)}?sent=${ok ? "1" : "0"}`);
+}
+
+// ---- SLA (service agreement) flow: sales uploads → accountant generates the invoice ----
+
+// Sales uploads an SLA for a client, marking it With/Without GST + service + amount.
+export async function uploadSla(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me || !SALES_MANAGE.includes(me.role)) redirect("/");
+  const clientName = s(fd, "clientName");
+  if (!clientName) redirect("/sla?err=client");
+  // Link to an existing client if the typed name matches one (case-insensitive).
+  const key = clientName.trim().toLowerCase();
+  const match = (await prisma.client.findMany({ select: { id: true, name: true } })).find((c) => c.name.trim().toLowerCase() === key);
+  const fileUrl = await saveUpload(fd.get("file"), "slas");
+  const sla = await prisma.sla.create({
+    data: {
+      clientName,
+      clientId: match?.id ?? null,
+      title: s(fd, "title"),
+      service: s(fd, "service") === "DM" ? "DM" : "WEBSITE",
+      amount: Math.max(0, n(fd, "amount")),
+      gst: s(fd, "gst") === "1", // "1" = With GST, "0" = Without GST
+      fileUrl,
+      notes: s(fd, "notes"),
+      uploadedBy: me.name,
+    },
+  });
+  await notifyRole("ACCOUNTANT", `New SLA: ${clientName}`, `${me.name} uploaded an SLA · ${sla.gst ? "With GST" : "Without GST"} · ₹${sla.amount.toLocaleString("en-IN")}`, "/sla", "violet");
+  revalidatePath("/sla");
+  redirect("/sla?uploaded=1");
+}
+
+// Accountant generates the invoice from an uploaded SLA (per its service + amount + GST).
+export async function generateInvoiceFromSla(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me || !INVOICE_MANAGE.includes(me.role)) redirect("/");
+  const slaId = s(fd, "slaId");
+  const back = s(fd, "return") || "/sla";
+  const sla = await prisma.sla.findUnique({ where: { id: slaId }, include: { client: true } });
+  if (!sla || sla.status === "INVOICED" || sla.amount <= 0) redirect(back);
+  const client = sla.client; // may be null if the typed name didn't match a client
+  const base = sla.amount;
+  const taxPct = sla.gst ? (client?.gstRate || 18) : 0;
+  const taxAmount = Math.round((base * taxPct) / 100);
+  const gst = taxPct > 0;
+  const category = sla.service === "DM" ? "DM" : "WEBSITE";
+  const company = companyFor(gst, category);
+  const gstin = client?.gstin ?? "";
+  const clientState = stateFromGstin(gstin);
+  const issueDate = new Date().toISOString().slice(0, 10);
+  const desc = sla.title || (category === "DM" ? "Digital Marketing" : "Website Development");
+  const billTo = client?.name || sla.clientName;
+  const inv = await prisma.salesInvoice.create({
+    data: {
+      number: await invoiceNumber(gst), clientId: client?.id ?? null, pipeline: "WEBROCZ", company,
+      billTo, contact: client?.pocName ?? "", phone: client?.pocMobile ?? "", email: client?.pocEmail ?? "", clientGstin: gstin,
+      clientState, placeOfSupply: clientState,
+      items: JSON.stringify([{ name: desc, qty: 1, rate: base, amount: base }]),
+      subtotal: base, taxPct, taxAmount, total: base + taxAmount, received: 0,
+      paymentStatus: "Pending", issueDate, dueDate: addDaysISO(issueDate, 15),
+      notes: sla.title ? `From SLA: ${sla.title}` : "From SLA",
+    },
+  });
+  await prisma.sla.update({ where: { id: slaId }, data: { status: "INVOICED", invoiceId: inv.id } });
+  revalidatePath("/sla");
+  revalidatePath("/invoices");
+  if (client) revalidatePath(`/accounts/${client.id}`);
+  redirect(back);
+}
+
+// Delete a sales invoice (accountant/admin). Payments cascade with it.
+export async function deleteSalesInvoice(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me || !INVOICE_MANAGE.includes(me.role)) redirect("/");
+  const id = s(fd, "invoiceId");
+  const back = s(fd, "return") || "/invoices";
+  if (id) {
+    // If this invoice was generated from an SLA, flip that SLA back to "to invoice".
+    try { await prisma.sla.updateMany({ where: { invoiceId: id }, data: { status: "UPLOADED", invoiceId: null } }); } catch { /* ignore */ }
+    try { await prisma.salesInvoice.delete({ where: { id } }); } catch { /* already gone */ }
+  }
+  revalidatePath("/invoices");
+  revalidatePath("/sla");
+  redirect(back);
+}
+
+// Remove an SLA (sales or accountant/admin).
+export async function deleteSla(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me || (!SALES_MANAGE.includes(me.role) && !INVOICE_MANAGE.includes(me.role))) redirect("/");
+  const id = s(fd, "slaId");
+  const back = s(fd, "return") || "/sla";
+  if (id) { try { await prisma.sla.delete({ where: { id } }); } catch { /* already gone */ } }
+  revalidatePath("/sla");
+  redirect(back);
 }

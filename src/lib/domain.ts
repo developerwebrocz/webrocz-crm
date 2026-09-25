@@ -58,6 +58,32 @@ export function stateFromGstin(gstin: string | null | undefined): string {
   return GST_STATE_BY_CODE[code] ?? "";
 }
 
+// ---- The three billing entities (companies) the accountant bills under ----
+// Web Rocz Pvt Ltd = GST invoices (Website + DM). The other two are non-GST.
+export type Seller = { name: string; address: string; phone: string; email: string; gstin: string; state: string; bankName: string; bankAccount: string; bankIfsc: string; bankHolder: string; terms: string };
+export type Company = { key: string; label: string; gst: boolean; seller: Seller };
+export const COMPANY_KEYS = ["WEB_ROCZ_PVT", "WEB_SOLUTIONS", "WEB_ROCZ"] as const;
+export const COMPANIES: Record<string, Company> = {
+  // GST entity — full seller details incl. GSTIN (reuses the registered company).
+  WEB_ROCZ_PVT: { key: "WEB_ROCZ_PVT", label: "Web Rocz Pvt Ltd", gst: true, seller: SELLER },
+  // Non-GST entity for website work. Address/bank default to head office — update names as needed.
+  WEB_SOLUTIONS: { key: "WEB_SOLUTIONS", label: "Web Solutions", gst: false, seller: { ...SELLER, name: "Web Solutions", gstin: "", state: "36-Telangana" } },
+  // Non-GST entity for digital-marketing work.
+  WEB_ROCZ: { key: "WEB_ROCZ", label: "Web Rocz", gst: false, seller: { ...SELLER, name: "Web Rocz", gstin: "", state: "36-Telangana" } },
+};
+
+// Which billing entity an invoice belongs to, from its GST flag + service category.
+export function companyFor(gst: boolean, category: string): string {
+  if (gst) return "WEB_ROCZ_PVT";
+  return category === "DM" ? "WEB_ROCZ" : "WEB_SOLUTIONS";
+}
+export function companyLabel(key: string): string {
+  return COMPANIES[key]?.label ?? key ?? "";
+}
+export function companySeller(key: string): Seller {
+  return COMPANIES[key]?.seller ?? SELLER;
+}
+
 // Indian financial-year label for a date (Apr–Mar), e.g. 2026-09 → "2026-27".
 export function financialYear(d = new Date()): string {
   const y = d.getFullYear();

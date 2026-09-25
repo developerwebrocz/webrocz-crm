@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { SERVICES, SERVICE_KEYS, type ServiceKey, financialYear } from "@/lib/domain";
+import { SERVICES, SERVICE_KEYS, type ServiceKey, financialYear, companyFor, stateFromGstin } from "@/lib/domain";
 import { hashPassword, verifyPassword, getCurrentUser, getRealUser } from "@/lib/auth";
 import { sendEmail, inviteEmailHtml } from "@/lib/email";
 import { SESSION_COOKIE, IMPERSONATE_COOKIE, signSession, signImpersonation } from "@/lib/session";
@@ -611,7 +611,8 @@ export async function addClientFromFinance(fd: FormData) {
 
   const gst = Math.max(0, n(fd, "gst")); // 0 = no GST, else rate %
   const gstin = s(fd, "gstin");
-  const client = await prisma.client.create({ data: { code, ...scalars, gstApplicable: gst > 0, gstRate: gst > 0 ? gst : 18, gstin } });
+  const accountManagerId = s(fd, "accountManagerId") || null;
+  const client = await prisma.client.create({ data: { code, ...scalars, gstApplicable: gst > 0, gstRate: gst > 0 ? gst : 18, gstin, accountManagerId } });
 
   // A client who takes both services gets a SEPARATE invoice per service, so the
   // Website-vs-DM split stays exact (no lumped "Both" invoice). Amounts are entered
@@ -632,16 +633,22 @@ export async function addClientFromFinance(fd: FormData) {
     const dd = new Date(issueDate + "T00:00:00Z"); dd.setUTCDate(dd.getUTCDate() + 15);
     const dueDate = dd.toISOString().slice(0, 10);
     const fy = financialYear();
-    const lastInv = await prisma.salesInvoice.findFirst({ where: { number: { startsWith: `${fy}/` } }, orderBy: { createdAt: "desc" }, select: { number: true } });
+    // Serial series follows the client's GST flag (GST vs non-GST); all specs share it here.
+    const hasGst = gst > 0;
+    const prefix = `${hasGst ? "GST" : "NG"}/${fy}/`;
+    const clientState = stateFromGstin(gstin);
+    const lastInv = await prisma.salesInvoice.findFirst({ where: { number: { startsWith: prefix } }, orderBy: { createdAt: "desc" }, select: { number: true } });
     let seq = lastInv ? parseInt(lastInv.number.split("/").pop() || "0", 10) + 1 : 1;
     for (const sp of specs) {
       const taxAmount = Math.round((sp.amount * gst) / 100);
       const total = sp.amount + taxAmount;
       const received = Math.min(paidLeft, total); paidLeft -= received;
+      const company = companyFor(hasGst, sp.label === "Digital Marketing" ? "DM" : "WEBSITE");
       const inv = await prisma.salesInvoice.create({
         data: {
-          number: `${fy}/${seq++}`, clientId: client.id, pipeline: "WEBROCZ",
+          number: `${prefix}${String(seq++).padStart(3, "0")}`, clientId: client.id, pipeline: "WEBROCZ", company,
           billTo: client.name, contact: scalars.pocName ?? "", phone: scalars.pocMobile ?? "", email: scalars.pocEmail ?? "", clientGstin: gstin,
+          clientState, placeOfSupply: clientState,
           items: JSON.stringify([{ name: sp.label, qty: 1, rate: sp.amount, amount: sp.amount }]),
           subtotal: sp.amount, taxPct: gst, taxAmount, total,
           received,
@@ -682,15 +689,69 @@ export async function updateClientFinance(fd: FormData) {
       monthlyRetainer: n(fd, "monthlyRetainer"),
       status: STATUS_OK.includes(s(fd, "status")) ? s(fd, "status") : "ACTIVE",
       renewalDate: s(fd, "renewalDate"),
+      accountManagerId: s(fd, "accountManagerId") || null,
       gstApplicable: n(fd, "gst") > 0,
       gstRate: n(fd, "gst") > 0 ? n(fd, "gst") : 18,
       gstin: s(fd, "gstin"),
+      // Website / hosting (also editable from the Website renewals page)
+      websiteName: s(fd, "websiteName"),
+      websiteDomain: s(fd, "websiteDomain"),
+      hostingTaken: s(fd, "hostingTaken") === "yes" || s(fd, "hostingTaken") === "on" || n(fd, "hostingTaken") === 1,
+      websiteTakenDate: s(fd, "websiteTakenDate"),
+      websiteExpiryDate: s(fd, "websiteExpiryDate"),
+      websiteRenewAmount: n(fd, "websiteRenewAmount"),
       notes: s(fd, "notes") || null,
     },
   });
   revalidatePath("/accounts");
   revalidatePath(`/accounts/${id}`);
   redirect(`/accounts/${id}?saved=1`);
+}
+
+// Accountant logs a follow-up on a CLIENT (with their name + optional next date).
+// Appended to the client's followupLog JSON. Also usable to just set the next date.
+export async function logClientFollowup(fd: FormData) {
+  const u = await getCurrentUser();
+  if (!u || !["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"].includes(u.role)) redirect("/");
+  const id = s(fd, "id");
+  const back = s(fd, "return") || (id ? `/accounts/${id}` : "/accounts");
+  if (!id) redirect(back);
+  const note = s(fd, "note");
+  const next = s(fd, "next");
+  if (!note && !next) redirect(back);
+  const client = await prisma.client.findUnique({ where: { id }, select: { followupLog: true } });
+  let log: { date: string; by: string; note: string; next?: string }[] = [];
+  try { const arr = JSON.parse(client?.followupLog || "[]"); if (Array.isArray(arr)) log = arr; } catch { /* ignore */ }
+  const date = new Date().toISOString().slice(0, 10);
+  if (note) log.push({ date, by: u.name, note, next });
+  await prisma.client.update({ where: { id }, data: { followupLog: JSON.stringify(log), nextFollowup: next || undefined } });
+  revalidatePath("/accounts");
+  revalidatePath(`/accounts/${id}`);
+  redirect(back);
+}
+
+// Accountant updates just a client's website / hosting / renewal info (from the
+// Website renewals page or the client profile). Kept separate so it can be inline.
+export async function updateClientWebsite(fd: FormData) {
+  const u = await getCurrentUser();
+  if (!u || !["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"].includes(u.role)) redirect("/");
+  const id = s(fd, "id");
+  const back = s(fd, "return") || "/renewals";
+  if (!id) redirect(back);
+  await prisma.client.update({
+    where: { id },
+    data: {
+      websiteName: s(fd, "websiteName"),
+      websiteDomain: s(fd, "websiteDomain"),
+      hostingTaken: s(fd, "hostingTaken") === "yes",
+      websiteTakenDate: s(fd, "websiteTakenDate"),
+      websiteExpiryDate: s(fd, "websiteExpiryDate"),
+      websiteRenewAmount: n(fd, "websiteRenewAmount"),
+    },
+  });
+  revalidatePath("/renewals");
+  revalidatePath(`/accounts/${id}`);
+  redirect(back);
 }
 
 // Accountant deletes a client from the finance area. Cascades to invoices/payments —

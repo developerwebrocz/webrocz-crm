@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { Landmark, Download, ReceiptText } from "lucide-react";
 
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
@@ -125,7 +124,7 @@ export default function FinanceGst({ rows, supplierState }: { rows: Row[]; suppl
         </div>
       </div>
 
-      <p className="text-[11.5px] text-[var(--faint)]">Intra-state (client in {supplierState}) is split into CGST + SGST; inter-state is charged as IGST. Figures are derived from each invoice&apos;s tax and place of supply — verify against your books before filing. <Link href="/payments" prefetch className="text-[var(--violet)] hover:underline">Payments →</Link></p>
+      <p className="text-[11.5px] text-[var(--faint)]">Intra-state (client in {supplierState}) is split into CGST + SGST; inter-state is charged as IGST. Figures are derived from each invoice&apos;s tax and place of supply — verify against your books before filing.</p>
     </div>
   );
 }

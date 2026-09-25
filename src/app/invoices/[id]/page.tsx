@@ -21,5 +21,6 @@ export default async function InvoiceByIdPage({ params, searchParams }: { params
   const canManage = ["SUPER_ADMIN", "SUB_ADMIN", "ACCOUNTANT"].includes(user.role);
   const pipeline = (d.invoice as { pipeline?: string } | null)?.pipeline;
   const lead = d.lead ? { id: d.lead.id, startDate: d.lead.startDate, pipeline } : { id: "", pipeline };
-  return <InvoiceView lead={lead} invoice={d.invoice} canManage={canManage} isSuperAdmin={isSuperAdmin} sent={sent} backHref="/invoices" />;
+  const approvalOff = user.role === "ACCOUNTANT"; // accountant CRM has no approval gate
+  return <InvoiceView lead={lead} invoice={d.invoice} canManage={canManage} isSuperAdmin={isSuperAdmin} approvalOff={approvalOff} sent={sent} backHref="/invoices" />;
 }

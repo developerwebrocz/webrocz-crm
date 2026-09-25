@@ -46,7 +46,7 @@ async function AppShell({ user, userId, impersonatedBy, children }: { user: { na
   const [clientCount, search, alerts, approvalsCount, taskCount, reminderCount] = await Promise.all([
     prisma.client.count().catch(() => 0),
     getSearchIndex().catch(() => ({ clients: [], projects: [], team: [] })),
-    getAlerts(userId).catch(() => ({ count: 0, items: [] })),
+    getAlerts(userId, user.role).catch(() => ({ count: 0, items: [] })),
     // approvals badge scoped by role: admin = all, head = their dept, others = 0
     ((user.role === "SUPER_ADMIN" || user.role === "SUB_ADMIN") ? getApprovalsCount() : deptForRole(user.role) ? getApprovalsCount(deptForRole(user.role)!) : Promise.resolve(0)).catch(() => 0),
     getMyOpenTaskCount(userId).catch(() => 0),
@@ -63,7 +63,7 @@ async function AppShell({ user, userId, impersonatedBy, children }: { user: { na
         </div>
       )}
       <TopBar user={user} search={search} alerts={alerts} />
-      <MobileNav />
+      <MobileNav role={user.role} />
       <div className="flex">
         <Sidebar clientCount={clientCount} approvalsCount={approvalsCount} taskCount={taskCount} reminderCount={reminderCount} user={user} />
         <main className="min-w-0 flex-1 px-5 py-7 sm:px-8">

@@ -70,35 +70,45 @@ model TimeSession {
 }
 
 model Client {
-  id              String   @id @default(cuid())
-  code            String   @unique // CLI-1000
-  name            String
-  website         String?
-  industry        String? // Real Estate, Healthcare, ...
-  monthlyRetainer Int      @default(0) // INR / month
-  googleBudget    Int      @default(0) // monthly Google Ads budget (INR)
+  id                 String   @id @default(cuid())
+  code               String   @unique // CLI-1000
+  name               String
+  website            String?
+  industry           String? // Real Estate, Healthcare, ...
+  monthlyRetainer    Int      @default(0) // INR / month
+  googleBudget       Int      @default(0) // monthly Google Ads budget (INR)
   // --- SEO master fields (mirror the SEO team's Google Sheet) ---
-  seoPriority     String   @default("") // A | B | C
-  seoScheduleDays String   @default("") // "Mon, Wed, Fri" / "Daily 8 X 25 Days"
-  blogTarget      Int      @default(8) // blogs / month
-  backlinkTarget  Int      @default(0) // backlinks / month
-  keywordTarget   Int      @default(0) // keywords tracked
-  gscLink         String   @default("") // Google Search Console URL
-  gaLink          String   @default("") // Google Analytics URL
-  domainAuthority Int      @default(0) // DA (client website)
-  pocName         String?
-  pocMobile       String?
-  pocEmail        String?
-  onboardDate     DateTime @default(now())
-  renewalDate     String   @default("") // "2026-12-01" — contract renewal
-  status          String   @default("ACTIVE") // ACTIVE | ON_HOLD | UPCOMING
+  seoPriority        String   @default("") // A | B | C
+  seoScheduleDays    String   @default("") // "Mon, Wed, Fri" / "Daily 8 X 25 Days"
+  blogTarget         Int      @default(8) // blogs / month
+  backlinkTarget     Int      @default(0) // backlinks / month
+  keywordTarget      Int      @default(0) // keywords tracked
+  gscLink            String   @default("") // Google Search Console URL
+  gaLink             String   @default("") // Google Analytics URL
+  domainAuthority    Int      @default(0) // DA (client website)
+  pocName            String?
+  pocMobile          String?
+  pocEmail           String?
+  onboardDate        DateTime @default(now())
+  renewalDate        String   @default("") // "2026-12-01" — contract renewal
+  status             String   @default("ACTIVE") // ACTIVE | ON_HOLD | UPCOMING
   // --- Billing / GST ---
-  gstApplicable   Boolean  @default(true) // whether invoices for this client carry GST
-  gstRate         Int      @default(18) // GST % applied when applicable
-  gstin           String   @default("") // client's GSTIN (for the tax invoice)
-  notes           String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  gstApplicable      Boolean  @default(true) // whether invoices for this client carry GST
+  gstRate            Int      @default(18) // GST % applied when applicable
+  gstin              String   @default("") // client's GSTIN (for the tax invoice)
+  // --- Website renewal / hosting (one website per client) ---
+  websiteName        String   @default("") // display name of the website
+  websiteDomain      String   @default("") // e.g. example.com
+  hostingTaken       Boolean  @default(false) // is hosting taken with us?
+  websiteTakenDate   String   @default("") // "2026-01-15" — when the website/hosting started
+  websiteExpiryDate  String   @default("") // "2027-01-15" — renewal/expiry date
+  websiteRenewAmount Int      @default(0) // INR to renew the website/hosting
+  // --- Accountant follow-up log (client level): JSON [{ date, by, note, next }] ---
+  followupLog        String   @default("[]")
+  nextFollowup       String   @default("") // next planned follow-up date
+  notes              String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   accountManagerId String?
   accountManager   User?   @relation("AccountManager", fields: [accountManagerId], references: [id])
@@ -109,6 +119,8 @@ model Client {
   updates         WorkUpdate[]
   adsMetrics      AdsPerformance[]
   invoices        Invoice[]
+  salesInvoices   SalesInvoice[]
+  slas            Sla[]
   campaigns       CampaignEntry[]
   socialPosts     SocialPost[]
   devProjects     DevProject[]
@@ -233,6 +245,9 @@ model SalesInvoice {
   leadId        String?
   clientId      String?
   pipeline      String    @default("WEBROCZ")
+  // Billing entity this invoice belongs to: WEB_SOLUTIONS | WEB_ROCZ | WEB_ROCZ_PVT
+  // (derived from GST + service at creation; drives the serial series & reports)
+  company       String    @default("")
   billTo        String // client / company name
   contact       String?
   phone         String?
@@ -263,6 +278,9 @@ model SalesInvoice {
   createdAt     DateTime  @default(now())
 
   payments Payment[]
+  // Client link: deleting a client removes its sales invoices (payments cascade in turn),
+  // matching the monthly Invoice model — prevents orphaned invoices in the finance reports.
+  client   Client?   @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
   @@index([leadId])
   @@index([clientId])
@@ -284,6 +302,28 @@ model Payment {
 
   @@index([invoiceId])
   @@index([date])
+}
+
+// SLA (service agreement) uploaded by the sales team for a client. The accountant
+// reviews it and generates the invoice from its terms (service + amount + GST).
+model Sla {
+  id         String   @id @default(cuid())
+  clientName String   @default("") // typed by sales (may or may not match an existing client)
+  clientId   String? // set when the typed name matches an existing client
+  client     Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  title      String   @default("") // e.g. "Website + SEO annual SLA"
+  service    String   @default("WEBSITE") // WEBSITE | DM
+  amount     Int      @default(0) // agreed amount (before GST)
+  gst        Boolean  @default(false) // true = With GST 18%, false = Without GST
+  fileUrl    String   @default("") // the uploaded SLA document
+  notes      String   @default("")
+  status     String   @default("UPLOADED") // UPLOADED | INVOICED
+  invoiceId  String? // the generated SalesInvoice, once created
+  uploadedBy String   @default("") // sales person's name
+  createdAt  DateTime @default(now())
+
+  @@index([clientId])
+  @@index([status])
 }
 
 // Recruitment / hiring pipeline — candidates for employee positions (separate from sales).

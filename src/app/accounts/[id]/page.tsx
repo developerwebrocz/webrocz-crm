@@ -16,5 +16,5 @@ export default async function FinanceClientDetailPage({ params, searchParams }: 
   const openPayId = typeof sp.pay === "string" ? sp.pay : "";
   const d = await getFinanceClientDetail(id);
   if (!d) redirect("/accounts");
-  return <FinanceClientDetail client={d.client} invoices={d.invoices} payments={d.payments} totals={d.totals} openPayId={openPayId} />;
+  return <FinanceClientDetail client={d.client} invoices={d.invoices} payments={d.payments} totals={d.totals} clientFollowups={d.clientFollowups} amUsers={d.amUsers} slas={d.slas} openPayId={openPayId} />;
 }

@@ -14,6 +14,8 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
   const sp = await searchParams;
   const q = typeof sp.q === "string" ? sp.q : "";
   const status = typeof sp.status === "string" ? sp.status : "";
-  const d = await getInvoices({ q, status });
-  return <InvoicesDashboard rows={d.rows} totals={d.totals} q={q} status={status} />;
+  const company = typeof sp.company === "string" ? sp.company : "";
+  const d = await getInvoices({ q, status, company });
+  const hideApproval = user.role === "ACCOUNTANT";
+  return <InvoicesDashboard rows={d.rows} totals={d.totals} companyCounts={d.companyCounts} q={q} status={status} company={company} hideApproval={hideApproval} />;
 }

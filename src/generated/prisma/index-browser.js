@@ -178,6 +178,14 @@ exports.Prisma.ClientScalarFieldEnum = {
   gstApplicable: 'gstApplicable',
   gstRate: 'gstRate',
   gstin: 'gstin',
+  websiteName: 'websiteName',
+  websiteDomain: 'websiteDomain',
+  hostingTaken: 'hostingTaken',
+  websiteTakenDate: 'websiteTakenDate',
+  websiteExpiryDate: 'websiteExpiryDate',
+  websiteRenewAmount: 'websiteRenewAmount',
+  followupLog: 'followupLog',
+  nextFollowup: 'nextFollowup',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -252,6 +260,7 @@ exports.Prisma.SalesInvoiceScalarFieldEnum = {
   leadId: 'leadId',
   clientId: 'clientId',
   pipeline: 'pipeline',
+  company: 'company',
   billTo: 'billTo',
   contact: 'contact',
   phone: 'phone',
@@ -288,6 +297,22 @@ exports.Prisma.PaymentScalarFieldEnum = {
   ref: 'ref',
   note: 'note',
   by: 'by',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.SlaScalarFieldEnum = {
+  id: 'id',
+  clientName: 'clientName',
+  clientId: 'clientId',
+  title: 'title',
+  service: 'service',
+  amount: 'amount',
+  gst: 'gst',
+  fileUrl: 'fileUrl',
+  notes: 'notes',
+  status: 'status',
+  invoiceId: 'invoiceId',
+  uploadedBy: 'uploadedBy',
   createdAt: 'createdAt'
 };
 
@@ -656,6 +681,7 @@ exports.Prisma.ModelName = {
   Invoice: 'Invoice',
   SalesInvoice: 'SalesInvoice',
   Payment: 'Payment',
+  Sla: 'Sla',
   Candidate: 'Candidate',
   CampaignEntry: 'CampaignEntry',
   DevProject: 'DevProject',

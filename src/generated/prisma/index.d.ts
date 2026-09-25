@@ -74,6 +74,11 @@ export type SalesInvoice = $Result.DefaultSelection<Prisma.$SalesInvoicePayload>
  */
 export type Payment = $Result.DefaultSelection<Prisma.$PaymentPayload>
 /**
+ * Model Sla
+ * 
+ */
+export type Sla = $Result.DefaultSelection<Prisma.$SlaPayload>
+/**
  * Model Candidate
  * 
  */
@@ -429,6 +434,16 @@ export class PrismaClient<
     * ```
     */
   get payment(): Prisma.PaymentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.sla`: Exposes CRUD operations for the **Sla** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Slas
+    * const slas = await prisma.sla.findMany()
+    * ```
+    */
+  get sla(): Prisma.SlaDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.candidate`: Exposes CRUD operations for the **Candidate** model.
@@ -1118,6 +1133,7 @@ export namespace Prisma {
     Invoice: 'Invoice',
     SalesInvoice: 'SalesInvoice',
     Payment: 'Payment',
+    Sla: 'Sla',
     Candidate: 'Candidate',
     CampaignEntry: 'CampaignEntry',
     DevProject: 'DevProject',
@@ -1156,7 +1172,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "task" | "timeSession" | "client" | "clientContact" | "clientService" | "deliverable" | "assignment" | "workUpdate" | "invoice" | "salesInvoice" | "payment" | "candidate" | "campaignEntry" | "devProject" | "devTask" | "devActivity" | "socialPost" | "seoAnalytics" | "seoBlogSlot" | "seoKeyword" | "seoBacklink" | "gmbClient" | "seoReport" | "creativeTask" | "googleAdsCampaign" | "adsPerformance" | "notification" | "lead" | "leadActivity" | "followup" | "quotation" | "proposal" | "reminder" | "meeting"
+      modelProps: "user" | "task" | "timeSession" | "client" | "clientContact" | "clientService" | "deliverable" | "assignment" | "workUpdate" | "invoice" | "salesInvoice" | "payment" | "sla" | "candidate" | "campaignEntry" | "devProject" | "devTask" | "devActivity" | "socialPost" | "seoAnalytics" | "seoBlogSlot" | "seoKeyword" | "seoBacklink" | "gmbClient" | "seoReport" | "creativeTask" | "googleAdsCampaign" | "adsPerformance" | "notification" | "lead" | "leadActivity" | "followup" | "quotation" | "proposal" | "reminder" | "meeting"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2045,6 +2061,80 @@ export namespace Prisma {
           count: {
             args: Prisma.PaymentCountArgs<ExtArgs>
             result: $Utils.Optional<PaymentCountAggregateOutputType> | number
+          }
+        }
+      }
+      Sla: {
+        payload: Prisma.$SlaPayload<ExtArgs>
+        fields: Prisma.SlaFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SlaFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlaPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SlaFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlaPayload>
+          }
+          findFirst: {
+            args: Prisma.SlaFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlaPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SlaFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlaPayload>
+          }
+          findMany: {
+            args: Prisma.SlaFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlaPayload>[]
+          }
+          create: {
+            args: Prisma.SlaCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlaPayload>
+          }
+          createMany: {
+            args: Prisma.SlaCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SlaCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlaPayload>[]
+          }
+          delete: {
+            args: Prisma.SlaDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlaPayload>
+          }
+          update: {
+            args: Prisma.SlaUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlaPayload>
+          }
+          deleteMany: {
+            args: Prisma.SlaDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SlaUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SlaUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlaPayload>[]
+          }
+          upsert: {
+            args: Prisma.SlaUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlaPayload>
+          }
+          aggregate: {
+            args: Prisma.SlaAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSla>
+          }
+          groupBy: {
+            args: Prisma.SlaGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SlaGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SlaCountArgs<ExtArgs>
+            result: $Utils.Optional<SlaCountAggregateOutputType> | number
           }
         }
       }
@@ -3885,6 +3975,7 @@ export namespace Prisma {
     invoice?: InvoiceOmit
     salesInvoice?: SalesInvoiceOmit
     payment?: PaymentOmit
+    sla?: SlaOmit
     candidate?: CandidateOmit
     campaignEntry?: CampaignEntryOmit
     devProject?: DevProjectOmit
@@ -4097,6 +4188,8 @@ export namespace Prisma {
     updates: number
     adsMetrics: number
     invoices: number
+    salesInvoices: number
+    slas: number
     campaigns: number
     socialPosts: number
     devProjects: number
@@ -4119,6 +4212,8 @@ export namespace Prisma {
     updates?: boolean | ClientCountOutputTypeCountUpdatesArgs
     adsMetrics?: boolean | ClientCountOutputTypeCountAdsMetricsArgs
     invoices?: boolean | ClientCountOutputTypeCountInvoicesArgs
+    salesInvoices?: boolean | ClientCountOutputTypeCountSalesInvoicesArgs
+    slas?: boolean | ClientCountOutputTypeCountSlasArgs
     campaigns?: boolean | ClientCountOutputTypeCountCampaignsArgs
     socialPosts?: boolean | ClientCountOutputTypeCountSocialPostsArgs
     devProjects?: boolean | ClientCountOutputTypeCountDevProjectsArgs
@@ -4185,6 +4280,20 @@ export namespace Prisma {
    */
   export type ClientCountOutputTypeCountInvoicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: InvoiceWhereInput
+  }
+
+  /**
+   * ClientCountOutputType without action
+   */
+  export type ClientCountOutputTypeCountSalesInvoicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SalesInvoiceWhereInput
+  }
+
+  /**
+   * ClientCountOutputType without action
+   */
+  export type ClientCountOutputTypeCountSlasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SlaWhereInput
   }
 
   /**
@@ -8094,6 +8203,7 @@ export namespace Prisma {
     keywordTarget: number | null
     domainAuthority: number | null
     gstRate: number | null
+    websiteRenewAmount: number | null
   }
 
   export type ClientSumAggregateOutputType = {
@@ -8104,6 +8214,7 @@ export namespace Prisma {
     keywordTarget: number | null
     domainAuthority: number | null
     gstRate: number | null
+    websiteRenewAmount: number | null
   }
 
   export type ClientMinAggregateOutputType = {
@@ -8131,6 +8242,14 @@ export namespace Prisma {
     gstApplicable: boolean | null
     gstRate: number | null
     gstin: string | null
+    websiteName: string | null
+    websiteDomain: string | null
+    hostingTaken: boolean | null
+    websiteTakenDate: string | null
+    websiteExpiryDate: string | null
+    websiteRenewAmount: number | null
+    followupLog: string | null
+    nextFollowup: string | null
     notes: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -8162,6 +8281,14 @@ export namespace Prisma {
     gstApplicable: boolean | null
     gstRate: number | null
     gstin: string | null
+    websiteName: string | null
+    websiteDomain: string | null
+    hostingTaken: boolean | null
+    websiteTakenDate: string | null
+    websiteExpiryDate: string | null
+    websiteRenewAmount: number | null
+    followupLog: string | null
+    nextFollowup: string | null
     notes: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -8193,6 +8320,14 @@ export namespace Prisma {
     gstApplicable: number
     gstRate: number
     gstin: number
+    websiteName: number
+    websiteDomain: number
+    hostingTaken: number
+    websiteTakenDate: number
+    websiteExpiryDate: number
+    websiteRenewAmount: number
+    followupLog: number
+    nextFollowup: number
     notes: number
     createdAt: number
     updatedAt: number
@@ -8209,6 +8344,7 @@ export namespace Prisma {
     keywordTarget?: true
     domainAuthority?: true
     gstRate?: true
+    websiteRenewAmount?: true
   }
 
   export type ClientSumAggregateInputType = {
@@ -8219,6 +8355,7 @@ export namespace Prisma {
     keywordTarget?: true
     domainAuthority?: true
     gstRate?: true
+    websiteRenewAmount?: true
   }
 
   export type ClientMinAggregateInputType = {
@@ -8246,6 +8383,14 @@ export namespace Prisma {
     gstApplicable?: true
     gstRate?: true
     gstin?: true
+    websiteName?: true
+    websiteDomain?: true
+    hostingTaken?: true
+    websiteTakenDate?: true
+    websiteExpiryDate?: true
+    websiteRenewAmount?: true
+    followupLog?: true
+    nextFollowup?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -8277,6 +8422,14 @@ export namespace Prisma {
     gstApplicable?: true
     gstRate?: true
     gstin?: true
+    websiteName?: true
+    websiteDomain?: true
+    hostingTaken?: true
+    websiteTakenDate?: true
+    websiteExpiryDate?: true
+    websiteRenewAmount?: true
+    followupLog?: true
+    nextFollowup?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -8308,6 +8461,14 @@ export namespace Prisma {
     gstApplicable?: true
     gstRate?: true
     gstin?: true
+    websiteName?: true
+    websiteDomain?: true
+    hostingTaken?: true
+    websiteTakenDate?: true
+    websiteExpiryDate?: true
+    websiteRenewAmount?: true
+    followupLog?: true
+    nextFollowup?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -8426,6 +8587,14 @@ export namespace Prisma {
     gstApplicable: boolean
     gstRate: number
     gstin: string
+    websiteName: string
+    websiteDomain: string
+    hostingTaken: boolean
+    websiteTakenDate: string
+    websiteExpiryDate: string
+    websiteRenewAmount: number
+    followupLog: string
+    nextFollowup: string
     notes: string | null
     createdAt: Date
     updatedAt: Date
@@ -8476,6 +8645,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: boolean
     gstin?: boolean
+    websiteName?: boolean
+    websiteDomain?: boolean
+    hostingTaken?: boolean
+    websiteTakenDate?: boolean
+    websiteExpiryDate?: boolean
+    websiteRenewAmount?: boolean
+    followupLog?: boolean
+    nextFollowup?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -8487,6 +8664,8 @@ export namespace Prisma {
     updates?: boolean | Client$updatesArgs<ExtArgs>
     adsMetrics?: boolean | Client$adsMetricsArgs<ExtArgs>
     invoices?: boolean | Client$invoicesArgs<ExtArgs>
+    salesInvoices?: boolean | Client$salesInvoicesArgs<ExtArgs>
+    slas?: boolean | Client$slasArgs<ExtArgs>
     campaigns?: boolean | Client$campaignsArgs<ExtArgs>
     socialPosts?: boolean | Client$socialPostsArgs<ExtArgs>
     devProjects?: boolean | Client$devProjectsArgs<ExtArgs>
@@ -8528,6 +8707,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: boolean
     gstin?: boolean
+    websiteName?: boolean
+    websiteDomain?: boolean
+    hostingTaken?: boolean
+    websiteTakenDate?: boolean
+    websiteExpiryDate?: boolean
+    websiteRenewAmount?: boolean
+    followupLog?: boolean
+    nextFollowup?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -8560,6 +8747,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: boolean
     gstin?: boolean
+    websiteName?: boolean
+    websiteDomain?: boolean
+    hostingTaken?: boolean
+    websiteTakenDate?: boolean
+    websiteExpiryDate?: boolean
+    websiteRenewAmount?: boolean
+    followupLog?: boolean
+    nextFollowup?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -8592,13 +8787,21 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: boolean
     gstin?: boolean
+    websiteName?: boolean
+    websiteDomain?: boolean
+    hostingTaken?: boolean
+    websiteTakenDate?: boolean
+    websiteExpiryDate?: boolean
+    websiteRenewAmount?: boolean
+    followupLog?: boolean
+    nextFollowup?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     accountManagerId?: boolean
   }
 
-  export type ClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "name" | "website" | "industry" | "monthlyRetainer" | "googleBudget" | "seoPriority" | "seoScheduleDays" | "blogTarget" | "backlinkTarget" | "keywordTarget" | "gscLink" | "gaLink" | "domainAuthority" | "pocName" | "pocMobile" | "pocEmail" | "onboardDate" | "renewalDate" | "status" | "gstApplicable" | "gstRate" | "gstin" | "notes" | "createdAt" | "updatedAt" | "accountManagerId", ExtArgs["result"]["client"]>
+  export type ClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "name" | "website" | "industry" | "monthlyRetainer" | "googleBudget" | "seoPriority" | "seoScheduleDays" | "blogTarget" | "backlinkTarget" | "keywordTarget" | "gscLink" | "gaLink" | "domainAuthority" | "pocName" | "pocMobile" | "pocEmail" | "onboardDate" | "renewalDate" | "status" | "gstApplicable" | "gstRate" | "gstin" | "websiteName" | "websiteDomain" | "hostingTaken" | "websiteTakenDate" | "websiteExpiryDate" | "websiteRenewAmount" | "followupLog" | "nextFollowup" | "notes" | "createdAt" | "updatedAt" | "accountManagerId", ExtArgs["result"]["client"]>
   export type ClientInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     accountManager?: boolean | Client$accountManagerArgs<ExtArgs>
     services?: boolean | Client$servicesArgs<ExtArgs>
@@ -8607,6 +8810,8 @@ export namespace Prisma {
     updates?: boolean | Client$updatesArgs<ExtArgs>
     adsMetrics?: boolean | Client$adsMetricsArgs<ExtArgs>
     invoices?: boolean | Client$invoicesArgs<ExtArgs>
+    salesInvoices?: boolean | Client$salesInvoicesArgs<ExtArgs>
+    slas?: boolean | Client$slasArgs<ExtArgs>
     campaigns?: boolean | Client$campaignsArgs<ExtArgs>
     socialPosts?: boolean | Client$socialPostsArgs<ExtArgs>
     devProjects?: boolean | Client$devProjectsArgs<ExtArgs>
@@ -8639,6 +8844,8 @@ export namespace Prisma {
       updates: Prisma.$WorkUpdatePayload<ExtArgs>[]
       adsMetrics: Prisma.$AdsPerformancePayload<ExtArgs>[]
       invoices: Prisma.$InvoicePayload<ExtArgs>[]
+      salesInvoices: Prisma.$SalesInvoicePayload<ExtArgs>[]
+      slas: Prisma.$SlaPayload<ExtArgs>[]
       campaigns: Prisma.$CampaignEntryPayload<ExtArgs>[]
       socialPosts: Prisma.$SocialPostPayload<ExtArgs>[]
       devProjects: Prisma.$DevProjectPayload<ExtArgs>[]
@@ -8678,6 +8885,14 @@ export namespace Prisma {
       gstApplicable: boolean
       gstRate: number
       gstin: string
+      websiteName: string
+      websiteDomain: string
+      hostingTaken: boolean
+      websiteTakenDate: string
+      websiteExpiryDate: string
+      websiteRenewAmount: number
+      followupLog: string
+      nextFollowup: string
       notes: string | null
       createdAt: Date
       updatedAt: Date
@@ -9083,6 +9298,8 @@ export namespace Prisma {
     updates<T extends Client$updatesArgs<ExtArgs> = {}>(args?: Subset<T, Client$updatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkUpdatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     adsMetrics<T extends Client$adsMetricsArgs<ExtArgs> = {}>(args?: Subset<T, Client$adsMetricsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdsPerformancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     invoices<T extends Client$invoicesArgs<ExtArgs> = {}>(args?: Subset<T, Client$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    salesInvoices<T extends Client$salesInvoicesArgs<ExtArgs> = {}>(args?: Subset<T, Client$salesInvoicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SalesInvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    slas<T extends Client$slasArgs<ExtArgs> = {}>(args?: Subset<T, Client$slasArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SlaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     campaigns<T extends Client$campaignsArgs<ExtArgs> = {}>(args?: Subset<T, Client$campaignsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CampaignEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     socialPosts<T extends Client$socialPostsArgs<ExtArgs> = {}>(args?: Subset<T, Client$socialPostsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SocialPostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     devProjects<T extends Client$devProjectsArgs<ExtArgs> = {}>(args?: Subset<T, Client$devProjectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DevProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -9149,6 +9366,14 @@ export namespace Prisma {
     readonly gstApplicable: FieldRef<"Client", 'Boolean'>
     readonly gstRate: FieldRef<"Client", 'Int'>
     readonly gstin: FieldRef<"Client", 'String'>
+    readonly websiteName: FieldRef<"Client", 'String'>
+    readonly websiteDomain: FieldRef<"Client", 'String'>
+    readonly hostingTaken: FieldRef<"Client", 'Boolean'>
+    readonly websiteTakenDate: FieldRef<"Client", 'String'>
+    readonly websiteExpiryDate: FieldRef<"Client", 'String'>
+    readonly websiteRenewAmount: FieldRef<"Client", 'Int'>
+    readonly followupLog: FieldRef<"Client", 'String'>
+    readonly nextFollowup: FieldRef<"Client", 'String'>
     readonly notes: FieldRef<"Client", 'String'>
     readonly createdAt: FieldRef<"Client", 'DateTime'>
     readonly updatedAt: FieldRef<"Client", 'DateTime'>
@@ -9712,6 +9937,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: InvoiceScalarFieldEnum | InvoiceScalarFieldEnum[]
+  }
+
+  /**
+   * Client.salesInvoices
+   */
+  export type Client$salesInvoicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SalesInvoice
+     */
+    select?: SalesInvoiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SalesInvoice
+     */
+    omit?: SalesInvoiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesInvoiceInclude<ExtArgs> | null
+    where?: SalesInvoiceWhereInput
+    orderBy?: SalesInvoiceOrderByWithRelationInput | SalesInvoiceOrderByWithRelationInput[]
+    cursor?: SalesInvoiceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SalesInvoiceScalarFieldEnum | SalesInvoiceScalarFieldEnum[]
+  }
+
+  /**
+   * Client.slas
+   */
+  export type Client$slasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sla
+     */
+    select?: SlaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sla
+     */
+    omit?: SlaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SlaInclude<ExtArgs> | null
+    where?: SlaWhereInput
+    orderBy?: SlaOrderByWithRelationInput | SlaOrderByWithRelationInput[]
+    cursor?: SlaWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SlaScalarFieldEnum | SlaScalarFieldEnum[]
   }
 
   /**
@@ -16753,6 +17026,7 @@ export namespace Prisma {
     leadId: string | null
     clientId: string | null
     pipeline: string | null
+    company: string | null
     billTo: string | null
     contact: string | null
     phone: string | null
@@ -16786,6 +17060,7 @@ export namespace Prisma {
     leadId: string | null
     clientId: string | null
     pipeline: string | null
+    company: string | null
     billTo: string | null
     contact: string | null
     phone: string | null
@@ -16819,6 +17094,7 @@ export namespace Prisma {
     leadId: number
     clientId: number
     pipeline: number
+    company: number
     billTo: number
     contact: number
     phone: number
@@ -16870,6 +17146,7 @@ export namespace Prisma {
     leadId?: true
     clientId?: true
     pipeline?: true
+    company?: true
     billTo?: true
     contact?: true
     phone?: true
@@ -16903,6 +17180,7 @@ export namespace Prisma {
     leadId?: true
     clientId?: true
     pipeline?: true
+    company?: true
     billTo?: true
     contact?: true
     phone?: true
@@ -16936,6 +17214,7 @@ export namespace Prisma {
     leadId?: true
     clientId?: true
     pipeline?: true
+    company?: true
     billTo?: true
     contact?: true
     phone?: true
@@ -17056,6 +17335,7 @@ export namespace Prisma {
     leadId: string | null
     clientId: string | null
     pipeline: string
+    company: string
     billTo: string
     contact: string | null
     phone: string | null
@@ -17108,6 +17388,7 @@ export namespace Prisma {
     leadId?: boolean
     clientId?: boolean
     pipeline?: boolean
+    company?: boolean
     billTo?: boolean
     contact?: boolean
     phone?: boolean
@@ -17134,6 +17415,7 @@ export namespace Prisma {
     emailedAt?: boolean
     createdAt?: boolean
     payments?: boolean | SalesInvoice$paymentsArgs<ExtArgs>
+    client?: boolean | SalesInvoice$clientArgs<ExtArgs>
     _count?: boolean | SalesInvoiceCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["salesInvoice"]>
 
@@ -17143,6 +17425,7 @@ export namespace Prisma {
     leadId?: boolean
     clientId?: boolean
     pipeline?: boolean
+    company?: boolean
     billTo?: boolean
     contact?: boolean
     phone?: boolean
@@ -17168,6 +17451,7 @@ export namespace Prisma {
     nextFollowup?: boolean
     emailedAt?: boolean
     createdAt?: boolean
+    client?: boolean | SalesInvoice$clientArgs<ExtArgs>
   }, ExtArgs["result"]["salesInvoice"]>
 
   export type SalesInvoiceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -17176,6 +17460,7 @@ export namespace Prisma {
     leadId?: boolean
     clientId?: boolean
     pipeline?: boolean
+    company?: boolean
     billTo?: boolean
     contact?: boolean
     phone?: boolean
@@ -17201,6 +17486,7 @@ export namespace Prisma {
     nextFollowup?: boolean
     emailedAt?: boolean
     createdAt?: boolean
+    client?: boolean | SalesInvoice$clientArgs<ExtArgs>
   }, ExtArgs["result"]["salesInvoice"]>
 
   export type SalesInvoiceSelectScalar = {
@@ -17209,6 +17495,7 @@ export namespace Prisma {
     leadId?: boolean
     clientId?: boolean
     pipeline?: boolean
+    company?: boolean
     billTo?: boolean
     contact?: boolean
     phone?: boolean
@@ -17236,18 +17523,24 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type SalesInvoiceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "number" | "leadId" | "clientId" | "pipeline" | "billTo" | "contact" | "phone" | "email" | "items" | "subtotal" | "taxPct" | "taxAmount" | "total" | "received" | "paymentStatus" | "notes" | "issueDate" | "dueDate" | "clientGstin" | "clientState" | "clientAddress" | "placeOfSupply" | "approved" | "approvedBy" | "approvedAt" | "notesLog" | "nextFollowup" | "emailedAt" | "createdAt", ExtArgs["result"]["salesInvoice"]>
+  export type SalesInvoiceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "number" | "leadId" | "clientId" | "pipeline" | "company" | "billTo" | "contact" | "phone" | "email" | "items" | "subtotal" | "taxPct" | "taxAmount" | "total" | "received" | "paymentStatus" | "notes" | "issueDate" | "dueDate" | "clientGstin" | "clientState" | "clientAddress" | "placeOfSupply" | "approved" | "approvedBy" | "approvedAt" | "notesLog" | "nextFollowup" | "emailedAt" | "createdAt", ExtArgs["result"]["salesInvoice"]>
   export type SalesInvoiceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     payments?: boolean | SalesInvoice$paymentsArgs<ExtArgs>
+    client?: boolean | SalesInvoice$clientArgs<ExtArgs>
     _count?: boolean | SalesInvoiceCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type SalesInvoiceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type SalesInvoiceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type SalesInvoiceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    client?: boolean | SalesInvoice$clientArgs<ExtArgs>
+  }
+  export type SalesInvoiceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    client?: boolean | SalesInvoice$clientArgs<ExtArgs>
+  }
 
   export type $SalesInvoicePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "SalesInvoice"
     objects: {
       payments: Prisma.$PaymentPayload<ExtArgs>[]
+      client: Prisma.$ClientPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -17255,6 +17548,7 @@ export namespace Prisma {
       leadId: string | null
       clientId: string | null
       pipeline: string
+      company: string
       billTo: string
       contact: string | null
       phone: string | null
@@ -17675,6 +17969,7 @@ export namespace Prisma {
   export interface Prisma__SalesInvoiceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     payments<T extends SalesInvoice$paymentsArgs<ExtArgs> = {}>(args?: Subset<T, SalesInvoice$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    client<T extends SalesInvoice$clientArgs<ExtArgs> = {}>(args?: Subset<T, SalesInvoice$clientArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -17709,6 +18004,7 @@ export namespace Prisma {
     readonly leadId: FieldRef<"SalesInvoice", 'String'>
     readonly clientId: FieldRef<"SalesInvoice", 'String'>
     readonly pipeline: FieldRef<"SalesInvoice", 'String'>
+    readonly company: FieldRef<"SalesInvoice", 'String'>
     readonly billTo: FieldRef<"SalesInvoice", 'String'>
     readonly contact: FieldRef<"SalesInvoice", 'String'>
     readonly phone: FieldRef<"SalesInvoice", 'String'>
@@ -17986,6 +18282,10 @@ export namespace Prisma {
      * The data used to create many SalesInvoices.
      */
     data: SalesInvoiceCreateManyInput | SalesInvoiceCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesInvoiceIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -18056,6 +18356,10 @@ export namespace Prisma {
      * Limit how many SalesInvoices to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesInvoiceIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -18146,6 +18450,25 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PaymentScalarFieldEnum | PaymentScalarFieldEnum[]
+  }
+
+  /**
+   * SalesInvoice.client
+   */
+  export type SalesInvoice$clientArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Client
+     */
+    select?: ClientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Client
+     */
+    omit?: ClientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientInclude<ExtArgs> | null
+    where?: ClientWhereInput
   }
 
   /**
@@ -19311,6 +19634,1224 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: PaymentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Sla
+   */
+
+  export type AggregateSla = {
+    _count: SlaCountAggregateOutputType | null
+    _avg: SlaAvgAggregateOutputType | null
+    _sum: SlaSumAggregateOutputType | null
+    _min: SlaMinAggregateOutputType | null
+    _max: SlaMaxAggregateOutputType | null
+  }
+
+  export type SlaAvgAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type SlaSumAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type SlaMinAggregateOutputType = {
+    id: string | null
+    clientName: string | null
+    clientId: string | null
+    title: string | null
+    service: string | null
+    amount: number | null
+    gst: boolean | null
+    fileUrl: string | null
+    notes: string | null
+    status: string | null
+    invoiceId: string | null
+    uploadedBy: string | null
+    createdAt: Date | null
+  }
+
+  export type SlaMaxAggregateOutputType = {
+    id: string | null
+    clientName: string | null
+    clientId: string | null
+    title: string | null
+    service: string | null
+    amount: number | null
+    gst: boolean | null
+    fileUrl: string | null
+    notes: string | null
+    status: string | null
+    invoiceId: string | null
+    uploadedBy: string | null
+    createdAt: Date | null
+  }
+
+  export type SlaCountAggregateOutputType = {
+    id: number
+    clientName: number
+    clientId: number
+    title: number
+    service: number
+    amount: number
+    gst: number
+    fileUrl: number
+    notes: number
+    status: number
+    invoiceId: number
+    uploadedBy: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type SlaAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type SlaSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type SlaMinAggregateInputType = {
+    id?: true
+    clientName?: true
+    clientId?: true
+    title?: true
+    service?: true
+    amount?: true
+    gst?: true
+    fileUrl?: true
+    notes?: true
+    status?: true
+    invoiceId?: true
+    uploadedBy?: true
+    createdAt?: true
+  }
+
+  export type SlaMaxAggregateInputType = {
+    id?: true
+    clientName?: true
+    clientId?: true
+    title?: true
+    service?: true
+    amount?: true
+    gst?: true
+    fileUrl?: true
+    notes?: true
+    status?: true
+    invoiceId?: true
+    uploadedBy?: true
+    createdAt?: true
+  }
+
+  export type SlaCountAggregateInputType = {
+    id?: true
+    clientName?: true
+    clientId?: true
+    title?: true
+    service?: true
+    amount?: true
+    gst?: true
+    fileUrl?: true
+    notes?: true
+    status?: true
+    invoiceId?: true
+    uploadedBy?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type SlaAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Sla to aggregate.
+     */
+    where?: SlaWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Slas to fetch.
+     */
+    orderBy?: SlaOrderByWithRelationInput | SlaOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SlaWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Slas from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Slas.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Slas
+    **/
+    _count?: true | SlaCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: SlaAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: SlaSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SlaMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SlaMaxAggregateInputType
+  }
+
+  export type GetSlaAggregateType<T extends SlaAggregateArgs> = {
+        [P in keyof T & keyof AggregateSla]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSla[P]>
+      : GetScalarType<T[P], AggregateSla[P]>
+  }
+
+
+
+
+  export type SlaGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SlaWhereInput
+    orderBy?: SlaOrderByWithAggregationInput | SlaOrderByWithAggregationInput[]
+    by: SlaScalarFieldEnum[] | SlaScalarFieldEnum
+    having?: SlaScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SlaCountAggregateInputType | true
+    _avg?: SlaAvgAggregateInputType
+    _sum?: SlaSumAggregateInputType
+    _min?: SlaMinAggregateInputType
+    _max?: SlaMaxAggregateInputType
+  }
+
+  export type SlaGroupByOutputType = {
+    id: string
+    clientName: string
+    clientId: string | null
+    title: string
+    service: string
+    amount: number
+    gst: boolean
+    fileUrl: string
+    notes: string
+    status: string
+    invoiceId: string | null
+    uploadedBy: string
+    createdAt: Date
+    _count: SlaCountAggregateOutputType | null
+    _avg: SlaAvgAggregateOutputType | null
+    _sum: SlaSumAggregateOutputType | null
+    _min: SlaMinAggregateOutputType | null
+    _max: SlaMaxAggregateOutputType | null
+  }
+
+  type GetSlaGroupByPayload<T extends SlaGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SlaGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SlaGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SlaGroupByOutputType[P]>
+            : GetScalarType<T[P], SlaGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SlaSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    clientName?: boolean
+    clientId?: boolean
+    title?: boolean
+    service?: boolean
+    amount?: boolean
+    gst?: boolean
+    fileUrl?: boolean
+    notes?: boolean
+    status?: boolean
+    invoiceId?: boolean
+    uploadedBy?: boolean
+    createdAt?: boolean
+    client?: boolean | Sla$clientArgs<ExtArgs>
+  }, ExtArgs["result"]["sla"]>
+
+  export type SlaSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    clientName?: boolean
+    clientId?: boolean
+    title?: boolean
+    service?: boolean
+    amount?: boolean
+    gst?: boolean
+    fileUrl?: boolean
+    notes?: boolean
+    status?: boolean
+    invoiceId?: boolean
+    uploadedBy?: boolean
+    createdAt?: boolean
+    client?: boolean | Sla$clientArgs<ExtArgs>
+  }, ExtArgs["result"]["sla"]>
+
+  export type SlaSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    clientName?: boolean
+    clientId?: boolean
+    title?: boolean
+    service?: boolean
+    amount?: boolean
+    gst?: boolean
+    fileUrl?: boolean
+    notes?: boolean
+    status?: boolean
+    invoiceId?: boolean
+    uploadedBy?: boolean
+    createdAt?: boolean
+    client?: boolean | Sla$clientArgs<ExtArgs>
+  }, ExtArgs["result"]["sla"]>
+
+  export type SlaSelectScalar = {
+    id?: boolean
+    clientName?: boolean
+    clientId?: boolean
+    title?: boolean
+    service?: boolean
+    amount?: boolean
+    gst?: boolean
+    fileUrl?: boolean
+    notes?: boolean
+    status?: boolean
+    invoiceId?: boolean
+    uploadedBy?: boolean
+    createdAt?: boolean
+  }
+
+  export type SlaOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "clientName" | "clientId" | "title" | "service" | "amount" | "gst" | "fileUrl" | "notes" | "status" | "invoiceId" | "uploadedBy" | "createdAt", ExtArgs["result"]["sla"]>
+  export type SlaInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    client?: boolean | Sla$clientArgs<ExtArgs>
+  }
+  export type SlaIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    client?: boolean | Sla$clientArgs<ExtArgs>
+  }
+  export type SlaIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    client?: boolean | Sla$clientArgs<ExtArgs>
+  }
+
+  export type $SlaPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Sla"
+    objects: {
+      client: Prisma.$ClientPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      clientName: string
+      clientId: string | null
+      title: string
+      service: string
+      amount: number
+      gst: boolean
+      fileUrl: string
+      notes: string
+      status: string
+      invoiceId: string | null
+      uploadedBy: string
+      createdAt: Date
+    }, ExtArgs["result"]["sla"]>
+    composites: {}
+  }
+
+  type SlaGetPayload<S extends boolean | null | undefined | SlaDefaultArgs> = $Result.GetResult<Prisma.$SlaPayload, S>
+
+  type SlaCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SlaFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SlaCountAggregateInputType | true
+    }
+
+  export interface SlaDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Sla'], meta: { name: 'Sla' } }
+    /**
+     * Find zero or one Sla that matches the filter.
+     * @param {SlaFindUniqueArgs} args - Arguments to find a Sla
+     * @example
+     * // Get one Sla
+     * const sla = await prisma.sla.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SlaFindUniqueArgs>(args: SelectSubset<T, SlaFindUniqueArgs<ExtArgs>>): Prisma__SlaClient<$Result.GetResult<Prisma.$SlaPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Sla that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SlaFindUniqueOrThrowArgs} args - Arguments to find a Sla
+     * @example
+     * // Get one Sla
+     * const sla = await prisma.sla.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SlaFindUniqueOrThrowArgs>(args: SelectSubset<T, SlaFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SlaClient<$Result.GetResult<Prisma.$SlaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Sla that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SlaFindFirstArgs} args - Arguments to find a Sla
+     * @example
+     * // Get one Sla
+     * const sla = await prisma.sla.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SlaFindFirstArgs>(args?: SelectSubset<T, SlaFindFirstArgs<ExtArgs>>): Prisma__SlaClient<$Result.GetResult<Prisma.$SlaPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Sla that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SlaFindFirstOrThrowArgs} args - Arguments to find a Sla
+     * @example
+     * // Get one Sla
+     * const sla = await prisma.sla.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SlaFindFirstOrThrowArgs>(args?: SelectSubset<T, SlaFindFirstOrThrowArgs<ExtArgs>>): Prisma__SlaClient<$Result.GetResult<Prisma.$SlaPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Slas that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SlaFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Slas
+     * const slas = await prisma.sla.findMany()
+     * 
+     * // Get first 10 Slas
+     * const slas = await prisma.sla.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const slaWithIdOnly = await prisma.sla.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SlaFindManyArgs>(args?: SelectSubset<T, SlaFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SlaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Sla.
+     * @param {SlaCreateArgs} args - Arguments to create a Sla.
+     * @example
+     * // Create one Sla
+     * const Sla = await prisma.sla.create({
+     *   data: {
+     *     // ... data to create a Sla
+     *   }
+     * })
+     * 
+     */
+    create<T extends SlaCreateArgs>(args: SelectSubset<T, SlaCreateArgs<ExtArgs>>): Prisma__SlaClient<$Result.GetResult<Prisma.$SlaPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Slas.
+     * @param {SlaCreateManyArgs} args - Arguments to create many Slas.
+     * @example
+     * // Create many Slas
+     * const sla = await prisma.sla.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SlaCreateManyArgs>(args?: SelectSubset<T, SlaCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Slas and returns the data saved in the database.
+     * @param {SlaCreateManyAndReturnArgs} args - Arguments to create many Slas.
+     * @example
+     * // Create many Slas
+     * const sla = await prisma.sla.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Slas and only return the `id`
+     * const slaWithIdOnly = await prisma.sla.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SlaCreateManyAndReturnArgs>(args?: SelectSubset<T, SlaCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SlaPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Sla.
+     * @param {SlaDeleteArgs} args - Arguments to delete one Sla.
+     * @example
+     * // Delete one Sla
+     * const Sla = await prisma.sla.delete({
+     *   where: {
+     *     // ... filter to delete one Sla
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SlaDeleteArgs>(args: SelectSubset<T, SlaDeleteArgs<ExtArgs>>): Prisma__SlaClient<$Result.GetResult<Prisma.$SlaPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Sla.
+     * @param {SlaUpdateArgs} args - Arguments to update one Sla.
+     * @example
+     * // Update one Sla
+     * const sla = await prisma.sla.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SlaUpdateArgs>(args: SelectSubset<T, SlaUpdateArgs<ExtArgs>>): Prisma__SlaClient<$Result.GetResult<Prisma.$SlaPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Slas.
+     * @param {SlaDeleteManyArgs} args - Arguments to filter Slas to delete.
+     * @example
+     * // Delete a few Slas
+     * const { count } = await prisma.sla.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SlaDeleteManyArgs>(args?: SelectSubset<T, SlaDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Slas.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SlaUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Slas
+     * const sla = await prisma.sla.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SlaUpdateManyArgs>(args: SelectSubset<T, SlaUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Slas and returns the data updated in the database.
+     * @param {SlaUpdateManyAndReturnArgs} args - Arguments to update many Slas.
+     * @example
+     * // Update many Slas
+     * const sla = await prisma.sla.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Slas and only return the `id`
+     * const slaWithIdOnly = await prisma.sla.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SlaUpdateManyAndReturnArgs>(args: SelectSubset<T, SlaUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SlaPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Sla.
+     * @param {SlaUpsertArgs} args - Arguments to update or create a Sla.
+     * @example
+     * // Update or create a Sla
+     * const sla = await prisma.sla.upsert({
+     *   create: {
+     *     // ... data to create a Sla
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Sla we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SlaUpsertArgs>(args: SelectSubset<T, SlaUpsertArgs<ExtArgs>>): Prisma__SlaClient<$Result.GetResult<Prisma.$SlaPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Slas.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SlaCountArgs} args - Arguments to filter Slas to count.
+     * @example
+     * // Count the number of Slas
+     * const count = await prisma.sla.count({
+     *   where: {
+     *     // ... the filter for the Slas we want to count
+     *   }
+     * })
+    **/
+    count<T extends SlaCountArgs>(
+      args?: Subset<T, SlaCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SlaCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Sla.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SlaAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SlaAggregateArgs>(args: Subset<T, SlaAggregateArgs>): Prisma.PrismaPromise<GetSlaAggregateType<T>>
+
+    /**
+     * Group by Sla.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SlaGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SlaGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SlaGroupByArgs['orderBy'] }
+        : { orderBy?: SlaGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SlaGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSlaGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Sla model
+   */
+  readonly fields: SlaFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Sla.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SlaClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    client<T extends Sla$clientArgs<ExtArgs> = {}>(args?: Subset<T, Sla$clientArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Sla model
+   */
+  interface SlaFieldRefs {
+    readonly id: FieldRef<"Sla", 'String'>
+    readonly clientName: FieldRef<"Sla", 'String'>
+    readonly clientId: FieldRef<"Sla", 'String'>
+    readonly title: FieldRef<"Sla", 'String'>
+    readonly service: FieldRef<"Sla", 'String'>
+    readonly amount: FieldRef<"Sla", 'Int'>
+    readonly gst: FieldRef<"Sla", 'Boolean'>
+    readonly fileUrl: FieldRef<"Sla", 'String'>
+    readonly notes: FieldRef<"Sla", 'String'>
+    readonly status: FieldRef<"Sla", 'String'>
+    readonly invoiceId: FieldRef<"Sla", 'String'>
+    readonly uploadedBy: FieldRef<"Sla", 'String'>
+    readonly createdAt: FieldRef<"Sla", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Sla findUnique
+   */
+  export type SlaFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sla
+     */
+    select?: SlaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sla
+     */
+    omit?: SlaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SlaInclude<ExtArgs> | null
+    /**
+     * Filter, which Sla to fetch.
+     */
+    where: SlaWhereUniqueInput
+  }
+
+  /**
+   * Sla findUniqueOrThrow
+   */
+  export type SlaFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sla
+     */
+    select?: SlaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sla
+     */
+    omit?: SlaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SlaInclude<ExtArgs> | null
+    /**
+     * Filter, which Sla to fetch.
+     */
+    where: SlaWhereUniqueInput
+  }
+
+  /**
+   * Sla findFirst
+   */
+  export type SlaFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sla
+     */
+    select?: SlaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sla
+     */
+    omit?: SlaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SlaInclude<ExtArgs> | null
+    /**
+     * Filter, which Sla to fetch.
+     */
+    where?: SlaWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Slas to fetch.
+     */
+    orderBy?: SlaOrderByWithRelationInput | SlaOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Slas.
+     */
+    cursor?: SlaWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Slas from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Slas.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Slas.
+     */
+    distinct?: SlaScalarFieldEnum | SlaScalarFieldEnum[]
+  }
+
+  /**
+   * Sla findFirstOrThrow
+   */
+  export type SlaFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sla
+     */
+    select?: SlaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sla
+     */
+    omit?: SlaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SlaInclude<ExtArgs> | null
+    /**
+     * Filter, which Sla to fetch.
+     */
+    where?: SlaWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Slas to fetch.
+     */
+    orderBy?: SlaOrderByWithRelationInput | SlaOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Slas.
+     */
+    cursor?: SlaWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Slas from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Slas.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Slas.
+     */
+    distinct?: SlaScalarFieldEnum | SlaScalarFieldEnum[]
+  }
+
+  /**
+   * Sla findMany
+   */
+  export type SlaFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sla
+     */
+    select?: SlaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sla
+     */
+    omit?: SlaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SlaInclude<ExtArgs> | null
+    /**
+     * Filter, which Slas to fetch.
+     */
+    where?: SlaWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Slas to fetch.
+     */
+    orderBy?: SlaOrderByWithRelationInput | SlaOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Slas.
+     */
+    cursor?: SlaWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Slas from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Slas.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Slas.
+     */
+    distinct?: SlaScalarFieldEnum | SlaScalarFieldEnum[]
+  }
+
+  /**
+   * Sla create
+   */
+  export type SlaCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sla
+     */
+    select?: SlaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sla
+     */
+    omit?: SlaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SlaInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Sla.
+     */
+    data?: XOR<SlaCreateInput, SlaUncheckedCreateInput>
+  }
+
+  /**
+   * Sla createMany
+   */
+  export type SlaCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Slas.
+     */
+    data: SlaCreateManyInput | SlaCreateManyInput[]
+  }
+
+  /**
+   * Sla createManyAndReturn
+   */
+  export type SlaCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sla
+     */
+    select?: SlaSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sla
+     */
+    omit?: SlaOmit<ExtArgs> | null
+    /**
+     * The data used to create many Slas.
+     */
+    data: SlaCreateManyInput | SlaCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SlaIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Sla update
+   */
+  export type SlaUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sla
+     */
+    select?: SlaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sla
+     */
+    omit?: SlaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SlaInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Sla.
+     */
+    data: XOR<SlaUpdateInput, SlaUncheckedUpdateInput>
+    /**
+     * Choose, which Sla to update.
+     */
+    where: SlaWhereUniqueInput
+  }
+
+  /**
+   * Sla updateMany
+   */
+  export type SlaUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Slas.
+     */
+    data: XOR<SlaUpdateManyMutationInput, SlaUncheckedUpdateManyInput>
+    /**
+     * Filter which Slas to update
+     */
+    where?: SlaWhereInput
+    /**
+     * Limit how many Slas to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Sla updateManyAndReturn
+   */
+  export type SlaUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sla
+     */
+    select?: SlaSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sla
+     */
+    omit?: SlaOmit<ExtArgs> | null
+    /**
+     * The data used to update Slas.
+     */
+    data: XOR<SlaUpdateManyMutationInput, SlaUncheckedUpdateManyInput>
+    /**
+     * Filter which Slas to update
+     */
+    where?: SlaWhereInput
+    /**
+     * Limit how many Slas to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SlaIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Sla upsert
+   */
+  export type SlaUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sla
+     */
+    select?: SlaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sla
+     */
+    omit?: SlaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SlaInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Sla to update in case it exists.
+     */
+    where: SlaWhereUniqueInput
+    /**
+     * In case the Sla found by the `where` argument doesn't exist, create a new Sla with this data.
+     */
+    create: XOR<SlaCreateInput, SlaUncheckedCreateInput>
+    /**
+     * In case the Sla was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SlaUpdateInput, SlaUncheckedUpdateInput>
+  }
+
+  /**
+   * Sla delete
+   */
+  export type SlaDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sla
+     */
+    select?: SlaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sla
+     */
+    omit?: SlaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SlaInclude<ExtArgs> | null
+    /**
+     * Filter which Sla to delete.
+     */
+    where: SlaWhereUniqueInput
+  }
+
+  /**
+   * Sla deleteMany
+   */
+  export type SlaDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Slas to delete
+     */
+    where?: SlaWhereInput
+    /**
+     * Limit how many Slas to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Sla.client
+   */
+  export type Sla$clientArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Client
+     */
+    select?: ClientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Client
+     */
+    omit?: ClientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientInclude<ExtArgs> | null
+    where?: ClientWhereInput
+  }
+
+  /**
+   * Sla without action
+   */
+  export type SlaDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sla
+     */
+    select?: SlaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sla
+     */
+    omit?: SlaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SlaInclude<ExtArgs> | null
   }
 
 
@@ -46690,6 +48231,14 @@ export namespace Prisma {
     gstApplicable: 'gstApplicable',
     gstRate: 'gstRate',
     gstin: 'gstin',
+    websiteName: 'websiteName',
+    websiteDomain: 'websiteDomain',
+    hostingTaken: 'hostingTaken',
+    websiteTakenDate: 'websiteTakenDate',
+    websiteExpiryDate: 'websiteExpiryDate',
+    websiteRenewAmount: 'websiteRenewAmount',
+    followupLog: 'followupLog',
+    nextFollowup: 'nextFollowup',
     notes: 'notes',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -46785,6 +48334,7 @@ export namespace Prisma {
     leadId: 'leadId',
     clientId: 'clientId',
     pipeline: 'pipeline',
+    company: 'company',
     billTo: 'billTo',
     contact: 'contact',
     phone: 'phone',
@@ -46828,6 +48378,25 @@ export namespace Prisma {
   };
 
   export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+  export const SlaScalarFieldEnum: {
+    id: 'id',
+    clientName: 'clientName',
+    clientId: 'clientId',
+    title: 'title',
+    service: 'service',
+    amount: 'amount',
+    gst: 'gst',
+    fileUrl: 'fileUrl',
+    notes: 'notes',
+    status: 'status',
+    invoiceId: 'invoiceId',
+    uploadedBy: 'uploadedBy',
+    createdAt: 'createdAt'
+  };
+
+  export type SlaScalarFieldEnum = (typeof SlaScalarFieldEnum)[keyof typeof SlaScalarFieldEnum]
 
 
   export const CandidateScalarFieldEnum: {
@@ -47584,6 +49153,14 @@ export namespace Prisma {
     gstApplicable?: BoolFilter<"Client"> | boolean
     gstRate?: IntFilter<"Client"> | number
     gstin?: StringFilter<"Client"> | string
+    websiteName?: StringFilter<"Client"> | string
+    websiteDomain?: StringFilter<"Client"> | string
+    hostingTaken?: BoolFilter<"Client"> | boolean
+    websiteTakenDate?: StringFilter<"Client"> | string
+    websiteExpiryDate?: StringFilter<"Client"> | string
+    websiteRenewAmount?: IntFilter<"Client"> | number
+    followupLog?: StringFilter<"Client"> | string
+    nextFollowup?: StringFilter<"Client"> | string
     notes?: StringNullableFilter<"Client"> | string | null
     createdAt?: DateTimeFilter<"Client"> | Date | string
     updatedAt?: DateTimeFilter<"Client"> | Date | string
@@ -47595,6 +49172,8 @@ export namespace Prisma {
     updates?: WorkUpdateListRelationFilter
     adsMetrics?: AdsPerformanceListRelationFilter
     invoices?: InvoiceListRelationFilter
+    salesInvoices?: SalesInvoiceListRelationFilter
+    slas?: SlaListRelationFilter
     campaigns?: CampaignEntryListRelationFilter
     socialPosts?: SocialPostListRelationFilter
     devProjects?: DevProjectListRelationFilter
@@ -47635,6 +49214,14 @@ export namespace Prisma {
     gstApplicable?: SortOrder
     gstRate?: SortOrder
     gstin?: SortOrder
+    websiteName?: SortOrder
+    websiteDomain?: SortOrder
+    hostingTaken?: SortOrder
+    websiteTakenDate?: SortOrder
+    websiteExpiryDate?: SortOrder
+    websiteRenewAmount?: SortOrder
+    followupLog?: SortOrder
+    nextFollowup?: SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -47646,6 +49233,8 @@ export namespace Prisma {
     updates?: WorkUpdateOrderByRelationAggregateInput
     adsMetrics?: AdsPerformanceOrderByRelationAggregateInput
     invoices?: InvoiceOrderByRelationAggregateInput
+    salesInvoices?: SalesInvoiceOrderByRelationAggregateInput
+    slas?: SlaOrderByRelationAggregateInput
     campaigns?: CampaignEntryOrderByRelationAggregateInput
     socialPosts?: SocialPostOrderByRelationAggregateInput
     devProjects?: DevProjectOrderByRelationAggregateInput
@@ -47689,6 +49278,14 @@ export namespace Prisma {
     gstApplicable?: BoolFilter<"Client"> | boolean
     gstRate?: IntFilter<"Client"> | number
     gstin?: StringFilter<"Client"> | string
+    websiteName?: StringFilter<"Client"> | string
+    websiteDomain?: StringFilter<"Client"> | string
+    hostingTaken?: BoolFilter<"Client"> | boolean
+    websiteTakenDate?: StringFilter<"Client"> | string
+    websiteExpiryDate?: StringFilter<"Client"> | string
+    websiteRenewAmount?: IntFilter<"Client"> | number
+    followupLog?: StringFilter<"Client"> | string
+    nextFollowup?: StringFilter<"Client"> | string
     notes?: StringNullableFilter<"Client"> | string | null
     createdAt?: DateTimeFilter<"Client"> | Date | string
     updatedAt?: DateTimeFilter<"Client"> | Date | string
@@ -47700,6 +49297,8 @@ export namespace Prisma {
     updates?: WorkUpdateListRelationFilter
     adsMetrics?: AdsPerformanceListRelationFilter
     invoices?: InvoiceListRelationFilter
+    salesInvoices?: SalesInvoiceListRelationFilter
+    slas?: SlaListRelationFilter
     campaigns?: CampaignEntryListRelationFilter
     socialPosts?: SocialPostListRelationFilter
     devProjects?: DevProjectListRelationFilter
@@ -47740,6 +49339,14 @@ export namespace Prisma {
     gstApplicable?: SortOrder
     gstRate?: SortOrder
     gstin?: SortOrder
+    websiteName?: SortOrder
+    websiteDomain?: SortOrder
+    hostingTaken?: SortOrder
+    websiteTakenDate?: SortOrder
+    websiteExpiryDate?: SortOrder
+    websiteRenewAmount?: SortOrder
+    followupLog?: SortOrder
+    nextFollowup?: SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -47779,6 +49386,14 @@ export namespace Prisma {
     gstApplicable?: BoolWithAggregatesFilter<"Client"> | boolean
     gstRate?: IntWithAggregatesFilter<"Client"> | number
     gstin?: StringWithAggregatesFilter<"Client"> | string
+    websiteName?: StringWithAggregatesFilter<"Client"> | string
+    websiteDomain?: StringWithAggregatesFilter<"Client"> | string
+    hostingTaken?: BoolWithAggregatesFilter<"Client"> | boolean
+    websiteTakenDate?: StringWithAggregatesFilter<"Client"> | string
+    websiteExpiryDate?: StringWithAggregatesFilter<"Client"> | string
+    websiteRenewAmount?: IntWithAggregatesFilter<"Client"> | number
+    followupLog?: StringWithAggregatesFilter<"Client"> | string
+    nextFollowup?: StringWithAggregatesFilter<"Client"> | string
     notes?: StringNullableWithAggregatesFilter<"Client"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Client"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Client"> | Date | string
@@ -48210,6 +49825,7 @@ export namespace Prisma {
     leadId?: StringNullableFilter<"SalesInvoice"> | string | null
     clientId?: StringNullableFilter<"SalesInvoice"> | string | null
     pipeline?: StringFilter<"SalesInvoice"> | string
+    company?: StringFilter<"SalesInvoice"> | string
     billTo?: StringFilter<"SalesInvoice"> | string
     contact?: StringNullableFilter<"SalesInvoice"> | string | null
     phone?: StringNullableFilter<"SalesInvoice"> | string | null
@@ -48236,6 +49852,7 @@ export namespace Prisma {
     emailedAt?: DateTimeNullableFilter<"SalesInvoice"> | Date | string | null
     createdAt?: DateTimeFilter<"SalesInvoice"> | Date | string
     payments?: PaymentListRelationFilter
+    client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
   }
 
   export type SalesInvoiceOrderByWithRelationInput = {
@@ -48244,6 +49861,7 @@ export namespace Prisma {
     leadId?: SortOrderInput | SortOrder
     clientId?: SortOrderInput | SortOrder
     pipeline?: SortOrder
+    company?: SortOrder
     billTo?: SortOrder
     contact?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
@@ -48270,6 +49888,7 @@ export namespace Prisma {
     emailedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     payments?: PaymentOrderByRelationAggregateInput
+    client?: ClientOrderByWithRelationInput
   }
 
   export type SalesInvoiceWhereUniqueInput = Prisma.AtLeast<{
@@ -48281,6 +49900,7 @@ export namespace Prisma {
     leadId?: StringNullableFilter<"SalesInvoice"> | string | null
     clientId?: StringNullableFilter<"SalesInvoice"> | string | null
     pipeline?: StringFilter<"SalesInvoice"> | string
+    company?: StringFilter<"SalesInvoice"> | string
     billTo?: StringFilter<"SalesInvoice"> | string
     contact?: StringNullableFilter<"SalesInvoice"> | string | null
     phone?: StringNullableFilter<"SalesInvoice"> | string | null
@@ -48307,6 +49927,7 @@ export namespace Prisma {
     emailedAt?: DateTimeNullableFilter<"SalesInvoice"> | Date | string | null
     createdAt?: DateTimeFilter<"SalesInvoice"> | Date | string
     payments?: PaymentListRelationFilter
+    client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
   }, "id" | "number">
 
   export type SalesInvoiceOrderByWithAggregationInput = {
@@ -48315,6 +49936,7 @@ export namespace Prisma {
     leadId?: SortOrderInput | SortOrder
     clientId?: SortOrderInput | SortOrder
     pipeline?: SortOrder
+    company?: SortOrder
     billTo?: SortOrder
     contact?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
@@ -48356,6 +49978,7 @@ export namespace Prisma {
     leadId?: StringNullableWithAggregatesFilter<"SalesInvoice"> | string | null
     clientId?: StringNullableWithAggregatesFilter<"SalesInvoice"> | string | null
     pipeline?: StringWithAggregatesFilter<"SalesInvoice"> | string
+    company?: StringWithAggregatesFilter<"SalesInvoice"> | string
     billTo?: StringWithAggregatesFilter<"SalesInvoice"> | string
     contact?: StringNullableWithAggregatesFilter<"SalesInvoice"> | string | null
     phone?: StringNullableWithAggregatesFilter<"SalesInvoice"> | string | null
@@ -48458,6 +50081,103 @@ export namespace Prisma {
     note?: StringWithAggregatesFilter<"Payment"> | string
     by?: StringWithAggregatesFilter<"Payment"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
+  }
+
+  export type SlaWhereInput = {
+    AND?: SlaWhereInput | SlaWhereInput[]
+    OR?: SlaWhereInput[]
+    NOT?: SlaWhereInput | SlaWhereInput[]
+    id?: StringFilter<"Sla"> | string
+    clientName?: StringFilter<"Sla"> | string
+    clientId?: StringNullableFilter<"Sla"> | string | null
+    title?: StringFilter<"Sla"> | string
+    service?: StringFilter<"Sla"> | string
+    amount?: IntFilter<"Sla"> | number
+    gst?: BoolFilter<"Sla"> | boolean
+    fileUrl?: StringFilter<"Sla"> | string
+    notes?: StringFilter<"Sla"> | string
+    status?: StringFilter<"Sla"> | string
+    invoiceId?: StringNullableFilter<"Sla"> | string | null
+    uploadedBy?: StringFilter<"Sla"> | string
+    createdAt?: DateTimeFilter<"Sla"> | Date | string
+    client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
+  }
+
+  export type SlaOrderByWithRelationInput = {
+    id?: SortOrder
+    clientName?: SortOrder
+    clientId?: SortOrderInput | SortOrder
+    title?: SortOrder
+    service?: SortOrder
+    amount?: SortOrder
+    gst?: SortOrder
+    fileUrl?: SortOrder
+    notes?: SortOrder
+    status?: SortOrder
+    invoiceId?: SortOrderInput | SortOrder
+    uploadedBy?: SortOrder
+    createdAt?: SortOrder
+    client?: ClientOrderByWithRelationInput
+  }
+
+  export type SlaWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: SlaWhereInput | SlaWhereInput[]
+    OR?: SlaWhereInput[]
+    NOT?: SlaWhereInput | SlaWhereInput[]
+    clientName?: StringFilter<"Sla"> | string
+    clientId?: StringNullableFilter<"Sla"> | string | null
+    title?: StringFilter<"Sla"> | string
+    service?: StringFilter<"Sla"> | string
+    amount?: IntFilter<"Sla"> | number
+    gst?: BoolFilter<"Sla"> | boolean
+    fileUrl?: StringFilter<"Sla"> | string
+    notes?: StringFilter<"Sla"> | string
+    status?: StringFilter<"Sla"> | string
+    invoiceId?: StringNullableFilter<"Sla"> | string | null
+    uploadedBy?: StringFilter<"Sla"> | string
+    createdAt?: DateTimeFilter<"Sla"> | Date | string
+    client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
+  }, "id">
+
+  export type SlaOrderByWithAggregationInput = {
+    id?: SortOrder
+    clientName?: SortOrder
+    clientId?: SortOrderInput | SortOrder
+    title?: SortOrder
+    service?: SortOrder
+    amount?: SortOrder
+    gst?: SortOrder
+    fileUrl?: SortOrder
+    notes?: SortOrder
+    status?: SortOrder
+    invoiceId?: SortOrderInput | SortOrder
+    uploadedBy?: SortOrder
+    createdAt?: SortOrder
+    _count?: SlaCountOrderByAggregateInput
+    _avg?: SlaAvgOrderByAggregateInput
+    _max?: SlaMaxOrderByAggregateInput
+    _min?: SlaMinOrderByAggregateInput
+    _sum?: SlaSumOrderByAggregateInput
+  }
+
+  export type SlaScalarWhereWithAggregatesInput = {
+    AND?: SlaScalarWhereWithAggregatesInput | SlaScalarWhereWithAggregatesInput[]
+    OR?: SlaScalarWhereWithAggregatesInput[]
+    NOT?: SlaScalarWhereWithAggregatesInput | SlaScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Sla"> | string
+    clientName?: StringWithAggregatesFilter<"Sla"> | string
+    clientId?: StringNullableWithAggregatesFilter<"Sla"> | string | null
+    title?: StringWithAggregatesFilter<"Sla"> | string
+    service?: StringWithAggregatesFilter<"Sla"> | string
+    amount?: IntWithAggregatesFilter<"Sla"> | number
+    gst?: BoolWithAggregatesFilter<"Sla"> | boolean
+    fileUrl?: StringWithAggregatesFilter<"Sla"> | string
+    notes?: StringWithAggregatesFilter<"Sla"> | string
+    status?: StringWithAggregatesFilter<"Sla"> | string
+    invoiceId?: StringNullableWithAggregatesFilter<"Sla"> | string | null
+    uploadedBy?: StringWithAggregatesFilter<"Sla"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Sla"> | Date | string
   }
 
   export type CandidateWhereInput = {
@@ -50878,6 +52598,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -50888,6 +52616,8 @@ export namespace Prisma {
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
@@ -50928,6 +52658,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -50938,6 +52676,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
@@ -50978,6 +52718,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -50988,6 +52736,8 @@ export namespace Prisma {
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
@@ -51028,6 +52778,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51038,6 +52796,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
@@ -51078,6 +52838,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -51109,6 +52877,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51139,6 +52915,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51575,8 +53359,8 @@ export namespace Prisma {
     id?: string
     number: string
     leadId?: string | null
-    clientId?: string | null
     pipeline?: string
+    company?: string
     billTo: string
     contact?: string | null
     phone?: string | null
@@ -51603,6 +53387,7 @@ export namespace Prisma {
     emailedAt?: Date | string | null
     createdAt?: Date | string
     payments?: PaymentCreateNestedManyWithoutInvoiceInput
+    client?: ClientCreateNestedOneWithoutSalesInvoicesInput
   }
 
   export type SalesInvoiceUncheckedCreateInput = {
@@ -51611,6 +53396,7 @@ export namespace Prisma {
     leadId?: string | null
     clientId?: string | null
     pipeline?: string
+    company?: string
     billTo: string
     contact?: string | null
     phone?: string | null
@@ -51643,8 +53429,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     number?: StringFieldUpdateOperationsInput | string
     leadId?: NullableStringFieldUpdateOperationsInput | string | null
-    clientId?: NullableStringFieldUpdateOperationsInput | string | null
     pipeline?: StringFieldUpdateOperationsInput | string
+    company?: StringFieldUpdateOperationsInput | string
     billTo?: StringFieldUpdateOperationsInput | string
     contact?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51671,6 +53457,7 @@ export namespace Prisma {
     emailedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     payments?: PaymentUpdateManyWithoutInvoiceNestedInput
+    client?: ClientUpdateOneWithoutSalesInvoicesNestedInput
   }
 
   export type SalesInvoiceUncheckedUpdateInput = {
@@ -51679,6 +53466,7 @@ export namespace Prisma {
     leadId?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
     pipeline?: StringFieldUpdateOperationsInput | string
+    company?: StringFieldUpdateOperationsInput | string
     billTo?: StringFieldUpdateOperationsInput | string
     contact?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51713,6 +53501,7 @@ export namespace Prisma {
     leadId?: string | null
     clientId?: string | null
     pipeline?: string
+    company?: string
     billTo: string
     contact?: string | null
     phone?: string | null
@@ -51744,8 +53533,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     number?: StringFieldUpdateOperationsInput | string
     leadId?: NullableStringFieldUpdateOperationsInput | string | null
-    clientId?: NullableStringFieldUpdateOperationsInput | string | null
     pipeline?: StringFieldUpdateOperationsInput | string
+    company?: StringFieldUpdateOperationsInput | string
     billTo?: StringFieldUpdateOperationsInput | string
     contact?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51779,6 +53568,7 @@ export namespace Prisma {
     leadId?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
     pipeline?: StringFieldUpdateOperationsInput | string
+    company?: StringFieldUpdateOperationsInput | string
     billTo?: StringFieldUpdateOperationsInput | string
     contact?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51886,6 +53676,117 @@ export namespace Prisma {
     ref?: StringFieldUpdateOperationsInput | string
     note?: StringFieldUpdateOperationsInput | string
     by?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SlaCreateInput = {
+    id?: string
+    clientName?: string
+    title?: string
+    service?: string
+    amount?: number
+    gst?: boolean
+    fileUrl?: string
+    notes?: string
+    status?: string
+    invoiceId?: string | null
+    uploadedBy?: string
+    createdAt?: Date | string
+    client?: ClientCreateNestedOneWithoutSlasInput
+  }
+
+  export type SlaUncheckedCreateInput = {
+    id?: string
+    clientName?: string
+    clientId?: string | null
+    title?: string
+    service?: string
+    amount?: number
+    gst?: boolean
+    fileUrl?: string
+    notes?: string
+    status?: string
+    invoiceId?: string | null
+    uploadedBy?: string
+    createdAt?: Date | string
+  }
+
+  export type SlaUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientName?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    service?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    gst?: BoolFieldUpdateOperationsInput | boolean
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    notes?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    client?: ClientUpdateOneWithoutSlasNestedInput
+  }
+
+  export type SlaUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    service?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    gst?: BoolFieldUpdateOperationsInput | boolean
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    notes?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SlaCreateManyInput = {
+    id?: string
+    clientName?: string
+    clientId?: string | null
+    title?: string
+    service?: string
+    amount?: number
+    gst?: boolean
+    fileUrl?: string
+    notes?: string
+    status?: string
+    invoiceId?: string | null
+    uploadedBy?: string
+    createdAt?: Date | string
+  }
+
+  export type SlaUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientName?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    service?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    gst?: BoolFieldUpdateOperationsInput | boolean
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    notes?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SlaUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    service?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    gst?: BoolFieldUpdateOperationsInput | boolean
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    notes?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -54677,6 +56578,18 @@ export namespace Prisma {
     none?: InvoiceWhereInput
   }
 
+  export type SalesInvoiceListRelationFilter = {
+    every?: SalesInvoiceWhereInput
+    some?: SalesInvoiceWhereInput
+    none?: SalesInvoiceWhereInput
+  }
+
+  export type SlaListRelationFilter = {
+    every?: SlaWhereInput
+    some?: SlaWhereInput
+    none?: SlaWhereInput
+  }
+
   export type CampaignEntryListRelationFilter = {
     every?: CampaignEntryWhereInput
     some?: CampaignEntryWhereInput
@@ -54753,6 +56666,14 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type SalesInvoiceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SlaOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type CampaignEntryOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -54818,6 +56739,14 @@ export namespace Prisma {
     gstApplicable?: SortOrder
     gstRate?: SortOrder
     gstin?: SortOrder
+    websiteName?: SortOrder
+    websiteDomain?: SortOrder
+    hostingTaken?: SortOrder
+    websiteTakenDate?: SortOrder
+    websiteExpiryDate?: SortOrder
+    websiteRenewAmount?: SortOrder
+    followupLog?: SortOrder
+    nextFollowup?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -54832,6 +56761,7 @@ export namespace Prisma {
     keywordTarget?: SortOrder
     domainAuthority?: SortOrder
     gstRate?: SortOrder
+    websiteRenewAmount?: SortOrder
   }
 
   export type ClientMaxOrderByAggregateInput = {
@@ -54859,6 +56789,14 @@ export namespace Prisma {
     gstApplicable?: SortOrder
     gstRate?: SortOrder
     gstin?: SortOrder
+    websiteName?: SortOrder
+    websiteDomain?: SortOrder
+    hostingTaken?: SortOrder
+    websiteTakenDate?: SortOrder
+    websiteExpiryDate?: SortOrder
+    websiteRenewAmount?: SortOrder
+    followupLog?: SortOrder
+    nextFollowup?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -54890,6 +56828,14 @@ export namespace Prisma {
     gstApplicable?: SortOrder
     gstRate?: SortOrder
     gstin?: SortOrder
+    websiteName?: SortOrder
+    websiteDomain?: SortOrder
+    hostingTaken?: SortOrder
+    websiteTakenDate?: SortOrder
+    websiteExpiryDate?: SortOrder
+    websiteRenewAmount?: SortOrder
+    followupLog?: SortOrder
+    nextFollowup?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -54904,6 +56850,7 @@ export namespace Prisma {
     keywordTarget?: SortOrder
     domainAuthority?: SortOrder
     gstRate?: SortOrder
+    websiteRenewAmount?: SortOrder
   }
 
   export type ClientScalarRelationFilter = {
@@ -55190,6 +57137,7 @@ export namespace Prisma {
     leadId?: SortOrder
     clientId?: SortOrder
     pipeline?: SortOrder
+    company?: SortOrder
     billTo?: SortOrder
     contact?: SortOrder
     phone?: SortOrder
@@ -55231,6 +57179,7 @@ export namespace Prisma {
     leadId?: SortOrder
     clientId?: SortOrder
     pipeline?: SortOrder
+    company?: SortOrder
     billTo?: SortOrder
     contact?: SortOrder
     phone?: SortOrder
@@ -55264,6 +57213,7 @@ export namespace Prisma {
     leadId?: SortOrder
     clientId?: SortOrder
     pipeline?: SortOrder
+    company?: SortOrder
     billTo?: SortOrder
     contact?: SortOrder
     phone?: SortOrder
@@ -55345,6 +57295,62 @@ export namespace Prisma {
   }
 
   export type PaymentSumOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type SlaCountOrderByAggregateInput = {
+    id?: SortOrder
+    clientName?: SortOrder
+    clientId?: SortOrder
+    title?: SortOrder
+    service?: SortOrder
+    amount?: SortOrder
+    gst?: SortOrder
+    fileUrl?: SortOrder
+    notes?: SortOrder
+    status?: SortOrder
+    invoiceId?: SortOrder
+    uploadedBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SlaAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type SlaMaxOrderByAggregateInput = {
+    id?: SortOrder
+    clientName?: SortOrder
+    clientId?: SortOrder
+    title?: SortOrder
+    service?: SortOrder
+    amount?: SortOrder
+    gst?: SortOrder
+    fileUrl?: SortOrder
+    notes?: SortOrder
+    status?: SortOrder
+    invoiceId?: SortOrder
+    uploadedBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SlaMinOrderByAggregateInput = {
+    id?: SortOrder
+    clientName?: SortOrder
+    clientId?: SortOrder
+    title?: SortOrder
+    service?: SortOrder
+    amount?: SortOrder
+    gst?: SortOrder
+    fileUrl?: SortOrder
+    notes?: SortOrder
+    status?: SortOrder
+    invoiceId?: SortOrder
+    uploadedBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SlaSumOrderByAggregateInput = {
     amount?: SortOrder
   }
 
@@ -57212,6 +59218,20 @@ export namespace Prisma {
     connect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
   }
 
+  export type SalesInvoiceCreateNestedManyWithoutClientInput = {
+    create?: XOR<SalesInvoiceCreateWithoutClientInput, SalesInvoiceUncheckedCreateWithoutClientInput> | SalesInvoiceCreateWithoutClientInput[] | SalesInvoiceUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: SalesInvoiceCreateOrConnectWithoutClientInput | SalesInvoiceCreateOrConnectWithoutClientInput[]
+    createMany?: SalesInvoiceCreateManyClientInputEnvelope
+    connect?: SalesInvoiceWhereUniqueInput | SalesInvoiceWhereUniqueInput[]
+  }
+
+  export type SlaCreateNestedManyWithoutClientInput = {
+    create?: XOR<SlaCreateWithoutClientInput, SlaUncheckedCreateWithoutClientInput> | SlaCreateWithoutClientInput[] | SlaUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: SlaCreateOrConnectWithoutClientInput | SlaCreateOrConnectWithoutClientInput[]
+    createMany?: SlaCreateManyClientInputEnvelope
+    connect?: SlaWhereUniqueInput | SlaWhereUniqueInput[]
+  }
+
   export type CampaignEntryCreateNestedManyWithoutClientInput = {
     create?: XOR<CampaignEntryCreateWithoutClientInput, CampaignEntryUncheckedCreateWithoutClientInput> | CampaignEntryCreateWithoutClientInput[] | CampaignEntryUncheckedCreateWithoutClientInput[]
     connectOrCreate?: CampaignEntryCreateOrConnectWithoutClientInput | CampaignEntryCreateOrConnectWithoutClientInput[]
@@ -57343,6 +59363,20 @@ export namespace Prisma {
     connectOrCreate?: InvoiceCreateOrConnectWithoutClientInput | InvoiceCreateOrConnectWithoutClientInput[]
     createMany?: InvoiceCreateManyClientInputEnvelope
     connect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+  }
+
+  export type SalesInvoiceUncheckedCreateNestedManyWithoutClientInput = {
+    create?: XOR<SalesInvoiceCreateWithoutClientInput, SalesInvoiceUncheckedCreateWithoutClientInput> | SalesInvoiceCreateWithoutClientInput[] | SalesInvoiceUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: SalesInvoiceCreateOrConnectWithoutClientInput | SalesInvoiceCreateOrConnectWithoutClientInput[]
+    createMany?: SalesInvoiceCreateManyClientInputEnvelope
+    connect?: SalesInvoiceWhereUniqueInput | SalesInvoiceWhereUniqueInput[]
+  }
+
+  export type SlaUncheckedCreateNestedManyWithoutClientInput = {
+    create?: XOR<SlaCreateWithoutClientInput, SlaUncheckedCreateWithoutClientInput> | SlaCreateWithoutClientInput[] | SlaUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: SlaCreateOrConnectWithoutClientInput | SlaCreateOrConnectWithoutClientInput[]
+    createMany?: SlaCreateManyClientInputEnvelope
+    connect?: SlaWhereUniqueInput | SlaWhereUniqueInput[]
   }
 
   export type CampaignEntryUncheckedCreateNestedManyWithoutClientInput = {
@@ -57528,6 +59562,34 @@ export namespace Prisma {
     update?: InvoiceUpdateWithWhereUniqueWithoutClientInput | InvoiceUpdateWithWhereUniqueWithoutClientInput[]
     updateMany?: InvoiceUpdateManyWithWhereWithoutClientInput | InvoiceUpdateManyWithWhereWithoutClientInput[]
     deleteMany?: InvoiceScalarWhereInput | InvoiceScalarWhereInput[]
+  }
+
+  export type SalesInvoiceUpdateManyWithoutClientNestedInput = {
+    create?: XOR<SalesInvoiceCreateWithoutClientInput, SalesInvoiceUncheckedCreateWithoutClientInput> | SalesInvoiceCreateWithoutClientInput[] | SalesInvoiceUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: SalesInvoiceCreateOrConnectWithoutClientInput | SalesInvoiceCreateOrConnectWithoutClientInput[]
+    upsert?: SalesInvoiceUpsertWithWhereUniqueWithoutClientInput | SalesInvoiceUpsertWithWhereUniqueWithoutClientInput[]
+    createMany?: SalesInvoiceCreateManyClientInputEnvelope
+    set?: SalesInvoiceWhereUniqueInput | SalesInvoiceWhereUniqueInput[]
+    disconnect?: SalesInvoiceWhereUniqueInput | SalesInvoiceWhereUniqueInput[]
+    delete?: SalesInvoiceWhereUniqueInput | SalesInvoiceWhereUniqueInput[]
+    connect?: SalesInvoiceWhereUniqueInput | SalesInvoiceWhereUniqueInput[]
+    update?: SalesInvoiceUpdateWithWhereUniqueWithoutClientInput | SalesInvoiceUpdateWithWhereUniqueWithoutClientInput[]
+    updateMany?: SalesInvoiceUpdateManyWithWhereWithoutClientInput | SalesInvoiceUpdateManyWithWhereWithoutClientInput[]
+    deleteMany?: SalesInvoiceScalarWhereInput | SalesInvoiceScalarWhereInput[]
+  }
+
+  export type SlaUpdateManyWithoutClientNestedInput = {
+    create?: XOR<SlaCreateWithoutClientInput, SlaUncheckedCreateWithoutClientInput> | SlaCreateWithoutClientInput[] | SlaUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: SlaCreateOrConnectWithoutClientInput | SlaCreateOrConnectWithoutClientInput[]
+    upsert?: SlaUpsertWithWhereUniqueWithoutClientInput | SlaUpsertWithWhereUniqueWithoutClientInput[]
+    createMany?: SlaCreateManyClientInputEnvelope
+    set?: SlaWhereUniqueInput | SlaWhereUniqueInput[]
+    disconnect?: SlaWhereUniqueInput | SlaWhereUniqueInput[]
+    delete?: SlaWhereUniqueInput | SlaWhereUniqueInput[]
+    connect?: SlaWhereUniqueInput | SlaWhereUniqueInput[]
+    update?: SlaUpdateWithWhereUniqueWithoutClientInput | SlaUpdateWithWhereUniqueWithoutClientInput[]
+    updateMany?: SlaUpdateManyWithWhereWithoutClientInput | SlaUpdateManyWithWhereWithoutClientInput[]
+    deleteMany?: SlaScalarWhereInput | SlaScalarWhereInput[]
   }
 
   export type CampaignEntryUpdateManyWithoutClientNestedInput = {
@@ -57794,6 +59856,34 @@ export namespace Prisma {
     update?: InvoiceUpdateWithWhereUniqueWithoutClientInput | InvoiceUpdateWithWhereUniqueWithoutClientInput[]
     updateMany?: InvoiceUpdateManyWithWhereWithoutClientInput | InvoiceUpdateManyWithWhereWithoutClientInput[]
     deleteMany?: InvoiceScalarWhereInput | InvoiceScalarWhereInput[]
+  }
+
+  export type SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput = {
+    create?: XOR<SalesInvoiceCreateWithoutClientInput, SalesInvoiceUncheckedCreateWithoutClientInput> | SalesInvoiceCreateWithoutClientInput[] | SalesInvoiceUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: SalesInvoiceCreateOrConnectWithoutClientInput | SalesInvoiceCreateOrConnectWithoutClientInput[]
+    upsert?: SalesInvoiceUpsertWithWhereUniqueWithoutClientInput | SalesInvoiceUpsertWithWhereUniqueWithoutClientInput[]
+    createMany?: SalesInvoiceCreateManyClientInputEnvelope
+    set?: SalesInvoiceWhereUniqueInput | SalesInvoiceWhereUniqueInput[]
+    disconnect?: SalesInvoiceWhereUniqueInput | SalesInvoiceWhereUniqueInput[]
+    delete?: SalesInvoiceWhereUniqueInput | SalesInvoiceWhereUniqueInput[]
+    connect?: SalesInvoiceWhereUniqueInput | SalesInvoiceWhereUniqueInput[]
+    update?: SalesInvoiceUpdateWithWhereUniqueWithoutClientInput | SalesInvoiceUpdateWithWhereUniqueWithoutClientInput[]
+    updateMany?: SalesInvoiceUpdateManyWithWhereWithoutClientInput | SalesInvoiceUpdateManyWithWhereWithoutClientInput[]
+    deleteMany?: SalesInvoiceScalarWhereInput | SalesInvoiceScalarWhereInput[]
+  }
+
+  export type SlaUncheckedUpdateManyWithoutClientNestedInput = {
+    create?: XOR<SlaCreateWithoutClientInput, SlaUncheckedCreateWithoutClientInput> | SlaCreateWithoutClientInput[] | SlaUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: SlaCreateOrConnectWithoutClientInput | SlaCreateOrConnectWithoutClientInput[]
+    upsert?: SlaUpsertWithWhereUniqueWithoutClientInput | SlaUpsertWithWhereUniqueWithoutClientInput[]
+    createMany?: SlaCreateManyClientInputEnvelope
+    set?: SlaWhereUniqueInput | SlaWhereUniqueInput[]
+    disconnect?: SlaWhereUniqueInput | SlaWhereUniqueInput[]
+    delete?: SlaWhereUniqueInput | SlaWhereUniqueInput[]
+    connect?: SlaWhereUniqueInput | SlaWhereUniqueInput[]
+    update?: SlaUpdateWithWhereUniqueWithoutClientInput | SlaUpdateWithWhereUniqueWithoutClientInput[]
+    updateMany?: SlaUpdateManyWithWhereWithoutClientInput | SlaUpdateManyWithWhereWithoutClientInput[]
+    deleteMany?: SlaScalarWhereInput | SlaScalarWhereInput[]
   }
 
   export type CampaignEntryUncheckedUpdateManyWithoutClientNestedInput = {
@@ -58105,6 +60195,12 @@ export namespace Prisma {
     connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
   }
 
+  export type ClientCreateNestedOneWithoutSalesInvoicesInput = {
+    create?: XOR<ClientCreateWithoutSalesInvoicesInput, ClientUncheckedCreateWithoutSalesInvoicesInput>
+    connectOrCreate?: ClientCreateOrConnectWithoutSalesInvoicesInput
+    connect?: ClientWhereUniqueInput
+  }
+
   export type PaymentUncheckedCreateNestedManyWithoutInvoiceInput = {
     create?: XOR<PaymentCreateWithoutInvoiceInput, PaymentUncheckedCreateWithoutInvoiceInput> | PaymentCreateWithoutInvoiceInput[] | PaymentUncheckedCreateWithoutInvoiceInput[]
     connectOrCreate?: PaymentCreateOrConnectWithoutInvoiceInput | PaymentCreateOrConnectWithoutInvoiceInput[]
@@ -58124,6 +60220,16 @@ export namespace Prisma {
     update?: PaymentUpdateWithWhereUniqueWithoutInvoiceInput | PaymentUpdateWithWhereUniqueWithoutInvoiceInput[]
     updateMany?: PaymentUpdateManyWithWhereWithoutInvoiceInput | PaymentUpdateManyWithWhereWithoutInvoiceInput[]
     deleteMany?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
+  }
+
+  export type ClientUpdateOneWithoutSalesInvoicesNestedInput = {
+    create?: XOR<ClientCreateWithoutSalesInvoicesInput, ClientUncheckedCreateWithoutSalesInvoicesInput>
+    connectOrCreate?: ClientCreateOrConnectWithoutSalesInvoicesInput
+    upsert?: ClientUpsertWithoutSalesInvoicesInput
+    disconnect?: ClientWhereInput | boolean
+    delete?: ClientWhereInput | boolean
+    connect?: ClientWhereUniqueInput
+    update?: XOR<XOR<ClientUpdateToOneWithWhereWithoutSalesInvoicesInput, ClientUpdateWithoutSalesInvoicesInput>, ClientUncheckedUpdateWithoutSalesInvoicesInput>
   }
 
   export type PaymentUncheckedUpdateManyWithoutInvoiceNestedInput = {
@@ -58152,6 +60258,22 @@ export namespace Prisma {
     upsert?: SalesInvoiceUpsertWithoutPaymentsInput
     connect?: SalesInvoiceWhereUniqueInput
     update?: XOR<XOR<SalesInvoiceUpdateToOneWithWhereWithoutPaymentsInput, SalesInvoiceUpdateWithoutPaymentsInput>, SalesInvoiceUncheckedUpdateWithoutPaymentsInput>
+  }
+
+  export type ClientCreateNestedOneWithoutSlasInput = {
+    create?: XOR<ClientCreateWithoutSlasInput, ClientUncheckedCreateWithoutSlasInput>
+    connectOrCreate?: ClientCreateOrConnectWithoutSlasInput
+    connect?: ClientWhereUniqueInput
+  }
+
+  export type ClientUpdateOneWithoutSlasNestedInput = {
+    create?: XOR<ClientCreateWithoutSlasInput, ClientUncheckedCreateWithoutSlasInput>
+    connectOrCreate?: ClientCreateOrConnectWithoutSlasInput
+    upsert?: ClientUpsertWithoutSlasInput
+    disconnect?: ClientWhereInput | boolean
+    delete?: ClientWhereInput | boolean
+    connect?: ClientWhereUniqueInput
+    update?: XOR<XOR<ClientUpdateToOneWithWhereWithoutSlasInput, ClientUpdateWithoutSlasInput>, ClientUncheckedUpdateWithoutSlasInput>
   }
 
   export type ClientCreateNestedOneWithoutCampaignsInput = {
@@ -59072,6 +61194,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -59081,6 +61211,8 @@ export namespace Prisma {
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
@@ -59121,6 +61253,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -59130,6 +61270,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
@@ -59552,6 +61694,14 @@ export namespace Prisma {
     gstApplicable?: BoolFilter<"Client"> | boolean
     gstRate?: IntFilter<"Client"> | number
     gstin?: StringFilter<"Client"> | string
+    websiteName?: StringFilter<"Client"> | string
+    websiteDomain?: StringFilter<"Client"> | string
+    hostingTaken?: BoolFilter<"Client"> | boolean
+    websiteTakenDate?: StringFilter<"Client"> | string
+    websiteExpiryDate?: StringFilter<"Client"> | string
+    websiteRenewAmount?: IntFilter<"Client"> | number
+    followupLog?: StringFilter<"Client"> | string
+    nextFollowup?: StringFilter<"Client"> | string
     notes?: StringNullableFilter<"Client"> | string | null
     createdAt?: DateTimeFilter<"Client"> | Date | string
     updatedAt?: DateTimeFilter<"Client"> | Date | string
@@ -59944,6 +62094,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -59954,6 +62112,8 @@ export namespace Prisma {
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
@@ -59993,6 +62153,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60003,6 +62171,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
@@ -60156,6 +62326,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60166,6 +62344,8 @@ export namespace Prisma {
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
@@ -60205,6 +62385,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60215,6 +62403,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
@@ -60536,6 +62726,122 @@ export namespace Prisma {
 
   export type InvoiceCreateManyClientInputEnvelope = {
     data: InvoiceCreateManyClientInput | InvoiceCreateManyClientInput[]
+  }
+
+  export type SalesInvoiceCreateWithoutClientInput = {
+    id?: string
+    number: string
+    leadId?: string | null
+    pipeline?: string
+    company?: string
+    billTo: string
+    contact?: string | null
+    phone?: string | null
+    email?: string | null
+    items?: string
+    subtotal?: number
+    taxPct?: number
+    taxAmount?: number
+    total?: number
+    received?: number
+    paymentStatus?: string
+    notes?: string | null
+    issueDate: string
+    dueDate?: string
+    clientGstin?: string | null
+    clientState?: string | null
+    clientAddress?: string | null
+    placeOfSupply?: string | null
+    approved?: boolean
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    notesLog?: string
+    nextFollowup?: string | null
+    emailedAt?: Date | string | null
+    createdAt?: Date | string
+    payments?: PaymentCreateNestedManyWithoutInvoiceInput
+  }
+
+  export type SalesInvoiceUncheckedCreateWithoutClientInput = {
+    id?: string
+    number: string
+    leadId?: string | null
+    pipeline?: string
+    company?: string
+    billTo: string
+    contact?: string | null
+    phone?: string | null
+    email?: string | null
+    items?: string
+    subtotal?: number
+    taxPct?: number
+    taxAmount?: number
+    total?: number
+    received?: number
+    paymentStatus?: string
+    notes?: string | null
+    issueDate: string
+    dueDate?: string
+    clientGstin?: string | null
+    clientState?: string | null
+    clientAddress?: string | null
+    placeOfSupply?: string | null
+    approved?: boolean
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    notesLog?: string
+    nextFollowup?: string | null
+    emailedAt?: Date | string | null
+    createdAt?: Date | string
+    payments?: PaymentUncheckedCreateNestedManyWithoutInvoiceInput
+  }
+
+  export type SalesInvoiceCreateOrConnectWithoutClientInput = {
+    where: SalesInvoiceWhereUniqueInput
+    create: XOR<SalesInvoiceCreateWithoutClientInput, SalesInvoiceUncheckedCreateWithoutClientInput>
+  }
+
+  export type SalesInvoiceCreateManyClientInputEnvelope = {
+    data: SalesInvoiceCreateManyClientInput | SalesInvoiceCreateManyClientInput[]
+  }
+
+  export type SlaCreateWithoutClientInput = {
+    id?: string
+    clientName?: string
+    title?: string
+    service?: string
+    amount?: number
+    gst?: boolean
+    fileUrl?: string
+    notes?: string
+    status?: string
+    invoiceId?: string | null
+    uploadedBy?: string
+    createdAt?: Date | string
+  }
+
+  export type SlaUncheckedCreateWithoutClientInput = {
+    id?: string
+    clientName?: string
+    title?: string
+    service?: string
+    amount?: number
+    gst?: boolean
+    fileUrl?: string
+    notes?: string
+    status?: string
+    invoiceId?: string | null
+    uploadedBy?: string
+    createdAt?: Date | string
+  }
+
+  export type SlaCreateOrConnectWithoutClientInput = {
+    where: SlaWhereUniqueInput
+    create: XOR<SlaCreateWithoutClientInput, SlaUncheckedCreateWithoutClientInput>
+  }
+
+  export type SlaCreateManyClientInputEnvelope = {
+    data: SlaCreateManyClientInput | SlaCreateManyClientInput[]
   }
 
   export type CampaignEntryCreateWithoutClientInput = {
@@ -61218,6 +63524,94 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Invoice"> | Date | string
   }
 
+  export type SalesInvoiceUpsertWithWhereUniqueWithoutClientInput = {
+    where: SalesInvoiceWhereUniqueInput
+    update: XOR<SalesInvoiceUpdateWithoutClientInput, SalesInvoiceUncheckedUpdateWithoutClientInput>
+    create: XOR<SalesInvoiceCreateWithoutClientInput, SalesInvoiceUncheckedCreateWithoutClientInput>
+  }
+
+  export type SalesInvoiceUpdateWithWhereUniqueWithoutClientInput = {
+    where: SalesInvoiceWhereUniqueInput
+    data: XOR<SalesInvoiceUpdateWithoutClientInput, SalesInvoiceUncheckedUpdateWithoutClientInput>
+  }
+
+  export type SalesInvoiceUpdateManyWithWhereWithoutClientInput = {
+    where: SalesInvoiceScalarWhereInput
+    data: XOR<SalesInvoiceUpdateManyMutationInput, SalesInvoiceUncheckedUpdateManyWithoutClientInput>
+  }
+
+  export type SalesInvoiceScalarWhereInput = {
+    AND?: SalesInvoiceScalarWhereInput | SalesInvoiceScalarWhereInput[]
+    OR?: SalesInvoiceScalarWhereInput[]
+    NOT?: SalesInvoiceScalarWhereInput | SalesInvoiceScalarWhereInput[]
+    id?: StringFilter<"SalesInvoice"> | string
+    number?: StringFilter<"SalesInvoice"> | string
+    leadId?: StringNullableFilter<"SalesInvoice"> | string | null
+    clientId?: StringNullableFilter<"SalesInvoice"> | string | null
+    pipeline?: StringFilter<"SalesInvoice"> | string
+    company?: StringFilter<"SalesInvoice"> | string
+    billTo?: StringFilter<"SalesInvoice"> | string
+    contact?: StringNullableFilter<"SalesInvoice"> | string | null
+    phone?: StringNullableFilter<"SalesInvoice"> | string | null
+    email?: StringNullableFilter<"SalesInvoice"> | string | null
+    items?: StringFilter<"SalesInvoice"> | string
+    subtotal?: IntFilter<"SalesInvoice"> | number
+    taxPct?: IntFilter<"SalesInvoice"> | number
+    taxAmount?: IntFilter<"SalesInvoice"> | number
+    total?: IntFilter<"SalesInvoice"> | number
+    received?: IntFilter<"SalesInvoice"> | number
+    paymentStatus?: StringFilter<"SalesInvoice"> | string
+    notes?: StringNullableFilter<"SalesInvoice"> | string | null
+    issueDate?: StringFilter<"SalesInvoice"> | string
+    dueDate?: StringFilter<"SalesInvoice"> | string
+    clientGstin?: StringNullableFilter<"SalesInvoice"> | string | null
+    clientState?: StringNullableFilter<"SalesInvoice"> | string | null
+    clientAddress?: StringNullableFilter<"SalesInvoice"> | string | null
+    placeOfSupply?: StringNullableFilter<"SalesInvoice"> | string | null
+    approved?: BoolFilter<"SalesInvoice"> | boolean
+    approvedBy?: StringNullableFilter<"SalesInvoice"> | string | null
+    approvedAt?: DateTimeNullableFilter<"SalesInvoice"> | Date | string | null
+    notesLog?: StringFilter<"SalesInvoice"> | string
+    nextFollowup?: StringNullableFilter<"SalesInvoice"> | string | null
+    emailedAt?: DateTimeNullableFilter<"SalesInvoice"> | Date | string | null
+    createdAt?: DateTimeFilter<"SalesInvoice"> | Date | string
+  }
+
+  export type SlaUpsertWithWhereUniqueWithoutClientInput = {
+    where: SlaWhereUniqueInput
+    update: XOR<SlaUpdateWithoutClientInput, SlaUncheckedUpdateWithoutClientInput>
+    create: XOR<SlaCreateWithoutClientInput, SlaUncheckedCreateWithoutClientInput>
+  }
+
+  export type SlaUpdateWithWhereUniqueWithoutClientInput = {
+    where: SlaWhereUniqueInput
+    data: XOR<SlaUpdateWithoutClientInput, SlaUncheckedUpdateWithoutClientInput>
+  }
+
+  export type SlaUpdateManyWithWhereWithoutClientInput = {
+    where: SlaScalarWhereInput
+    data: XOR<SlaUpdateManyMutationInput, SlaUncheckedUpdateManyWithoutClientInput>
+  }
+
+  export type SlaScalarWhereInput = {
+    AND?: SlaScalarWhereInput | SlaScalarWhereInput[]
+    OR?: SlaScalarWhereInput[]
+    NOT?: SlaScalarWhereInput | SlaScalarWhereInput[]
+    id?: StringFilter<"Sla"> | string
+    clientName?: StringFilter<"Sla"> | string
+    clientId?: StringNullableFilter<"Sla"> | string | null
+    title?: StringFilter<"Sla"> | string
+    service?: StringFilter<"Sla"> | string
+    amount?: IntFilter<"Sla"> | number
+    gst?: BoolFilter<"Sla"> | boolean
+    fileUrl?: StringFilter<"Sla"> | string
+    notes?: StringFilter<"Sla"> | string
+    status?: StringFilter<"Sla"> | string
+    invoiceId?: StringNullableFilter<"Sla"> | string | null
+    uploadedBy?: StringFilter<"Sla"> | string
+    createdAt?: DateTimeFilter<"Sla"> | Date | string
+  }
+
   export type CampaignEntryUpsertWithWhereUniqueWithoutClientInput = {
     where: CampaignEntryWhereUniqueInput
     update: XOR<CampaignEntryUpdateWithoutClientInput, CampaignEntryUncheckedUpdateWithoutClientInput>
@@ -61618,6 +64012,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61628,6 +64030,8 @@ export namespace Prisma {
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
@@ -61667,6 +64071,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61677,6 +64089,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
@@ -61732,6 +64146,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61742,6 +64164,8 @@ export namespace Prisma {
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
@@ -61781,6 +64205,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61791,6 +64223,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
@@ -61830,6 +64264,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61839,6 +64281,8 @@ export namespace Prisma {
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
@@ -61879,6 +64323,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61888,6 +64340,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
@@ -61944,6 +64398,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61953,6 +64415,8 @@ export namespace Prisma {
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
@@ -61993,6 +64457,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62002,6 +64474,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
@@ -62042,6 +64516,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62051,6 +64533,8 @@ export namespace Prisma {
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
@@ -62091,6 +64575,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62100,6 +64592,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
@@ -62156,6 +64650,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62165,6 +64667,8 @@ export namespace Prisma {
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
@@ -62205,6 +64709,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62214,6 +64726,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
@@ -62254,6 +64768,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62263,6 +64785,8 @@ export namespace Prisma {
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
@@ -62303,6 +64827,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62312,6 +64844,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
@@ -62411,6 +64945,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62420,6 +64962,8 @@ export namespace Prisma {
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
@@ -62460,6 +65004,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62469,6 +65021,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
@@ -62558,6 +65112,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62567,6 +65129,8 @@ export namespace Prisma {
     assignments?: AssignmentCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
@@ -62607,6 +65171,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62616,6 +65188,8 @@ export namespace Prisma {
     assignments?: AssignmentUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
@@ -62715,6 +65289,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62724,6 +65306,8 @@ export namespace Prisma {
     assignments?: AssignmentUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
@@ -62764,6 +65348,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62773,6 +65365,8 @@ export namespace Prisma {
     assignments?: AssignmentUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
@@ -62862,6 +65456,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62871,6 +65473,8 @@ export namespace Prisma {
     assignments?: AssignmentCreateNestedManyWithoutClientInput
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
@@ -62911,6 +65515,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62920,6 +65532,8 @@ export namespace Prisma {
     assignments?: AssignmentUncheckedCreateNestedManyWithoutClientInput
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
@@ -62976,6 +65590,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62985,6 +65607,8 @@ export namespace Prisma {
     assignments?: AssignmentUpdateManyWithoutClientNestedInput
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
@@ -63025,6 +65649,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63034,6 +65666,8 @@ export namespace Prisma {
     assignments?: AssignmentUncheckedUpdateManyWithoutClientNestedInput
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
@@ -63080,6 +65714,129 @@ export namespace Prisma {
     data: PaymentCreateManyInvoiceInput | PaymentCreateManyInvoiceInput[]
   }
 
+  export type ClientCreateWithoutSalesInvoicesInput = {
+    id?: string
+    code: string
+    name: string
+    website?: string | null
+    industry?: string | null
+    monthlyRetainer?: number
+    googleBudget?: number
+    seoPriority?: string
+    seoScheduleDays?: string
+    blogTarget?: number
+    backlinkTarget?: number
+    keywordTarget?: number
+    gscLink?: string
+    gaLink?: string
+    domainAuthority?: number
+    pocName?: string | null
+    pocMobile?: string | null
+    pocEmail?: string | null
+    onboardDate?: Date | string
+    renewalDate?: string
+    status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accountManager?: UserCreateNestedOneWithoutManagedClientsInput
+    services?: ClientServiceCreateNestedManyWithoutClientInput
+    deliverables?: DeliverableCreateNestedManyWithoutClientInput
+    assignments?: AssignmentCreateNestedManyWithoutClientInput
+    updates?: WorkUpdateCreateNestedManyWithoutClientInput
+    adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
+    invoices?: InvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
+    campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
+    socialPosts?: SocialPostCreateNestedManyWithoutClientInput
+    devProjects?: DevProjectCreateNestedManyWithoutClientInput
+    contacts?: ClientContactCreateNestedManyWithoutClientInput
+    tasks?: TaskCreateNestedManyWithoutClientInput
+    googleCampaigns?: GoogleAdsCampaignCreateNestedManyWithoutClientInput
+    creativeTasks?: CreativeTaskCreateNestedManyWithoutClientInput
+    seoAnalytics?: SeoAnalyticsCreateNestedManyWithoutClientInput
+    seoBlogSlots?: SeoBlogSlotCreateNestedManyWithoutClientInput
+    seoKeywords?: SeoKeywordCreateNestedManyWithoutClientInput
+    seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
+    gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
+    seoReports?: SeoReportCreateNestedManyWithoutClientInput
+  }
+
+  export type ClientUncheckedCreateWithoutSalesInvoicesInput = {
+    id?: string
+    code: string
+    name: string
+    website?: string | null
+    industry?: string | null
+    monthlyRetainer?: number
+    googleBudget?: number
+    seoPriority?: string
+    seoScheduleDays?: string
+    blogTarget?: number
+    backlinkTarget?: number
+    keywordTarget?: number
+    gscLink?: string
+    gaLink?: string
+    domainAuthority?: number
+    pocName?: string | null
+    pocMobile?: string | null
+    pocEmail?: string | null
+    onboardDate?: Date | string
+    renewalDate?: string
+    status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accountManagerId?: string | null
+    services?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
+    deliverables?: DeliverableUncheckedCreateNestedManyWithoutClientInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutClientInput
+    updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
+    adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
+    campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
+    socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
+    devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
+    contacts?: ClientContactUncheckedCreateNestedManyWithoutClientInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutClientInput
+    googleCampaigns?: GoogleAdsCampaignUncheckedCreateNestedManyWithoutClientInput
+    creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutClientInput
+    seoAnalytics?: SeoAnalyticsUncheckedCreateNestedManyWithoutClientInput
+    seoBlogSlots?: SeoBlogSlotUncheckedCreateNestedManyWithoutClientInput
+    seoKeywords?: SeoKeywordUncheckedCreateNestedManyWithoutClientInput
+    seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
+    gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
+    seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+  }
+
+  export type ClientCreateOrConnectWithoutSalesInvoicesInput = {
+    where: ClientWhereUniqueInput
+    create: XOR<ClientCreateWithoutSalesInvoicesInput, ClientUncheckedCreateWithoutSalesInvoicesInput>
+  }
+
   export type PaymentUpsertWithWhereUniqueWithoutInvoiceInput = {
     where: PaymentWhereUniqueInput
     update: XOR<PaymentUpdateWithoutInvoiceInput, PaymentUncheckedUpdateWithoutInvoiceInput>
@@ -63111,12 +65868,141 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Payment"> | Date | string
   }
 
+  export type ClientUpsertWithoutSalesInvoicesInput = {
+    update: XOR<ClientUpdateWithoutSalesInvoicesInput, ClientUncheckedUpdateWithoutSalesInvoicesInput>
+    create: XOR<ClientCreateWithoutSalesInvoicesInput, ClientUncheckedCreateWithoutSalesInvoicesInput>
+    where?: ClientWhereInput
+  }
+
+  export type ClientUpdateToOneWithWhereWithoutSalesInvoicesInput = {
+    where?: ClientWhereInput
+    data: XOR<ClientUpdateWithoutSalesInvoicesInput, ClientUncheckedUpdateWithoutSalesInvoicesInput>
+  }
+
+  export type ClientUpdateWithoutSalesInvoicesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    googleBudget?: IntFieldUpdateOperationsInput | number
+    seoPriority?: StringFieldUpdateOperationsInput | string
+    seoScheduleDays?: StringFieldUpdateOperationsInput | string
+    blogTarget?: IntFieldUpdateOperationsInput | number
+    backlinkTarget?: IntFieldUpdateOperationsInput | number
+    keywordTarget?: IntFieldUpdateOperationsInput | number
+    gscLink?: StringFieldUpdateOperationsInput | string
+    gaLink?: StringFieldUpdateOperationsInput | string
+    domainAuthority?: IntFieldUpdateOperationsInput | number
+    pocName?: NullableStringFieldUpdateOperationsInput | string | null
+    pocMobile?: NullableStringFieldUpdateOperationsInput | string | null
+    pocEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    renewalDate?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accountManager?: UserUpdateOneWithoutManagedClientsNestedInput
+    services?: ClientServiceUpdateManyWithoutClientNestedInput
+    deliverables?: DeliverableUpdateManyWithoutClientNestedInput
+    assignments?: AssignmentUpdateManyWithoutClientNestedInput
+    updates?: WorkUpdateUpdateManyWithoutClientNestedInput
+    adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
+    invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
+    campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
+    socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
+    devProjects?: DevProjectUpdateManyWithoutClientNestedInput
+    contacts?: ClientContactUpdateManyWithoutClientNestedInput
+    tasks?: TaskUpdateManyWithoutClientNestedInput
+    googleCampaigns?: GoogleAdsCampaignUpdateManyWithoutClientNestedInput
+    creativeTasks?: CreativeTaskUpdateManyWithoutClientNestedInput
+    seoAnalytics?: SeoAnalyticsUpdateManyWithoutClientNestedInput
+    seoBlogSlots?: SeoBlogSlotUpdateManyWithoutClientNestedInput
+    seoKeywords?: SeoKeywordUpdateManyWithoutClientNestedInput
+    seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
+    gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
+    seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+  }
+
+  export type ClientUncheckedUpdateWithoutSalesInvoicesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    googleBudget?: IntFieldUpdateOperationsInput | number
+    seoPriority?: StringFieldUpdateOperationsInput | string
+    seoScheduleDays?: StringFieldUpdateOperationsInput | string
+    blogTarget?: IntFieldUpdateOperationsInput | number
+    backlinkTarget?: IntFieldUpdateOperationsInput | number
+    keywordTarget?: IntFieldUpdateOperationsInput | number
+    gscLink?: StringFieldUpdateOperationsInput | string
+    gaLink?: StringFieldUpdateOperationsInput | string
+    domainAuthority?: IntFieldUpdateOperationsInput | number
+    pocName?: NullableStringFieldUpdateOperationsInput | string | null
+    pocMobile?: NullableStringFieldUpdateOperationsInput | string | null
+    pocEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    renewalDate?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    services?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
+    deliverables?: DeliverableUncheckedUpdateManyWithoutClientNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutClientNestedInput
+    updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
+    adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
+    campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
+    socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
+    devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
+    contacts?: ClientContactUncheckedUpdateManyWithoutClientNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutClientNestedInput
+    googleCampaigns?: GoogleAdsCampaignUncheckedUpdateManyWithoutClientNestedInput
+    creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutClientNestedInput
+    seoAnalytics?: SeoAnalyticsUncheckedUpdateManyWithoutClientNestedInput
+    seoBlogSlots?: SeoBlogSlotUncheckedUpdateManyWithoutClientNestedInput
+    seoKeywords?: SeoKeywordUncheckedUpdateManyWithoutClientNestedInput
+    seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
+    gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
+    seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+  }
+
   export type SalesInvoiceCreateWithoutPaymentsInput = {
     id?: string
     number: string
     leadId?: string | null
-    clientId?: string | null
     pipeline?: string
+    company?: string
     billTo: string
     contact?: string | null
     phone?: string | null
@@ -63142,6 +66028,7 @@ export namespace Prisma {
     nextFollowup?: string | null
     emailedAt?: Date | string | null
     createdAt?: Date | string
+    client?: ClientCreateNestedOneWithoutSalesInvoicesInput
   }
 
   export type SalesInvoiceUncheckedCreateWithoutPaymentsInput = {
@@ -63150,6 +66037,7 @@ export namespace Prisma {
     leadId?: string | null
     clientId?: string | null
     pipeline?: string
+    company?: string
     billTo: string
     contact?: string | null
     phone?: string | null
@@ -63197,8 +66085,43 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     number?: StringFieldUpdateOperationsInput | string
     leadId?: NullableStringFieldUpdateOperationsInput | string | null
+    pipeline?: StringFieldUpdateOperationsInput | string
+    company?: StringFieldUpdateOperationsInput | string
+    billTo?: StringFieldUpdateOperationsInput | string
+    contact?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    items?: StringFieldUpdateOperationsInput | string
+    subtotal?: IntFieldUpdateOperationsInput | number
+    taxPct?: IntFieldUpdateOperationsInput | number
+    taxAmount?: IntFieldUpdateOperationsInput | number
+    total?: IntFieldUpdateOperationsInput | number
+    received?: IntFieldUpdateOperationsInput | number
+    paymentStatus?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    issueDate?: StringFieldUpdateOperationsInput | string
+    dueDate?: StringFieldUpdateOperationsInput | string
+    clientGstin?: NullableStringFieldUpdateOperationsInput | string | null
+    clientState?: NullableStringFieldUpdateOperationsInput | string | null
+    clientAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    placeOfSupply?: NullableStringFieldUpdateOperationsInput | string | null
+    approved?: BoolFieldUpdateOperationsInput | boolean
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notesLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: NullableStringFieldUpdateOperationsInput | string | null
+    emailedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    client?: ClientUpdateOneWithoutSalesInvoicesNestedInput
+  }
+
+  export type SalesInvoiceUncheckedUpdateWithoutPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    number?: StringFieldUpdateOperationsInput | string
+    leadId?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
     pipeline?: StringFieldUpdateOperationsInput | string
+    company?: StringFieldUpdateOperationsInput | string
     billTo?: StringFieldUpdateOperationsInput | string
     contact?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -63226,37 +66149,256 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type SalesInvoiceUncheckedUpdateWithoutPaymentsInput = {
+  export type ClientCreateWithoutSlasInput = {
+    id?: string
+    code: string
+    name: string
+    website?: string | null
+    industry?: string | null
+    monthlyRetainer?: number
+    googleBudget?: number
+    seoPriority?: string
+    seoScheduleDays?: string
+    blogTarget?: number
+    backlinkTarget?: number
+    keywordTarget?: number
+    gscLink?: string
+    gaLink?: string
+    domainAuthority?: number
+    pocName?: string | null
+    pocMobile?: string | null
+    pocEmail?: string | null
+    onboardDate?: Date | string
+    renewalDate?: string
+    status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accountManager?: UserCreateNestedOneWithoutManagedClientsInput
+    services?: ClientServiceCreateNestedManyWithoutClientInput
+    deliverables?: DeliverableCreateNestedManyWithoutClientInput
+    assignments?: AssignmentCreateNestedManyWithoutClientInput
+    updates?: WorkUpdateCreateNestedManyWithoutClientInput
+    adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
+    invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
+    socialPosts?: SocialPostCreateNestedManyWithoutClientInput
+    devProjects?: DevProjectCreateNestedManyWithoutClientInput
+    contacts?: ClientContactCreateNestedManyWithoutClientInput
+    tasks?: TaskCreateNestedManyWithoutClientInput
+    googleCampaigns?: GoogleAdsCampaignCreateNestedManyWithoutClientInput
+    creativeTasks?: CreativeTaskCreateNestedManyWithoutClientInput
+    seoAnalytics?: SeoAnalyticsCreateNestedManyWithoutClientInput
+    seoBlogSlots?: SeoBlogSlotCreateNestedManyWithoutClientInput
+    seoKeywords?: SeoKeywordCreateNestedManyWithoutClientInput
+    seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
+    gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
+    seoReports?: SeoReportCreateNestedManyWithoutClientInput
+  }
+
+  export type ClientUncheckedCreateWithoutSlasInput = {
+    id?: string
+    code: string
+    name: string
+    website?: string | null
+    industry?: string | null
+    monthlyRetainer?: number
+    googleBudget?: number
+    seoPriority?: string
+    seoScheduleDays?: string
+    blogTarget?: number
+    backlinkTarget?: number
+    keywordTarget?: number
+    gscLink?: string
+    gaLink?: string
+    domainAuthority?: number
+    pocName?: string | null
+    pocMobile?: string | null
+    pocEmail?: string | null
+    onboardDate?: Date | string
+    renewalDate?: string
+    status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accountManagerId?: string | null
+    services?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
+    deliverables?: DeliverableUncheckedCreateNestedManyWithoutClientInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutClientInput
+    updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
+    adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
+    socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
+    devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
+    contacts?: ClientContactUncheckedCreateNestedManyWithoutClientInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutClientInput
+    googleCampaigns?: GoogleAdsCampaignUncheckedCreateNestedManyWithoutClientInput
+    creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutClientInput
+    seoAnalytics?: SeoAnalyticsUncheckedCreateNestedManyWithoutClientInput
+    seoBlogSlots?: SeoBlogSlotUncheckedCreateNestedManyWithoutClientInput
+    seoKeywords?: SeoKeywordUncheckedCreateNestedManyWithoutClientInput
+    seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
+    gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
+    seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+  }
+
+  export type ClientCreateOrConnectWithoutSlasInput = {
+    where: ClientWhereUniqueInput
+    create: XOR<ClientCreateWithoutSlasInput, ClientUncheckedCreateWithoutSlasInput>
+  }
+
+  export type ClientUpsertWithoutSlasInput = {
+    update: XOR<ClientUpdateWithoutSlasInput, ClientUncheckedUpdateWithoutSlasInput>
+    create: XOR<ClientCreateWithoutSlasInput, ClientUncheckedCreateWithoutSlasInput>
+    where?: ClientWhereInput
+  }
+
+  export type ClientUpdateToOneWithWhereWithoutSlasInput = {
+    where?: ClientWhereInput
+    data: XOR<ClientUpdateWithoutSlasInput, ClientUncheckedUpdateWithoutSlasInput>
+  }
+
+  export type ClientUpdateWithoutSlasInput = {
     id?: StringFieldUpdateOperationsInput | string
-    number?: StringFieldUpdateOperationsInput | string
-    leadId?: NullableStringFieldUpdateOperationsInput | string | null
-    clientId?: NullableStringFieldUpdateOperationsInput | string | null
-    pipeline?: StringFieldUpdateOperationsInput | string
-    billTo?: StringFieldUpdateOperationsInput | string
-    contact?: NullableStringFieldUpdateOperationsInput | string | null
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    items?: StringFieldUpdateOperationsInput | string
-    subtotal?: IntFieldUpdateOperationsInput | number
-    taxPct?: IntFieldUpdateOperationsInput | number
-    taxAmount?: IntFieldUpdateOperationsInput | number
-    total?: IntFieldUpdateOperationsInput | number
-    received?: IntFieldUpdateOperationsInput | number
-    paymentStatus?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    googleBudget?: IntFieldUpdateOperationsInput | number
+    seoPriority?: StringFieldUpdateOperationsInput | string
+    seoScheduleDays?: StringFieldUpdateOperationsInput | string
+    blogTarget?: IntFieldUpdateOperationsInput | number
+    backlinkTarget?: IntFieldUpdateOperationsInput | number
+    keywordTarget?: IntFieldUpdateOperationsInput | number
+    gscLink?: StringFieldUpdateOperationsInput | string
+    gaLink?: StringFieldUpdateOperationsInput | string
+    domainAuthority?: IntFieldUpdateOperationsInput | number
+    pocName?: NullableStringFieldUpdateOperationsInput | string | null
+    pocMobile?: NullableStringFieldUpdateOperationsInput | string | null
+    pocEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    renewalDate?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    issueDate?: StringFieldUpdateOperationsInput | string
-    dueDate?: StringFieldUpdateOperationsInput | string
-    clientGstin?: NullableStringFieldUpdateOperationsInput | string | null
-    clientState?: NullableStringFieldUpdateOperationsInput | string | null
-    clientAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    placeOfSupply?: NullableStringFieldUpdateOperationsInput | string | null
-    approved?: BoolFieldUpdateOperationsInput | boolean
-    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    notesLog?: StringFieldUpdateOperationsInput | string
-    nextFollowup?: NullableStringFieldUpdateOperationsInput | string | null
-    emailedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accountManager?: UserUpdateOneWithoutManagedClientsNestedInput
+    services?: ClientServiceUpdateManyWithoutClientNestedInput
+    deliverables?: DeliverableUpdateManyWithoutClientNestedInput
+    assignments?: AssignmentUpdateManyWithoutClientNestedInput
+    updates?: WorkUpdateUpdateManyWithoutClientNestedInput
+    adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
+    invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
+    socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
+    devProjects?: DevProjectUpdateManyWithoutClientNestedInput
+    contacts?: ClientContactUpdateManyWithoutClientNestedInput
+    tasks?: TaskUpdateManyWithoutClientNestedInput
+    googleCampaigns?: GoogleAdsCampaignUpdateManyWithoutClientNestedInput
+    creativeTasks?: CreativeTaskUpdateManyWithoutClientNestedInput
+    seoAnalytics?: SeoAnalyticsUpdateManyWithoutClientNestedInput
+    seoBlogSlots?: SeoBlogSlotUpdateManyWithoutClientNestedInput
+    seoKeywords?: SeoKeywordUpdateManyWithoutClientNestedInput
+    seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
+    gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
+    seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+  }
+
+  export type ClientUncheckedUpdateWithoutSlasInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    googleBudget?: IntFieldUpdateOperationsInput | number
+    seoPriority?: StringFieldUpdateOperationsInput | string
+    seoScheduleDays?: StringFieldUpdateOperationsInput | string
+    blogTarget?: IntFieldUpdateOperationsInput | number
+    backlinkTarget?: IntFieldUpdateOperationsInput | number
+    keywordTarget?: IntFieldUpdateOperationsInput | number
+    gscLink?: StringFieldUpdateOperationsInput | string
+    gaLink?: StringFieldUpdateOperationsInput | string
+    domainAuthority?: IntFieldUpdateOperationsInput | number
+    pocName?: NullableStringFieldUpdateOperationsInput | string | null
+    pocMobile?: NullableStringFieldUpdateOperationsInput | string | null
+    pocEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    renewalDate?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    services?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
+    deliverables?: DeliverableUncheckedUpdateManyWithoutClientNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutClientNestedInput
+    updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
+    adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
+    socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
+    devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
+    contacts?: ClientContactUncheckedUpdateManyWithoutClientNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutClientNestedInput
+    googleCampaigns?: GoogleAdsCampaignUncheckedUpdateManyWithoutClientNestedInput
+    creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutClientNestedInput
+    seoAnalytics?: SeoAnalyticsUncheckedUpdateManyWithoutClientNestedInput
+    seoBlogSlots?: SeoBlogSlotUncheckedUpdateManyWithoutClientNestedInput
+    seoKeywords?: SeoKeywordUncheckedUpdateManyWithoutClientNestedInput
+    seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
+    gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
+    seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutCampaignsInput = {
@@ -63284,6 +66426,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63294,6 +66444,8 @@ export namespace Prisma {
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
     contacts?: ClientContactCreateNestedManyWithoutClientInput
@@ -63333,6 +66485,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63343,6 +66503,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
     contacts?: ClientContactUncheckedCreateNestedManyWithoutClientInput
@@ -63398,6 +66560,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63408,6 +66578,8 @@ export namespace Prisma {
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
     contacts?: ClientContactUpdateManyWithoutClientNestedInput
@@ -63447,6 +66619,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63457,6 +66637,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
     contacts?: ClientContactUncheckedUpdateManyWithoutClientNestedInput
@@ -63496,6 +66678,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63506,6 +66696,8 @@ export namespace Prisma {
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     contacts?: ClientContactCreateNestedManyWithoutClientInput
@@ -63545,6 +66737,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63555,6 +66755,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     contacts?: ClientContactUncheckedCreateNestedManyWithoutClientInput
@@ -63701,6 +66903,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63711,6 +66921,8 @@ export namespace Prisma {
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     contacts?: ClientContactUpdateManyWithoutClientNestedInput
@@ -63750,6 +66962,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63760,6 +66980,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     contacts?: ClientContactUncheckedUpdateManyWithoutClientNestedInput
@@ -64095,6 +67317,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64105,6 +67335,8 @@ export namespace Prisma {
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
     contacts?: ClientContactCreateNestedManyWithoutClientInput
@@ -64144,6 +67376,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64154,6 +67394,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
     contacts?: ClientContactUncheckedCreateNestedManyWithoutClientInput
@@ -64209,6 +67451,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64219,6 +67469,8 @@ export namespace Prisma {
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
     contacts?: ClientContactUpdateManyWithoutClientNestedInput
@@ -64258,6 +67510,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64268,6 +67528,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
     contacts?: ClientContactUncheckedUpdateManyWithoutClientNestedInput
@@ -64307,6 +67569,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64317,6 +67587,8 @@ export namespace Prisma {
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
@@ -64356,6 +67628,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64366,6 +67646,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
@@ -64421,6 +67703,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64431,6 +67721,8 @@ export namespace Prisma {
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
@@ -64470,6 +67762,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64480,6 +67780,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
@@ -64519,6 +67821,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64529,6 +67839,8 @@ export namespace Prisma {
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
@@ -64568,6 +67880,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64578,6 +67898,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
@@ -64633,6 +67955,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64643,6 +67973,8 @@ export namespace Prisma {
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
@@ -64682,6 +68014,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64692,6 +68032,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
@@ -64731,6 +68073,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64741,6 +68091,8 @@ export namespace Prisma {
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
@@ -64780,6 +68132,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64790,6 +68150,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
@@ -64845,6 +68207,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64855,6 +68225,8 @@ export namespace Prisma {
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
@@ -64894,6 +68266,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64904,6 +68284,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
@@ -64943,6 +68325,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64953,6 +68343,8 @@ export namespace Prisma {
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
@@ -64992,6 +68384,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65002,6 +68402,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
@@ -65057,6 +68459,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65067,6 +68477,8 @@ export namespace Prisma {
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
@@ -65106,6 +68518,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65116,6 +68536,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
@@ -65155,6 +68577,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65165,6 +68595,8 @@ export namespace Prisma {
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
@@ -65204,6 +68636,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65214,6 +68654,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
@@ -65269,6 +68711,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65279,6 +68729,8 @@ export namespace Prisma {
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
@@ -65318,6 +68770,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65328,6 +68788,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
@@ -65367,6 +68829,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65377,6 +68847,8 @@ export namespace Prisma {
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
@@ -65416,6 +68888,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65426,6 +68906,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
@@ -65481,6 +68963,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65491,6 +68981,8 @@ export namespace Prisma {
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
@@ -65530,6 +69022,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65540,6 +69040,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
@@ -65579,6 +69081,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65589,6 +69099,8 @@ export namespace Prisma {
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
@@ -65628,6 +69140,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65638,6 +69158,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
@@ -65736,6 +69258,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65746,6 +69276,8 @@ export namespace Prisma {
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
@@ -65785,6 +69317,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65795,6 +69335,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
@@ -65883,6 +69425,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65893,6 +69443,8 @@ export namespace Prisma {
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
@@ -65932,6 +69484,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65942,6 +69502,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
@@ -65997,6 +69559,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66007,6 +69577,8 @@ export namespace Prisma {
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
@@ -66046,6 +69618,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66056,6 +69636,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
@@ -66095,6 +69677,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66104,6 +69694,8 @@ export namespace Prisma {
     assignments?: AssignmentCreateNestedManyWithoutClientInput
     updates?: WorkUpdateCreateNestedManyWithoutClientInput
     invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostCreateNestedManyWithoutClientInput
     devProjects?: DevProjectCreateNestedManyWithoutClientInput
@@ -66144,6 +69736,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66153,6 +69753,8 @@ export namespace Prisma {
     assignments?: AssignmentUncheckedCreateNestedManyWithoutClientInput
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
     campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
     socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
     devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
@@ -66209,6 +69811,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66218,6 +69828,8 @@ export namespace Prisma {
     assignments?: AssignmentUpdateManyWithoutClientNestedInput
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
@@ -66258,6 +69870,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66267,6 +69887,8 @@ export namespace Prisma {
     assignments?: AssignmentUncheckedUpdateManyWithoutClientNestedInput
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
@@ -67794,6 +71416,14 @@ export namespace Prisma {
     gstApplicable?: boolean
     gstRate?: number
     gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    hostingTaken?: boolean
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67957,6 +71587,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67966,6 +71604,8 @@ export namespace Prisma {
     updates?: WorkUpdateUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUpdateManyWithoutClientNestedInput
@@ -68006,6 +71646,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -68015,6 +71663,8 @@ export namespace Prisma {
     updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
     adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
     campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
     socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
     devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
@@ -68055,6 +71705,14 @@ export namespace Prisma {
     gstApplicable?: BoolFieldUpdateOperationsInput | boolean
     gstRate?: IntFieldUpdateOperationsInput | number
     gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -68535,6 +72193,54 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type SalesInvoiceCreateManyClientInput = {
+    id?: string
+    number: string
+    leadId?: string | null
+    pipeline?: string
+    company?: string
+    billTo: string
+    contact?: string | null
+    phone?: string | null
+    email?: string | null
+    items?: string
+    subtotal?: number
+    taxPct?: number
+    taxAmount?: number
+    total?: number
+    received?: number
+    paymentStatus?: string
+    notes?: string | null
+    issueDate: string
+    dueDate?: string
+    clientGstin?: string | null
+    clientState?: string | null
+    clientAddress?: string | null
+    placeOfSupply?: string | null
+    approved?: boolean
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    notesLog?: string
+    nextFollowup?: string | null
+    emailedAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type SlaCreateManyClientInput = {
+    id?: string
+    clientName?: string
+    title?: string
+    service?: string
+    amount?: number
+    gst?: boolean
+    fileUrl?: string
+    notes?: string
+    status?: string
+    invoiceId?: string | null
+    uploadedBy?: string
+    createdAt?: Date | string
+  }
+
   export type CampaignEntryCreateManyClientInput = {
     id?: string
     date: string
@@ -68893,6 +72599,152 @@ export namespace Prisma {
     amount?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SalesInvoiceUpdateWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    number?: StringFieldUpdateOperationsInput | string
+    leadId?: NullableStringFieldUpdateOperationsInput | string | null
+    pipeline?: StringFieldUpdateOperationsInput | string
+    company?: StringFieldUpdateOperationsInput | string
+    billTo?: StringFieldUpdateOperationsInput | string
+    contact?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    items?: StringFieldUpdateOperationsInput | string
+    subtotal?: IntFieldUpdateOperationsInput | number
+    taxPct?: IntFieldUpdateOperationsInput | number
+    taxAmount?: IntFieldUpdateOperationsInput | number
+    total?: IntFieldUpdateOperationsInput | number
+    received?: IntFieldUpdateOperationsInput | number
+    paymentStatus?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    issueDate?: StringFieldUpdateOperationsInput | string
+    dueDate?: StringFieldUpdateOperationsInput | string
+    clientGstin?: NullableStringFieldUpdateOperationsInput | string | null
+    clientState?: NullableStringFieldUpdateOperationsInput | string | null
+    clientAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    placeOfSupply?: NullableStringFieldUpdateOperationsInput | string | null
+    approved?: BoolFieldUpdateOperationsInput | boolean
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notesLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: NullableStringFieldUpdateOperationsInput | string | null
+    emailedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUpdateManyWithoutInvoiceNestedInput
+  }
+
+  export type SalesInvoiceUncheckedUpdateWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    number?: StringFieldUpdateOperationsInput | string
+    leadId?: NullableStringFieldUpdateOperationsInput | string | null
+    pipeline?: StringFieldUpdateOperationsInput | string
+    company?: StringFieldUpdateOperationsInput | string
+    billTo?: StringFieldUpdateOperationsInput | string
+    contact?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    items?: StringFieldUpdateOperationsInput | string
+    subtotal?: IntFieldUpdateOperationsInput | number
+    taxPct?: IntFieldUpdateOperationsInput | number
+    taxAmount?: IntFieldUpdateOperationsInput | number
+    total?: IntFieldUpdateOperationsInput | number
+    received?: IntFieldUpdateOperationsInput | number
+    paymentStatus?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    issueDate?: StringFieldUpdateOperationsInput | string
+    dueDate?: StringFieldUpdateOperationsInput | string
+    clientGstin?: NullableStringFieldUpdateOperationsInput | string | null
+    clientState?: NullableStringFieldUpdateOperationsInput | string | null
+    clientAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    placeOfSupply?: NullableStringFieldUpdateOperationsInput | string | null
+    approved?: BoolFieldUpdateOperationsInput | boolean
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notesLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: NullableStringFieldUpdateOperationsInput | string | null
+    emailedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUncheckedUpdateManyWithoutInvoiceNestedInput
+  }
+
+  export type SalesInvoiceUncheckedUpdateManyWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    number?: StringFieldUpdateOperationsInput | string
+    leadId?: NullableStringFieldUpdateOperationsInput | string | null
+    pipeline?: StringFieldUpdateOperationsInput | string
+    company?: StringFieldUpdateOperationsInput | string
+    billTo?: StringFieldUpdateOperationsInput | string
+    contact?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    items?: StringFieldUpdateOperationsInput | string
+    subtotal?: IntFieldUpdateOperationsInput | number
+    taxPct?: IntFieldUpdateOperationsInput | number
+    taxAmount?: IntFieldUpdateOperationsInput | number
+    total?: IntFieldUpdateOperationsInput | number
+    received?: IntFieldUpdateOperationsInput | number
+    paymentStatus?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    issueDate?: StringFieldUpdateOperationsInput | string
+    dueDate?: StringFieldUpdateOperationsInput | string
+    clientGstin?: NullableStringFieldUpdateOperationsInput | string | null
+    clientState?: NullableStringFieldUpdateOperationsInput | string | null
+    clientAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    placeOfSupply?: NullableStringFieldUpdateOperationsInput | string | null
+    approved?: BoolFieldUpdateOperationsInput | boolean
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notesLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: NullableStringFieldUpdateOperationsInput | string | null
+    emailedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SlaUpdateWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientName?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    service?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    gst?: BoolFieldUpdateOperationsInput | boolean
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    notes?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SlaUncheckedUpdateWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientName?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    service?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    gst?: BoolFieldUpdateOperationsInput | boolean
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    notes?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SlaUncheckedUpdateManyWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientName?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    service?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    gst?: BoolFieldUpdateOperationsInput | boolean
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    notes?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

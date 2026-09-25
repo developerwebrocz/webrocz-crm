@@ -403,6 +403,7 @@ function OnboardModal({ lead, developers, dmPeople, close }: { lead: Lead; devel
             <F label="Email"><input name="email" defaultValue={lead.email} className="input" /></F>
             <F label="Final project / package amount (₹)"><input type="number" name="finalAmount" defaultValue={lead.value || ""} className="input" /></F>
             <F label="Payment status"><select name="paymentStatus" className="select"><option>Pending</option><option>Advance Paid</option><option>Fully Paid</option></select></F>
+            <F label="GST on invoice"><select name="gst" defaultValue="1" className="select"><option value="1">With GST 18%</option><option value="0">Without GST</option></select></F>
             <F label="Start date"><input type="date" name="startDate" className="input" /></F>
           </div>
           <F label="Confirmed services"><div className="rounded-[10px] border border-[var(--line)] p-3 text-[12.5px]">{(lead.servicesArr ?? []).join(", ") || "—"}</div></F>

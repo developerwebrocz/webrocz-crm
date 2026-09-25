@@ -2,16 +2,17 @@
 
 import { useState } from "react";
 import { generateInvoice, saveInvoice, emailInvoice, approveInvoice, addInvoiceNote } from "@/app/sales-actions";
-import { SELLER, amountInWords } from "@/lib/domain";
+import { SELLER, amountInWords, companySeller } from "@/lib/domain";
 import { ArrowLeft, Download, Mail, Pencil, FileText, CheckCircle2, Lock, ShieldCheck } from "lucide-react";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const inr = (v: number) => "₨ " + (v || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, sent, backHref }: { lead: any; invoice: any; canManage: boolean; isSuperAdmin: boolean; sent: string; backHref: string }) {
+export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, approvalOff, sent, backHref }: { lead: any; invoice: any; canManage: boolean; isSuperAdmin: boolean; approvalOff?: boolean; sent: string; backHref: string }) {
   const [edit, setEdit] = useState(false);
   const leadId = lead?.id ?? "";
-  const brand = (invoice?.pipeline ?? lead?.pipeline) === "DIGITALHAT" ? "Digital Hat" : "WebRocz";
+  // In the accountant CRM there's no approval gate — treat invoices as ready to download/send.
+  const ready = invoice.approved || approvalOff;
 
   if (!invoice) {
     return (
@@ -34,10 +35,12 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, se
   const items = invoice.itemsArr ?? [];
   const notes = invoice.notesArr ?? [];
   const balance = invoice.total - (invoice.received || 0);
-  const intraState = (invoice.clientState || SELLER.state) === SELLER.state;
+  // The billing entity (company) that issued this invoice drives the seller block details.
+  const seller = companySeller(invoice.company || "");
+  const intraState = (invoice.clientState || seller.state) === seller.state;
+  const hasGst = invoice.taxPct > 0; // no GST → hide the GST column, tax split, and "Tax" in the title
   const halfPct = invoice.taxPct / 2;
   const halfTax = Math.round(invoice.taxAmount / 2);
-  const payTone = balance <= 0 ? "var(--emerald)" : (invoice.received > 0 ? "var(--violet)" : "var(--amber)");
   const V = "var(--violet)";
 
   return (
@@ -53,19 +56,20 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, se
       <div className="no-print flex flex-wrap items-center gap-2">
         <a href={backHref} className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--muted)] hover:text-[var(--ink)]"><ArrowLeft size={15} /> Back</a>
         <div className="ml-auto flex flex-wrap items-center gap-2">
-          {isSuperAdmin && (
+          {isSuperAdmin && !approvalOff && (
             <form action={approveInvoice}><input type="hidden" name="invoiceId" value={invoice.id} /><input type="hidden" name="leadId" value={leadId} /><input type="hidden" name="approve" value={invoice.approved ? "0" : "1"} />
               <button className={`btn btn-sm ${invoice.approved ? "btn-ghost" : "btn-violet"}`}><ShieldCheck size={14} /> {invoice.approved ? "Approved — revoke" : "Approve"}</button>
             </form>
           )}
           {canManage && <button onClick={() => setEdit((v) => !v)} className="btn btn-ghost btn-sm"><Pencil size={14} /> Edit</button>}
-          {invoice.approved
+          {ready
             ? <button onClick={() => window.print()} className="btn btn-violet btn-sm"><Download size={14} /> Download PDF</button>
             : <span className="inline-flex items-center gap-1.5 rounded-[10px] border border-[var(--line-2)] px-3 py-1.5 text-[12.5px] font-semibold text-[var(--muted)]"><Lock size={13} /> Download after approval</span>}
         </div>
       </div>
 
-      {/* approval status banner */}
+      {/* approval status banner — hidden in the accountant CRM (no approval gate) */}
+      {!approvalOff && (
       <div className={`no-print rounded-[10px] border px-4 py-2.5 text-[12.5px] font-medium`} style={invoice.approved
         ? { borderColor: "color-mix(in srgb, var(--emerald) 40%, white)", background: "color-mix(in srgb, var(--emerald) 8%, white)", color: "var(--emerald)" }
         : { borderColor: "color-mix(in srgb, var(--amber) 45%, white)", background: "color-mix(in srgb, var(--amber) 10%, white)", color: "#92600a" }}>
@@ -73,6 +77,7 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, se
           ? <><CheckCircle2 size={14} className="mr-1 inline" /> Approved by {invoice.approvedBy} — sales &amp; accountant can now download and send.</>
           : <><Lock size={14} className="mr-1 inline" /> Waiting for Super Admin approval. Download &amp; send are locked until then.</>}
       </div>
+      )}
 
       {sent === "ok" && <div className="no-print rounded-[10px] px-4 py-2.5 text-[13px] font-medium" style={{ background: "color-mix(in srgb,var(--emerald) 8%,white)", color: "var(--emerald)" }}>✓ Invoice emailed to the client.</div>}
       {sent === "fail" && <div className="no-print rounded-[10px] px-4 py-2.5 text-[13px] font-medium" style={{ background: "color-mix(in srgb,var(--rose) 8%,white)", color: "var(--rose)" }}>Could not send — email not configured or address invalid. Use Download PDF instead.</div>}
@@ -106,16 +111,17 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, se
 
       {/* ============ printable GST tax invoice ============ */}
       <div id="invoice" className="card overflow-hidden !p-0 text-[12px]">
-        <div className="border-b-2 py-2 text-center text-[15px] font-bold" style={{ borderColor: V, color: "var(--ink)" }}>Tax Invoice</div>
+        <div className="border-b-2 py-2 text-center text-[15px] font-bold" style={{ borderColor: V, color: "var(--ink)" }}>{hasGst ? "Tax Invoice" : "Invoice"}</div>
 
         {/* seller header */}
         <div className="flex items-start justify-between gap-4 px-6 py-4">
-          <div className="text-[20px] font-extrabold tracking-tight" style={{ color: V }}>{brand === "Digital Hat" ? "Digital Hat" : "Web Rocz"}</div>
+          {/* Web Rocz logo on every invoice, regardless of the billing entity. */}
+          <img src="/webrocz-horizontal.png" alt="Web Rocz" className="h-[40px] w-auto object-contain" />
           <div className="text-right leading-relaxed">
-            <div className="text-[15px] font-extrabold">{SELLER.name}</div>
-            <div className="text-[11px] text-[var(--ink-2)]">{SELLER.address}</div>
-            <div className="text-[11px] text-[var(--ink-2)]">Phone no.: {SELLER.phone} &nbsp; Email: {SELLER.email}</div>
-            <div className="text-[11px] text-[var(--ink-2)]">GSTIN: {SELLER.gstin}, State: {SELLER.state}</div>
+            <div className="text-[15px] font-extrabold">{seller.name}</div>
+            <div className="text-[11px] text-[var(--ink-2)]">{seller.address}</div>
+            <div className="text-[11px] text-[var(--ink-2)]">Phone no.: {seller.phone} &nbsp; Email: {seller.email}</div>
+            <div className="text-[11px] text-[var(--ink-2)]">{seller.gstin ? `GSTIN: ${seller.gstin}, ` : ""}State: {seller.state}</div>
           </div>
         </div>
 
@@ -128,7 +134,7 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, se
               {invoice.clientAddress && <div className="text-[11.5px] text-[var(--ink-2)]">{invoice.clientAddress}</div>}
               {invoice.phone && <div className="text-[11.5px] text-[var(--ink-2)]">Contact No. : {invoice.phone}</div>}
               {invoice.clientGstin && <div className="text-[11.5px] text-[var(--ink-2)]">GSTIN : {invoice.clientGstin}</div>}
-              <div className="text-[11.5px] text-[var(--ink-2)]">State: {invoice.clientState || SELLER.state}</div>
+              <div className="text-[11.5px] text-[var(--ink-2)]">State: {invoice.clientState || seller.state}</div>
             </div>
           </div>
           <div className="border-t border-[var(--line)]">
@@ -136,7 +142,7 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, se
             <div className="px-4 py-3 text-right leading-relaxed">
               <div className="text-[12px]">Invoice No. : <b>{invoice.number}</b></div>
               <div className="text-[12px]">Date : {fmt(invoice.issueDate)}</div>
-              <div className="text-[12px]">Place of supply: {invoice.placeOfSupply || SELLER.state}</div>
+              <div className="text-[12px]">Place of supply: {invoice.placeOfSupply || seller.state}</div>
             </div>
           </div>
         </div>
@@ -148,7 +154,7 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, se
               <th className="px-3 py-2 text-left font-semibold">#</th>
               <th className="px-3 py-2 text-left font-semibold">Item name</th>
               <th className="px-3 py-2 text-right font-semibold">Price/ Unit</th>
-              <th className="px-3 py-2 text-right font-semibold">GST</th>
+              {hasGst && <th className="px-3 py-2 text-right font-semibold">GST</th>}
               <th className="px-3 py-2 text-right font-semibold">Amount</th>
             </tr>
           </thead>
@@ -160,14 +166,14 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, se
                   <td className="px-3 py-2.5">{i + 1}</td>
                   <td className="px-3 py-2.5 font-medium">{it.name}</td>
                   <td className="px-3 py-2.5 text-right tnum">{inr(it.rate)}</td>
-                  <td className="px-3 py-2.5 text-right tnum">{inr(gst)} ({invoice.taxPct}%)</td>
+                  {hasGst && <td className="px-3 py-2.5 text-right tnum">{inr(gst)} ({invoice.taxPct}%)</td>}
                   <td className="px-3 py-2.5 text-right tnum">{inr(it.amount + gst)}</td>
                 </tr>
               );
             })}
             <tr className="font-bold">
               <td className="px-3 py-2.5" colSpan={3}>Total</td>
-              <td className="px-3 py-2.5 text-right tnum">{inr(invoice.taxAmount)}</td>
+              {hasGst && <td className="px-3 py-2.5 text-right tnum">{inr(invoice.taxAmount)}</td>}
               <td className="px-3 py-2.5 text-right tnum">{inr(invoice.total)}</td>
             </tr>
           </tbody>
@@ -190,7 +196,8 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, se
           </div>
         </div>
 
-        {/* tax split */}
+        {/* tax split — only for GST invoices */}
+        {hasGst && (
         <table className="w-full border-collapse border-t border-[var(--line)]">
           <thead><tr className="text-white text-left" style={{ background: V }}>
             <th className="px-3 py-1.5 font-semibold">Tax type</th><th className="px-3 py-1.5 text-right font-semibold">Taxable amount</th><th className="px-3 py-1.5 text-right font-semibold">Rate</th><th className="px-3 py-1.5 text-right font-semibold">Tax amount</th>
@@ -204,24 +211,25 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, se
             )}
           </tbody>
         </table>
+        )}
 
         {/* bank + terms + signatory */}
         <div className="grid grid-cols-3 border-t border-[var(--line)]">
           <div className="border-r border-[var(--line)]">
             <Bar>Bank Details</Bar>
             <div className="px-4 py-3 text-[11.5px] leading-relaxed">
-              <div>Name : {SELLER.bankName}</div>
-              <div>Account No. : {SELLER.bankAccount}</div>
-              <div>IFSC code : {SELLER.bankIfsc}</div>
-              <div>Account holder&apos;s name : {SELLER.bankHolder}</div>
+              <div>Name : {seller.bankName}</div>
+              <div>Account No. : {seller.bankAccount}</div>
+              <div>IFSC code : {seller.bankIfsc}</div>
+              <div>Account holder&apos;s name : {seller.bankHolder}</div>
             </div>
           </div>
           <div className="border-r border-[var(--line)]">
             <Bar>Terms and Conditions</Bar>
-            <div className="px-4 py-3 text-[11.5px] leading-relaxed">{invoice.notes || SELLER.terms}</div>
+            <div className="px-4 py-3 text-[11.5px] leading-relaxed">{invoice.notes || seller.terms}</div>
           </div>
           <div className="flex flex-col items-center justify-between px-4 py-3 text-center">
-            <div className="text-[11.5px]">For : {SELLER.name}</div>
+            <div className="text-[11.5px]">For : {seller.name}</div>
             <div className="mt-6 text-[11.5px] font-semibold">Authorized Signatory</div>
           </div>
         </div>
@@ -231,11 +239,11 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, se
       {canManage && (
         <div className="no-print card card-pad">
           <h3 className="text-[14px] font-bold">Send to client</h3>
-          <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">{invoice.approved ? "Emails the client a branded copy with a link to view / download." : "Locked — needs Super Admin approval first."}{invoice.emailedAt ? ` Last sent: ${new Date(invoice.emailedAt).toLocaleString("en-IN")}.` : ""}</p>
+          <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">{ready ? "Emails the client a branded copy with a link to view / download." : "Locked — needs Super Admin approval first."}{invoice.emailedAt ? ` Last sent: ${new Date(invoice.emailedAt).toLocaleString("en-IN")}.` : ""}</p>
           <form action={emailInvoice} className="mt-3 flex flex-wrap items-end gap-2">
             <input type="hidden" name="invoiceId" value={invoice.id} /><input type="hidden" name="leadId" value={leadId} />
             <div className="flex-1 min-w-[240px]"><L label="Client email"><input name="to" type="email" required defaultValue={invoice.email ?? lead?.email ?? ""} placeholder="client@example.com" className="input" /></L></div>
-            <button disabled={!invoice.approved} className="btn btn-violet disabled:opacity-40"><Mail size={15} /> Email invoice</button>
+            <button disabled={!ready} className="btn btn-violet disabled:opacity-40"><Mail size={15} /> Email invoice</button>
           </form>
         </div>
       )}
