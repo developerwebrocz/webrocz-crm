@@ -53,3 +53,4 @@ SQLite can't hold Prisma enums, so allowed values live in `src/lib/domain.ts` (t
 
 `/` dashboard · `/clients` + `/clients/new` + `/clients/[id]` · `/updates` work log ·
 `/am` account-manager panel · `/ads` ads performance · `/reports` (CSV / print).
+"# webrocz-crm" 
