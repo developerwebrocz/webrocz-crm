@@ -1,5 +1,5 @@
 import { prisma } from "./prisma";
-import { COMPLETING_STATUSES, healthBand, serviceKind } from "./domain";
+import { COMPLETING_STATUSES, healthBand, serviceKind, SALES_STAGE_KEYS } from "./domain";
 import { resolvePeriod, now, type PeriodKey } from "./period";
 
 // workType -> service + whether it counts toward agreed deliverables
@@ -2340,6 +2340,70 @@ export async function getFinanceClientDetail(clientId: string) {
   let clientFollowups: { date: string; by: string; note: string; next?: string }[] = [];
   try { const arr = JSON.parse(client.followupLog || "[]"); if (Array.isArray(arr)) clientFollowups = arr.sort((a, b) => (a.date < b.date ? 1 : -1)); } catch { /* ignore */ }
   return { client: { ...client, onboardDate: client.onboardDate.toISOString().slice(0, 10) }, invoices, payments, totals, clientFollowups, amUsers, slas };
+}
+
+// Super Admin overview — sales pipeline + finance in one easy-to-read summary.
+export async function getAdminSalesFinance() {
+  const today = salesToday();
+  const ym = today.slice(0, 7);
+  const [leads, invoices, fups, rems] = await Promise.all([
+    prisma.lead.findMany({ where: { pipeline: "WEBROCZ" }, select: { id: true, stage: true, services: true, value: true, startDate: true } }),
+    prisma.salesInvoice.findMany({ select: { total: true, received: true, approved: true, issueDate: true, leadId: true, items: true } }),
+    prisma.followup.findMany({ where: { status: "PENDING" }, select: { date: true, nextDate: true } }),
+    prisma.reminder.findMany({ where: { status: "PENDING" }, select: { date: true } }),
+  ]);
+
+  // ---- Sales: per-stage counts + pipeline value + category split ----
+  const stageCounts: Record<string, number> = {};
+  for (const k of SALES_STAGE_KEYS) stageCounts[k] = 0;
+  let activeValue = 0, wonValue = 0;
+  let webCount = 0, dmCount = 0, webValue = 0, dmValue = 0;
+  let onboardedThisMonth = 0;
+  for (const l of leads) {
+    stageCounts[l.stage] = (stageCounts[l.stage] ?? 0) + 1;
+    if (l.stage === "ONBOARDED") { wonValue += l.value || 0; if ((l.startDate || "").slice(0, 7) === ym) onboardedThisMonth++; }
+    if (l.stage !== "LOST" && l.stage !== "ONBOARDED") activeValue += l.value || 0;
+    if (l.stage === "LOST") continue;
+    const k = serviceKind(parseServices(l.services));
+    if (k.web) { webCount++; webValue += l.value || 0; }
+    if (k.dm) { dmCount++; dmValue += l.value || 0; }
+  }
+  const dueDates = [...fups.map((f) => f.nextDate || f.date), ...rems.map((r) => r.date)].filter(Boolean) as string[];
+  const remindersDue = dueDates.filter((d) => d <= today).length;
+
+  // ---- Finance: totals + monthly Website vs DM split (same rules as accountant) ----
+  const leadSvc = new Map(leads.map((l) => [l.id, parseServices(l.services)]));
+  const catOf = (inv: { leadId: string | null; items: string }): "Website" | "Digital Marketing" | "Both" | "Other" => {
+    let svc = inv.leadId ? (leadSvc.get(inv.leadId) ?? []) : [];
+    if (svc.length === 0) { try { const items = JSON.parse(inv.items || "[]"); svc = Array.isArray(items) ? items.map((it: { name?: string }) => it.name || "") : []; } catch { /* ignore */ } }
+    const k = serviceKind(svc);
+    return k.web && k.dm ? "Both" : k.web ? "Website" : k.dm ? "Digital Marketing" : "Other";
+  };
+  const finance = {
+    invoices: invoices.length,
+    billed: invoices.reduce((s, i) => s + i.total, 0),
+    received: invoices.reduce((s, i) => s + i.received, 0),
+    pending: invoices.reduce((s, i) => s + (i.total - i.received), 0),
+    overdue: invoices.filter((i) => i.total - i.received > 0 && !!i.issueDate && i.issueDate < today).length,
+    pendingApproval: invoices.filter((i) => !i.approved).length,
+  };
+  const byMonth: Record<string, { month: string; billed: number; received: number; web: number; dm: number }> = {};
+  for (const i of invoices) {
+    const m = (i.issueDate || "").slice(0, 7); if (!m) continue;
+    const row = (byMonth[m] ??= { month: m, billed: 0, received: 0, web: 0, dm: 0 });
+    row.billed += i.total; row.received += i.received;
+    const c = catOf(i);
+    if (c === "Website" || c === "Both") row.web += i.total;
+    if (c === "Digital Marketing" || c === "Both") row.dm += i.total;
+  }
+  const monthly = Object.values(byMonth).sort((a, b) => (a.month < b.month ? 1 : -1)).slice(0, 4);
+
+  return {
+    stageCounts, activeValue, wonValue, onboardedThisMonth, remindersDue,
+    totalLeads: leads.length,
+    category: { web: { count: webCount, value: webValue }, dm: { count: dmCount, value: dmValue } },
+    finance, monthly,
+  };
 }
 
 // All invoices for the accountant / finance dashboard.

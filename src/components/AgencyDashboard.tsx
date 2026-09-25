@@ -5,6 +5,7 @@ import { Card, Eyebrow, IconChip } from "@/components/ui";
 import PeriodTabs from "@/components/PeriodTabs";
 import DashboardClientsTable from "@/components/DashboardClientsTable";
 import Sparkline from "@/components/Sparkline";
+import SalesFinanceOverview from "@/components/SalesFinanceOverview";
 import { Megaphone, TrendingUp, TrendingDown, Trophy } from "lucide-react";
 
 const DEPT_BAR: Record<string, string> = { SEO: "var(--emerald)", DESIGN: "var(--violet)", VIDEO: "#f97316", ACCOUNT: "var(--ink)" };
@@ -125,6 +126,9 @@ export default async function AgencyDashboard({ period }: { period: PeriodKey })
           </div>
         </Card>
       </div>
+
+      {/* Sales & Finance — Super Admin summary (pipeline + invoices at a glance) */}
+      <SalesFinanceOverview />
 
       {/* Row 2 — four department cards */}
       <div className="grid gap-4 xl:grid-cols-4 md:grid-cols-2">
