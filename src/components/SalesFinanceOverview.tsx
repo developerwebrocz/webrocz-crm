@@ -19,7 +19,7 @@ export default async function SalesFinanceOverview() {
         <h2 className="text-[16px] font-extrabold tracking-tight">Sales &amp; Finance</h2>
         <div className="flex gap-3">
           <Link href="/sales" className="eyebrow hover:text-[var(--violet)]">Sales →</Link>
-          <Link href="/invoices" className="eyebrow hover:text-[var(--violet)]">Invoices →</Link>
+          <Link href="/finance" className="eyebrow hover:text-[var(--violet)]">Finance dashboard →</Link>
         </div>
       </div>
 

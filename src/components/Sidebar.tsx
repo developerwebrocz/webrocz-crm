@@ -68,6 +68,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
       { href: "/pipeline/web-rocz-pvt", label: "Web Rocz Pvt Ltd", icon: Building2 },
     ] },
     { label: "Finance", items: [
+      { href: "/finance", label: "Finance Dashboard", icon: LayoutDashboard },
       { href: "/accounts", label: "All Clients", icon: Users },
       { href: "/dm-clients", label: "DM Clients", icon: Megaphone },
       { href: "/sla", label: "SLAs", icon: FileSignature },
