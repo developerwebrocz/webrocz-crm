@@ -45,7 +45,10 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
                     <label key={sv} className="flex items-center gap-2 text-[13px] font-medium"><input type="checkbox" name="services" value={sv} className="h-4 w-4 accent-[var(--violet)]" /> {sv}</label>
                   ))}
                   {customs.map((c, i) => (
-                    <input key={i} name="services" value={c} onChange={(e) => setCustoms((cs) => cs.map((v, j) => (j === i ? e.target.value : v)))} className="input" placeholder="Custom service" />
+                    <div key={i} className="flex items-center gap-2">
+                      <input name="services" value={c} onChange={(e) => setCustoms((cs) => cs.map((v, j) => (j === i ? e.target.value : v)))} className="input flex-1" placeholder="Custom service" />
+                      <button type="button" onClick={() => setCustoms((cs) => cs.filter((_, j) => j !== i))} title="Remove" className="grid h-8 w-8 flex-none place-items-center rounded-[8px] border border-[var(--line-2)] text-[var(--rose)] hover:bg-[color-mix(in_srgb,var(--rose)_10%,white)]"><X size={14} /></button>
+                    </div>
                   ))}
                   <button type="button" onClick={() => setCustoms((cs) => [...cs, ""])} className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--violet)] hover:underline"><Plus size={13} /> Add</button>
                 </div>
