@@ -17,6 +17,14 @@ function n(fd: FormData, k: string) {
   const v = parseInt(s(fd, k), 10);
   return Number.isFinite(v) ? v : 0;
 }
+// Next CLI-#### client code. Scans only CLI- codes and takes the NUMERIC max, so it is not
+// thrown off by other-prefix codes in the same table (e.g. SEO-###) — a lexicographic
+// "order by code desc" would pick "SEO-…" over "CLI-…" and mint a colliding code.
+async function nextClientCode() {
+  const rows = await prisma.client.findMany({ where: { code: { startsWith: "CLI-" } }, select: { code: true } });
+  const max = rows.reduce((m, c) => Math.max(m, parseInt(c.code.slice(4), 10) || 0), 999);
+  return `CLI-${max + 1}`;
+}
 // Full-access admin: Super Admin or Sub Admin. Used for edit/delete of core records.
 async function isAdmin() {
   const u = await getCurrentUser();
@@ -573,9 +581,7 @@ export async function createClient(fd: FormData) {
   const scalars = clientScalars(fd);
   if (!scalars.name) throw new Error("Client name is required");
 
-  const last = await prisma.client.findFirst({ orderBy: { code: "desc" }, select: { code: true } });
-  const lastNum = last ? parseInt(last.code.replace(/\D/g, ""), 10) : 999;
-  const code = `CLI-${lastNum + 1}`;
+  const code = await nextClientCode();
 
   const client = await prisma.client.create({ data: { code, ...scalars } });
   const { services, deliverables, assignments } = parseServiceBlock(fd, client.id);
@@ -605,9 +611,7 @@ export async function addClientFromFinance(fd: FormData) {
   const scalars = clientScalars(fd);
   if (!scalars.name) redirect("/?client=missingname");
 
-  const last = await prisma.client.findFirst({ orderBy: { code: "desc" }, select: { code: true } });
-  const lastNum = last ? parseInt(last.code.replace(/\D/g, ""), 10) : 999;
-  const code = `CLI-${lastNum + 1}`;
+  const code = await nextClientCode();
 
   const gst = Math.max(0, n(fd, "gst")); // 0 = no GST, else rate %
   const gstin = s(fd, "gstin");
@@ -768,9 +772,7 @@ export async function addClientWebsite(fd: FormData) {
   if (match) {
     clientId = match.id;
   } else {
-    const last = await prisma.client.findFirst({ orderBy: { code: "desc" }, select: { code: true } });
-    const num = last ? parseInt(last.code.replace(/\D/g, ""), 10) + 1 : 1000;
-    const created = await prisma.client.create({ data: { code: `CLI-${num}`, name: clientName, status: "ACTIVE" } });
+    const created = await prisma.client.create({ data: { code: await nextClientCode(), name: clientName, status: "ACTIVE" } });
     clientId = created.id;
   }
   await prisma.client.update({

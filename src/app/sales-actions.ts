@@ -9,6 +9,12 @@ import { financialYear, stateFromGstin, companyFor } from "@/lib/domain";
 // local form helpers
 function s(fd: FormData, k: string) { return (fd.get(k) as string | null)?.toString().trim() ?? ""; }
 function n(fd: FormData, k: string) { const v = parseInt(s(fd, k).replace(/[^\d-]/g, ""), 10); return Number.isFinite(v) ? v : 0; }
+// Next CLI-#### client code — numeric max over CLI- codes only (see actions.ts for why).
+async function nextClientCode() {
+  const rows = await prisma.client.findMany({ where: { code: { startsWith: "CLI-" } }, select: { code: true } });
+  const max = rows.reduce((m, c) => Math.max(m, parseInt(c.code.slice(4), 10) || 0), 999);
+  return `CLI-${max + 1}`;
+}
 // Add N days to a "YYYY-MM-DD" string ("" stays "").
 function addDaysISO(iso: string, days: number): string {
   if (!iso) return "";
@@ -308,11 +314,9 @@ export async function onboardLead(fd: FormData) {
 
   let clientId = lead.clientId;
   if (!clientId) {
-    const last = await prisma.client.findFirst({ orderBy: { code: "desc" }, select: { code: true } });
-    const num = last ? parseInt(last.code.replace(/\D/g, ""), 10) + 1 : 1000;
     const client = await prisma.client.create({
       data: {
-        code: `CLI-${num}`, name: company, monthlyRetainer: hasDm ? finalAmount : 0,
+        code: await nextClientCode(), name: company, monthlyRetainer: hasDm ? finalAmount : 0,
         pocName: s(fd, "contactPerson") || lead.contactPerson || null, pocMobile: s(fd, "phone") || lead.phone || null, pocEmail: s(fd, "email") || lead.email || null,
         status: "ACTIVE", notes: `Onboarded from ${lead.code}. ${s(fd, "notes")}`.trim(),
         gstApplicable: gst, gstRate: 18, // GST preference set at onboarding
@@ -543,9 +547,7 @@ export async function addInvoice(fd: FormData) {
   const all = await prisma.client.findMany({ select: { id: true, name: true, gstin: true, gstRate: true, pocName: true, pocMobile: true, pocEmail: true } });
   let client = all.find((c) => c.name.trim().toLowerCase() === clientName.toLowerCase()) || null;
   if (!client) {
-    const last = await prisma.client.findFirst({ orderBy: { code: "desc" }, select: { code: true } });
-    const num = (last ? parseInt(last.code.replace(/\D/g, ""), 10) : 999) + 1;
-    const created = await prisma.client.create({ data: { code: `CLI-${num}`, name: clientName, status: "ACTIVE", gstApplicable: gst, gstRate: gst ? 18 : 0 } });
+    const created = await prisma.client.create({ data: { code: await nextClientCode(), name: clientName, status: "ACTIVE", gstApplicable: gst, gstRate: gst ? 18 : 0 } });
     client = { id: created.id, name: created.name, gstin: created.gstin, gstRate: created.gstRate, pocName: created.pocName, pocMobile: created.pocMobile, pocEmail: created.pocEmail };
   }
 
