@@ -19665,6 +19665,11 @@ export namespace Prisma {
     service: string | null
     amount: number | null
     gst: boolean | null
+    pocName: string | null
+    pocMobile: string | null
+    pocEmail: string | null
+    gstin: string | null
+    accountManagerId: string | null
     fileUrl: string | null
     notes: string | null
     status: string | null
@@ -19681,6 +19686,11 @@ export namespace Prisma {
     service: string | null
     amount: number | null
     gst: boolean | null
+    pocName: string | null
+    pocMobile: string | null
+    pocEmail: string | null
+    gstin: string | null
+    accountManagerId: string | null
     fileUrl: string | null
     notes: string | null
     status: string | null
@@ -19697,6 +19707,11 @@ export namespace Prisma {
     service: number
     amount: number
     gst: number
+    pocName: number
+    pocMobile: number
+    pocEmail: number
+    gstin: number
+    accountManagerId: number
     fileUrl: number
     notes: number
     status: number
@@ -19723,6 +19738,11 @@ export namespace Prisma {
     service?: true
     amount?: true
     gst?: true
+    pocName?: true
+    pocMobile?: true
+    pocEmail?: true
+    gstin?: true
+    accountManagerId?: true
     fileUrl?: true
     notes?: true
     status?: true
@@ -19739,6 +19759,11 @@ export namespace Prisma {
     service?: true
     amount?: true
     gst?: true
+    pocName?: true
+    pocMobile?: true
+    pocEmail?: true
+    gstin?: true
+    accountManagerId?: true
     fileUrl?: true
     notes?: true
     status?: true
@@ -19755,6 +19780,11 @@ export namespace Prisma {
     service?: true
     amount?: true
     gst?: true
+    pocName?: true
+    pocMobile?: true
+    pocEmail?: true
+    gstin?: true
+    accountManagerId?: true
     fileUrl?: true
     notes?: true
     status?: true
@@ -19858,6 +19888,11 @@ export namespace Prisma {
     service: string
     amount: number
     gst: boolean
+    pocName: string
+    pocMobile: string
+    pocEmail: string
+    gstin: string
+    accountManagerId: string | null
     fileUrl: string
     notes: string
     status: string
@@ -19893,6 +19928,11 @@ export namespace Prisma {
     service?: boolean
     amount?: boolean
     gst?: boolean
+    pocName?: boolean
+    pocMobile?: boolean
+    pocEmail?: boolean
+    gstin?: boolean
+    accountManagerId?: boolean
     fileUrl?: boolean
     notes?: boolean
     status?: boolean
@@ -19910,6 +19950,11 @@ export namespace Prisma {
     service?: boolean
     amount?: boolean
     gst?: boolean
+    pocName?: boolean
+    pocMobile?: boolean
+    pocEmail?: boolean
+    gstin?: boolean
+    accountManagerId?: boolean
     fileUrl?: boolean
     notes?: boolean
     status?: boolean
@@ -19927,6 +19972,11 @@ export namespace Prisma {
     service?: boolean
     amount?: boolean
     gst?: boolean
+    pocName?: boolean
+    pocMobile?: boolean
+    pocEmail?: boolean
+    gstin?: boolean
+    accountManagerId?: boolean
     fileUrl?: boolean
     notes?: boolean
     status?: boolean
@@ -19944,6 +19994,11 @@ export namespace Prisma {
     service?: boolean
     amount?: boolean
     gst?: boolean
+    pocName?: boolean
+    pocMobile?: boolean
+    pocEmail?: boolean
+    gstin?: boolean
+    accountManagerId?: boolean
     fileUrl?: boolean
     notes?: boolean
     status?: boolean
@@ -19952,7 +20007,7 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type SlaOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "clientName" | "clientId" | "title" | "service" | "amount" | "gst" | "fileUrl" | "notes" | "status" | "invoiceId" | "uploadedBy" | "createdAt", ExtArgs["result"]["sla"]>
+  export type SlaOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "clientName" | "clientId" | "title" | "service" | "amount" | "gst" | "pocName" | "pocMobile" | "pocEmail" | "gstin" | "accountManagerId" | "fileUrl" | "notes" | "status" | "invoiceId" | "uploadedBy" | "createdAt", ExtArgs["result"]["sla"]>
   export type SlaInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | Sla$clientArgs<ExtArgs>
   }
@@ -19976,6 +20031,11 @@ export namespace Prisma {
       service: string
       amount: number
       gst: boolean
+      pocName: string
+      pocMobile: string
+      pocEmail: string
+      gstin: string
+      accountManagerId: string | null
       fileUrl: string
       notes: string
       status: string
@@ -20413,6 +20473,11 @@ export namespace Prisma {
     readonly service: FieldRef<"Sla", 'String'>
     readonly amount: FieldRef<"Sla", 'Int'>
     readonly gst: FieldRef<"Sla", 'Boolean'>
+    readonly pocName: FieldRef<"Sla", 'String'>
+    readonly pocMobile: FieldRef<"Sla", 'String'>
+    readonly pocEmail: FieldRef<"Sla", 'String'>
+    readonly gstin: FieldRef<"Sla", 'String'>
+    readonly accountManagerId: FieldRef<"Sla", 'String'>
     readonly fileUrl: FieldRef<"Sla", 'String'>
     readonly notes: FieldRef<"Sla", 'String'>
     readonly status: FieldRef<"Sla", 'String'>
@@ -48388,6 +48453,11 @@ export namespace Prisma {
     service: 'service',
     amount: 'amount',
     gst: 'gst',
+    pocName: 'pocName',
+    pocMobile: 'pocMobile',
+    pocEmail: 'pocEmail',
+    gstin: 'gstin',
+    accountManagerId: 'accountManagerId',
     fileUrl: 'fileUrl',
     notes: 'notes',
     status: 'status',
@@ -50094,6 +50164,11 @@ export namespace Prisma {
     service?: StringFilter<"Sla"> | string
     amount?: IntFilter<"Sla"> | number
     gst?: BoolFilter<"Sla"> | boolean
+    pocName?: StringFilter<"Sla"> | string
+    pocMobile?: StringFilter<"Sla"> | string
+    pocEmail?: StringFilter<"Sla"> | string
+    gstin?: StringFilter<"Sla"> | string
+    accountManagerId?: StringNullableFilter<"Sla"> | string | null
     fileUrl?: StringFilter<"Sla"> | string
     notes?: StringFilter<"Sla"> | string
     status?: StringFilter<"Sla"> | string
@@ -50111,6 +50186,11 @@ export namespace Prisma {
     service?: SortOrder
     amount?: SortOrder
     gst?: SortOrder
+    pocName?: SortOrder
+    pocMobile?: SortOrder
+    pocEmail?: SortOrder
+    gstin?: SortOrder
+    accountManagerId?: SortOrderInput | SortOrder
     fileUrl?: SortOrder
     notes?: SortOrder
     status?: SortOrder
@@ -50131,6 +50211,11 @@ export namespace Prisma {
     service?: StringFilter<"Sla"> | string
     amount?: IntFilter<"Sla"> | number
     gst?: BoolFilter<"Sla"> | boolean
+    pocName?: StringFilter<"Sla"> | string
+    pocMobile?: StringFilter<"Sla"> | string
+    pocEmail?: StringFilter<"Sla"> | string
+    gstin?: StringFilter<"Sla"> | string
+    accountManagerId?: StringNullableFilter<"Sla"> | string | null
     fileUrl?: StringFilter<"Sla"> | string
     notes?: StringFilter<"Sla"> | string
     status?: StringFilter<"Sla"> | string
@@ -50148,6 +50233,11 @@ export namespace Prisma {
     service?: SortOrder
     amount?: SortOrder
     gst?: SortOrder
+    pocName?: SortOrder
+    pocMobile?: SortOrder
+    pocEmail?: SortOrder
+    gstin?: SortOrder
+    accountManagerId?: SortOrderInput | SortOrder
     fileUrl?: SortOrder
     notes?: SortOrder
     status?: SortOrder
@@ -50172,6 +50262,11 @@ export namespace Prisma {
     service?: StringWithAggregatesFilter<"Sla"> | string
     amount?: IntWithAggregatesFilter<"Sla"> | number
     gst?: BoolWithAggregatesFilter<"Sla"> | boolean
+    pocName?: StringWithAggregatesFilter<"Sla"> | string
+    pocMobile?: StringWithAggregatesFilter<"Sla"> | string
+    pocEmail?: StringWithAggregatesFilter<"Sla"> | string
+    gstin?: StringWithAggregatesFilter<"Sla"> | string
+    accountManagerId?: StringNullableWithAggregatesFilter<"Sla"> | string | null
     fileUrl?: StringWithAggregatesFilter<"Sla"> | string
     notes?: StringWithAggregatesFilter<"Sla"> | string
     status?: StringWithAggregatesFilter<"Sla"> | string
@@ -53686,6 +53781,11 @@ export namespace Prisma {
     service?: string
     amount?: number
     gst?: boolean
+    pocName?: string
+    pocMobile?: string
+    pocEmail?: string
+    gstin?: string
+    accountManagerId?: string | null
     fileUrl?: string
     notes?: string
     status?: string
@@ -53703,6 +53803,11 @@ export namespace Prisma {
     service?: string
     amount?: number
     gst?: boolean
+    pocName?: string
+    pocMobile?: string
+    pocEmail?: string
+    gstin?: string
+    accountManagerId?: string | null
     fileUrl?: string
     notes?: string
     status?: string
@@ -53718,6 +53823,11 @@ export namespace Prisma {
     service?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
     gst?: BoolFieldUpdateOperationsInput | boolean
+    pocName?: StringFieldUpdateOperationsInput | string
+    pocMobile?: StringFieldUpdateOperationsInput | string
+    pocEmail?: StringFieldUpdateOperationsInput | string
+    gstin?: StringFieldUpdateOperationsInput | string
+    accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: StringFieldUpdateOperationsInput | string
     notes?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -53735,6 +53845,11 @@ export namespace Prisma {
     service?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
     gst?: BoolFieldUpdateOperationsInput | boolean
+    pocName?: StringFieldUpdateOperationsInput | string
+    pocMobile?: StringFieldUpdateOperationsInput | string
+    pocEmail?: StringFieldUpdateOperationsInput | string
+    gstin?: StringFieldUpdateOperationsInput | string
+    accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: StringFieldUpdateOperationsInput | string
     notes?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -53751,6 +53866,11 @@ export namespace Prisma {
     service?: string
     amount?: number
     gst?: boolean
+    pocName?: string
+    pocMobile?: string
+    pocEmail?: string
+    gstin?: string
+    accountManagerId?: string | null
     fileUrl?: string
     notes?: string
     status?: string
@@ -53766,6 +53886,11 @@ export namespace Prisma {
     service?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
     gst?: BoolFieldUpdateOperationsInput | boolean
+    pocName?: StringFieldUpdateOperationsInput | string
+    pocMobile?: StringFieldUpdateOperationsInput | string
+    pocEmail?: StringFieldUpdateOperationsInput | string
+    gstin?: StringFieldUpdateOperationsInput | string
+    accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: StringFieldUpdateOperationsInput | string
     notes?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -53782,6 +53907,11 @@ export namespace Prisma {
     service?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
     gst?: BoolFieldUpdateOperationsInput | boolean
+    pocName?: StringFieldUpdateOperationsInput | string
+    pocMobile?: StringFieldUpdateOperationsInput | string
+    pocEmail?: StringFieldUpdateOperationsInput | string
+    gstin?: StringFieldUpdateOperationsInput | string
+    accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: StringFieldUpdateOperationsInput | string
     notes?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -57306,6 +57436,11 @@ export namespace Prisma {
     service?: SortOrder
     amount?: SortOrder
     gst?: SortOrder
+    pocName?: SortOrder
+    pocMobile?: SortOrder
+    pocEmail?: SortOrder
+    gstin?: SortOrder
+    accountManagerId?: SortOrder
     fileUrl?: SortOrder
     notes?: SortOrder
     status?: SortOrder
@@ -57326,6 +57461,11 @@ export namespace Prisma {
     service?: SortOrder
     amount?: SortOrder
     gst?: SortOrder
+    pocName?: SortOrder
+    pocMobile?: SortOrder
+    pocEmail?: SortOrder
+    gstin?: SortOrder
+    accountManagerId?: SortOrder
     fileUrl?: SortOrder
     notes?: SortOrder
     status?: SortOrder
@@ -57342,6 +57482,11 @@ export namespace Prisma {
     service?: SortOrder
     amount?: SortOrder
     gst?: SortOrder
+    pocName?: SortOrder
+    pocMobile?: SortOrder
+    pocEmail?: SortOrder
+    gstin?: SortOrder
+    accountManagerId?: SortOrder
     fileUrl?: SortOrder
     notes?: SortOrder
     status?: SortOrder
@@ -62812,6 +62957,11 @@ export namespace Prisma {
     service?: string
     amount?: number
     gst?: boolean
+    pocName?: string
+    pocMobile?: string
+    pocEmail?: string
+    gstin?: string
+    accountManagerId?: string | null
     fileUrl?: string
     notes?: string
     status?: string
@@ -62827,6 +62977,11 @@ export namespace Prisma {
     service?: string
     amount?: number
     gst?: boolean
+    pocName?: string
+    pocMobile?: string
+    pocEmail?: string
+    gstin?: string
+    accountManagerId?: string | null
     fileUrl?: string
     notes?: string
     status?: string
@@ -63604,6 +63759,11 @@ export namespace Prisma {
     service?: StringFilter<"Sla"> | string
     amount?: IntFilter<"Sla"> | number
     gst?: BoolFilter<"Sla"> | boolean
+    pocName?: StringFilter<"Sla"> | string
+    pocMobile?: StringFilter<"Sla"> | string
+    pocEmail?: StringFilter<"Sla"> | string
+    gstin?: StringFilter<"Sla"> | string
+    accountManagerId?: StringNullableFilter<"Sla"> | string | null
     fileUrl?: StringFilter<"Sla"> | string
     notes?: StringFilter<"Sla"> | string
     status?: StringFilter<"Sla"> | string
@@ -72233,6 +72393,11 @@ export namespace Prisma {
     service?: string
     amount?: number
     gst?: boolean
+    pocName?: string
+    pocMobile?: string
+    pocEmail?: string
+    gstin?: string
+    accountManagerId?: string | null
     fileUrl?: string
     notes?: string
     status?: string
@@ -72710,6 +72875,11 @@ export namespace Prisma {
     service?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
     gst?: BoolFieldUpdateOperationsInput | boolean
+    pocName?: StringFieldUpdateOperationsInput | string
+    pocMobile?: StringFieldUpdateOperationsInput | string
+    pocEmail?: StringFieldUpdateOperationsInput | string
+    gstin?: StringFieldUpdateOperationsInput | string
+    accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: StringFieldUpdateOperationsInput | string
     notes?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -72725,6 +72895,11 @@ export namespace Prisma {
     service?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
     gst?: BoolFieldUpdateOperationsInput | boolean
+    pocName?: StringFieldUpdateOperationsInput | string
+    pocMobile?: StringFieldUpdateOperationsInput | string
+    pocEmail?: StringFieldUpdateOperationsInput | string
+    gstin?: StringFieldUpdateOperationsInput | string
+    accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: StringFieldUpdateOperationsInput | string
     notes?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -72740,6 +72915,11 @@ export namespace Prisma {
     service?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
     gst?: BoolFieldUpdateOperationsInput | boolean
+    pocName?: StringFieldUpdateOperationsInput | string
+    pocMobile?: StringFieldUpdateOperationsInput | string
+    pocEmail?: StringFieldUpdateOperationsInput | string
+    gstin?: StringFieldUpdateOperationsInput | string
+    accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: StringFieldUpdateOperationsInput | string
     notes?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string

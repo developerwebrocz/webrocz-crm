@@ -286,10 +286,14 @@ function EditModal({ client, amUsers, close }: { client: Client; amUsers: AmUser
           </label>
           <div className="rounded-[10px] border border-[var(--line)] p-3">
             <div className="eyebrow mb-2">GST / tax</div>
-            <div className="grid grid-cols-2 gap-3">
+            {noGst ? (
               <label className="block"><span className="text-[12px] font-semibold">GST on invoices</span><select name="gst" value={gst} onChange={(e) => setGst(e.target.value)} className="select mt-1"><option value="0">Without GST</option><option value="18">With GST 18%</option></select></label>
-              <label className="block"><span className="text-[12px] font-semibold">Client GSTIN</span><input name="gstin" defaultValue={client.gstin} disabled={noGst} className="input mt-1 disabled:opacity-50 disabled:cursor-not-allowed" placeholder={noGst ? "Not applicable" : "optional"} /></label>
-            </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                <label className="block"><span className="text-[12px] font-semibold">GST on invoices</span><select name="gst" value={gst} onChange={(e) => setGst(e.target.value)} className="select mt-1"><option value="0">Without GST</option><option value="18">With GST 18%</option></select></label>
+                <label className="block"><span className="text-[12px] font-semibold">Client GSTIN</span><input name="gstin" defaultValue={client.gstin} className="input mt-1" placeholder="optional" /></label>
+              </div>
+            )}
             <p className="mt-2 text-[11.5px] text-[var(--faint)]">This sets the default GST for every new invoice you raise for this client.</p>
           </div>
           <div className="rounded-[10px] border border-[var(--line)] p-3">
@@ -340,10 +344,14 @@ function NewInvoiceModal({ clientId, clientName, defaultTaxPct, defaultGstin, cl
             <label className="block"><span className="eyebrow">Amount (₹, before GST)</span><input name="amount" type="number" min={1} required className="input mt-1" placeholder="0" /></label>
           </div>
           <label className="block"><span className="eyebrow">Description (on invoice)</span><input name="desc" className="input mt-1" placeholder="optional — defaults to the service name" /></label>
-          <div className="grid grid-cols-2 gap-3">
+          {noGst ? (
             <label className="block"><span className="eyebrow">GST</span><select name="taxPct" value={taxPct} onChange={(e) => setTaxPct(e.target.value)} className="select mt-1"><option value="0">Without GST</option>{GST_OPTS.filter((g) => g > 0).map((g) => <option key={g} value={String(g)}>With GST {g}%</option>)}</select></label>
-            <label className="block"><span className="eyebrow">Client GSTIN</span><input name="gstin" defaultValue={defaultGstin} disabled={noGst} className="input mt-1 disabled:opacity-50 disabled:cursor-not-allowed" placeholder={noGst ? "Not applicable" : "e.g. 36AABC…"} /></label>
-          </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block"><span className="eyebrow">GST</span><select name="taxPct" value={taxPct} onChange={(e) => setTaxPct(e.target.value)} className="select mt-1"><option value="0">Without GST</option>{GST_OPTS.filter((g) => g > 0).map((g) => <option key={g} value={String(g)}>With GST {g}%</option>)}</select></label>
+              <label className="block"><span className="eyebrow">Client GSTIN</span><input name="gstin" defaultValue={defaultGstin} className="input mt-1" placeholder="e.g. 36AABC…" /></label>
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Issue date</span><input name="issueDate" type="date" defaultValue={today} className="input mt-1" /></label>
             <label className="block"><span className="eyebrow">Due date</span><input name="dueDate" type="date" defaultValue={due} className="input mt-1" /></label>

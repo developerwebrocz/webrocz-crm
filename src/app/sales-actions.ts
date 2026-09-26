@@ -676,6 +676,12 @@ export async function uploadSla(fd: FormData) {
       service: s(fd, "service") === "DM" ? "DM" : "WEBSITE",
       amount: Math.max(0, n(fd, "amount")),
       gst: s(fd, "gst") === "1", // "1" = With GST, "0" = Without GST
+      // Client details so the accountant's data/filters are complete on generation.
+      pocName: s(fd, "pocName"),
+      pocMobile: s(fd, "pocMobile"),
+      pocEmail: s(fd, "pocEmail"),
+      gstin: s(fd, "gstin"),
+      accountManagerId: s(fd, "accountManagerId") || null,
       fileUrl,
       notes: s(fd, "notes"),
       uploadedBy: me.name,
@@ -694,22 +700,41 @@ export async function generateInvoiceFromSla(fd: FormData) {
   const back = s(fd, "return") || "/sla";
   const sla = await prisma.sla.findUnique({ where: { id: slaId }, include: { client: true } });
   if (!sla || sla.status === "INVOICED" || sla.amount <= 0) redirect(back);
-  const client = sla.client; // may be null if the typed name didn't match a client
-  const base = sla.amount;
-  const taxPct = sla.gst ? (client?.gstRate || 18) : 0;
-  const taxAmount = Math.round((base * taxPct) / 100);
-  const gst = taxPct > 0;
+  const gst = sla.gst;
   const category = sla.service === "DM" ? "DM" : "WEBSITE";
   const company = companyFor(gst, category);
-  const gstin = client?.gstin ?? "";
+
+  // Resolve the client. If the typed name never matched an existing client, create one now
+  // from the SLA's captured details so the accountant's client list & filters (account
+  // manager, phone, email, GST) are complete — not just an orphan invoice with a billTo.
+  let client = sla.client;
+  if (!client) {
+    client = await prisma.client.create({
+      data: {
+        code: await nextClientCode(), name: sla.clientName, status: "ACTIVE",
+        pocName: sla.pocName || null, pocMobile: sla.pocMobile || null, pocEmail: sla.pocEmail || null,
+        gstin: sla.gstin || "", gstApplicable: gst, gstRate: gst ? 18 : 0,
+        ...(sla.accountManagerId ? { accountManager: { connect: { id: sla.accountManagerId } } } : {}),
+      },
+    });
+    const svc = category === "DM" ? "Digital Marketing" : "Website Development";
+    await prisma.clientService.create({ data: { clientId: client.id, service: svc } });
+    await prisma.sla.update({ where: { id: sla.id }, data: { clientId: client.id } });
+  }
+
+  const base = sla.amount;
+  const taxPct = gst ? (client.gstRate || 18) : 0;
+  const taxAmount = Math.round((base * taxPct) / 100);
+  // Prefer the SLA's captured GSTIN, falling back to the client's on record.
+  const gstin = sla.gstin || client.gstin || "";
   const clientState = stateFromGstin(gstin);
   const issueDate = new Date().toISOString().slice(0, 10);
   const desc = sla.title || (category === "DM" ? "Digital Marketing" : "Website Development");
-  const billTo = client?.name || sla.clientName;
+  const billTo = client.name || sla.clientName;
   const inv = await prisma.salesInvoice.create({
     data: {
-      number: await invoiceNumber(gst), clientId: client?.id ?? null, pipeline: "WEBROCZ", company,
-      billTo, contact: client?.pocName ?? "", phone: client?.pocMobile ?? "", email: client?.pocEmail ?? "", clientGstin: gstin,
+      number: await invoiceNumber(gst), clientId: client.id, pipeline: "WEBROCZ", company,
+      billTo, contact: client.pocName || sla.pocName || "", phone: client.pocMobile || sla.pocMobile || "", email: client.pocEmail || sla.pocEmail || "", clientGstin: gstin,
       clientState, placeOfSupply: clientState,
       items: JSON.stringify([{ name: desc, qty: 1, rate: base, amount: base }]),
       subtotal: base, taxPct, taxAmount, total: base + taxAmount, received: 0,
@@ -720,7 +745,8 @@ export async function generateInvoiceFromSla(fd: FormData) {
   await prisma.sla.update({ where: { id: slaId }, data: { status: "INVOICED", invoiceId: inv.id } });
   revalidatePath("/sla");
   revalidatePath("/invoices");
-  if (client) revalidatePath(`/accounts/${client.id}`);
+  revalidatePath("/accounts");
+  revalidatePath(`/accounts/${client.id}`);
   redirect(back);
 }
 

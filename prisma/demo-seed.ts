@@ -66,6 +66,23 @@ async function ensureInvoice(number: string, billTo: string, serviceName: string
   console.log("invoice", number, billTo, `₹${total}`, paymentStatus, opts.approved ? "approved" : "pending-approval");
 }
 
+// A sample SLA uploaded by sales, awaiting the accountant to generate the invoice.
+// Carries the client details (contact / phone / email / GSTIN) so the accountant's
+// invoice + filters are complete even for a brand-new client. Idempotent by name+title.
+async function ensureSla(clientName: string, opts: { title: string; service: string; amount: number; gst: boolean; pocName?: string; pocMobile?: string; pocEmail?: string; gstin?: string; uploadedBy?: string }) {
+  const existing = await prisma.sla.findFirst({ where: { clientName, title: opts.title } });
+  if (existing) { console.log("sla exists", clientName, "·", opts.title); return; }
+  const client = (await prisma.client.findMany({ select: { id: true, name: true } }))
+    .find((c) => c.name.trim().toLowerCase() === clientName.trim().toLowerCase());
+  await prisma.sla.create({ data: {
+    clientName, clientId: client?.id ?? null, title: opts.title,
+    service: opts.service === "DM" ? "DM" : "WEBSITE", amount: opts.amount, gst: opts.gst,
+    pocName: opts.pocName ?? "", pocMobile: opts.pocMobile ?? "", pocEmail: opts.pocEmail ?? "",
+    gstin: opts.gstin ?? "", status: "UPLOADED", uploadedBy: opts.uploadedBy ?? "Sales Exec",
+  } as never });
+  console.log("sla", clientName, "·", opts.title, opts.gst ? "· GST" : "· non-GST");
+}
+
 async function main() {
   console.log("--- Sales pipeline demo (Website Development) ---");
   await ensureLead("Pixel Web Studio", { stage: "POSITIVE_LEAD", company: "Pixel Web Studio", contactPerson: "Rohit Verma", phone: "9701122334", email: "rohit@pixelweb.in", source: "Referral", services: JSON.stringify(["Custom Website", "WordPress Development"]), value: 60000, requirements: "5-page business website, blog, contact form" });
@@ -103,8 +120,16 @@ async function main() {
   await ensureInvoice("WR-INV-2026-0004", "Glow Skin Clinic", "Google Ads", 55000, 0, { contact: "Dr. Meghana", phone: "9700667788", email: "info@glowskin.in", issueDate: "2026-09-05", approved: false });
   await ensureInvoice("WR-INV-2026-0006", "FitZone Gym", "SEO", 40000, 20000, { contact: "Arjun Reddy", phone: "9885112233", email: "arjun@fitzone.in", issueDate: "2026-09-22", approved: false });
 
+  console.log("--- SLA demo (sales upload → accountant generates the invoice) ---");
+  // One per billing entity: Web Solutions (website, non-GST), Web Rocz (DM, non-GST),
+  // Web Rocz Pvt Ltd (website, With GST). Brand-new names → accountant creates the client.
+  await ensureSla("Sunrise Realty", { title: "Corporate website — annual", service: "WEBSITE", amount: 60000, gst: false, pocName: "Kavya Rao", pocMobile: "9701223344", pocEmail: "kavya@sunriserealty.in" });
+  await ensureSla("FreshLeaf Cafe", { title: "Social media — 3 months", service: "DM", amount: 30000, gst: false, pocName: "Vikram N", pocMobile: "9701445566", pocEmail: "vikram@freshleaf.in" });
+  await ensureSla("Orbit Technologies", { title: "Website + SEO retainer", service: "WEBSITE", amount: 120000, gst: true, pocName: "Anil Mehta", pocMobile: "9885778811", pocEmail: "anil@orbittech.in", gstin: "36AABCO1234F1Z9" });
+
   const leads = await prisma.lead.count();
   const invs = await prisma.salesInvoice.count();
-  console.log(`\n✅ Demo ready — ${leads} leads in pipeline, ${invs} invoices. Login /staff (sales@ / accountant@, pw webrocz123).`);
+  const slas = await prisma.sla.count();
+  console.log(`\n✅ Demo ready — ${leads} leads in pipeline, ${invs} invoices, ${slas} SLAs. Login /staff (sales@ / accountant@, pw webrocz123).`);
 }
 main().finally(() => process.exit(0));

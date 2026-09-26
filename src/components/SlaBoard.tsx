@@ -12,12 +12,14 @@ const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso
 type Row = {
   id: string; clientId: string; clientName: string; clientCode: string; matched: boolean;
   title: string; service: string; amount: number; gst: boolean; fileUrl: string; notes: string;
+  pocMobile: string; pocEmail: string; gstin: string; accountManager: string;
   status: string; invoiceNumber: string; uploadedBy: string; createdAt: string;
 };
 type Counts = { all: number; pending: number; invoiced: number };
 type Totals = { pendingAmount: number };
+type AmUser = { id: string; name: string };
 
-export default function SlaBoard({ rows, counts, totals, canUpload, canGenerate }: { rows: Row[]; counts: Counts; totals: Totals; canUpload: boolean; canGenerate: boolean }) {
+export default function SlaBoard({ rows, counts, totals, amUsers, canUpload, canGenerate }: { rows: Row[]; counts: Counts; totals: Totals; amUsers: AmUser[]; canUpload: boolean; canGenerate: boolean }) {
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("ALL"); // ALL | UPLOADED | INVOICED
   const [addOpen, setAddOpen] = useState(false);
@@ -103,32 +105,52 @@ export default function SlaBoard({ rows, counts, totals, canUpload, canGenerate 
         </div>
       </div>
 
-      {addOpen && <UploadModal close={() => setAddOpen(false)} />}
+      {addOpen && <UploadModal amUsers={amUsers} close={() => setAddOpen(false)} />}
     </div>
   );
 }
 
-function UploadModal({ close }: { close: () => void }) {
+function UploadModal({ amUsers, close }: { amUsers: AmUser[]; close: () => void }) {
+  const [service, setService] = useState("WEBSITE");
+  const [gst, setGst] = useState("1");
+  const withGst = gst === "1";
+  // Web Solutions = Website + non-GST, Web Rocz = DM + non-GST, Web Rocz Pvt Ltd = With GST.
+  const target = withGst ? "Web Rocz Pvt Ltd" : service === "DM" ? "Web Rocz" : "Web Solutions";
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
-      <div className="flex max-h-[92vh] w-full max-w-[480px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
+      <div className="flex max-h-[92vh] w-full max-w-[520px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
           <div>
             <h2 className="text-[16px] font-bold">Upload SLA</h2>
-            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">Attach the agreement and set its terms. The accountant generates the invoice from it.</p>
+            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">Attach the agreement and fill the client details — the accountant generates the invoice and files it under the right company from this.</p>
           </div>
           <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
         </div>
         <form action={uploadSla} encType="multipart/form-data" className="space-y-3 overflow-y-auto scroll-thin px-6 py-5">
-          <label className="block"><span className="eyebrow">Client name *</span><input name="clientName" required className="input mt-1" placeholder="Type the client / company name" /><span className="mt-1 block text-[11px] text-[var(--faint)]">If it matches an existing client, the SLA links to them automatically.</span></label>
+          <label className="block"><span className="eyebrow">Client name *</span><input name="clientName" required className="input mt-1" placeholder="Type the client / company name" /><span className="mt-1 block text-[11px] text-[var(--faint)]">If it matches an existing client, the SLA links to them automatically — otherwise the accountant creates them from these details.</span></label>
           <label className="block"><span className="eyebrow">SLA title / description</span><input name="title" className="input mt-1" placeholder="e.g. Website + SEO annual agreement" /></label>
           <div className="grid grid-cols-2 gap-3">
-            <label className="block"><span className="eyebrow">Service</span><select name="service" defaultValue="WEBSITE" className="select mt-1"><option value="WEBSITE">Website</option><option value="DM">Digital Marketing</option></select></label>
-            <label className="block"><span className="eyebrow">GST</span><select name="gst" defaultValue="1" className="select mt-1"><option value="1">With GST 18%</option><option value="0">Without GST</option></select></label>
+            <label className="block"><span className="eyebrow">Contact person</span><input name="pocName" className="input mt-1" placeholder="e.g. Riya Sharma" /></label>
+            <label className="block"><span className="eyebrow">Phone</span><input name="pocMobile" className="input mt-1" placeholder="10-digit mobile" /></label>
           </div>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" className="input mt-1" placeholder="client@example.com" /></label>
+            <label className="block"><span className="eyebrow">Account manager</span>
+              <select name="accountManagerId" defaultValue="" className="select mt-1">
+                <option value="">— Unassigned —</option>
+                {amUsers.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+              </select>
+            </label>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block"><span className="eyebrow">Service</span><select name="service" value={service} onChange={(e) => setService(e.target.value)} className="select mt-1"><option value="WEBSITE">Website</option><option value="DM">Digital Marketing</option></select></label>
+            <label className="block"><span className="eyebrow">GST</span><select name="gst" value={gst} onChange={(e) => setGst(e.target.value)} className="select mt-1"><option value="1">With GST 18%</option><option value="0">Without GST</option></select></label>
+          </div>
+          {withGst && <label className="block"><span className="eyebrow">Client GSTIN</span><input name="gstin" className="input mt-1" placeholder="e.g. 36AABC…" /><span className="mt-1 block text-[11px] text-[var(--faint)]">Sets the place of supply (CGST/SGST vs IGST) on the tax invoice.</span></label>}
           <label className="block"><span className="eyebrow">Amount (₹, before GST)</span><input name="amount" type="number" min={0} required className="input mt-1" placeholder="0" /></label>
           <label className="block"><span className="eyebrow">SLA document</span><input name="file" type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" className="input mt-1 !py-2" /></label>
           <label className="block"><span className="eyebrow">Notes</span><input name="notes" className="input mt-1" placeholder="optional" /></label>
+          <p className="rounded-[10px] bg-[var(--surface-2)] px-3 py-2 text-[11.5px] text-[var(--muted)]">Accountant files this under → <b>{target}</b> · {withGst ? "GST" : "Non-GST"} series</p>
           <div className="flex justify-end gap-2 pt-1">
             <button type="button" onClick={close} className="btn btn-ghost">Cancel</button>
             <button type="submit" className="btn btn-violet"><Upload size={15} /> Upload SLA</button>

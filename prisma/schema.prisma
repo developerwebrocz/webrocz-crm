@@ -315,6 +315,13 @@ model Sla {
   service    String   @default("WEBSITE") // WEBSITE | DM
   amount     Int      @default(0)     // agreed amount (before GST)
   gst        Boolean  @default(false) // true = With GST 18%, false = Without GST
+  // Client details captured at upload so the accountant's invoice/filters are complete
+  // even when the SLA is for a brand-new client (no existing record to pull from).
+  pocName    String   @default("")    // contact person
+  pocMobile  String   @default("")    // phone
+  pocEmail   String   @default("")    // email
+  gstin      String   @default("")    // client GSTIN (for GST invoices / place of supply)
+  accountManagerId String?            // account manager to assign the client to
   fileUrl    String   @default("")    // the uploaded SLA document
   notes      String   @default("")
   status     String   @default("UPLOADED") // UPLOADED | INVOICED

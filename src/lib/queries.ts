@@ -2466,20 +2466,23 @@ export async function getInvoices(opts: { q?: string; status?: string; company?:
 // SLA board: every uploaded SLA (with client + generated-invoice number) plus the
 // client list for the sales upload picker. Shared by sales (upload) and accountant (generate).
 export async function getSlaBoard() {
-  const [slas, invoices] = await Promise.all([
+  const [slas, invoices, amUsers] = await Promise.all([
     prisma.sla.findMany({ orderBy: { createdAt: "desc" }, include: { client: { select: { name: true, code: true } } } }),
     prisma.salesInvoice.findMany({ select: { id: true, number: true } }),
+    prisma.user.findMany({ where: { active: true, role: { in: ["ACCOUNT_MANAGER", "AM_HEAD", "DM_EXEC"] } }, orderBy: { name: "asc" }, select: { id: true, name: true } }),
   ]);
+  const amName = new Map(amUsers.map((a) => [a.id, a.name]));
   const invNum = new Map(invoices.map((i) => [i.id, i.number]));
   const rows = slas.map((x) => ({
     id: x.id, clientId: x.clientId ?? "", clientName: x.clientName || x.client?.name || "—", clientCode: x.client?.code ?? "", matched: !!x.clientId,
     title: x.title, service: x.service, amount: x.amount, gst: x.gst, fileUrl: x.fileUrl, notes: x.notes,
+    pocMobile: x.pocMobile, pocEmail: x.pocEmail, gstin: x.gstin, accountManager: (x.accountManagerId && amName.get(x.accountManagerId)) || "",
     status: x.status, invoiceNumber: x.invoiceId ? (invNum.get(x.invoiceId) ?? "") : "",
     uploadedBy: x.uploadedBy, createdAt: x.createdAt.toISOString().slice(0, 10),
   }));
   const counts = { all: rows.length, pending: rows.filter((r) => r.status === "UPLOADED").length, invoiced: rows.filter((r) => r.status === "INVOICED").length };
   const totals = { pendingAmount: rows.filter((r) => r.status === "UPLOADED").reduce((s, r) => s + r.amount, 0) };
-  return { rows, counts, totals };
+  return { rows, counts, totals, amUsers };
 }
 
 export async function getFollowupsBoard(userId: string, role: string, pipeline = "WEBROCZ") {

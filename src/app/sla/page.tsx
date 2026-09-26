@@ -14,6 +14,6 @@ export default async function SlaPage() {
   const canUpload = SALES.includes(user.role);
   const canGenerate = FINANCE.includes(user.role);
   if (!canUpload && !canGenerate) redirect("/");
-  const { rows, counts, totals } = await getSlaBoard();
-  return <SlaBoard rows={rows} counts={counts} totals={totals} canUpload={canUpload} canGenerate={canGenerate} />;
+  const { rows, counts, totals, amUsers } = await getSlaBoard();
+  return <SlaBoard rows={rows} counts={counts} totals={totals} amUsers={amUsers} canUpload={canUpload} canGenerate={canGenerate} />;
 }
