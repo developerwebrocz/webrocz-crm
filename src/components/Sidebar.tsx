@@ -63,9 +63,9 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
   // Companies pipeline — each billing entity expands into its own sections
   // (Clients / Invoices / Website renewals) when it's the one you're viewing.
   const companyMeta = [
-    { key: "WEB_SOLUTIONS", slug: "web-solutions", label: "Web Solutions", icon: Globe, renewals: true },
-    { key: "WEB_ROCZ", slug: "web-rocz", label: "Web Rocz", icon: Megaphone, renewals: false },
-    { key: "WEB_ROCZ_PVT", slug: "web-rocz-pvt", label: "Web Rocz Pvt Ltd", icon: Building2, renewals: true },
+    { key: "WEB_SOLUTIONS", slug: "web-solutions", label: "Web Solutions", icon: Globe, renewals: true, clientsLabel: "Clients" },
+    { key: "WEB_ROCZ", slug: "web-rocz", label: "Web Rocz", icon: Megaphone, renewals: false, clientsLabel: "DM Clients" },
+    { key: "WEB_ROCZ_PVT", slug: "web-rocz-pvt", label: "Web Rocz Pvt Ltd", icon: Building2, renewals: true, clientsLabel: "Clients" },
   ];
   const companyParam = sp.get("company") ?? "";
   const activeCoKey = (() => {
@@ -78,7 +78,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
   const companyItems: Item[] = companyMeta.map((c) => {
     const activeCo = activeCoKey === c.key;
     const subItems: Item[] = activeCo ? [
-      { href: `/pipeline/${c.slug}`, label: "Clients", icon: Users, forceActive: path === `/pipeline/${c.slug}` },
+      { href: `/pipeline/${c.slug}`, label: c.clientsLabel, icon: Users, forceActive: path === `/pipeline/${c.slug}` },
       { href: `/invoices?company=${c.key}`, label: "Invoices", icon: ReceiptText, forceActive: path.startsWith("/invoices") && companyParam === c.key },
       ...(c.renewals ? [{ href: `/renewals?company=${c.slug}`, label: "Website renewals", icon: Repeat, forceActive: path.startsWith("/renewals") && companyParam === c.slug }] : []),
     ] : [];
