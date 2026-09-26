@@ -11,6 +11,6 @@ export default async function FinanceClientsPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   if (!ALLOWED.includes(user.role)) redirect("/");
-  const { rows, amUsers } = await getFinanceClients();
-  return <FinanceClients rows={rows} amUsers={amUsers} />;
+  const { rows } = await getFinanceClients();
+  return <FinanceClients rows={rows} />;
 }

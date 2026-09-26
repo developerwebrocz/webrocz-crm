@@ -12,14 +12,13 @@ const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso
 type Row = {
   id: string; clientId: string; clientName: string; clientCode: string; matched: boolean;
   title: string; service: string; amount: number; gst: boolean; fileUrl: string; notes: string;
-  pocMobile: string; pocEmail: string; gstin: string; accountManager: string;
+  pocMobile: string; pocEmail: string; gstin: string;
   status: string; invoiceNumber: string; uploadedBy: string; createdAt: string;
 };
 type Counts = { all: number; pending: number; invoiced: number };
 type Totals = { pendingAmount: number };
-type AmUser = { id: string; name: string };
 
-export default function SlaBoard({ rows, counts, totals, amUsers, canUpload, canGenerate }: { rows: Row[]; counts: Counts; totals: Totals; amUsers: AmUser[]; canUpload: boolean; canGenerate: boolean }) {
+export default function SlaBoard({ rows, counts, totals, canUpload, canGenerate }: { rows: Row[]; counts: Counts; totals: Totals; canUpload: boolean; canGenerate: boolean }) {
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("ALL"); // ALL | UPLOADED | INVOICED
   const [addOpen, setAddOpen] = useState(false);
@@ -105,12 +104,12 @@ export default function SlaBoard({ rows, counts, totals, amUsers, canUpload, can
         </div>
       </div>
 
-      {addOpen && <UploadModal amUsers={amUsers} close={() => setAddOpen(false)} />}
+      {addOpen && <UploadModal close={() => setAddOpen(false)} />}
     </div>
   );
 }
 
-function UploadModal({ amUsers, close }: { amUsers: AmUser[]; close: () => void }) {
+function UploadModal({ close }: { close: () => void }) {
   const [service, setService] = useState("WEBSITE");
   const [gst, setGst] = useState("1");
   const withGst = gst === "1";
@@ -133,15 +132,7 @@ function UploadModal({ amUsers, close }: { amUsers: AmUser[]; close: () => void 
             <label className="block"><span className="eyebrow">Contact person</span><input name="pocName" className="input mt-1" placeholder="e.g. Riya Sharma" /></label>
             <label className="block"><span className="eyebrow">Phone</span><input name="pocMobile" className="input mt-1" placeholder="10-digit mobile" /></label>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" className="input mt-1" placeholder="client@example.com" /></label>
-            <label className="block"><span className="eyebrow">Account manager</span>
-              <select name="accountManagerId" defaultValue="" className="select mt-1">
-                <option value="">— Unassigned —</option>
-                {amUsers.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-              </select>
-            </label>
-          </div>
+          <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" className="input mt-1" placeholder="client@example.com" /></label>
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Service</span><select name="service" value={service} onChange={(e) => setService(e.target.value)} className="select mt-1"><option value="WEBSITE">Website</option><option value="DM">Digital Marketing</option></select></label>
             <label className="block"><span className="eyebrow">GST</span><select name="gst" value={gst} onChange={(e) => setGst(e.target.value)} className="select mt-1"><option value="1">With GST 18%</option><option value="0">Without GST</option></select></label>

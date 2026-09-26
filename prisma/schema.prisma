@@ -321,7 +321,6 @@ model Sla {
   pocMobile  String   @default("")    // phone
   pocEmail   String   @default("")    // email
   gstin      String   @default("")    // client GSTIN (for GST invoices / place of supply)
-  accountManagerId String?            // account manager to assign the client to
   fileUrl    String   @default("")    // the uploaded SLA document
   notes      String   @default("")
   status     String   @default("UPLOADED") // UPLOADED | INVOICED

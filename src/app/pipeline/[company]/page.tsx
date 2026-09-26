@@ -22,11 +22,11 @@ export default async function CompanyPipelinePage({ params }: { params: Promise<
   const { company } = await params;
   const key = SLUG_TO_COMPANY[company];
   if (!key) notFound();
-  const { rows, amUsers } = await getFinanceClients();
+  const { rows } = await getFinanceClients();
   return (
     <div className="space-y-5">
       <CompanyNav company={key} active="clients" />
-      <FinanceClients rows={rows} amUsers={amUsers} lockedCompany={key} embedded />
+      <FinanceClients rows={rows} lockedCompany={key} embedded />
     </div>
   );
 }

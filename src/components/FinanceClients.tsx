@@ -18,10 +18,9 @@ const addDaysISO = (iso: string, n: number) => { const d = new Date((iso || toda
 type MiniInv = { category: string; total: number; received: number; balance: number; overdue: boolean; issueDate: string; company: string };
 type Note = { invId: string; invNumber: string; date: string; by: string; note: string };
 type Followup = { date: string; by: string; note: string; next?: string };
-type Row = { id: string; code: string; name: string; contact: string; phone: string; email: string; accountManager: string; status: string; retainer: number; category: string; invs: MiniInv[]; lastInvoiceDate: string; billed: number; received: number; pending: number; companies: string[]; clientFollowups: Followup[]; nextFollowup: string; notes: Note[]; noteTarget: { id: string; number: string } | null };
+type Row = { id: string; code: string; name: string; contact: string; phone: string; email: string; status: string; retainer: number; category: string; invs: MiniInv[]; lastInvoiceDate: string; billed: number; received: number; pending: number; companies: string[]; clientFollowups: Followup[]; nextFollowup: string; notes: Note[]; noteTarget: { id: string; number: string } | null };
 
-type AmUser = { id: string; name: string };
-export default function FinanceClients({ rows, amUsers, lockedCompany, lockedCategory, embedded }: { rows: Row[]; amUsers: AmUser[]; lockedCompany?: string; lockedCategory?: string; embedded?: boolean }) {
+export default function FinanceClients({ rows, lockedCompany, lockedCategory, embedded }: { rows: Row[]; lockedCompany?: string; lockedCategory?: string; embedded?: boolean }) {
   const [q, setQ] = useState("");
   const [clientSel, setClientSel] = useState("ALL"); // ALL | <clientId>
   const [companySel, setCompanySel] = useState(lockedCompany ?? "ALL"); // ALL | <company key>
@@ -109,8 +108,8 @@ export default function FinanceClients({ rows, amUsers, lockedCompany, lockedCat
 
   const exportCsv = () => downloadCsv(
     `clients-${new Date().toISOString().slice(0, 10)}.csv`,
-    ["Client", "Code", "Last invoice", "Phone", "Email", "Account manager", "Services", "Amount (billed)", "Received", "Pending", "Companies"],
-    filtered.map((r) => [r.name, r.code, r.lastInvoiceDate, r.phone, r.email, r.accountManager, catActive ? scopeLabel : r.category, r.billed, r.received, r.pending, r.companies.map(companyLabel).join(" / ")]),
+    ["Client", "Code", "Last invoice", "Phone", "Email", "Services", "Amount (billed)", "Received", "Pending", "Companies"],
+    filtered.map((r) => [r.name, r.code, r.lastInvoiceDate, r.phone, r.email, catActive ? scopeLabel : r.category, r.billed, r.received, r.pending, r.companies.map(companyLabel).join(" / ")]),
   );
 
   return (
@@ -176,7 +175,7 @@ export default function FinanceClients({ rows, amUsers, lockedCompany, lockedCat
       <div className="card !p-0 overflow-hidden">
         <div className="overflow-x-auto scroll-thin">
           <table className="w-full min-w-[1120px] text-left">
-            <thead><tr className="border-b border-[var(--line)]">{["#", "Invoice date", "Client Name", "Phone / Mobile", "Email", "Account Manager", "Services", "Amount", "Actions"].map((h) => <th key={h} className="th px-5 py-2.5">{h}</th>)}</tr></thead>
+            <thead><tr className="border-b border-[var(--line)]">{["#", "Invoice date", "Client Name", "Phone / Mobile", "Email", "Services", "Amount", "Actions"].map((h) => <th key={h} className="th px-5 py-2.5">{h}</th>)}</tr></thead>
             <tbody>
               {filtered.length === 0 && <tr><td colSpan={9} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No clients found.</td></tr>}
               {paged.map((r, i) => (
@@ -186,7 +185,6 @@ export default function FinanceClients({ rows, amUsers, lockedCompany, lockedCat
                   <td className="px-5 py-3"><Link href={`/accounts/${r.id}`} prefetch className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.name}</Link><div className="text-[11px] text-[var(--faint)]">{r.code}{r.companies.length > 0 ? ` · ${r.companies.map(companyLabel).join(", ")}` : ""}</div></td>
                   <td className="px-5 py-3 text-[12.5px] tnum">{r.phone || "—"}</td>
                   <td className="px-5 py-3 text-[12.5px]">{r.email ? <a href={`mailto:${r.email}`} className="text-[var(--indigo)] hover:underline">{r.email}</a> : "—"}</td>
-                  <td className="px-5 py-3 text-[12.5px]">{r.accountManager || <span className="text-[var(--faint)]">—</span>}</td>
                   <td className="px-5 py-3"><CatChip c={catActive ? scopeLabel : r.category} /></td>
                   <td className="px-5 py-3"><div className="text-[13px] font-semibold tnum">{inr(r.billed)}</div>{r.pending > 0 && <div className="text-[11px] font-semibold tnum" style={{ color: r.overdueAmt > 0 ? "var(--rose)" : "var(--amber)" }}>{inr(r.pending)} due{r.overdueAmt > 0 ? " · overdue" : ""}</div>}</td>
                   <td className="px-5 py-3">
@@ -215,7 +213,7 @@ export default function FinanceClients({ rows, amUsers, lockedCompany, lockedCat
 
       {fuRow && <FollowupModal r={fuRow} close={() => setFuRow(null)} />}
       {delRow && <DeleteModal r={delRow} close={() => setDelRow(null)} />}
-      {addOpen && <AddClientModal amUsers={amUsers} lockedCompany={lockedCompany} lockedCategory={lockedCategory} close={() => setAddOpen(false)} />}
+      {addOpen && <AddClientModal lockedCompany={lockedCompany} lockedCategory={lockedCategory} close={() => setAddOpen(false)} />}
       {addInvOpen && <AddInvoiceModal clientNames={clientNames} close={() => setAddInvOpen(false)} lockCompany={lockedCompany} returnTo={lockedCompany ? `/pipeline/${{ WEB_SOLUTIONS: "web-solutions", WEB_ROCZ: "web-rocz", WEB_ROCZ_PVT: "web-rocz-pvt" }[lockedCompany] ?? "web-solutions"}` : "/invoices"} />}
     </div>
   );
@@ -223,7 +221,7 @@ export default function FinanceClients({ rows, amUsers, lockedCompany, lockedCat
 
 const COMPANY_SLUG: Record<string, string> = { WEB_SOLUTIONS: "web-solutions", WEB_ROCZ: "web-rocz", WEB_ROCZ_PVT: "web-rocz-pvt" };
 
-function AddClientModal({ amUsers, lockedCompany, lockedCategory, close }: { amUsers: AmUser[]; lockedCompany?: string; lockedCategory?: string; close: () => void }) {
+function AddClientModal({ lockedCompany, lockedCategory, close }: { lockedCompany?: string; lockedCategory?: string; close: () => void }) {
   // Company / category context decides which services + GST the Add-Client form offers.
   const locked = lockedCompany ?? "";
   const isPvt = locked === "WEB_ROCZ_PVT";
@@ -260,12 +258,6 @@ function AddClientModal({ amUsers, lockedCompany, lockedCategory, close }: { amU
             <label className="block"><span className="eyebrow">Phone</span><input name="pocMobile" className="input mt-1" /></label>
           </div>
           <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" className="input mt-1" /></label>
-          <label className="block"><span className="eyebrow">Account manager</span>
-            <select name="accountManagerId" defaultValue="" className="select mt-1">
-              <option value="">— Unassigned —</option>
-              {amUsers.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-            </select>
-          </label>
           {gstFixed === null ? (
             <div className="grid grid-cols-2 gap-3">
               <label className="block"><span className="eyebrow">GST</span><select name="gst" value={gstSel} onChange={(e) => setGstSel(e.target.value)} className="select mt-1"><option value="0">Without GST</option><option value="18">With GST 18%</option></select></label>

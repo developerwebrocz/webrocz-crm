@@ -22,8 +22,7 @@ type Aging = { current: number; d30: number; d60: number; d90: number; d90plus: 
 // Where a client name / Pay button should take you: the client's finance page (deep-open Pay if given).
 const clientHref = (r: Inv, pay = false) => r.clientId ? `/accounts/${r.clientId}${pay ? `?pay=${r.id}` : ""}` : `/invoices/${r.id}`;
 
-type AmUser = { id: string; name: string };
-export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, employees, aging, amUsers, userName }: { totals: any; invoiceRows: Inv[]; monthlyRows: MonthRow[]; employees: Emp[]; aging: Aging; amUsers: AmUser[]; userName: string }) {
+export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, employees, aging, userName }: { totals: any; invoiceRows: Inv[]; monthlyRows: MonthRow[]; employees: Emp[]; aging: Aging; userName: string }) {
   const [tab, setTab] = useState<"invoices" | "monthly" | "employees">("invoices");
   const [cat, setCat] = useState("ALL");
   const [pay, setPay] = useState("ALL"); // ALL | pending | paid | overdue
@@ -206,7 +205,7 @@ export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, 
         </div>
       )}
 
-      {addClient && <AddClientModal amUsers={amUsers} close={() => setAddClient(false)} />}
+      {addClient && <AddClientModal close={() => setAddClient(false)} />}
 
       {/* Employees */}
       {tab === "employees" && (
@@ -232,7 +231,7 @@ export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, 
   );
 }
 
-function AddClientModal({ amUsers, close }: { amUsers: AmUser[]; close: () => void }) {
+function AddClientModal({ close }: { close: () => void }) {
   const [gst, setGst] = useState("18");
   const noGst = gst === "0"; // Without GST → no GSTIN to capture
   return (
@@ -252,12 +251,6 @@ function AddClientModal({ amUsers, close }: { amUsers: AmUser[]; close: () => vo
             <label className="block"><span className="eyebrow">Phone</span><input name="pocMobile" className="input mt-1" /></label>
           </div>
           <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" className="input mt-1" /></label>
-          <label className="block"><span className="eyebrow">Account manager</span>
-            <select name="accountManagerId" defaultValue="" className="select mt-1">
-              <option value="">— Unassigned —</option>
-              {amUsers.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-            </select>
-          </label>
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">GST</span><select name="gst" value={gst} onChange={(e) => setGst(e.target.value)} className="select mt-1"><option value="0">Without GST</option><option value="18">With GST 18%</option></select></label>
             <label className="block"><span className="eyebrow">Client GSTIN</span><input name="gstin" disabled={noGst} className="input mt-1 disabled:opacity-50 disabled:cursor-not-allowed" placeholder={noGst ? "Not applicable" : "optional"} /></label>

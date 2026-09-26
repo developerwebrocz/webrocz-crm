@@ -12,14 +12,13 @@ const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 type Client = { id: string; code: string; name: string; website: string | null; industry: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; monthlyRetainer: number; status: string; renewalDate: string; gstApplicable: boolean; gstRate: number; gstin: string; onboardDate: string; notes: string | null; websiteName: string; websiteDomain: string; hostingTaken: boolean; websiteTakenDate: string; websiteExpiryDate: string; websiteRenewAmount: number; nextFollowup: string; accountManagerId: string | null };
-type AmUser = { id: string; name: string };
 type Inv = { id: string; number: string; total: number; received: number; balance: number; approved: boolean; paymentStatus: string; issueDate: string; dueDate: string; leadId: string | null; category: string; overdue: boolean; company: string; followups: { date: string; by: string; note: string }[] };
 type Pay = { id: string; invoiceId: string; invoiceNumber: string; amount: number; date: string; mode: string; ref: string; note: string; by: string };
 type Followup = { date: string; by: string; note: string; next?: string };
 type Sla = { id: string; title: string; service: string; amount: number; gst: boolean; fileUrl: string; notes: string; status: string; uploadedBy: string; createdAt: string };
 type Totals = { billed: number; received: number; pending: number; overdue: number; invoices: number };
 
-export default function FinanceClientDetail({ client, invoices, payments, totals, clientFollowups, amUsers, slas, openPayId }: { client: Client; invoices: Inv[]; payments: Pay[]; totals: Totals; clientFollowups: Followup[]; amUsers: AmUser[]; slas: Sla[]; openPayId?: string }) {
+export default function FinanceClientDetail({ client, invoices, payments, totals, clientFollowups, slas, openPayId }: { client: Client; invoices: Inv[]; payments: Pay[]; totals: Totals; clientFollowups: Followup[]; slas: Sla[]; openPayId?: string }) {
   const [payInv, setPayInv] = useState<Inv | null>(() => invoices.find((i) => i.id === openPayId && i.balance > 0) ?? null);
   const [newInv, setNewInv] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -244,14 +243,12 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
 
       {payInv && <PaymentModal inv={payInv} clientName={client.name} back={backUrl} close={() => setPayInv(null)} />}
       {newInv && <NewInvoiceModal clientId={client.id} clientName={client.name} defaultTaxPct={client.gstApplicable ? client.gstRate : 0} defaultGstin={client.gstin} close={() => setNewInv(false)} />}
-      {editOpen && <EditModal client={client} amUsers={amUsers} close={() => setEditOpen(false)} />}
+      {editOpen && <EditModal client={client} close={() => setEditOpen(false)} />}
     </div>
   );
 }
 
-function EditModal({ client, amUsers, close }: { client: Client; amUsers: AmUser[]; close: () => void }) {
-  const [gst, setGst] = useState(client.gstApplicable ? "18" : "0");
-  const noGst = gst === "0"; // Without GST → no GSTIN to capture
+function EditModal({ client, close }: { client: Client; close: () => void }) {
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
       <div className="flex max-h-[92vh] w-full max-w-[560px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
@@ -273,28 +270,9 @@ function EditModal({ client, amUsers, close }: { client: Client; amUsers: AmUser
             <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" defaultValue={client.pocEmail ?? ""} className="input mt-1" /></label>
             <label className="block"><span className="eyebrow">Website</span><input name="website" defaultValue={client.website ?? ""} className="input mt-1" /></label>
           </div>
-          <div className="grid grid-cols-3 gap-3">
-            <label className="block"><span className="eyebrow">Monthly retainer (₹)</span><input name="monthlyRetainer" type="number" min={0} defaultValue={client.monthlyRetainer} className="input mt-1" /></label>
+          <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Status</span><select name="status" defaultValue={client.status} className="select mt-1"><option value="ACTIVE">Active</option><option value="ON_HOLD">On hold</option><option value="UPCOMING">Upcoming</option></select></label>
             <label className="block"><span className="eyebrow">Renewal date</span><input name="renewalDate" type="date" defaultValue={client.renewalDate || ""} className="input mt-1" /></label>
-          </div>
-          <label className="block"><span className="eyebrow">Account manager</span>
-            <select name="accountManagerId" defaultValue={client.accountManagerId ?? ""} className="select mt-1">
-              <option value="">— Unassigned —</option>
-              {amUsers.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-            </select>
-          </label>
-          <div className="rounded-[10px] border border-[var(--line)] p-3">
-            <div className="eyebrow mb-2">GST / tax</div>
-            {noGst ? (
-              <label className="block"><span className="text-[12px] font-semibold">GST on invoices</span><select name="gst" value={gst} onChange={(e) => setGst(e.target.value)} className="select mt-1"><option value="0">Without GST</option><option value="18">With GST 18%</option></select></label>
-            ) : (
-              <div className="grid grid-cols-2 gap-3">
-                <label className="block"><span className="text-[12px] font-semibold">GST on invoices</span><select name="gst" value={gst} onChange={(e) => setGst(e.target.value)} className="select mt-1"><option value="0">Without GST</option><option value="18">With GST 18%</option></select></label>
-                <label className="block"><span className="text-[12px] font-semibold">Client GSTIN</span><input name="gstin" defaultValue={client.gstin} className="input mt-1" placeholder="optional" /></label>
-              </div>
-            )}
-            <p className="mt-2 text-[11.5px] text-[var(--faint)]">This sets the default GST for every new invoice you raise for this client.</p>
           </div>
           <div className="rounded-[10px] border border-[var(--line)] p-3">
             <div className="eyebrow mb-2 flex items-center gap-1.5"><Globe size={13} /> Website / hosting</div>
@@ -306,9 +284,6 @@ function EditModal({ client, amUsers, close }: { client: Client; amUsers: AmUser
               <label className="block"><span className="text-[12px] font-semibold">Expiry date</span><input name="websiteExpiryDate" type="date" defaultValue={client.websiteExpiryDate} className="input mt-1" /></label>
               <label className="block"><span className="text-[12px] font-semibold">Renewal amount (₹)</span><input name="websiteRenewAmount" type="number" min={0} defaultValue={client.websiteRenewAmount} className="input mt-1" placeholder="e.g. 8000" /></label>
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <label className="block"><span className="eyebrow">Industry</span><input name="industry" defaultValue={client.industry ?? ""} className="input mt-1" placeholder="optional" /></label>
           </div>
           <label className="block"><span className="eyebrow">Notes</span><textarea name="notes" rows={2} defaultValue={client.notes ?? ""} className="input mt-1" placeholder="optional" /></label>
           <div className="flex justify-end gap-2 pt-1">

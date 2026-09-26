@@ -307,27 +307,26 @@ model Payment {
 // SLA (service agreement) uploaded by the sales team for a client. The accountant
 // reviews it and generates the invoice from its terms (service + amount + GST).
 model Sla {
-  id               String   @id @default(cuid())
-  clientName       String   @default("") // typed by sales (may or may not match an existing client)
-  clientId         String? // set when the typed name matches an existing client
-  client           Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
-  title            String   @default("") // e.g. "Website + SEO annual SLA"
-  service          String   @default("WEBSITE") // WEBSITE | DM
-  amount           Int      @default(0) // agreed amount (before GST)
-  gst              Boolean  @default(false) // true = With GST 18%, false = Without GST
+  id         String   @id @default(cuid())
+  clientName String   @default("") // typed by sales (may or may not match an existing client)
+  clientId   String? // set when the typed name matches an existing client
+  client     Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  title      String   @default("") // e.g. "Website + SEO annual SLA"
+  service    String   @default("WEBSITE") // WEBSITE | DM
+  amount     Int      @default(0) // agreed amount (before GST)
+  gst        Boolean  @default(false) // true = With GST 18%, false = Without GST
   // Client details captured at upload so the accountant's invoice/filters are complete
   // even when the SLA is for a brand-new client (no existing record to pull from).
-  pocName          String   @default("") // contact person
-  pocMobile        String   @default("") // phone
-  pocEmail         String   @default("") // email
-  gstin            String   @default("") // client GSTIN (for GST invoices / place of supply)
-  accountManagerId String? // account manager to assign the client to
-  fileUrl          String   @default("") // the uploaded SLA document
-  notes            String   @default("")
-  status           String   @default("UPLOADED") // UPLOADED | INVOICED
-  invoiceId        String? // the generated SalesInvoice, once created
-  uploadedBy       String   @default("") // sales person's name
-  createdAt        DateTime @default(now())
+  pocName    String   @default("") // contact person
+  pocMobile  String   @default("") // phone
+  pocEmail   String   @default("") // email
+  gstin      String   @default("") // client GSTIN (for GST invoices / place of supply)
+  fileUrl    String   @default("") // the uploaded SLA document
+  notes      String   @default("")
+  status     String   @default("UPLOADED") // UPLOADED | INVOICED
+  invoiceId  String? // the generated SalesInvoice, once created
+  uploadedBy String   @default("") // sales person's name
+  createdAt  DateTime @default(now())
 
   @@index([clientId])
   @@index([status])

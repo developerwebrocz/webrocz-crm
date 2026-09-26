@@ -312,7 +312,6 @@ exports.Prisma.SlaScalarFieldEnum = {
   pocMobile: 'pocMobile',
   pocEmail: 'pocEmail',
   gstin: 'gstin',
-  accountManagerId: 'accountManagerId',
   fileUrl: 'fileUrl',
   notes: 'notes',
   status: 'status',

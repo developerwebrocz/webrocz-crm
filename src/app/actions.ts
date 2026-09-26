@@ -615,8 +615,7 @@ export async function addClientFromFinance(fd: FormData) {
 
   const gst = Math.max(0, n(fd, "gst")); // 0 = no GST, else rate %
   const gstin = s(fd, "gstin");
-  const accountManagerId = s(fd, "accountManagerId") || null;
-  const client = await prisma.client.create({ data: { code, ...scalars, gstApplicable: gst > 0, gstRate: gst > 0 ? gst : 18, gstin, accountManagerId } });
+  const client = await prisma.client.create({ data: { code, ...scalars, gstApplicable: gst > 0, gstRate: gst > 0 ? gst : 18, gstin } });
 
   // A client who takes both services gets a SEPARATE invoice per service, so the
   // Website-vs-DM split stays exact (no lumped "Both" invoice). Amounts are entered
@@ -689,14 +688,10 @@ export async function updateClientFinance(fd: FormData) {
       pocMobile: s(fd, "pocMobile") || null,
       pocEmail: s(fd, "pocEmail") || null,
       website: s(fd, "website") || null,
-      industry: s(fd, "industry") || null,
-      monthlyRetainer: n(fd, "monthlyRetainer"),
       status: STATUS_OK.includes(s(fd, "status")) ? s(fd, "status") : "ACTIVE",
       renewalDate: s(fd, "renewalDate"),
-      accountManagerId: s(fd, "accountManagerId") || null,
-      gstApplicable: n(fd, "gst") > 0,
-      gstRate: n(fd, "gst") > 0 ? n(fd, "gst") : 18,
-      gstin: s(fd, "gstin"),
+      // Industry, monthly retainer, account manager and GST/GSTIN are no longer edited from
+      // the finance form — left untouched here so they keep whatever was set elsewhere.
       // Website / hosting (also editable from the Website renewals page)
       websiteName: s(fd, "websiteName"),
       websiteDomain: s(fd, "websiteDomain"),

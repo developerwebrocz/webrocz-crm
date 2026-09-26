@@ -12,6 +12,6 @@ export default async function DmClientsPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   if (!ALLOWED.includes(user.role)) redirect("/");
-  const { rows, amUsers } = await getFinanceClients();
-  return <FinanceClients rows={rows} amUsers={amUsers} lockedCategory="DM" />;
+  const { rows } = await getFinanceClients();
+  return <FinanceClients rows={rows} lockedCategory="DM" />;
 }

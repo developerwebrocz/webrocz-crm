@@ -681,7 +681,6 @@ export async function uploadSla(fd: FormData) {
       pocMobile: s(fd, "pocMobile"),
       pocEmail: s(fd, "pocEmail"),
       gstin: s(fd, "gstin"),
-      accountManagerId: s(fd, "accountManagerId") || null,
       fileUrl,
       notes: s(fd, "notes"),
       uploadedBy: me.name,
@@ -714,7 +713,6 @@ export async function generateInvoiceFromSla(fd: FormData) {
         code: await nextClientCode(), name: sla.clientName, status: "ACTIVE",
         pocName: sla.pocName || null, pocMobile: sla.pocMobile || null, pocEmail: sla.pocEmail || null,
         gstin: sla.gstin || "", gstApplicable: gst, gstRate: gst ? 18 : 0,
-        ...(sla.accountManagerId ? { accountManager: { connect: { id: sla.accountManagerId } } } : {}),
       },
     });
     const svc = category === "DM" ? "Digital Marketing" : "Website Development";
