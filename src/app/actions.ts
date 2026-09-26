@@ -680,6 +680,14 @@ export async function updateClientFinance(fd: FormData) {
   const name = s(fd, "name");
   if (!name) redirect(`/accounts/${id}?err=name`);
   const STATUS_OK = ["ACTIVE", "ON_HOLD", "UPCOMING"];
+  // Services (Domain / Hosting+SSL) — the amount only counts when the service is ticked.
+  const domainTaken = s(fd, "domainTaken") === "on" || s(fd, "domainTaken") === "yes";
+  const hostingTaken = s(fd, "hostingTaken") === "on" || s(fd, "hostingTaken") === "yes";
+  const domainAmount = domainTaken ? Math.max(0, n(fd, "domainAmount")) : 0;
+  const hostingAmount = hostingTaken ? Math.max(0, n(fd, "hostingAmount")) : 0;
+  const takenDate = s(fd, "websiteTakenDate");
+  // Expiry = register date + 1 year (computed, not entered).
+  const expiryDate = (() => { if (!takenDate) return ""; const d = new Date(takenDate + "T00:00:00Z"); if (isNaN(d.getTime())) return ""; d.setUTCFullYear(d.getUTCFullYear() + 1); return d.toISOString().slice(0, 10); })();
   await prisma.client.update({
     where: { id },
     data: {
@@ -688,18 +696,14 @@ export async function updateClientFinance(fd: FormData) {
       pocMobile: s(fd, "pocMobile") || null,
       pocEmail: s(fd, "pocEmail") || null,
       status: STATUS_OK.includes(s(fd, "status")) ? s(fd, "status") : "ACTIVE",
-      renewalDate: s(fd, "renewalDate"),
-      // Industry, monthly retainer, account manager and GST/GSTIN are no longer edited from
-      // the finance form — left untouched here so they keep whatever was set elsewhere.
-      // Website / hosting (also editable from the Website renewals page)
-      websiteName: s(fd, "websiteName"),
+      // Industry, monthly retainer, account manager, GST/GSTIN, website URL and the general
+      // renewal date are not edited here — left untouched so they keep what was set elsewhere.
       websiteDomain: s(fd, "websiteDomain"),
-      domainAmount: n(fd, "domainAmount"),
-      hostingTaken: s(fd, "hostingTaken") === "yes" || s(fd, "hostingTaken") === "on" || n(fd, "hostingTaken") === 1,
-      hostingAmount: n(fd, "hostingAmount"),
-      websiteTakenDate: s(fd, "websiteTakenDate"),
-      websiteExpiryDate: s(fd, "websiteExpiryDate"),
-      websiteRenewAmount: n(fd, "websiteRenewAmount"),
+      domainTaken, domainAmount,
+      hostingTaken, hostingAmount,
+      websiteTakenDate: takenDate,
+      websiteExpiryDate: expiryDate,
+      websiteRenewAmount: domainAmount + hostingAmount, // auto: domain + hosting
       notes: s(fd, "notes") || null,
     },
   });

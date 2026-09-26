@@ -180,6 +180,7 @@ exports.Prisma.ClientScalarFieldEnum = {
   gstin: 'gstin',
   websiteName: 'websiteName',
   websiteDomain: 'websiteDomain',
+  domainTaken: 'domainTaken',
   domainAmount: 'domainAmount',
   hostingTaken: 'hostingTaken',
   hostingAmount: 'hostingAmount',

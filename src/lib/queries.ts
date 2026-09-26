@@ -2303,7 +2303,7 @@ export async function getWebsiteRenewals() {
 export async function getFinanceClientDetail(clientId: string) {
   const client = await prisma.client.findUnique({
     where: { id: clientId },
-    select: { id: true, code: true, name: true, website: true, industry: true, pocName: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true, renewalDate: true, gstApplicable: true, gstRate: true, gstin: true, onboardDate: true, notes: true, websiteName: true, websiteDomain: true, domainAmount: true, hostingTaken: true, hostingAmount: true, websiteTakenDate: true, websiteExpiryDate: true, websiteRenewAmount: true, followupLog: true, nextFollowup: true, accountManagerId: true },
+    select: { id: true, code: true, name: true, website: true, industry: true, pocName: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true, renewalDate: true, gstApplicable: true, gstRate: true, gstin: true, onboardDate: true, notes: true, websiteName: true, websiteDomain: true, domainTaken: true, domainAmount: true, hostingTaken: true, hostingAmount: true, websiteTakenDate: true, websiteExpiryDate: true, websiteRenewAmount: true, followupLog: true, nextFollowup: true, accountManagerId: true },
   });
   if (!client) return null;
   const [invoicesRaw, leads, amUsers, slasRaw] = await Promise.all([

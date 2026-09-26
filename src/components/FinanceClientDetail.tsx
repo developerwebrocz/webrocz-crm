@@ -11,7 +11,7 @@ const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
-type Client = { id: string; code: string; name: string; website: string | null; industry: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; monthlyRetainer: number; status: string; renewalDate: string; gstApplicable: boolean; gstRate: number; gstin: string; onboardDate: string; notes: string | null; websiteName: string; websiteDomain: string; domainAmount: number; hostingTaken: boolean; hostingAmount: number; websiteTakenDate: string; websiteExpiryDate: string; websiteRenewAmount: number; nextFollowup: string; accountManagerId: string | null };
+type Client = { id: string; code: string; name: string; website: string | null; industry: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; monthlyRetainer: number; status: string; renewalDate: string; gstApplicable: boolean; gstRate: number; gstin: string; onboardDate: string; notes: string | null; websiteName: string; websiteDomain: string; domainTaken: boolean; domainAmount: number; hostingTaken: boolean; hostingAmount: number; websiteTakenDate: string; websiteExpiryDate: string; websiteRenewAmount: number; nextFollowup: string; accountManagerId: string | null };
 type Inv = { id: string; number: string; total: number; received: number; balance: number; approved: boolean; paymentStatus: string; issueDate: string; dueDate: string; leadId: string | null; category: string; overdue: boolean; company: string; followups: { date: string; by: string; note: string }[] };
 type Pay = { id: string; invoiceId: string; invoiceNumber: string; amount: number; date: string; mode: string; ref: string; note: string; by: string };
 type Followup = { date: string; by: string; note: string; next?: string };
@@ -249,51 +249,60 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
 }
 
 function EditModal({ client, close }: { client: Client; close: () => void }) {
+  const [domainOn, setDomainOn] = useState(client.domainTaken);
+  const [hostingOn, setHostingOn] = useState(client.hostingTaken);
+  const [domainAmt, setDomainAmt] = useState(client.domainAmount || 0);
+  const [hostingAmt, setHostingAmt] = useState(client.hostingAmount || 0);
+  const [registerDate, setRegisterDate] = useState(client.websiteTakenDate || "");
+  // Renewal = the amounts of the ticked services; expiry = register date + 1 year. Both auto.
+  const renewal = (domainOn ? domainAmt || 0 : 0) + (hostingOn ? hostingAmt || 0 : 0);
+  const expiry = (() => { if (!registerDate) return ""; const d = new Date(registerDate + "T00:00:00Z"); if (isNaN(d.getTime())) return ""; d.setUTCFullYear(d.getUTCFullYear() + 1); return d.toISOString().slice(0, 10); })();
+  const fmtD = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split("-"); return d ? `${d}-${m}-${y}` : iso; };
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
       <div className="flex max-h-[92vh] w-full max-w-[560px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
           <div>
             <h2 className="text-[16px] font-bold">Edit client</h2>
-            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">{client.code} · update contact, retainer &amp; renewal. Raise invoices from the Invoices section below.</p>
+            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">{client.code} · update details, domain / hosting &amp; renewal.</p>
           </div>
           <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
         </div>
         <form action={updateClientFinance} className="space-y-3 overflow-y-auto scroll-thin px-6 py-5">
           <input type="hidden" name="id" value={client.id} />
-          <label className="block"><span className="eyebrow">Client / company name *</span><input name="name" required defaultValue={client.name} className="input mt-1" /></label>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block"><span className="eyebrow">Company name *</span><input name="name" required defaultValue={client.name} className="input mt-1" /></label>
+            <label className="block"><span className="eyebrow">Domain name</span><input name="websiteDomain" defaultValue={client.websiteDomain} className="input mt-1" placeholder="e.g. acme.com" /></label>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Contact person</span><input name="pocName" defaultValue={client.pocName ?? ""} className="input mt-1" /></label>
-            <label className="block"><span className="eyebrow">Phone</span><input name="pocMobile" defaultValue={client.pocMobile ?? ""} className="input mt-1" /></label>
+            <label className="block"><span className="eyebrow">Phone number</span><input name="pocMobile" defaultValue={client.pocMobile ?? ""} className="input mt-1" /></label>
           </div>
-          <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" defaultValue={client.pocEmail ?? ""} className="input mt-1" /></label>
           <div className="grid grid-cols-2 gap-3">
+            <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" defaultValue={client.pocEmail ?? ""} className="input mt-1" /></label>
             <label className="block"><span className="eyebrow">Status</span><select name="status" defaultValue={client.status} className="select mt-1"><option value="ACTIVE">Active</option><option value="ON_HOLD">On hold</option><option value="UPCOMING">Upcoming</option></select></label>
-            <label className="block"><span className="eyebrow">Renewal date</span><input name="renewalDate" type="date" defaultValue={client.renewalDate || ""} className="input mt-1" /></label>
           </div>
           <div className="rounded-[10px] border border-[var(--line)] p-3">
-            <div className="eyebrow mb-2 flex items-center gap-1.5"><Globe size={13} /> Website / hosting</div>
-            <div className="space-y-3">
-              <label className="block"><span className="text-[12px] font-semibold">Website URL</span><input name="websiteName" defaultValue={client.websiteName} className="input mt-1" placeholder="e.g. https://acme.com" /></label>
-              <div className="grid grid-cols-2 gap-3">
-                <label className="block"><span className="text-[12px] font-semibold">Domain</span><input name="websiteDomain" defaultValue={client.websiteDomain} className="input mt-1" placeholder="e.g. acme.com" /></label>
-                <label className="block"><span className="text-[12px] font-semibold">Domain amount (₹)</span><input name="domainAmount" type="number" min={0} defaultValue={client.domainAmount} className="input mt-1" placeholder="e.g. 1200" /></label>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div><span className="text-[12px] font-semibold">Hosting with us?</span>
-                  <div className="mt-2 flex items-center gap-5 text-[13px]">
-                    <label className="inline-flex items-center gap-1.5"><input type="radio" name="hostingTaken" value="yes" defaultChecked={client.hostingTaken} className="accent-[var(--violet)]" /> Yes</label>
-                    <label className="inline-flex items-center gap-1.5"><input type="radio" name="hostingTaken" value="no" defaultChecked={!client.hostingTaken} className="accent-[var(--violet)]" /> No</label>
-                  </div>
-                </div>
-                <label className="block"><span className="text-[12px] font-semibold">Hosting amount (₹)</span><input name="hostingAmount" type="number" min={0} defaultValue={client.hostingAmount} className="input mt-1" placeholder="e.g. 3000" /></label>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <label className="block"><span className="text-[12px] font-semibold">Date taken</span><input name="websiteTakenDate" type="date" defaultValue={client.websiteTakenDate} className="input mt-1" /></label>
-                <label className="block"><span className="text-[12px] font-semibold">Expiry date</span><input name="websiteExpiryDate" type="date" defaultValue={client.websiteExpiryDate} className="input mt-1" /></label>
-              </div>
-              <label className="block"><span className="text-[12px] font-semibold">Renewal amount (₹)</span><input name="websiteRenewAmount" type="number" min={0} defaultValue={client.websiteRenewAmount} className="input mt-1" placeholder="e.g. 8000" /></label>
+            <div className="eyebrow mb-2 flex items-center gap-1.5"><Globe size={13} /> Services</div>
+            <div className="flex flex-wrap items-center gap-5 text-[13px] font-semibold">
+              <label className="inline-flex items-center gap-2"><input type="checkbox" name="domainTaken" checked={domainOn} onChange={(e) => setDomainOn(e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> Domain</label>
+              <label className="inline-flex items-center gap-2"><input type="checkbox" name="hostingTaken" checked={hostingOn} onChange={(e) => setHostingOn(e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> Hosting + SSL</label>
             </div>
+            {(domainOn || hostingOn) && (
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                {domainOn && <label className="block"><span className="text-[12px] font-semibold">Domain amount (₹)</span><input name="domainAmount" type="number" min={0} value={domainAmt} onChange={(e) => setDomainAmt(parseInt(e.target.value, 10) || 0)} className="input mt-1" placeholder="0" /></label>}
+                {hostingOn && <label className="block"><span className="text-[12px] font-semibold">Hosting amount (₹)</span><input name="hostingAmount" type="number" min={0} value={hostingAmt} onChange={(e) => setHostingAmt(parseInt(e.target.value, 10) || 0)} className="input mt-1" placeholder="0" /></label>}
+              </div>
+            )}
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <label className="block"><span className="text-[12px] font-semibold">Register date</span><input name="websiteTakenDate" type="date" value={registerDate} onChange={(e) => setRegisterDate(e.target.value)} className="input mt-1" /></label>
+              <div><span className="text-[12px] font-semibold">Expiry date <span className="font-normal text-[var(--faint)]">(auto · +1 yr)</span></span>
+                <div className="input mt-1 flex items-center bg-[var(--surface-2)] text-[var(--muted)]">{fmtD(expiry)}</div>
+                <input type="hidden" name="websiteExpiryDate" value={expiry} />
+              </div>
+            </div>
+            <label className="mt-3 block"><span className="text-[12px] font-semibold">Renewal amount (₹) <span className="font-normal text-[var(--faint)]">(auto · domain + hosting)</span></span>
+              <input name="websiteRenewAmount" type="number" value={renewal} readOnly className="input mt-1 bg-[var(--surface-2)] font-semibold" /></label>
           </div>
           <label className="block"><span className="eyebrow">Notes</span><textarea name="notes" rows={2} defaultValue={client.notes ?? ""} className="input mt-1" placeholder="optional" /></label>
           <div className="flex justify-end gap-2 pt-1">
