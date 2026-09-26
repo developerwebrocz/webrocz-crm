@@ -8203,6 +8203,8 @@ export namespace Prisma {
     keywordTarget: number | null
     domainAuthority: number | null
     gstRate: number | null
+    domainAmount: number | null
+    hostingAmount: number | null
     websiteRenewAmount: number | null
   }
 
@@ -8214,6 +8216,8 @@ export namespace Prisma {
     keywordTarget: number | null
     domainAuthority: number | null
     gstRate: number | null
+    domainAmount: number | null
+    hostingAmount: number | null
     websiteRenewAmount: number | null
   }
 
@@ -8244,7 +8248,9 @@ export namespace Prisma {
     gstin: string | null
     websiteName: string | null
     websiteDomain: string | null
+    domainAmount: number | null
     hostingTaken: boolean | null
+    hostingAmount: number | null
     websiteTakenDate: string | null
     websiteExpiryDate: string | null
     websiteRenewAmount: number | null
@@ -8283,7 +8289,9 @@ export namespace Prisma {
     gstin: string | null
     websiteName: string | null
     websiteDomain: string | null
+    domainAmount: number | null
     hostingTaken: boolean | null
+    hostingAmount: number | null
     websiteTakenDate: string | null
     websiteExpiryDate: string | null
     websiteRenewAmount: number | null
@@ -8322,7 +8330,9 @@ export namespace Prisma {
     gstin: number
     websiteName: number
     websiteDomain: number
+    domainAmount: number
     hostingTaken: number
+    hostingAmount: number
     websiteTakenDate: number
     websiteExpiryDate: number
     websiteRenewAmount: number
@@ -8344,6 +8354,8 @@ export namespace Prisma {
     keywordTarget?: true
     domainAuthority?: true
     gstRate?: true
+    domainAmount?: true
+    hostingAmount?: true
     websiteRenewAmount?: true
   }
 
@@ -8355,6 +8367,8 @@ export namespace Prisma {
     keywordTarget?: true
     domainAuthority?: true
     gstRate?: true
+    domainAmount?: true
+    hostingAmount?: true
     websiteRenewAmount?: true
   }
 
@@ -8385,7 +8399,9 @@ export namespace Prisma {
     gstin?: true
     websiteName?: true
     websiteDomain?: true
+    domainAmount?: true
     hostingTaken?: true
+    hostingAmount?: true
     websiteTakenDate?: true
     websiteExpiryDate?: true
     websiteRenewAmount?: true
@@ -8424,7 +8440,9 @@ export namespace Prisma {
     gstin?: true
     websiteName?: true
     websiteDomain?: true
+    domainAmount?: true
     hostingTaken?: true
+    hostingAmount?: true
     websiteTakenDate?: true
     websiteExpiryDate?: true
     websiteRenewAmount?: true
@@ -8463,7 +8481,9 @@ export namespace Prisma {
     gstin?: true
     websiteName?: true
     websiteDomain?: true
+    domainAmount?: true
     hostingTaken?: true
+    hostingAmount?: true
     websiteTakenDate?: true
     websiteExpiryDate?: true
     websiteRenewAmount?: true
@@ -8589,7 +8609,9 @@ export namespace Prisma {
     gstin: string
     websiteName: string
     websiteDomain: string
+    domainAmount: number
     hostingTaken: boolean
+    hostingAmount: number
     websiteTakenDate: string
     websiteExpiryDate: string
     websiteRenewAmount: number
@@ -8647,7 +8669,9 @@ export namespace Prisma {
     gstin?: boolean
     websiteName?: boolean
     websiteDomain?: boolean
+    domainAmount?: boolean
     hostingTaken?: boolean
+    hostingAmount?: boolean
     websiteTakenDate?: boolean
     websiteExpiryDate?: boolean
     websiteRenewAmount?: boolean
@@ -8709,7 +8733,9 @@ export namespace Prisma {
     gstin?: boolean
     websiteName?: boolean
     websiteDomain?: boolean
+    domainAmount?: boolean
     hostingTaken?: boolean
+    hostingAmount?: boolean
     websiteTakenDate?: boolean
     websiteExpiryDate?: boolean
     websiteRenewAmount?: boolean
@@ -8749,7 +8775,9 @@ export namespace Prisma {
     gstin?: boolean
     websiteName?: boolean
     websiteDomain?: boolean
+    domainAmount?: boolean
     hostingTaken?: boolean
+    hostingAmount?: boolean
     websiteTakenDate?: boolean
     websiteExpiryDate?: boolean
     websiteRenewAmount?: boolean
@@ -8789,7 +8817,9 @@ export namespace Prisma {
     gstin?: boolean
     websiteName?: boolean
     websiteDomain?: boolean
+    domainAmount?: boolean
     hostingTaken?: boolean
+    hostingAmount?: boolean
     websiteTakenDate?: boolean
     websiteExpiryDate?: boolean
     websiteRenewAmount?: boolean
@@ -8801,7 +8831,7 @@ export namespace Prisma {
     accountManagerId?: boolean
   }
 
-  export type ClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "name" | "website" | "industry" | "monthlyRetainer" | "googleBudget" | "seoPriority" | "seoScheduleDays" | "blogTarget" | "backlinkTarget" | "keywordTarget" | "gscLink" | "gaLink" | "domainAuthority" | "pocName" | "pocMobile" | "pocEmail" | "onboardDate" | "renewalDate" | "status" | "gstApplicable" | "gstRate" | "gstin" | "websiteName" | "websiteDomain" | "hostingTaken" | "websiteTakenDate" | "websiteExpiryDate" | "websiteRenewAmount" | "followupLog" | "nextFollowup" | "notes" | "createdAt" | "updatedAt" | "accountManagerId", ExtArgs["result"]["client"]>
+  export type ClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "name" | "website" | "industry" | "monthlyRetainer" | "googleBudget" | "seoPriority" | "seoScheduleDays" | "blogTarget" | "backlinkTarget" | "keywordTarget" | "gscLink" | "gaLink" | "domainAuthority" | "pocName" | "pocMobile" | "pocEmail" | "onboardDate" | "renewalDate" | "status" | "gstApplicable" | "gstRate" | "gstin" | "websiteName" | "websiteDomain" | "domainAmount" | "hostingTaken" | "hostingAmount" | "websiteTakenDate" | "websiteExpiryDate" | "websiteRenewAmount" | "followupLog" | "nextFollowup" | "notes" | "createdAt" | "updatedAt" | "accountManagerId", ExtArgs["result"]["client"]>
   export type ClientInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     accountManager?: boolean | Client$accountManagerArgs<ExtArgs>
     services?: boolean | Client$servicesArgs<ExtArgs>
@@ -8887,7 +8917,9 @@ export namespace Prisma {
       gstin: string
       websiteName: string
       websiteDomain: string
+      domainAmount: number
       hostingTaken: boolean
+      hostingAmount: number
       websiteTakenDate: string
       websiteExpiryDate: string
       websiteRenewAmount: number
@@ -9368,7 +9400,9 @@ export namespace Prisma {
     readonly gstin: FieldRef<"Client", 'String'>
     readonly websiteName: FieldRef<"Client", 'String'>
     readonly websiteDomain: FieldRef<"Client", 'String'>
+    readonly domainAmount: FieldRef<"Client", 'Int'>
     readonly hostingTaken: FieldRef<"Client", 'Boolean'>
+    readonly hostingAmount: FieldRef<"Client", 'Int'>
     readonly websiteTakenDate: FieldRef<"Client", 'String'>
     readonly websiteExpiryDate: FieldRef<"Client", 'String'>
     readonly websiteRenewAmount: FieldRef<"Client", 'Int'>
@@ -48285,7 +48319,9 @@ export namespace Prisma {
     gstin: 'gstin',
     websiteName: 'websiteName',
     websiteDomain: 'websiteDomain',
+    domainAmount: 'domainAmount',
     hostingTaken: 'hostingTaken',
+    hostingAmount: 'hostingAmount',
     websiteTakenDate: 'websiteTakenDate',
     websiteExpiryDate: 'websiteExpiryDate',
     websiteRenewAmount: 'websiteRenewAmount',
@@ -49211,7 +49247,9 @@ export namespace Prisma {
     gstin?: StringFilter<"Client"> | string
     websiteName?: StringFilter<"Client"> | string
     websiteDomain?: StringFilter<"Client"> | string
+    domainAmount?: IntFilter<"Client"> | number
     hostingTaken?: BoolFilter<"Client"> | boolean
+    hostingAmount?: IntFilter<"Client"> | number
     websiteTakenDate?: StringFilter<"Client"> | string
     websiteExpiryDate?: StringFilter<"Client"> | string
     websiteRenewAmount?: IntFilter<"Client"> | number
@@ -49272,7 +49310,9 @@ export namespace Prisma {
     gstin?: SortOrder
     websiteName?: SortOrder
     websiteDomain?: SortOrder
+    domainAmount?: SortOrder
     hostingTaken?: SortOrder
+    hostingAmount?: SortOrder
     websiteTakenDate?: SortOrder
     websiteExpiryDate?: SortOrder
     websiteRenewAmount?: SortOrder
@@ -49336,7 +49376,9 @@ export namespace Prisma {
     gstin?: StringFilter<"Client"> | string
     websiteName?: StringFilter<"Client"> | string
     websiteDomain?: StringFilter<"Client"> | string
+    domainAmount?: IntFilter<"Client"> | number
     hostingTaken?: BoolFilter<"Client"> | boolean
+    hostingAmount?: IntFilter<"Client"> | number
     websiteTakenDate?: StringFilter<"Client"> | string
     websiteExpiryDate?: StringFilter<"Client"> | string
     websiteRenewAmount?: IntFilter<"Client"> | number
@@ -49397,7 +49439,9 @@ export namespace Prisma {
     gstin?: SortOrder
     websiteName?: SortOrder
     websiteDomain?: SortOrder
+    domainAmount?: SortOrder
     hostingTaken?: SortOrder
+    hostingAmount?: SortOrder
     websiteTakenDate?: SortOrder
     websiteExpiryDate?: SortOrder
     websiteRenewAmount?: SortOrder
@@ -49444,7 +49488,9 @@ export namespace Prisma {
     gstin?: StringWithAggregatesFilter<"Client"> | string
     websiteName?: StringWithAggregatesFilter<"Client"> | string
     websiteDomain?: StringWithAggregatesFilter<"Client"> | string
+    domainAmount?: IntWithAggregatesFilter<"Client"> | number
     hostingTaken?: BoolWithAggregatesFilter<"Client"> | boolean
+    hostingAmount?: IntWithAggregatesFilter<"Client"> | number
     websiteTakenDate?: StringWithAggregatesFilter<"Client"> | string
     websiteExpiryDate?: StringWithAggregatesFilter<"Client"> | string
     websiteRenewAmount?: IntWithAggregatesFilter<"Client"> | number
@@ -52676,7 +52722,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -52736,7 +52784,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -52796,7 +52846,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -52856,7 +52908,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -52916,7 +52970,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -52955,7 +53011,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -52993,7 +53051,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -56845,7 +56905,9 @@ export namespace Prisma {
     gstin?: SortOrder
     websiteName?: SortOrder
     websiteDomain?: SortOrder
+    domainAmount?: SortOrder
     hostingTaken?: SortOrder
+    hostingAmount?: SortOrder
     websiteTakenDate?: SortOrder
     websiteExpiryDate?: SortOrder
     websiteRenewAmount?: SortOrder
@@ -56865,6 +56927,8 @@ export namespace Prisma {
     keywordTarget?: SortOrder
     domainAuthority?: SortOrder
     gstRate?: SortOrder
+    domainAmount?: SortOrder
+    hostingAmount?: SortOrder
     websiteRenewAmount?: SortOrder
   }
 
@@ -56895,7 +56959,9 @@ export namespace Prisma {
     gstin?: SortOrder
     websiteName?: SortOrder
     websiteDomain?: SortOrder
+    domainAmount?: SortOrder
     hostingTaken?: SortOrder
+    hostingAmount?: SortOrder
     websiteTakenDate?: SortOrder
     websiteExpiryDate?: SortOrder
     websiteRenewAmount?: SortOrder
@@ -56934,7 +57000,9 @@ export namespace Prisma {
     gstin?: SortOrder
     websiteName?: SortOrder
     websiteDomain?: SortOrder
+    domainAmount?: SortOrder
     hostingTaken?: SortOrder
+    hostingAmount?: SortOrder
     websiteTakenDate?: SortOrder
     websiteExpiryDate?: SortOrder
     websiteRenewAmount?: SortOrder
@@ -56954,6 +57022,8 @@ export namespace Prisma {
     keywordTarget?: SortOrder
     domainAuthority?: SortOrder
     gstRate?: SortOrder
+    domainAmount?: SortOrder
+    hostingAmount?: SortOrder
     websiteRenewAmount?: SortOrder
   }
 
@@ -61312,7 +61382,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -61371,7 +61443,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -61812,7 +61886,9 @@ export namespace Prisma {
     gstin?: StringFilter<"Client"> | string
     websiteName?: StringFilter<"Client"> | string
     websiteDomain?: StringFilter<"Client"> | string
+    domainAmount?: IntFilter<"Client"> | number
     hostingTaken?: BoolFilter<"Client"> | boolean
+    hostingAmount?: IntFilter<"Client"> | number
     websiteTakenDate?: StringFilter<"Client"> | string
     websiteExpiryDate?: StringFilter<"Client"> | string
     websiteRenewAmount?: IntFilter<"Client"> | number
@@ -62212,7 +62288,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -62271,7 +62349,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -62444,7 +62524,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -62503,7 +62585,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -64142,7 +64226,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -64201,7 +64287,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -64276,7 +64364,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -64335,7 +64425,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -64394,7 +64486,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -64453,7 +64547,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -64528,7 +64624,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -64587,7 +64685,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -64646,7 +64746,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -64705,7 +64807,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -64780,7 +64884,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -64839,7 +64945,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -64898,7 +65006,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -64957,7 +65067,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -65075,7 +65187,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -65134,7 +65248,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -65242,7 +65358,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -65301,7 +65419,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -65419,7 +65539,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -65478,7 +65600,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -65586,7 +65710,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -65645,7 +65771,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -65720,7 +65848,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -65779,7 +65909,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -65869,7 +66001,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -65928,7 +66062,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -66034,7 +66170,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -66093,7 +66231,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -66304,7 +66444,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -66363,7 +66505,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -66438,7 +66582,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -66497,7 +66643,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -66556,7 +66704,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -66615,7 +66765,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -66690,7 +66842,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -66749,7 +66903,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -66808,7 +66964,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -66867,7 +67025,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -67033,7 +67193,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -67092,7 +67254,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -67447,7 +67611,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -67506,7 +67672,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -67581,7 +67749,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -67640,7 +67810,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -67699,7 +67871,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -67758,7 +67932,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -67833,7 +68009,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -67892,7 +68070,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -67951,7 +68131,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -68010,7 +68192,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -68085,7 +68269,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -68144,7 +68330,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -68203,7 +68391,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -68262,7 +68452,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -68337,7 +68529,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -68396,7 +68590,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -68455,7 +68651,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -68514,7 +68712,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -68589,7 +68789,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -68648,7 +68850,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -68707,7 +68911,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -68766,7 +68972,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -68841,7 +69049,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -68900,7 +69110,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -68959,7 +69171,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -69018,7 +69232,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -69093,7 +69309,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -69152,7 +69370,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -69211,7 +69431,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -69270,7 +69492,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -69388,7 +69612,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -69447,7 +69673,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -69555,7 +69783,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -69614,7 +69844,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -69689,7 +69921,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -69748,7 +69982,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -69807,7 +70043,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -69866,7 +70104,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -69941,7 +70181,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -70000,7 +70242,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -71546,7 +71790,9 @@ export namespace Prisma {
     gstin?: string
     websiteName?: string
     websiteDomain?: string
+    domainAmount?: number
     hostingTaken?: boolean
+    hostingAmount?: number
     websiteTakenDate?: string
     websiteExpiryDate?: string
     websiteRenewAmount?: number
@@ -71717,7 +71963,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -71776,7 +72024,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
@@ -71835,7 +72085,9 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
+    domainAmount?: IntFieldUpdateOperationsInput | number
     hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
     websiteTakenDate?: StringFieldUpdateOperationsInput | string
     websiteExpiryDate?: StringFieldUpdateOperationsInput | string
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number

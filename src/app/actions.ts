@@ -687,7 +687,6 @@ export async function updateClientFinance(fd: FormData) {
       pocName: s(fd, "pocName") || null,
       pocMobile: s(fd, "pocMobile") || null,
       pocEmail: s(fd, "pocEmail") || null,
-      website: s(fd, "website") || null,
       status: STATUS_OK.includes(s(fd, "status")) ? s(fd, "status") : "ACTIVE",
       renewalDate: s(fd, "renewalDate"),
       // Industry, monthly retainer, account manager and GST/GSTIN are no longer edited from
@@ -695,7 +694,9 @@ export async function updateClientFinance(fd: FormData) {
       // Website / hosting (also editable from the Website renewals page)
       websiteName: s(fd, "websiteName"),
       websiteDomain: s(fd, "websiteDomain"),
+      domainAmount: n(fd, "domainAmount"),
       hostingTaken: s(fd, "hostingTaken") === "yes" || s(fd, "hostingTaken") === "on" || n(fd, "hostingTaken") === 1,
+      hostingAmount: n(fd, "hostingAmount"),
       websiteTakenDate: s(fd, "websiteTakenDate"),
       websiteExpiryDate: s(fd, "websiteExpiryDate"),
       websiteRenewAmount: n(fd, "websiteRenewAmount"),

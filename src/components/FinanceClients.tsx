@@ -18,7 +18,7 @@ const addDaysISO = (iso: string, n: number) => { const d = new Date((iso || toda
 type MiniInv = { category: string; total: number; received: number; balance: number; overdue: boolean; issueDate: string; company: string };
 type Note = { invId: string; invNumber: string; date: string; by: string; note: string };
 type Followup = { date: string; by: string; note: string; next?: string };
-type Row = { id: string; code: string; name: string; contact: string; phone: string; email: string; status: string; retainer: number; category: string; invs: MiniInv[]; lastInvoiceDate: string; billed: number; received: number; pending: number; companies: string[]; clientFollowups: Followup[]; nextFollowup: string; notes: Note[]; noteTarget: { id: string; number: string } | null };
+type Row = { id: string; code: string; name: string; contact: string; phone: string; email: string; slaUrl: string; slaTitle: string; status: string; retainer: number; category: string; invs: MiniInv[]; lastInvoiceDate: string; billed: number; received: number; pending: number; companies: string[]; clientFollowups: Followup[]; nextFollowup: string; notes: Note[]; noteTarget: { id: string; number: string } | null };
 
 export default function FinanceClients({ rows, lockedCompany, lockedCategory, embedded }: { rows: Row[]; lockedCompany?: string; lockedCategory?: string; embedded?: boolean }) {
   const [q, setQ] = useState("");
@@ -175,7 +175,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
       <div className="card !p-0 overflow-hidden">
         <div className="overflow-x-auto scroll-thin">
           <table className="w-full min-w-[1120px] text-left">
-            <thead><tr className="border-b border-[var(--line)]">{["#", "Invoice date", "Client Name", "Phone / Mobile", "Email", "Services", "Amount", "Actions"].map((h) => <th key={h} className="th px-5 py-2.5">{h}</th>)}</tr></thead>
+            <thead><tr className="border-b border-[var(--line)]">{["#", "Invoice date", "Client Name", "Phone / Mobile", "Email", "SLA", "Services", "Amount", "Actions"].map((h) => <th key={h} className="th px-5 py-2.5">{h}</th>)}</tr></thead>
             <tbody>
               {filtered.length === 0 && <tr><td colSpan={9} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No clients found.</td></tr>}
               {paged.map((r, i) => (
@@ -185,6 +185,9 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
                   <td className="px-5 py-3"><Link href={`/accounts/${r.id}`} prefetch className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.name}</Link><div className="text-[11px] text-[var(--faint)]">{r.code}{r.companies.length > 0 ? ` · ${r.companies.map(companyLabel).join(", ")}` : ""}</div></td>
                   <td className="px-5 py-3 text-[12.5px] tnum">{r.phone || "—"}</td>
                   <td className="px-5 py-3 text-[12.5px]">{r.email ? <a href={`mailto:${r.email}`} className="text-[var(--indigo)] hover:underline">{r.email}</a> : "—"}</td>
+                  <td className="px-5 py-3">{r.slaUrl
+                    ? <a href={r.slaUrl} target="_blank" rel="noreferrer" download title={r.slaTitle || "Download SLA"} className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--violet)] hover:bg-[var(--surface-2)]"><Download size={13} /> SLA</a>
+                    : <span className="text-[var(--faint)]">—</span>}</td>
                   <td className="px-5 py-3"><CatChip c={catActive ? scopeLabel : r.category} /></td>
                   <td className="px-5 py-3"><div className="text-[13px] font-semibold tnum">{inr(r.billed)}</div>{r.pending > 0 && <div className="text-[11px] font-semibold tnum" style={{ color: r.overdueAmt > 0 ? "var(--rose)" : "var(--amber)" }}>{inr(r.pending)} due{r.overdueAmt > 0 ? " · overdue" : ""}</div>}</td>
                   <td className="px-5 py-3">

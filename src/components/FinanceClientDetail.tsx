@@ -11,7 +11,7 @@ const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
-type Client = { id: string; code: string; name: string; website: string | null; industry: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; monthlyRetainer: number; status: string; renewalDate: string; gstApplicable: boolean; gstRate: number; gstin: string; onboardDate: string; notes: string | null; websiteName: string; websiteDomain: string; hostingTaken: boolean; websiteTakenDate: string; websiteExpiryDate: string; websiteRenewAmount: number; nextFollowup: string; accountManagerId: string | null };
+type Client = { id: string; code: string; name: string; website: string | null; industry: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; monthlyRetainer: number; status: string; renewalDate: string; gstApplicable: boolean; gstRate: number; gstin: string; onboardDate: string; notes: string | null; websiteName: string; websiteDomain: string; domainAmount: number; hostingTaken: boolean; hostingAmount: number; websiteTakenDate: string; websiteExpiryDate: string; websiteRenewAmount: number; nextFollowup: string; accountManagerId: string | null };
 type Inv = { id: string; number: string; total: number; received: number; balance: number; approved: boolean; paymentStatus: string; issueDate: string; dueDate: string; leadId: string | null; category: string; overdue: boolean; company: string; followups: { date: string; by: string; note: string }[] };
 type Pay = { id: string; invoiceId: string; invoiceNumber: string; amount: number; date: string; mode: string; ref: string; note: string; by: string };
 type Followup = { date: string; by: string; note: string; next?: string };
@@ -266,22 +266,32 @@ function EditModal({ client, close }: { client: Client; close: () => void }) {
             <label className="block"><span className="eyebrow">Contact person</span><input name="pocName" defaultValue={client.pocName ?? ""} className="input mt-1" /></label>
             <label className="block"><span className="eyebrow">Phone</span><input name="pocMobile" defaultValue={client.pocMobile ?? ""} className="input mt-1" /></label>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" defaultValue={client.pocEmail ?? ""} className="input mt-1" /></label>
-            <label className="block"><span className="eyebrow">Website</span><input name="website" defaultValue={client.website ?? ""} className="input mt-1" /></label>
-          </div>
+          <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" defaultValue={client.pocEmail ?? ""} className="input mt-1" /></label>
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Status</span><select name="status" defaultValue={client.status} className="select mt-1"><option value="ACTIVE">Active</option><option value="ON_HOLD">On hold</option><option value="UPCOMING">Upcoming</option></select></label>
             <label className="block"><span className="eyebrow">Renewal date</span><input name="renewalDate" type="date" defaultValue={client.renewalDate || ""} className="input mt-1" /></label>
           </div>
           <div className="rounded-[10px] border border-[var(--line)] p-3">
             <div className="eyebrow mb-2 flex items-center gap-1.5"><Globe size={13} /> Website / hosting</div>
-            <div className="grid grid-cols-2 gap-3">
-              <label className="block"><span className="text-[12px] font-semibold">Website name</span><input name="websiteName" defaultValue={client.websiteName} className="input mt-1" placeholder="e.g. Acme Site" /></label>
-              <label className="block"><span className="text-[12px] font-semibold">Domain</span><input name="websiteDomain" defaultValue={client.websiteDomain} className="input mt-1" placeholder="e.g. acme.com" /></label>
-              <label className="block"><span className="text-[12px] font-semibold">Hosting with us?</span><select name="hostingTaken" defaultValue={client.hostingTaken ? "yes" : "no"} className="select mt-1"><option value="no">No</option><option value="yes">Yes</option></select></label>
-              <label className="block"><span className="text-[12px] font-semibold">Date taken</span><input name="websiteTakenDate" type="date" defaultValue={client.websiteTakenDate} className="input mt-1" /></label>
-              <label className="block"><span className="text-[12px] font-semibold">Expiry date</span><input name="websiteExpiryDate" type="date" defaultValue={client.websiteExpiryDate} className="input mt-1" /></label>
+            <div className="space-y-3">
+              <label className="block"><span className="text-[12px] font-semibold">Website URL</span><input name="websiteName" defaultValue={client.websiteName} className="input mt-1" placeholder="e.g. https://acme.com" /></label>
+              <div className="grid grid-cols-2 gap-3">
+                <label className="block"><span className="text-[12px] font-semibold">Domain</span><input name="websiteDomain" defaultValue={client.websiteDomain} className="input mt-1" placeholder="e.g. acme.com" /></label>
+                <label className="block"><span className="text-[12px] font-semibold">Domain amount (₹)</span><input name="domainAmount" type="number" min={0} defaultValue={client.domainAmount} className="input mt-1" placeholder="e.g. 1200" /></label>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><span className="text-[12px] font-semibold">Hosting with us?</span>
+                  <div className="mt-2 flex items-center gap-5 text-[13px]">
+                    <label className="inline-flex items-center gap-1.5"><input type="radio" name="hostingTaken" value="yes" defaultChecked={client.hostingTaken} className="accent-[var(--violet)]" /> Yes</label>
+                    <label className="inline-flex items-center gap-1.5"><input type="radio" name="hostingTaken" value="no" defaultChecked={!client.hostingTaken} className="accent-[var(--violet)]" /> No</label>
+                  </div>
+                </div>
+                <label className="block"><span className="text-[12px] font-semibold">Hosting amount (₹)</span><input name="hostingAmount" type="number" min={0} defaultValue={client.hostingAmount} className="input mt-1" placeholder="e.g. 3000" /></label>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <label className="block"><span className="text-[12px] font-semibold">Date taken</span><input name="websiteTakenDate" type="date" defaultValue={client.websiteTakenDate} className="input mt-1" /></label>
+                <label className="block"><span className="text-[12px] font-semibold">Expiry date</span><input name="websiteExpiryDate" type="date" defaultValue={client.websiteExpiryDate} className="input mt-1" /></label>
+              </div>
               <label className="block"><span className="text-[12px] font-semibold">Renewal amount (₹)</span><input name="websiteRenewAmount" type="number" min={0} defaultValue={client.websiteRenewAmount} className="input mt-1" placeholder="e.g. 8000" /></label>
             </div>
           </div>

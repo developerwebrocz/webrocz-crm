@@ -97,9 +97,11 @@ model Client {
   gstRate         Int      @default(18)    // GST % applied when applicable
   gstin           String   @default("")    // client's GSTIN (for the tax invoice)
   // --- Website renewal / hosting (one website per client) ---
-  websiteName        String  @default("") // display name of the website
+  websiteName        String  @default("") // website URL
   websiteDomain      String  @default("") // e.g. example.com
+  domainAmount       Int     @default(0)  // INR — domain cost
   hostingTaken       Boolean @default(false) // is hosting taken with us?
+  hostingAmount      Int     @default(0)  // INR — hosting cost
   websiteTakenDate   String  @default("") // "2026-01-15" — when the website/hosting started
   websiteExpiryDate  String  @default("") // "2027-01-15" — renewal/expiry date
   websiteRenewAmount Int     @default(0)  // INR to renew the website/hosting

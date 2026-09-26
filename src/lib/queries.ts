@@ -2036,14 +2036,21 @@ function catOfInvoice(inv: { leadId: string | null; items: string }, leadSvc: Ma
 // so the list can filter by category / date and recompute totals dynamically.
 export async function getFinanceClients() {
   const today = salesToday();
-  const [clients, invoices, leads, amUsers] = await Promise.all([
+  const [clients, invoices, leads, amUsers, slaDocs] = await Promise.all([
     prisma.client.findMany({ orderBy: { name: "asc" }, select: { id: true, code: true, name: true, pocName: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true, followupLog: true, nextFollowup: true, accountManager: { select: { name: true } } } }),
     prisma.salesInvoice.findMany({ orderBy: { createdAt: "desc" }, select: { id: true, number: true, clientId: true, billTo: true, total: true, received: true, issueDate: true, dueDate: true, leadId: true, items: true, notesLog: true, company: true, taxPct: true } }),
     prisma.lead.findMany({ select: { id: true, services: true } }),
     prisma.user.findMany({ where: { active: true, role: { in: ["ACCOUNT_MANAGER", "AM_HEAD", "DM_EXEC"] } }, orderBy: { name: "asc" }, select: { id: true, name: true } }),
+    prisma.sla.findMany({ where: { fileUrl: { not: "" } }, orderBy: { createdAt: "desc" }, select: { clientId: true, clientName: true, fileUrl: true, title: true } }),
   ]);
   const leadSvc = new Map(leads.map((l) => [l.id, parseServices(l.services)]));
   const nameToId = new Map(clients.map((c) => [c.name.trim().toLowerCase(), c.id]));
+  // Latest SLA document per client (matched by id, else by typed name) → shown as a download link.
+  const slaByClient = new Map<string, { url: string; title: string }>();
+  for (const d of slaDocs) {
+    const cid = d.clientId || nameToId.get((d.clientName || "").trim().toLowerCase());
+    if (cid && !slaByClient.has(cid)) slaByClient.set(cid, { url: d.fileUrl, title: d.title });
+  }
   const dueOf = (i: { dueDate: string; issueDate: string }) => i.dueDate || addDays(i.issueDate, 15);
 
   type MiniInv = { category: string; total: number; received: number; balance: number; overdue: boolean; issueDate: string; company: string };
@@ -2085,9 +2092,11 @@ export async function getFinanceClients() {
     // Client-level follow-up log (accountant's own notes on the client, with their name).
     let clientFollowups: { date: string; by: string; note: string; next?: string }[] = [];
     try { const arr = JSON.parse(c.followupLog || "[]"); if (Array.isArray(arr)) clientFollowups = arr; } catch { /* ignore */ }
+    const sla = slaByClient.get(c.id);
     return {
       id: c.id, code: c.code, name: c.name, contact: c.pocName ?? "", phone: c.pocMobile ?? "", email: c.pocEmail ?? "",
       accountManager: c.accountManager?.name ?? "",
+      slaUrl: sla?.url ?? "", slaTitle: sla?.title ?? "",
       status: c.status, retainer: c.monthlyRetainer || 0, category, invs,
       lastInvoiceDate: lastDateByClient.get(c.id) ?? "", billed, received, pending,
       companies: [...(companiesByClient.get(c.id) ?? [])],
@@ -2294,7 +2303,7 @@ export async function getWebsiteRenewals() {
 export async function getFinanceClientDetail(clientId: string) {
   const client = await prisma.client.findUnique({
     where: { id: clientId },
-    select: { id: true, code: true, name: true, website: true, industry: true, pocName: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true, renewalDate: true, gstApplicable: true, gstRate: true, gstin: true, onboardDate: true, notes: true, websiteName: true, websiteDomain: true, hostingTaken: true, websiteTakenDate: true, websiteExpiryDate: true, websiteRenewAmount: true, followupLog: true, nextFollowup: true, accountManagerId: true },
+    select: { id: true, code: true, name: true, website: true, industry: true, pocName: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true, renewalDate: true, gstApplicable: true, gstRate: true, gstin: true, onboardDate: true, notes: true, websiteName: true, websiteDomain: true, domainAmount: true, hostingTaken: true, hostingAmount: true, websiteTakenDate: true, websiteExpiryDate: true, websiteRenewAmount: true, followupLog: true, nextFollowup: true, accountManagerId: true },
   });
   if (!client) return null;
   const [invoicesRaw, leads, amUsers, slasRaw] = await Promise.all([
