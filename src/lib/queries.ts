@@ -2240,7 +2240,7 @@ export async function getWebsiteRenewals() {
   const [clients, invoices, leads] = await Promise.all([
     prisma.client.findMany({
       orderBy: { name: "asc" },
-      select: { id: true, code: true, name: true, pocMobile: true, pocEmail: true, status: true, website: true, websiteName: true, websiteDomain: true, hostingTaken: true, websiteTakenDate: true, websiteExpiryDate: true, websiteRenewAmount: true, gstApplicable: true },
+      select: { id: true, code: true, name: true, pocMobile: true, pocEmail: true, status: true, website: true, websiteName: true, websiteDomain: true, domainTaken: true, hostingTaken: true, websiteTakenDate: true, websiteExpiryDate: true, websiteRenewAmount: true, gstApplicable: true },
     }),
     prisma.salesInvoice.findMany({ select: { clientId: true, billTo: true, items: true, leadId: true, company: true, taxPct: true } }),
     prisma.lead.findMany({ select: { id: true, services: true } }),
@@ -2278,7 +2278,7 @@ export async function getWebsiteRenewals() {
     return {
       id: c.id, code: c.code, name: c.name, phone: c.pocMobile ?? "", email: c.pocEmail ?? "",
       status: c.status, websiteName: c.websiteName || "", domain,
-      hostingTaken: c.hostingTaken, takenDate: c.websiteTakenDate || "", expiryDate: expiry,
+      domainTaken: c.domainTaken, hostingTaken: c.hostingTaken, takenDate: c.websiteTakenDate || "", expiryDate: expiry,
       renewAmount: c.websiteRenewAmount || 0,
       daysToExpiry, expiring, expired, hasWebsite, detailsFilled, isWebsiteClient, websiteGst, websiteNoGst,
     };

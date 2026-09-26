@@ -2,9 +2,9 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { updateClientWebsite, addClientWebsite } from "@/app/actions";
+import { addClientWebsite, logClientFollowup } from "@/app/actions";
 import { downloadCsv } from "@/lib/csv";
-import { Globe, Search, ChevronLeft, ChevronRight, Download, Pencil, X, ServerCog, CalendarClock, Plus, IndianRupee } from "lucide-react";
+import { Globe, Search, ChevronLeft, ChevronRight, Download, X, ServerCog, CalendarClock, Plus, IndianRupee, ReceiptText, MessageSquarePlus } from "lucide-react";
 
 const PAGE_SIZE = 12;
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
@@ -13,7 +13,7 @@ const todayISO = () => new Date().toISOString().slice(0, 10);
 
 type Row = {
   id: string; code: string; name: string; phone: string; email: string; status: string;
-  websiteName: string; domain: string; hostingTaken: boolean; takenDate: string; expiryDate: string;
+  websiteName: string; domain: string; domainTaken: boolean; hostingTaken: boolean; takenDate: string; expiryDate: string;
   renewAmount: number; daysToExpiry: number | null; expiring: boolean; expired: boolean; hasWebsite: boolean; detailsFilled: boolean; isWebsiteClient: boolean; websiteGst: boolean; websiteNoGst: boolean;
 };
 type Counts = { all: number; tracked: number; hosting: number; expiring: number; expired: number };
@@ -23,7 +23,7 @@ export default function WebsiteRenewals({ rows, counts, totals, embedded, locked
   const [q, setQ] = useState("");
   const [view, setView] = useState<"tracked" | "expiring">("tracked");
   const [gstSel, setGstSel] = useState<string>(lockedGst ?? "ALL"); // ALL | GST | NOGST (locked inside a company hub)
-  const [editRow, setEditRow] = useState<Row | null>(null);
+  const [fuRow, setFuRow] = useState<Row | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const nq = q.trim().toLowerCase();
 
@@ -113,17 +113,17 @@ export default function WebsiteRenewals({ rows, counts, totals, embedded, locked
       <div className="card !p-0 overflow-hidden">
         <div className="overflow-x-auto scroll-thin">
           <table className="w-full min-w-[980px] text-left">
-            <thead><tr className="border-b border-[var(--line)]">{["#", "Client", "Website name", "Domain", "Hosting", "Date taken", "Expiry", "Renewal ₹", "Actions"].map((h) => <th key={h} className="th px-5 py-2.5">{h}</th>)}</tr></thead>
+            <thead><tr className="border-b border-[var(--line)]">{["#", "Company Name", "Domain Name", "Services", "Expiry Date", "Renewal ₹", "Invoice", "Follow-up"].map((h) => <th key={h} className="th px-5 py-2.5">{h}</th>)}</tr></thead>
             <tbody>
-              {filtered.length === 0 && <tr><td colSpan={9} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No website clients{view === "expiring" ? " expiring" : ""} found. Use “Add website” to add one.</td></tr>}
-              {paged.map((r, i) => (
+              {filtered.length === 0 && <tr><td colSpan={8} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No website clients{view === "expiring" ? " expiring" : ""} found. Use “Add website” to add one.</td></tr>}
+              {paged.map((r, i) => {
+                const services = [r.domainTaken ? "Domain" : "", r.hostingTaken ? "Hosting + SSL" : ""].filter(Boolean);
+                return (
                 <tr key={r.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
                   <td className="px-5 py-3 text-[12.5px] text-[var(--faint)] tnum">{start + i + 1}</td>
                   <td className="px-5 py-3"><Link href={`/accounts/${r.id}`} prefetch className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.name}</Link><div className="text-[11px] text-[var(--faint)]">{r.code}{r.phone ? ` · ${r.phone}` : ""}</div></td>
-                  <td className="px-5 py-3 text-[12.5px]">{r.websiteName || "—"}</td>
                   <td className="px-5 py-3 text-[12.5px]">{r.domain ? <a href={r.domain.startsWith("http") ? r.domain : `https://${r.domain}`} target="_blank" rel="noreferrer" className="text-[var(--indigo)] hover:underline">{r.domain}</a> : "—"}</td>
-                  <td className="px-5 py-3">{r.hostingTaken ? <span className="rounded-full bg-[color-mix(in_srgb,var(--emerald)_14%,white)] px-2 py-0.5 text-[11px] font-bold text-[var(--emerald)]">Yes</span> : <span className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[11px] font-bold text-[var(--muted)]">No</span>}</td>
-                  <td className="px-5 py-3 text-[12.5px] tnum">{fmtDate(r.takenDate)}</td>
+                  <td className="px-5 py-3">{services.length ? <div className="flex flex-wrap gap-1">{services.map((sv) => <span key={sv} className="rounded-full bg-[color-mix(in_srgb,var(--violet)_12%,white)] px-2 py-0.5 text-[10.5px] font-bold text-[var(--violet)]">{sv}</span>)}</div> : <span className="text-[var(--faint)]">—</span>}</td>
                   <td className="px-5 py-3 text-[12.5px] tnum">
                     {r.expiryDate ? (
                       <span className="inline-flex items-center gap-1.5">
@@ -136,10 +136,14 @@ export default function WebsiteRenewals({ rows, counts, totals, embedded, locked
                   </td>
                   <td className="px-5 py-3 text-[13px] font-semibold tnum">{r.renewAmount > 0 ? inr(r.renewAmount) : "—"}</td>
                   <td className="px-5 py-3">
-                    <button onClick={() => setEditRow(r)} className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><Pencil size={13} /> {r.detailsFilled ? "Edit website" : "Add details"}</button>
+                    <Link href={`/accounts/${r.id}`} prefetch className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><ReceiptText size={13} /> Invoice</Link>
+                  </td>
+                  <td className="px-5 py-3">
+                    <button onClick={() => setFuRow(r)} className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><MessageSquarePlus size={13} /> Follow-up</button>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -155,40 +159,8 @@ export default function WebsiteRenewals({ rows, counts, totals, embedded, locked
         )}
       </div>
 
-      {editRow && <WebsiteModal r={editRow} close={() => setEditRow(null)} />}
+      {fuRow && <FollowupModal r={fuRow} close={() => setFuRow(null)} />}
       {addOpen && <AddWebsiteModal rows={rows} close={() => setAddOpen(false)} />}
-    </div>
-  );
-}
-
-function WebsiteModal({ r, close }: { r: Row; close: () => void }) {
-  return (
-    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
-      <div className="flex max-h-[92vh] w-full max-w-[480px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
-          <div>
-            <h2 className="text-[16px] font-bold">Website · {r.name}</h2>
-            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">Track the website, hosting and renewal/expiry.</p>
-          </div>
-          <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
-        </div>
-        <form action={updateClientWebsite} className="space-y-3 overflow-y-auto scroll-thin px-6 py-5">
-          <input type="hidden" name="id" value={r.id} />
-          <input type="hidden" name="return" value="/renewals" />
-          <label className="block"><span className="eyebrow">Website name</span><input name="websiteName" defaultValue={r.websiteName} className="input mt-1" placeholder="e.g. Acme Corporate Site" /></label>
-          <label className="block"><span className="eyebrow">Domain</span><input name="websiteDomain" defaultValue={r.domain} className="input mt-1" placeholder="e.g. acme.com" /></label>
-          <label className="block"><span className="eyebrow">Hosting taken with us?</span><select name="hostingTaken" defaultValue={r.hostingTaken ? "yes" : "no"} className="select mt-1"><option value="no">No</option><option value="yes">Yes</option></select></label>
-          <div className="grid grid-cols-2 gap-3">
-            <label className="block"><span className="eyebrow">Date taken</span><input name="websiteTakenDate" type="date" defaultValue={r.takenDate} className="input mt-1" /></label>
-            <label className="block"><span className="eyebrow">Expiry date</span><input name="websiteExpiryDate" type="date" defaultValue={r.expiryDate} className="input mt-1" /></label>
-          </div>
-          <label className="block"><span className="eyebrow">Renewal amount (₹)</span><input name="websiteRenewAmount" type="number" min={0} defaultValue={r.renewAmount} className="input mt-1" placeholder="e.g. 8000" /></label>
-          <div className="flex justify-end gap-2 pt-1">
-            <button type="button" onClick={close} className="btn btn-ghost">Cancel</button>
-            <button type="submit" className="btn btn-violet"><Globe size={15} /> Save website</button>
-          </div>
-        </form>
-      </div>
     </div>
   );
 }
@@ -224,6 +196,30 @@ function AddWebsiteModal({ rows, close }: { rows: Row[]; close: () => void }) {
             <button type="button" onClick={close} className="btn btn-ghost">Cancel</button>
             <button type="submit" className="btn btn-violet"><Plus size={15} /> Add website</button>
           </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// Log a renewal follow-up note on the client (chase the renewal).
+function FollowupModal({ r, close }: { r: Row; close: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
+      <div className="w-full max-w-[440px] overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
+          <div>
+            <h2 className="text-[16px] font-bold">Renewal follow-up</h2>
+            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">{r.name}{r.expiryDate ? ` · expires ${fmtDate(r.expiryDate)}` : ""}</p>
+          </div>
+          <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
+        </div>
+        <form action={logClientFollowup} className="space-y-3 px-6 py-5">
+          <input type="hidden" name="id" value={r.id} />
+          <input type="hidden" name="return" value="/renewals" />
+          <label className="block"><span className="eyebrow">Follow-up note</span><textarea name="note" required rows={2} className="input mt-1" placeholder="e.g. Called client about hosting renewal" /></label>
+          <label className="block"><span className="eyebrow">Next follow-up</span><input name="next" type="date" defaultValue={todayISO()} className="input mt-1" /></label>
+          <div className="flex justify-end gap-2 pt-1"><button type="button" onClick={close} className="btn btn-ghost">Cancel</button><button type="submit" className="btn btn-violet"><MessageSquarePlus size={15} /> Save follow-up</button></div>
         </form>
       </div>
     </div>
