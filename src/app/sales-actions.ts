@@ -546,9 +546,14 @@ export async function addInvoice(fd: FormData) {
   // Match an existing client by name, else create a fresh one (CLI-#### like the finance flow).
   const all = await prisma.client.findMany({ select: { id: true, name: true, gstin: true, gstRate: true, pocName: true, pocMobile: true, pocEmail: true } });
   let client = all.find((c) => c.name.trim().toLowerCase() === clientName.toLowerCase()) || null;
+  const formGstin = gst ? s(fd, "gstin") : "";
   if (!client) {
-    const created = await prisma.client.create({ data: { code: await nextClientCode(), name: clientName, status: "ACTIVE", gstApplicable: gst, gstRate: gst ? 18 : 0 } });
+    const created = await prisma.client.create({ data: { code: await nextClientCode(), name: clientName, status: "ACTIVE", gstApplicable: gst, gstRate: gst ? 18 : 0, gstin: formGstin } });
     client = { id: created.id, name: created.name, gstin: created.gstin, gstRate: created.gstRate, pocName: created.pocName, pocMobile: created.pocMobile, pocEmail: created.pocEmail };
+  } else if (formGstin && !client.gstin) {
+    // Backfill the client's GSTIN from this invoice if it wasn't on record yet.
+    await prisma.client.update({ where: { id: client.id }, data: { gstin: formGstin, gstApplicable: true } });
+    client.gstin = formGstin;
   }
 
   const taxPct = gst ? (client.gstRate > 0 ? client.gstRate : 18) : 0;
@@ -557,7 +562,7 @@ export async function addInvoice(fd: FormData) {
   const issueDate = s(fd, "issueDate") || new Date().toISOString().slice(0, 10);
   const dueDate = s(fd, "dueDate") || addDaysISO(issueDate, 15);
   const received = Math.min(Math.max(0, n(fd, "received")), total);
-  const gstin = client.gstin || "";
+  const gstin = formGstin || client.gstin || "";
   const clientState = stateFromGstin(gstin);
   const company = companyFor(gst, category);
 

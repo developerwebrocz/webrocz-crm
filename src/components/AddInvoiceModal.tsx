@@ -48,6 +48,7 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
                   </select>}
             </label>
           </div>
+          {gst && <label className="block"><span className="eyebrow">Client GSTIN</span><input name="gstin" className="input mt-1" placeholder="e.g. 36AABCU9603R1ZM" /><span className="mt-1 block text-[11px] text-[var(--faint)]">Sets the place of supply (CGST/SGST vs IGST) on the tax invoice.</span></label>}
           <label className="block"><span className="eyebrow">Description (optional)</span><input name="desc" className="input mt-1" placeholder={category === "DM" ? "Digital Marketing" : "Website Development"} /></label>
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Amount (before GST)</span><input name="amount" type="number" min={1} required className="input mt-1" placeholder="e.g. 50000" /></label>
