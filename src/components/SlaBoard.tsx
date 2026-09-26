@@ -20,7 +20,7 @@ type Totals = { pendingAmount: number };
 
 export default function SlaBoard({ rows, counts, totals, canUpload, canGenerate }: { rows: Row[]; counts: Counts; totals: Totals; canUpload: boolean; canGenerate: boolean }) {
   const [q, setQ] = useState("");
-  const [status, setStatus] = useState("ALL"); // ALL | UPLOADED | INVOICED
+  const [status, setStatus] = useState("UPLOADED"); // default: only pending (moved/invoiced ones drop off the list)
   const [addOpen, setAddOpen] = useState(false);
   const nq = q.trim().toLowerCase();
 
@@ -92,7 +92,17 @@ export default function SlaBoard({ rows, counts, totals, canUpload, canGenerate 
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-1.5">
                       {canGenerate && r.status === "UPLOADED" && (
-                        <form action={generateInvoiceFromSla}><input type="hidden" name="slaId" value={r.id} /><input type="hidden" name="return" value="/sla" /><button type="submit" className="btn btn-sm btn-violet"><ReceiptText size={13} /> Generate invoice</button></form>
+                        <form action={generateInvoiceFromSla} className="flex items-center gap-1">
+                          <input type="hidden" name="slaId" value={r.id} />
+                          <input type="hidden" name="return" value="/sla" />
+                          <select name="company" required defaultValue="" className="select !w-auto !py-1 !text-[12px]">
+                            <option value="" disabled>Move to…</option>
+                            <option value="WEB_SOLUTIONS">Web Solutions</option>
+                            <option value="WEB_ROCZ">Web Rocz</option>
+                            <option value="WEB_ROCZ_PVT">Web Rocz Pvt Ltd</option>
+                          </select>
+                          <button type="submit" className="btn btn-sm btn-violet"><ReceiptText size={13} /> Move</button>
+                        </form>
                       )}
                       <form action={deleteSla}><input type="hidden" name="slaId" value={r.id} /><input type="hidden" name="return" value="/sla" /><button type="submit" title="Delete SLA" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--rose)] hover:bg-[color-mix(in_srgb,var(--rose)_10%,white)]"><Trash2 size={13} /></button></form>
                     </div>

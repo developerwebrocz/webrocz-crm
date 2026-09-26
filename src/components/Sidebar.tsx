@@ -64,8 +64,8 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
   // (Clients / Invoices / Website renewals) when it's the one you're viewing.
   const companyMeta = [
     { key: "WEB_SOLUTIONS", slug: "web-solutions", label: "Web Solutions", icon: Globe, renewals: true, clientsLabel: "Clients" },
-    { key: "WEB_ROCZ", slug: "web-rocz", label: "Web Rocz", icon: Megaphone, renewals: false, clientsLabel: "DM Clients" },
-    { key: "WEB_ROCZ_PVT", slug: "web-rocz-pvt", label: "Web Rocz Pvt Ltd", icon: Building2, renewals: true, clientsLabel: "Clients" },
+    { key: "WEB_ROCZ", slug: "web-rocz", label: "Web Rocz", icon: Megaphone, renewals: false, clientsLabel: "Clients" },
+    { key: "WEB_ROCZ_PVT", slug: "web-rocz-pvt", label: "Web Rocz Pvt Ltd", icon: Building2, renewals: false, clientsLabel: "Clients" },
   ];
   const companyParam = sp.get("company") ?? "";
   const activeCoKey = (() => {
@@ -88,13 +88,11 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
   const financeGroups: Group[] = [
     { label: "Companies", items: companyItems },
     { label: "Finance", items: [
-      { href: "/accounts", label: "All Clients", icon: Users },
-      { href: "/dm-clients", label: "DM Clients", icon: Megaphone },
+      { href: "/dm-clients", label: "All DM Clients", icon: Megaphone },
       { href: "/sla", label: "SLAs", icon: FileSignature },
       // Payments hidden for now — re-add when needed:
       // { href: "/payments", label: "Payments", icon: Wallet },
       // Website renewals now live under each company in the Companies group above.
-      { href: "/gst", label: "GST Summary", icon: Landmark },
       { href: "/statements", label: "Reports", icon: FileBarChart },
       { href: "/invoices", label: "Invoices", icon: ReceiptText },
     ] },

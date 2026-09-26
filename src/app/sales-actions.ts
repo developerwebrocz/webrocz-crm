@@ -699,9 +699,15 @@ export async function generateInvoiceFromSla(fd: FormData) {
   const back = s(fd, "return") || "/sla";
   const sla = await prisma.sla.findUnique({ where: { id: slaId }, include: { client: true } });
   if (!sla || sla.status === "INVOICED" || sla.amount <= 0) redirect(back);
-  const gst = sla.gst;
-  const category = sla.service === "DM" ? "DM" : "WEBSITE";
-  const company = companyFor(gst, category);
+  // "Move to" — the accountant may explicitly route the SLA to a billing entity.
+  // Otherwise the company is derived from the SLA's GST + service (legacy behaviour).
+  const VALID_CO = ["WEB_SOLUTIONS", "WEB_ROCZ", "WEB_ROCZ_PVT"];
+  const overrideCompany = s(fd, "company");
+  const company = VALID_CO.includes(overrideCompany) ? overrideCompany : companyFor(sla.gst, sla.service === "DM" ? "DM" : "WEBSITE");
+  // Web Rocz Pvt Ltd carries GST; Web Solutions & Web Rocz are non-GST. Category follows
+  // the single-service entities, and keeps the SLA's own service for the Pvt Ltd (does both).
+  const gst = company === "WEB_ROCZ_PVT";
+  const category = company === "WEB_ROCZ" ? "DM" : company === "WEB_SOLUTIONS" ? "WEBSITE" : (sla.service === "DM" ? "DM" : "WEBSITE");
 
   // Resolve the client. If the typed name never matched an existing client, create one now
   // from the SLA's captured details so the accountant's client list & filters (account
