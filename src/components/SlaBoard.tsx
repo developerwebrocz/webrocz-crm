@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { uploadSla, generateInvoiceFromSla, deleteSla } from "@/app/sales-actions";
 import { downloadCsv } from "@/lib/csv";
-import { FileSignature, Upload, Search, Download, ReceiptText, FileText, Trash2, CheckCircle2, Clock, IndianRupee, X } from "lucide-react";
+import { FileSignature, Upload, Search, Download, FileText, Trash2, CheckCircle2, Clock, IndianRupee, X } from "lucide-react";
 
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
@@ -95,13 +95,13 @@ export default function SlaBoard({ rows, counts, totals, canUpload, canGenerate 
                         <form action={generateInvoiceFromSla} className="flex items-center gap-1">
                           <input type="hidden" name="slaId" value={r.id} />
                           <input type="hidden" name="return" value="/sla" />
-                          <select name="company" required defaultValue="" className="select !w-auto !py-1 !text-[12px]">
+                          {/* Direct move: picking a company submits immediately (no extra button). */}
+                          <select name="company" required defaultValue="" onChange={(e) => { if (e.currentTarget.value) e.currentTarget.form?.requestSubmit(); }} className="select !w-auto !py-1 !text-[12px] font-semibold text-[var(--violet)]">
                             <option value="" disabled>Move to…</option>
-                            <option value="WEB_SOLUTIONS">Web Solutions</option>
-                            <option value="WEB_ROCZ">Web Rocz</option>
-                            <option value="WEB_ROCZ_PVT">Web Rocz Pvt Ltd</option>
+                            <option value="WEB_SOLUTIONS">→ Web Solutions</option>
+                            <option value="WEB_ROCZ">→ Web Rocz</option>
+                            <option value="WEB_ROCZ_PVT">→ Web Rocz Pvt Ltd</option>
                           </select>
-                          <button type="submit" className="btn btn-sm btn-violet"><ReceiptText size={13} /> Move</button>
                         </form>
                       )}
                       <form action={deleteSla}><input type="hidden" name="slaId" value={r.id} /><input type="hidden" name="return" value="/sla" /><button type="submit" title="Delete SLA" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--rose)] hover:bg-[color-mix(in_srgb,var(--rose)_10%,white)]"><Trash2 size={13} /></button></form>
@@ -123,8 +123,6 @@ function UploadModal({ close }: { close: () => void }) {
   const [service, setService] = useState("WEBSITE");
   const [gst, setGst] = useState("1");
   const withGst = gst === "1";
-  // Web Solutions = Website + non-GST, Web Rocz = DM + non-GST, Web Rocz Pvt Ltd = With GST.
-  const target = withGst ? "Web Rocz Pvt Ltd" : service === "DM" ? "Web Rocz" : "Web Solutions";
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
       <div className="flex max-h-[92vh] w-full max-w-[520px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
@@ -151,7 +149,6 @@ function UploadModal({ close }: { close: () => void }) {
           <label className="block"><span className="eyebrow">Amount (₹, before GST)</span><input name="amount" type="number" min={0} required className="input mt-1" placeholder="0" /></label>
           <label className="block"><span className="eyebrow">SLA document</span><input name="file" type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" className="input mt-1 !py-2" /></label>
           <label className="block"><span className="eyebrow">Notes</span><input name="notes" className="input mt-1" placeholder="optional" /></label>
-          <p className="rounded-[10px] bg-[var(--surface-2)] px-3 py-2 text-[11.5px] text-[var(--muted)]">Accountant files this under → <b>{target}</b> · {withGst ? "GST" : "Non-GST"} series</p>
           <div className="flex justify-end gap-2 pt-1">
             <button type="button" onClick={close} className="btn btn-ghost">Cancel</button>
             <button type="submit" className="btn btn-violet"><Upload size={15} /> Upload SLA</button>
