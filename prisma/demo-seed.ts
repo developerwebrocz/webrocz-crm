@@ -185,13 +185,15 @@ async function main() {
   await ensureSla("Aster Hospitals", { title: "Corporate website + AMC", service: "WEBSITE", amount: 150000, gst: true, pocName: "Dr. Kiran", pocMobile: "9700998877", pocEmail: "web@asterhospitals.in", gstin: "36AASTH5678K1Z2", uploadedBy: "Ramya (Sales)", fileUrl: slaFile, status: "INVOICED" });
 
   console.log("--- New-update notifications (bell alerts) ---");
+  // Clean up dead-link notifications from earlier demo runs (the /finance page was removed).
+  await prisma.notification.deleteMany({ where: { link: "/finance" } });
   const alertUsers = (await prisma.user.findMany({ where: { active: true, role: { in: ["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"] } }, select: { id: true } })).map((u) => u.id);
   if (alertUsers.length) {
     await ensureNotification(alertUsers, "New SLA uploaded", "Sunrise Realty · Corporate website — annual (₹60,000) — ready to move to a company", "/sla", "violet");
     await ensureNotification(alertUsers, "New SLA uploaded", "Orbit Technologies · Website + SEO retainer (₹1,20,000) · GST", "/sla", "violet");
-    await ensureNotification(alertUsers, "Payment received", "Nova Fashion paid ₹30,000 against Meta Ads invoice", "/finance", "emerald");
+    await ensureNotification(alertUsers, "Payment received", "Nova Fashion paid ₹30,000 against Meta Ads invoice", "/invoices", "emerald");
     await ensureNotification(alertUsers, "Invoice pending approval", "Glow Skin Clinic · WR-INV-2026-0004 (₹64,900) awaiting approval", "/invoices", "amber");
-    await ensureNotification(alertUsers, "Payment overdue", "Glow Skin Clinic · ₹64,900 overdue — follow up", "/finance", "rose");
+    await ensureNotification(alertUsers, "Payment overdue", "Glow Skin Clinic · ₹64,900 overdue — follow up", "/invoices", "rose");
   }
 
   const leads = await prisma.lead.count();
