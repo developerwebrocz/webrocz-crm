@@ -5,7 +5,20 @@
 // Run:  npx tsx prisma/demo-seed.ts     ·  Undo: npx tsx prisma/clear-demo.ts
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaClient } from "../src/generated/prisma/client.js";
+import { writeFileSync, mkdirSync } from "node:fs";
 const prisma = new PrismaClient({ adapter: new PrismaBetterSqlite3({ url: process.env.DATABASE_URL ?? "file:./prisma/dev.db" }) });
+
+// Write a small placeholder SLA document so the "Download" link in the finance/company
+// views actually resolves to a real file. Returns the public URL served by /uploads/[...].
+function ensureSampleSlaFile(): string {
+  const rel = "public/uploads/slas";
+  try { mkdirSync(rel, { recursive: true }); } catch { /* exists */ }
+  const name = "webrocz-sample-sla.txt";
+  try {
+    writeFileSync(`${rel}/${name}`, "WEBROCZ — SAMPLE SLA (demo)\n\nService agreement placeholder used for the demo walkthrough.\nReplace with the real signed SLA document when live.\n");
+  } catch { /* ignore write errors — link will still render */ }
+  return `/uploads/slas/${name}`;
+}
 
 const TODAY = "2026-09-25";
 const DUE = "2026-09-24"; // reminders due (shows in the "due" counter / bell)
@@ -93,18 +106,30 @@ async function ensureInvoice(number: string, billTo: string, serviceName: string
 // A sample SLA uploaded by sales, awaiting the accountant to generate the invoice.
 // Carries the client details (contact / phone / email / GSTIN) so the accountant's
 // invoice + filters are complete even for a brand-new client. Idempotent by name+title.
-async function ensureSla(clientName: string, opts: { title: string; service: string; amount: number; gst: boolean; pocName?: string; pocMobile?: string; pocEmail?: string; gstin?: string; uploadedBy?: string }) {
+async function ensureSla(clientName: string, opts: { title: string; service: string; amount: number; gst: boolean; pocName?: string; pocMobile?: string; pocEmail?: string; gstin?: string; uploadedBy?: string; fileUrl?: string; status?: string }) {
   const existing = await prisma.sla.findFirst({ where: { clientName, title: opts.title } });
-  if (existing) { console.log("sla exists", clientName, "·", opts.title); return; }
   const client = (await prisma.client.findMany({ select: { id: true, name: true } }))
     .find((c) => c.name.trim().toLowerCase() === clientName.trim().toLowerCase());
-  await prisma.sla.create({ data: {
+  const data = {
     clientName, clientId: client?.id ?? null, title: opts.title,
     service: opts.service === "DM" ? "DM" : "WEBSITE", amount: opts.amount, gst: opts.gst,
     pocName: opts.pocName ?? "", pocMobile: opts.pocMobile ?? "", pocEmail: opts.pocEmail ?? "",
-    gstin: opts.gstin ?? "", status: "UPLOADED", uploadedBy: opts.uploadedBy ?? "Sales Exec",
-  } as never });
-  console.log("sla", clientName, "·", opts.title, opts.gst ? "· GST" : "· non-GST");
+    gstin: opts.gstin ?? "", status: opts.status ?? "UPLOADED", uploadedBy: opts.uploadedBy ?? "Sales Exec",
+    fileUrl: opts.fileUrl ?? "",
+  };
+  if (existing) { await prisma.sla.update({ where: { id: existing.id }, data: data as never }); console.log("sla updated", clientName, "·", opts.title); return; }
+  await prisma.sla.create({ data: data as never });
+  console.log("sla", clientName, "·", opts.title, opts.gst ? "· GST" : "· non-GST", opts.fileUrl ? "· file" : "");
+}
+
+// A sample in-app notification (bell alert) for the finance/admin team — idempotent by title+body per user.
+async function ensureNotification(userIds: string[], title: string, body: string, link: string, tone: string) {
+  for (const userId of userIds) {
+    const existing = await prisma.notification.findFirst({ where: { userId, title, body } });
+    if (existing) continue;
+    await prisma.notification.create({ data: { userId, title, body, link, tone, read: false } });
+  }
+  console.log("notify", title);
 }
 
 async function main() {
@@ -145,16 +170,34 @@ async function main() {
   await ensureInvoice("WR-INV-2026-0004", "Glow Skin Clinic", "Google Ads", 55000, 0, { contact: "Dr. Meghana", phone: "9700667788", email: "info@glowskin.in", issueDate: "2026-09-05", approved: false, category: "DM", gst: false, retainer: 18000 });
   await ensureInvoice("WR-INV-2026-0006", "FitZone Gym", "SEO", 40000, 20000, { contact: "Arjun Reddy", phone: "9885112233", email: "arjun@fitzone.in", issueDate: "2026-09-22", approved: false, category: "DM", gst: false, retainer: 12000 });
 
-  console.log("--- SLA demo (sales upload → accountant generates the invoice) ---");
-  // One per billing entity: Web Solutions (website, non-GST), Web Rocz (DM, non-GST),
-  // Web Rocz Pvt Ltd (website, With GST). Brand-new names → accountant creates the client.
-  await ensureSla("Sunrise Realty", { title: "Corporate website — annual", service: "WEBSITE", amount: 60000, gst: false, pocName: "Kavya Rao", pocMobile: "9701223344", pocEmail: "kavya@sunriserealty.in" });
-  await ensureSla("FreshLeaf Cafe", { title: "Social media — 3 months", service: "DM", amount: 30000, gst: false, pocName: "Vikram N", pocMobile: "9701445566", pocEmail: "vikram@freshleaf.in" });
-  await ensureSla("Orbit Technologies", { title: "Website + SEO retainer", service: "WEBSITE", amount: 120000, gst: true, pocName: "Anil Mehta", pocMobile: "9885778811", pocEmail: "anil@orbittech.in", gstin: "36AABCO1234F1Z9" });
+  console.log("--- SLA demo (with downloadable files) ---");
+  const slaFile = ensureSampleSlaFile();
+  // (A) Pending SLAs on the SLA board — sales uploaded (with a file), accountant will "Move to" a company.
+  await ensureSla("Sunrise Realty", { title: "Corporate website — annual", service: "WEBSITE", amount: 60000, gst: false, pocName: "Kavya Rao", pocMobile: "9701223344", pocEmail: "kavya@sunriserealty.in", uploadedBy: "Ramya (Sales)", fileUrl: slaFile });
+  await ensureSla("FreshLeaf Cafe", { title: "Social media — 3 months", service: "DM", amount: 30000, gst: false, pocName: "Vikram N", pocMobile: "9701445566", pocEmail: "vikram@freshleaf.in", uploadedBy: "Sridhar (Sales)", fileUrl: slaFile });
+  await ensureSla("Orbit Technologies", { title: "Website + SEO retainer", service: "WEBSITE", amount: 120000, gst: true, pocName: "Anil Mehta", pocMobile: "9885778811", pocEmail: "anil@orbittech.in", gstin: "36AABCO1234F1Z9", uploadedBy: "Ramya (Sales)", fileUrl: slaFile });
+  // (B) Already-moved SLAs (file-backed) for existing company clients → so the SLA download +
+  //     uploader name show inside the Web Rocz / Web Rocz Pvt Ltd hubs. Marked INVOICED so they
+  //     drop off the pending SLA board.
+  await ensureSla("Nova Fashion", { title: "Digital marketing retainer", service: "DM", amount: 50000, gst: false, pocName: "Divya Sharma", pocMobile: "9885334455", pocEmail: "divya@novafashion.in", uploadedBy: "Sridhar (Sales)", fileUrl: slaFile, status: "INVOICED" });
+  await ensureSla("Glow Skin Clinic", { title: "Google Ads + SEO — 6 months", service: "DM", amount: 55000, gst: false, pocName: "Dr. Meghana", pocMobile: "9700667788", pocEmail: "info@glowskin.in", uploadedBy: "Ramya (Sales)", fileUrl: slaFile, status: "INVOICED" });
+  await ensureSla("TechnoSoft Solutions", { title: "Custom website build", service: "WEBSITE", amount: 100000, gst: true, pocName: "Praveen Kumar", pocMobile: "9701778899", pocEmail: "praveen@technosoft.in", gstin: "36ABCDT1234E1Z5", uploadedBy: "Sridhar (Sales)", fileUrl: slaFile, status: "INVOICED" });
+  await ensureSla("Aster Hospitals", { title: "Corporate website + AMC", service: "WEBSITE", amount: 150000, gst: true, pocName: "Dr. Kiran", pocMobile: "9700998877", pocEmail: "web@asterhospitals.in", gstin: "36AASTH5678K1Z2", uploadedBy: "Ramya (Sales)", fileUrl: slaFile, status: "INVOICED" });
+
+  console.log("--- New-update notifications (bell alerts) ---");
+  const alertUsers = (await prisma.user.findMany({ where: { active: true, role: { in: ["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"] } }, select: { id: true } })).map((u) => u.id);
+  if (alertUsers.length) {
+    await ensureNotification(alertUsers, "New SLA uploaded", "Sunrise Realty · Corporate website — annual (₹60,000) — ready to move to a company", "/sla", "violet");
+    await ensureNotification(alertUsers, "New SLA uploaded", "Orbit Technologies · Website + SEO retainer (₹1,20,000) · GST", "/sla", "violet");
+    await ensureNotification(alertUsers, "Payment received", "Nova Fashion paid ₹30,000 against Meta Ads invoice", "/finance", "emerald");
+    await ensureNotification(alertUsers, "Invoice pending approval", "Glow Skin Clinic · WR-INV-2026-0004 (₹64,900) awaiting approval", "/invoices", "amber");
+    await ensureNotification(alertUsers, "Payment overdue", "Glow Skin Clinic · ₹64,900 overdue — follow up", "/finance", "rose");
+  }
 
   const leads = await prisma.lead.count();
   const invs = await prisma.salesInvoice.count();
   const slas = await prisma.sla.count();
-  console.log(`\n✅ Demo ready — ${leads} leads in pipeline, ${invs} invoices, ${slas} SLAs. Login /staff (sales@ / accountant@, pw webrocz123).`);
+  const notifs = await prisma.notification.count({ where: { read: false } });
+  console.log(`\n✅ Demo ready — ${leads} leads, ${invs} invoices, ${slas} SLAs, ${notifs} unread alerts. Login /staff (sales@ / accountant@, pw webrocz123).`);
 }
-main().finally(() => process.exit(0));
+main().then(() => console.log("SEED_OK")).catch((e) => { console.error("SEED_ERROR:", e); process.exitCode = 1; }).finally(() => setTimeout(() => process.exit(process.exitCode ?? 0), 300));
