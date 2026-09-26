@@ -20,6 +20,27 @@ async function ownerId(): Promise<string | null> {
   return u ? u.id : null;
 }
 
+// Billing entity: WEB_ROCZ_PVT (GST) · WEB_SOLUTIONS (non-GST website) · WEB_ROCZ (non-GST DM)
+const companyFor = (gst: boolean, category: string) => gst ? "WEB_ROCZ_PVT" : (category === "DM" ? "WEB_ROCZ" : "WEB_SOLUTIONS");
+
+async function nextClientCode(): Promise<string> {
+  const clients = await prisma.client.findMany({ select: { code: true } });
+  let max = 1000;
+  for (const c of clients) { const n = parseInt((c.code || "").replace(/\D/g, ""), 10); if (!Number.isNaN(n) && n > max) max = n; }
+  return "CLI-" + (max + 1);
+}
+// A Client record so finance/company-hub views (which are client-centric) show the invoice.
+async function ensureClient(name: string, opts: { pocName: string; pocMobile: string; pocEmail: string; retainer?: number; industry?: string }): Promise<string> {
+  const found = await prisma.client.findFirst({ where: { name } });
+  if (found) return found.id;
+  const c = await prisma.client.create({ data: {
+    code: await nextClientCode(), name, pocName: opts.pocName, pocMobile: opts.pocMobile, pocEmail: opts.pocEmail,
+    monthlyRetainer: opts.retainer ?? 0, status: "ACTIVE", industry: opts.industry ?? "",
+  } as never });
+  console.log("client", c.code, name);
+  return c.id;
+}
+
 type Extras = {
   followup?: { date: string; type: string; notes: string; nextDate: string };
   quotation?: { number: string; services: string; amount: number; status: string };
@@ -48,22 +69,25 @@ async function ensureLead(name: string, data: Record<string, unknown>, extras: E
   }
 }
 
-async function ensureInvoice(number: string, billTo: string, serviceName: string, subtotal: number, received: number, opts: { contact: string; phone: string; email: string; issueDate: string; approved: boolean; gstin?: string }) {
-  const taxPct = 18;
+async function ensureInvoice(number: string, billTo: string, serviceName: string, subtotal: number, received: number, opts: { contact: string; phone: string; email: string; issueDate: string; approved: boolean; category: "Website" | "DM"; gst: boolean; retainer?: number; gstin?: string }) {
+  // Client record — REQUIRED so the client-centric finance / company-hub views show this invoice.
+  const clientId = await ensureClient(billTo, { pocName: opts.contact, pocMobile: opts.phone, pocEmail: opts.email, retainer: opts.retainer ?? 0, industry: opts.category === "DM" ? "Digital Marketing" : "Website" });
+  const taxPct = opts.gst ? 18 : 0;
   const taxAmount = Math.round(subtotal * taxPct / 100);
   const total = subtotal + taxAmount;
   const balance = total - received;
   const paymentStatus = balance <= 0 ? "Paid" : received > 0 ? "Partial" : "Pending";
+  const company = companyFor(opts.gst, opts.category);
   const items = JSON.stringify([{ name: serviceName, qty: 1, rate: subtotal, amount: subtotal }]);
   const data = {
-    number, billTo, contact: opts.contact, phone: opts.phone, email: opts.email, pipeline: "WEBROCZ",
+    number, billTo, clientId, company, contact: opts.contact, phone: opts.phone, email: opts.email, pipeline: "WEBROCZ",
     items, subtotal, taxPct, taxAmount, total, received, paymentStatus, issueDate: opts.issueDate,
-    clientGstin: opts.gstin ?? null, clientState: "36-Telangana", placeOfSupply: "36-Telangana",
+    clientGstin: opts.gst ? (opts.gstin ?? null) : null, clientState: "36-Telangana", placeOfSupply: "36-Telangana",
     clientAddress: "Hyderabad, Telangana", approved: opts.approved,
     approvedBy: opts.approved ? "Super Admin" : null, approvedAt: opts.approved ? new Date() : null,
   };
   await prisma.salesInvoice.upsert({ where: { number }, create: data as never, update: data as never });
-  console.log("invoice", number, billTo, `₹${total}`, paymentStatus, opts.approved ? "approved" : "pending-approval");
+  console.log("invoice", number, billTo, `₹${total}`, paymentStatus, company, opts.approved ? "approved" : "pending-approval");
 }
 
 // A sample SLA uploaded by sales, awaiting the accountant to generate the invoice.
@@ -110,15 +134,16 @@ async function main() {
   await ensureLead("Nova Fashion", { stage: "ONBOARDED", company: "Nova Fashion", contactPerson: "Divya Sharma", phone: "9885334455", email: "divya@novafashion.in", source: "Instagram", services: JSON.stringify(["Meta Ads", "SEO", "Social Media Marketing"]), value: 50000, paymentStatus: "Advance Received", startDate: "2026-08-05", finalAmount: 50000 });
   await ensureLead("QuickBite Foods", { stage: "LOST", company: "QuickBite Foods", contactPerson: "Naveen Teja", phone: "9700990011", email: "naveen@quickbite.in", source: "Cold Call", services: JSON.stringify(["Google Ads"]), value: 25000, lostReason: "Went with competitor", lostNotes: "Price mismatch", lostDate: "2026-09-12" });
 
-  console.log("--- Accountant dashboard demo (invoices) ---");
-  // Website Development invoices (name from Website group → category = Website)
-  await ensureInvoice("WR-INV-2026-0001", "TechnoSoft Solutions", "Custom Website", 100000, 118000, { contact: "Praveen Kumar", phone: "9701778899", email: "praveen@technosoft.in", issueDate: "2026-07-10", approved: true, gstin: "36ABCDT1234E1Z5" });
-  await ensureInvoice("WR-INV-2026-0003", "Skyline Builders", "Custom Web Application", 250000, 100000, { contact: "Ramesh Gupta", phone: "9700334455", email: "ramesh@skyline.in", issueDate: "2026-08-20", approved: true });
-  await ensureInvoice("WR-INV-2026-0005", "Aster Hospitals", "Corporate Website", 150000, 177000, { contact: "Dr. Kiran", phone: "9700998877", email: "web@asterhospitals.in", issueDate: "2026-09-18", approved: true, gstin: "36AASTH5678K1Z2" });
-  // Digital Marketing invoices (name from DM group → category = Digital Marketing)
-  await ensureInvoice("WR-INV-2026-0002", "Nova Fashion", "Meta Ads", 50000, 30000, { contact: "Divya Sharma", phone: "9885334455", email: "divya@novafashion.in", issueDate: "2026-08-12", approved: true });
-  await ensureInvoice("WR-INV-2026-0004", "Glow Skin Clinic", "Google Ads", 55000, 0, { contact: "Dr. Meghana", phone: "9700667788", email: "info@glowskin.in", issueDate: "2026-09-05", approved: false });
-  await ensureInvoice("WR-INV-2026-0006", "FitZone Gym", "SEO", 40000, 20000, { contact: "Arjun Reddy", phone: "9885112233", email: "arjun@fitzone.in", issueDate: "2026-09-22", approved: false });
+  console.log("--- Accountant dashboard demo (invoices, client-linked, all 3 companies) ---");
+  // Web Rocz Pvt Ltd (WITH GST) — website, GST invoices
+  await ensureInvoice("WR-INV-2026-0001", "TechnoSoft Solutions", "Custom Website", 100000, 118000, { contact: "Praveen Kumar", phone: "9701778899", email: "praveen@technosoft.in", issueDate: "2026-07-10", approved: true, category: "Website", gst: true, gstin: "36ABCDT1234E1Z5" });
+  await ensureInvoice("WR-INV-2026-0005", "Aster Hospitals", "Corporate Website", 150000, 177000, { contact: "Dr. Kiran", phone: "9700998877", email: "web@asterhospitals.in", issueDate: "2026-09-18", approved: true, category: "Website", gst: true, gstin: "36AASTH5678K1Z2" });
+  // Web Solutions (non-GST) — website
+  await ensureInvoice("WR-INV-2026-0003", "Skyline Builders", "Custom Web Application", 250000, 100000, { contact: "Ramesh Gupta", phone: "9700334455", email: "ramesh@skyline.in", issueDate: "2026-08-20", approved: true, category: "Website", gst: false });
+  // Web Rocz (non-GST) — digital marketing (monthly retainer clients)
+  await ensureInvoice("WR-INV-2026-0002", "Nova Fashion", "Meta Ads", 50000, 30000, { contact: "Divya Sharma", phone: "9885334455", email: "divya@novafashion.in", issueDate: "2026-08-12", approved: true, category: "DM", gst: false, retainer: 15000 });
+  await ensureInvoice("WR-INV-2026-0004", "Glow Skin Clinic", "Google Ads", 55000, 0, { contact: "Dr. Meghana", phone: "9700667788", email: "info@glowskin.in", issueDate: "2026-09-05", approved: false, category: "DM", gst: false, retainer: 18000 });
+  await ensureInvoice("WR-INV-2026-0006", "FitZone Gym", "SEO", 40000, 20000, { contact: "Arjun Reddy", phone: "9885112233", email: "arjun@fitzone.in", issueDate: "2026-09-22", approved: false, category: "DM", gst: false, retainer: 12000 });
 
   console.log("--- SLA demo (sales upload → accountant generates the invoice) ---");
   // One per billing entity: Web Solutions (website, non-GST), Web Rocz (DM, non-GST),
