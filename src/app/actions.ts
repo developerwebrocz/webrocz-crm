@@ -778,15 +778,25 @@ export async function addClientWebsite(fd: FormData) {
     const created = await prisma.client.create({ data: { code: await nextClientCode(), name: clientName, status: "ACTIVE" } });
     clientId = created.id;
   }
+  // Services list (Domain / Hosting + SSL / Website Designing / custom); Domain & Hosting drive
+  // their amounts + the auto renewal, expiry = register date + 1 year.
+  const svc = fd.getAll("svc").map((v) => String(v).trim()).filter(Boolean);
+  const domainTaken = svc.includes("Domain");
+  const hostingTaken = svc.includes("Hosting + SSL");
+  const domainAmount = domainTaken ? Math.max(0, n(fd, "domainAmount")) : 0;
+  const hostingAmount = hostingTaken ? Math.max(0, n(fd, "hostingAmount")) : 0;
+  const takenDate = s(fd, "websiteTakenDate");
+  const expiryDate = (() => { if (!takenDate) return ""; const d = new Date(takenDate + "T00:00:00Z"); if (isNaN(d.getTime())) return ""; d.setUTCFullYear(d.getUTCFullYear() + 1); return d.toISOString().slice(0, 10); })();
   await prisma.client.update({
     where: { id: clientId },
     data: {
-      websiteName: s(fd, "websiteName"),
       websiteDomain: s(fd, "websiteDomain"),
-      hostingTaken: s(fd, "hostingTaken") === "yes",
-      websiteTakenDate: s(fd, "websiteTakenDate"),
-      websiteExpiryDate: s(fd, "websiteExpiryDate"),
-      websiteRenewAmount: n(fd, "websiteRenewAmount"),
+      websiteServices: JSON.stringify(svc),
+      domainTaken, domainAmount,
+      hostingTaken, hostingAmount,
+      websiteTakenDate: takenDate,
+      websiteExpiryDate: expiryDate,
+      websiteRenewAmount: domainAmount + hostingAmount,
     },
   });
   revalidatePath("/renewals");

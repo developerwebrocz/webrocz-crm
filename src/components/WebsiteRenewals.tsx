@@ -167,31 +167,62 @@ export default function WebsiteRenewals({ rows, counts, totals, embedded, locked
 
 // Add website: pick a client (those without a website first) and fill the details.
 function AddWebsiteModal({ rows, close }: { rows: Row[]; close: () => void }) {
+  const [domainOn, setDomainOn] = useState(false);
+  const [hostingOn, setHostingOn] = useState(false);
+  const [designOn, setDesignOn] = useState(false);
+  const [customs, setCustoms] = useState<string[]>([]);
+  const [domainAmt, setDomainAmt] = useState(0);
+  const [hostingAmt, setHostingAmt] = useState(0);
+  const [registerDate, setRegisterDate] = useState("");
+  const renewal = (domainOn ? domainAmt || 0 : 0) + (hostingOn ? hostingAmt || 0 : 0);
+  const expiry = (() => { if (!registerDate) return ""; const d = new Date(registerDate + "T00:00:00Z"); if (isNaN(d.getTime())) return ""; d.setUTCFullYear(d.getUTCFullYear() + 1); return d.toISOString().slice(0, 10); })();
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
-      <div className="flex max-h-[92vh] w-full max-w-[480px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
+      <div className="flex max-h-[92vh] w-full max-w-[540px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
           <div>
             <h2 className="text-[16px] font-bold">Add website</h2>
-            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">Type the client name and record their website, hosting &amp; renewal.</p>
+            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">Type the client name and record their domain, services &amp; renewal.</p>
           </div>
           <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
         </div>
         <form action={addClientWebsite} className="space-y-3 overflow-y-auto scroll-thin px-6 py-5">
           <input type="hidden" name="return" value="/renewals" />
-          <label className="block"><span className="eyebrow">Client name *</span>
-            <input name="clientName" required list="client-names" className="input mt-1" placeholder="Type the client / company name" />
-            <datalist id="client-names">{rows.map((r) => <option key={r.id} value={r.name} />)}</datalist>
-            <span className="mt-1 block text-[11px] text-[var(--faint)]">Matches an existing client, or creates a new one if the name is new.</span>
-          </label>
-          <label className="block"><span className="eyebrow">Website name</span><input name="websiteName" className="input mt-1" placeholder="e.g. Acme Corporate Site" /></label>
-          <label className="block"><span className="eyebrow">Domain</span><input name="websiteDomain" className="input mt-1" placeholder="e.g. acme.com" /></label>
-          <label className="block"><span className="eyebrow">Hosting taken with us?</span><select name="hostingTaken" defaultValue="no" className="select mt-1"><option value="no">No</option><option value="yes">Yes</option></select></label>
           <div className="grid grid-cols-2 gap-3">
-            <label className="block"><span className="eyebrow">Date taken</span><input name="websiteTakenDate" type="date" className="input mt-1" /></label>
-            <label className="block"><span className="eyebrow">Expiry date</span><input name="websiteExpiryDate" type="date" className="input mt-1" /></label>
+            <label className="block"><span className="eyebrow">Company name *</span><input name="clientName" required list="client-names" className="input mt-1" placeholder="Company / client" /><datalist id="client-names">{rows.map((r) => <option key={r.id} value={r.name} />)}</datalist></label>
+            <label className="block"><span className="eyebrow">Domain name</span><input name="websiteDomain" className="input mt-1" placeholder="e.g. acme.com" /></label>
           </div>
-          <label className="block"><span className="eyebrow">Renewal amount (₹)</span><input name="websiteRenewAmount" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="e.g. 8000" /></label>
+          <span className="block text-[11px] text-[var(--faint)]">Matches an existing client, or creates a new one if the name is new.</span>
+          <div className="rounded-[10px] border border-[var(--line)] p-3">
+            <div className="eyebrow mb-2 flex items-center gap-1.5"><Globe size={13} /> Services</div>
+            <div className="space-y-2 text-[13px] font-semibold">
+              <label className="flex items-center gap-2"><input type="checkbox" name="svc" value="Domain" checked={domainOn} onChange={(e) => setDomainOn(e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> Domain</label>
+              <label className="flex items-center gap-2"><input type="checkbox" name="svc" value="Hosting + SSL" checked={hostingOn} onChange={(e) => setHostingOn(e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> Hosting + SSL</label>
+              <label className="flex items-center gap-2"><input type="checkbox" name="svc" value="Website Designing" checked={designOn} onChange={(e) => setDesignOn(e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> Website Designing</label>
+              {customs.map((c, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <input name="svc" value={c} onChange={(e) => setCustoms((cs) => cs.map((v, j) => (j === i ? e.target.value : v)))} className="input flex-1 font-normal" placeholder="Custom service" />
+                  <button type="button" onClick={() => setCustoms((cs) => cs.filter((_, j) => j !== i))} title="Remove" className="grid h-8 w-8 flex-none place-items-center rounded-[8px] border border-[var(--line-2)] text-[var(--rose)] hover:bg-[color-mix(in_srgb,var(--rose)_10%,white)]"><X size={14} /></button>
+                </div>
+              ))}
+              <button type="button" onClick={() => setCustoms((cs) => [...cs, ""])} className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--violet)] hover:underline"><Plus size={13} /> Add</button>
+            </div>
+            {(domainOn || hostingOn) && (
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                {domainOn && <label className="block"><span className="text-[12px] font-semibold">Domain amount (₹)</span><input name="domainAmount" type="number" min={0} value={domainAmt} onChange={(e) => setDomainAmt(parseInt(e.target.value, 10) || 0)} className="input mt-1" placeholder="0" /></label>}
+                {hostingOn && <label className="block"><span className="text-[12px] font-semibold">Hosting amount (₹)</span><input name="hostingAmount" type="number" min={0} value={hostingAmt} onChange={(e) => setHostingAmt(parseInt(e.target.value, 10) || 0)} className="input mt-1" placeholder="0" /></label>}
+              </div>
+            )}
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <label className="block"><span className="text-[12px] font-semibold">Register date</span><input name="websiteTakenDate" type="date" value={registerDate} onChange={(e) => setRegisterDate(e.target.value)} className="input mt-1" /></label>
+              <div><span className="text-[12px] font-semibold">Expiry date <span className="font-normal text-[var(--faint)]">(auto · +1 yr)</span></span>
+                <div className="input mt-1 flex items-center bg-[var(--surface-2)] text-[var(--muted)]">{fmtDate(expiry)}</div>
+                <input type="hidden" name="websiteExpiryDate" value={expiry} />
+              </div>
+            </div>
+            <label className="mt-3 block"><span className="text-[12px] font-semibold">Renewal amount (₹) <span className="font-normal text-[var(--faint)]">(auto · domain + hosting)</span></span>
+              <input name="websiteRenewAmount" type="number" value={renewal} readOnly className="input mt-1 bg-[var(--surface-2)] font-semibold" /></label>
+          </div>
           <div className="flex justify-end gap-2 pt-1">
             <button type="button" onClick={close} className="btn btn-ghost">Cancel</button>
             <button type="submit" className="btn btn-violet"><Plus size={15} /> Add website</button>
