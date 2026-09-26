@@ -11,7 +11,7 @@ const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
-type Client = { id: string; code: string; name: string; website: string | null; industry: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; monthlyRetainer: number; status: string; renewalDate: string; gstApplicable: boolean; gstRate: number; gstin: string; onboardDate: string; notes: string | null; websiteName: string; websiteDomain: string; domainTaken: boolean; domainAmount: number; hostingTaken: boolean; hostingAmount: number; websiteTakenDate: string; websiteExpiryDate: string; websiteRenewAmount: number; nextFollowup: string; accountManagerId: string | null };
+type Client = { id: string; code: string; name: string; website: string | null; industry: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; monthlyRetainer: number; status: string; renewalDate: string; gstApplicable: boolean; gstRate: number; gstin: string; onboardDate: string; notes: string | null; websiteName: string; websiteDomain: string; websiteServices: string; domainTaken: boolean; domainAmount: number; hostingTaken: boolean; hostingAmount: number; websiteTakenDate: string; websiteExpiryDate: string; websiteRenewAmount: number; nextFollowup: string; accountManagerId: string | null };
 type Inv = { id: string; number: string; total: number; received: number; balance: number; approved: boolean; paymentStatus: string; issueDate: string; dueDate: string; leadId: string | null; category: string; overdue: boolean; company: string; followups: { date: string; by: string; note: string }[] };
 type Pay = { id: string; invoiceId: string; invoiceNumber: string; amount: number; date: string; mode: string; ref: string; note: string; by: string };
 type Followup = { date: string; by: string; note: string; next?: string };
@@ -248,9 +248,13 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
   );
 }
 
+const FIXED_SERVICES = ["Domain", "Hosting + SSL", "Website Designing"];
 function EditModal({ client, close }: { client: Client; close: () => void }) {
-  const [domainOn, setDomainOn] = useState(client.domainTaken);
-  const [hostingOn, setHostingOn] = useState(client.hostingTaken);
+  const initServices = (() => { try { const a = JSON.parse(client.websiteServices || "[]"); return Array.isArray(a) ? a.map(String) : []; } catch { return []; } })();
+  const [domainOn, setDomainOn] = useState(client.domainTaken || initServices.includes("Domain"));
+  const [hostingOn, setHostingOn] = useState(client.hostingTaken || initServices.includes("Hosting + SSL"));
+  const [designOn, setDesignOn] = useState(initServices.includes("Website Designing"));
+  const [customs, setCustoms] = useState<string[]>(initServices.filter((s) => !FIXED_SERVICES.includes(s)));
   const [domainAmt, setDomainAmt] = useState(client.domainAmount || 0);
   const [hostingAmt, setHostingAmt] = useState(client.hostingAmount || 0);
   const [registerDate, setRegisterDate] = useState(client.websiteTakenDate || "");
@@ -284,9 +288,17 @@ function EditModal({ client, close }: { client: Client; close: () => void }) {
           </div>
           <div className="rounded-[10px] border border-[var(--line)] p-3">
             <div className="eyebrow mb-2 flex items-center gap-1.5"><Globe size={13} /> Services</div>
-            <div className="flex flex-wrap items-center gap-5 text-[13px] font-semibold">
-              <label className="inline-flex items-center gap-2"><input type="checkbox" name="domainTaken" checked={domainOn} onChange={(e) => setDomainOn(e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> Domain</label>
-              <label className="inline-flex items-center gap-2"><input type="checkbox" name="hostingTaken" checked={hostingOn} onChange={(e) => setHostingOn(e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> Hosting + SSL</label>
+            <div className="space-y-2 text-[13px] font-semibold">
+              <label className="flex items-center gap-2"><input type="checkbox" name="svc" value="Domain" checked={domainOn} onChange={(e) => setDomainOn(e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> Domain</label>
+              <label className="flex items-center gap-2"><input type="checkbox" name="svc" value="Hosting + SSL" checked={hostingOn} onChange={(e) => setHostingOn(e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> Hosting + SSL</label>
+              <label className="flex items-center gap-2"><input type="checkbox" name="svc" value="Website Designing" checked={designOn} onChange={(e) => setDesignOn(e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> Website Designing</label>
+              {customs.map((c, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <input name="svc" value={c} onChange={(e) => setCustoms((cs) => cs.map((v, j) => (j === i ? e.target.value : v)))} className="input flex-1 font-normal" placeholder="Custom service" />
+                  <button type="button" onClick={() => setCustoms((cs) => cs.filter((_, j) => j !== i))} title="Remove" className="grid h-8 w-8 flex-none place-items-center rounded-[8px] border border-[var(--line-2)] text-[var(--rose)] hover:bg-[color-mix(in_srgb,var(--rose)_10%,white)]"><X size={14} /></button>
+                </div>
+              ))}
+              <button type="button" onClick={() => setCustoms((cs) => [...cs, ""])} className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--violet)] hover:underline"><Plus size={13} /> Add</button>
             </div>
             {(domainOn || hostingOn) && (
               <div className="mt-3 grid grid-cols-2 gap-3">

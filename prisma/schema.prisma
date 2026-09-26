@@ -99,6 +99,7 @@ model Client {
   // --- Website renewal / hosting (one website per client) ---
   websiteName        String  @default("") // website URL
   websiteDomain      String  @default("") // e.g. example.com
+  websiteServices    String  @default("[]") // JSON list of services (Domain / Hosting + SSL / Website Designing / custom)
   domainTaken        Boolean @default(false) // domain service taken
   domainAmount       Int     @default(0)  // INR — domain cost
   hostingTaken       Boolean @default(false) // hosting + SSL taken with us?

@@ -680,9 +680,11 @@ export async function updateClientFinance(fd: FormData) {
   const name = s(fd, "name");
   if (!name) redirect(`/accounts/${id}?err=name`);
   const STATUS_OK = ["ACTIVE", "ON_HOLD", "UPCOMING"];
-  // Services (Domain / Hosting+SSL) — the amount only counts when the service is ticked.
-  const domainTaken = s(fd, "domainTaken") === "on" || s(fd, "domainTaken") === "yes";
-  const hostingTaken = s(fd, "hostingTaken") === "on" || s(fd, "hostingTaken") === "yes";
+  // Services list (Domain / Hosting + SSL / Website Designing / custom). Domain & Hosting drive
+  // their amounts + the renewal; the full list is stored so it shows in Website Renewals.
+  const svc = fd.getAll("svc").map((v) => String(v).trim()).filter(Boolean);
+  const domainTaken = svc.includes("Domain");
+  const hostingTaken = svc.includes("Hosting + SSL");
   const domainAmount = domainTaken ? Math.max(0, n(fd, "domainAmount")) : 0;
   const hostingAmount = hostingTaken ? Math.max(0, n(fd, "hostingAmount")) : 0;
   const takenDate = s(fd, "websiteTakenDate");
@@ -699,6 +701,7 @@ export async function updateClientFinance(fd: FormData) {
       // Industry, monthly retainer, account manager, GST/GSTIN, website URL and the general
       // renewal date are not edited here — left untouched so they keep what was set elsewhere.
       websiteDomain: s(fd, "websiteDomain"),
+      websiteServices: JSON.stringify(svc),
       domainTaken, domainAmount,
       hostingTaken, hostingAmount,
       websiteTakenDate: takenDate,

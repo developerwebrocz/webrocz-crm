@@ -2240,7 +2240,7 @@ export async function getWebsiteRenewals() {
   const [clients, invoices, leads] = await Promise.all([
     prisma.client.findMany({
       orderBy: { name: "asc" },
-      select: { id: true, code: true, name: true, pocMobile: true, pocEmail: true, status: true, website: true, websiteName: true, websiteDomain: true, domainTaken: true, hostingTaken: true, websiteTakenDate: true, websiteExpiryDate: true, websiteRenewAmount: true, gstApplicable: true },
+      select: { id: true, code: true, name: true, pocMobile: true, pocEmail: true, status: true, website: true, websiteName: true, websiteDomain: true, websiteServices: true, domainTaken: true, hostingTaken: true, websiteTakenDate: true, websiteExpiryDate: true, websiteRenewAmount: true, gstApplicable: true },
     }),
     prisma.salesInvoice.findMany({ select: { clientId: true, billTo: true, items: true, leadId: true, company: true, taxPct: true } }),
     prisma.lead.findMany({ select: { id: true, services: true } }),
@@ -2263,6 +2263,11 @@ export async function getWebsiteRenewals() {
     websiteClientIds.add(cid);
     if (company === "WEB_ROCZ_PVT") websiteGstIds.add(cid); else websiteNoGstIds.add(cid);
   }
+  // The client's website services list; legacy clients (no list yet) fall back to the flags.
+  const servicesOf = (c: { websiteServices: string; domainTaken: boolean; hostingTaken: boolean }): string[] => {
+    try { const a = JSON.parse(c.websiteServices || "[]"); if (Array.isArray(a) && a.length) return a.map(String); } catch { /* ignore */ }
+    return [c.domainTaken ? "Domain" : "", c.hostingTaken ? "Hosting + SSL" : ""].filter(Boolean);
+  };
   const rows = clients.map((c) => {
     const domain = c.websiteDomain || c.website || "";
     const expiry = c.websiteExpiryDate || "";
@@ -2278,7 +2283,7 @@ export async function getWebsiteRenewals() {
     return {
       id: c.id, code: c.code, name: c.name, phone: c.pocMobile ?? "", email: c.pocEmail ?? "",
       status: c.status, websiteName: c.websiteName || "", domain,
-      domainTaken: c.domainTaken, hostingTaken: c.hostingTaken, takenDate: c.websiteTakenDate || "", expiryDate: expiry,
+      domainTaken: c.domainTaken, hostingTaken: c.hostingTaken, services: servicesOf(c), takenDate: c.websiteTakenDate || "", expiryDate: expiry,
       renewAmount: c.websiteRenewAmount || 0,
       daysToExpiry, expiring, expired, hasWebsite, detailsFilled, isWebsiteClient, websiteGst, websiteNoGst,
     };
@@ -2303,7 +2308,7 @@ export async function getWebsiteRenewals() {
 export async function getFinanceClientDetail(clientId: string) {
   const client = await prisma.client.findUnique({
     where: { id: clientId },
-    select: { id: true, code: true, name: true, website: true, industry: true, pocName: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true, renewalDate: true, gstApplicable: true, gstRate: true, gstin: true, onboardDate: true, notes: true, websiteName: true, websiteDomain: true, domainTaken: true, domainAmount: true, hostingTaken: true, hostingAmount: true, websiteTakenDate: true, websiteExpiryDate: true, websiteRenewAmount: true, followupLog: true, nextFollowup: true, accountManagerId: true },
+    select: { id: true, code: true, name: true, website: true, industry: true, pocName: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true, renewalDate: true, gstApplicable: true, gstRate: true, gstin: true, onboardDate: true, notes: true, websiteName: true, websiteDomain: true, websiteServices: true, domainTaken: true, domainAmount: true, hostingTaken: true, hostingAmount: true, websiteTakenDate: true, websiteExpiryDate: true, websiteRenewAmount: true, followupLog: true, nextFollowup: true, accountManagerId: true },
   });
   if (!client) return null;
   const [invoicesRaw, leads, amUsers, slasRaw] = await Promise.all([

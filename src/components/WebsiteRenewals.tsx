@@ -13,7 +13,7 @@ const todayISO = () => new Date().toISOString().slice(0, 10);
 
 type Row = {
   id: string; code: string; name: string; phone: string; email: string; status: string;
-  websiteName: string; domain: string; domainTaken: boolean; hostingTaken: boolean; takenDate: string; expiryDate: string;
+  websiteName: string; domain: string; domainTaken: boolean; hostingTaken: boolean; services: string[]; takenDate: string; expiryDate: string;
   renewAmount: number; daysToExpiry: number | null; expiring: boolean; expired: boolean; hasWebsite: boolean; detailsFilled: boolean; isWebsiteClient: boolean; websiteGst: boolean; websiteNoGst: boolean;
 };
 type Counts = { all: number; tracked: number; hosting: number; expiring: number; expired: number };
@@ -117,7 +117,7 @@ export default function WebsiteRenewals({ rows, counts, totals, embedded, locked
             <tbody>
               {filtered.length === 0 && <tr><td colSpan={8} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No website clients{view === "expiring" ? " expiring" : ""} found. Use “Add website” to add one.</td></tr>}
               {paged.map((r, i) => {
-                const services = [r.domainTaken ? "Domain" : "", r.hostingTaken ? "Hosting + SSL" : ""].filter(Boolean);
+                const services = r.services;
                 return (
                 <tr key={r.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
                   <td className="px-5 py-3 text-[12.5px] text-[var(--faint)] tnum">{start + i + 1}</td>
