@@ -540,7 +540,11 @@ export async function addInvoice(fd: FormData) {
 
   const category = s(fd, "category") === "DM" ? "DM" : "WEBSITE";
   const serviceLabel = category === "DM" ? "Digital Marketing" : "Website Development";
-  const desc = s(fd, "desc") || serviceLabel;
+  // Web Solutions invoices tick services (Domain / Hosting+SSL / Website Designing / custom) —
+  // they become the invoice line; the Description is kept as a note.
+  const services = fd.getAll("services").map((v) => String(v).trim()).filter(Boolean);
+  const description = s(fd, "desc");
+  const desc = services.length ? services.join(", ") : (description || serviceLabel);
   const gst = s(fd, "gst") === "1";
 
   // Match an existing client by name, else create a fresh one (CLI-#### like the finance flow).
@@ -554,6 +558,14 @@ export async function addInvoice(fd: FormData) {
     // Backfill the client's GSTIN from this invoice if it wasn't on record yet.
     await prisma.client.update({ where: { id: client.id }, data: { gstin: formGstin, gstApplicable: true } });
     client.gstin = formGstin;
+  }
+
+  // Website details captured on the invoice (Web Solutions) → saved onto the client so they
+  // feed the Website Renewals tracking (domain + renewal amount).
+  const domain = s(fd, "domain");
+  const renewalAmount = Math.max(0, n(fd, "renewalAmount"));
+  if (domain || renewalAmount > 0) {
+    await prisma.client.update({ where: { id: client.id }, data: { ...(domain ? { websiteDomain: domain } : {}), ...(renewalAmount > 0 ? { websiteRenewAmount: renewalAmount } : {}) } });
   }
 
   const taxPct = gst ? (client.gstRate > 0 ? client.gstRate : 18) : 0;
@@ -575,6 +587,7 @@ export async function addInvoice(fd: FormData) {
       subtotal: base, taxPct, taxAmount, total, received,
       paymentStatus: received >= total ? "Fully Received" : received > 0 ? "Partially Received" : "Pending",
       issueDate, dueDate,
+      ...(services.length && description ? { notes: description } : {}),
     },
   });
   if (received > 0) {
