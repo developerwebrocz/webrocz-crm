@@ -12,6 +12,8 @@ const PAGE_SIZE = 10;
 
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
+// File name from an uploaded SLA URL, dropping the "<timestamp>-" upload prefix.
+const slaFileName = (url: string) => { const base = decodeURIComponent(url.split("/").pop() || ""); return base.replace(/^\d+-/, ""); };
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const addDaysISO = (iso: string, n: number) => { const d = new Date((iso || todayISO()) + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 
@@ -186,7 +188,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
                   <td className="px-5 py-3 text-[12.5px] tnum">{r.phone || "—"}</td>
                   <td className="px-5 py-3 text-[12.5px]">{r.email ? <a href={`mailto:${r.email}`} className="text-[var(--indigo)] hover:underline">{r.email}</a> : "—"}</td>
                   <td className="px-5 py-3">{r.slaUrl
-                    ? <a href={r.slaUrl} target="_blank" rel="noreferrer" download title={r.slaTitle || "Download SLA"} className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--violet)] hover:bg-[var(--surface-2)]"><Download size={13} /> SLA</a>
+                    ? <a href={r.slaUrl} target="_blank" rel="noreferrer" download title={r.slaTitle || `Download ${slaFileName(r.slaUrl)}`} className="inline-flex max-w-[180px] items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--violet)] hover:bg-[var(--surface-2)]"><Download size={13} className="flex-none" /> <span className="truncate">{slaFileName(r.slaUrl)}</span></a>
                     : <span className="text-[var(--faint)]">—</span>}</td>
                   <td className="px-5 py-3"><CatChip c={catActive ? scopeLabel : r.category} /></td>
                   <td className="px-5 py-3"><div className="text-[13px] font-semibold tnum">{inr(r.billed)}</div>{r.pending > 0 && <div className="text-[11px] font-semibold tnum" style={{ color: r.overdueAmt > 0 ? "var(--rose)" : "var(--amber)" }}>{inr(r.pending)} due{r.overdueAmt > 0 ? " · overdue" : ""}</div>}</td>
