@@ -131,7 +131,7 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
               {fInvoices.length === 0 && <tr><td colSpan={10} className="px-5 py-10 text-center text-sm text-[var(--muted)]">{filterActive ? "No invoices in this period." : "No invoices for this client yet."}</td></tr>}
               {fInvoices.map((r) => (
                 <tr key={r.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
-                  <td className="px-5 py-3 text-[12.5px] font-semibold">{r.number}{!r.approved && <span className="ml-1 text-[10.5px] font-bold text-[var(--amber)]">(unapproved)</span>}</td>
+                  <td className="px-5 py-3 text-[12.5px] font-semibold">{r.number}</td>
                   <td className="px-5 py-3 text-[11.5px] font-semibold text-[var(--ink-2)]">{r.company ? companyLabel(r.company) : "—"}</td>
                   <td className="px-5 py-3"><CatChip c={r.category} /></td>
                   <td className="px-5 py-3 text-[12.5px] text-[var(--muted)] tnum">{fmtDate(r.issueDate)}</td>

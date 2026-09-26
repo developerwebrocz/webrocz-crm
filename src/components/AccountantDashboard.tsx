@@ -156,7 +156,7 @@ export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, 
                     <td className="px-5 py-3 text-[12.5px] text-[var(--faint)] tnum">{start + i + 1}</td>
                     <td className="px-5 py-3"><Link href={clientHref(r)} prefetch className="text-left text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.billTo}</Link><div className="text-[11px] text-[var(--faint)]">{r.phone || r.email || ""}</div></td>
                     <td className="px-5 py-3"><CatChip c={r.category} /></td>
-                    <td className="px-5 py-3 text-[12.5px] font-semibold">{r.number}{!r.approved && <span className="ml-1 text-[10.5px] font-bold text-[var(--amber)]">(unapproved)</span>}</td>
+                    <td className="px-5 py-3 text-[12.5px] font-semibold">{r.number}</td>
                     <td className="px-5 py-3 text-[12.5px] text-[var(--muted)] tnum">{fmtDate(r.issueDate)}</td>
                     <td className="px-5 py-3 text-[12.5px] tnum" style={{ color: r.overdue ? "var(--rose)" : "var(--muted)" }}>{fmtDate(r.dueDate)}{r.overdue ? " ⚠" : ""}</td>
                     <td className="px-5 py-3 text-[13px] font-semibold tnum">{inr(r.total)}</td>
