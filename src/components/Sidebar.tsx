@@ -79,7 +79,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     const activeCo = activeCoKey === c.key;
     const subItems: Item[] = activeCo ? [
       { href: `/pipeline/${c.slug}`, label: c.clientsLabel, icon: Users, forceActive: path === `/pipeline/${c.slug}` },
-      { href: `/invoices?company=${c.key}`, label: "Invoices", icon: ReceiptText, forceActive: path.startsWith("/invoices") && companyParam === c.key },
+      { href: `/invoices?company=${c.key}&hub=1`, label: "Invoices", icon: ReceiptText, forceActive: path.startsWith("/invoices") && companyParam === c.key },
       ...(c.renewals ? [{ href: `/renewals?company=${c.slug}`, label: "Website renewals", icon: Repeat, forceActive: path.startsWith("/renewals") && companyParam === c.slug }] : []),
     ] : [];
     return { href: `/pipeline/${c.slug}`, label: c.label, icon: c.icon, forceActive: activeCo, subItems };

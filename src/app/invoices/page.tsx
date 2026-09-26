@@ -2,6 +2,8 @@ import { getInvoices } from "@/lib/queries";
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import InvoicesDashboard from "@/components/InvoicesDashboard";
+import CompanyNav from "@/components/CompanyNav";
+import { COMPANY_KEYS } from "@/lib/domain";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +19,16 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
   const company = typeof sp.company === "string" ? sp.company : "";
   const d = await getInvoices({ q, status, company });
   const hideApproval = user.role === "ACCOUNTANT";
-  // Invoices always renders its own company tabs (filter in place). Selecting a company tab
-  // keeps you on this tabbed view — it does NOT switch into a separate company "page".
-  return <InvoicesDashboard rows={d.rows} totals={d.totals} companyCounts={d.companyCounts} clientNames={d.clientNames} q={q} status={status} company={company} hideApproval={hideApproval} embedded={false} />;
+  // Opened from a company's sidebar (hub=1) → stay inside that company: a CompanyNav header and
+  // the invoices scoped to it (no cross-company tabs). Otherwise the normal tabbed dashboard,
+  // where the company tabs filter in place.
+  const inHub = sp.hub === "1" && (COMPANY_KEYS as readonly string[]).includes(company);
+  const dash = <InvoicesDashboard rows={d.rows} totals={d.totals} companyCounts={d.companyCounts} clientNames={d.clientNames} q={q} status={status} company={company} hideApproval={hideApproval} embedded={inHub} />;
+  if (!inHub) return dash;
+  return (
+    <div className="space-y-5">
+      <CompanyNav company={company} active="invoices" />
+      {dash}
+    </div>
+  );
 }

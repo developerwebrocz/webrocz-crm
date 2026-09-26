@@ -122,7 +122,7 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
 
       {fuInv && <InvoiceFollowupModal inv={fuInv} close={() => setFuInv(null)} />}
       {delInv && <DeleteInvoiceModal inv={delInv} close={() => setDelInv(null)} />}
-      {addOpen && <AddInvoiceModal clientNames={clientNames} close={() => setAddOpen(false)} lockCompany={embedded ? company : undefined} returnTo={embedded ? `/invoices?company=${company}` : "/invoices"} />}
+      {addOpen && <AddInvoiceModal clientNames={clientNames} close={() => setAddOpen(false)} lockCompany={embedded ? company : undefined} returnTo={embedded ? `/invoices?company=${company}&hub=1` : "/invoices"} />}
     </div>
   );
 }
