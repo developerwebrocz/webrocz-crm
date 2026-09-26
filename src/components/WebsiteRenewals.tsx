@@ -19,10 +19,10 @@ type Row = {
 type Counts = { all: number; tracked: number; hosting: number; expiring: number; expired: number };
 type Totals = { renewDue: number; renewAll: number };
 
-export default function WebsiteRenewals({ rows, counts, totals }: { rows: Row[]; counts: Counts; totals: Totals }) {
+export default function WebsiteRenewals({ rows, counts, totals, embedded, lockedGst }: { rows: Row[]; counts: Counts; totals: Totals; embedded?: boolean; lockedGst?: "GST" | "NOGST" }) {
   const [q, setQ] = useState("");
   const [view, setView] = useState<"tracked" | "expiring">("tracked");
-  const [gstSel, setGstSel] = useState("ALL"); // ALL | GST | NOGST
+  const [gstSel, setGstSel] = useState<string>(lockedGst ?? "ALL"); // ALL | GST | NOGST (locked inside a company hub)
   const [editRow, setEditRow] = useState<Row | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const nq = q.trim().toLowerCase();
@@ -61,6 +61,14 @@ export default function WebsiteRenewals({ rows, counts, totals }: { rows: Row[];
 
   return (
     <div className="space-y-5">
+      {embedded ? (
+        // Rendered under CompanyNav (company hub) — skip the gradient title, keep the actions.
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <p className="mr-auto text-[12.5px] text-[var(--muted)]">{counts.tracked} website{counts.tracked === 1 ? "" : "s"} · {counts.hosting} on our hosting · <b style={{ color: "var(--rose)" }}>{counts.expiring}</b> expiring soon</p>
+          <button onClick={() => setAddOpen(true)} className="btn btn-violet"><Plus size={15} /> Add website</button>
+          <button onClick={exportCsv} className="btn btn-ghost"><Download size={15} /> Export CSV</button>
+        </div>
+      ) : (
       <div className="overflow-hidden rounded-[16px] border border-[var(--line)] bg-[var(--surface)] shadow-[var(--shadow-xs)]">
         <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4" style={{ background: "linear-gradient(100deg, color-mix(in srgb, var(--indigo) 10%, white), color-mix(in srgb, var(--sky) 6%, white))" }}>
           <div className="flex items-center gap-3.5">
@@ -80,6 +88,7 @@ export default function WebsiteRenewals({ rows, counts, totals }: { rows: Row[];
           </div>
         </div>
       </div>
+      )}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Kpi label="Website clients" value={String(counts.tracked)} icon={<Globe size={15} />} />
@@ -98,7 +107,7 @@ export default function WebsiteRenewals({ rows, counts, totals }: { rows: Row[];
             <button key={k} onClick={() => setView(k)} className={`rounded-[8px] px-3 py-1.5 text-[12.5px] font-semibold ${view === k ? "bg-[var(--violet)] text-white" : "text-[var(--ink-2)] hover:bg-[var(--surface-2)]"}`}>{label}</button>
           ))}
         </div>
-        <select value={gstSel} onChange={(e) => setGstSel(e.target.value)} className="select !w-auto"><option value="ALL">GST &amp; Non-GST</option><option value="GST">With GST</option><option value="NOGST">Without GST</option></select>
+        {!lockedGst && <select value={gstSel} onChange={(e) => setGstSel(e.target.value)} className="select !w-auto"><option value="ALL">GST &amp; Non-GST</option><option value="GST">With GST</option><option value="NOGST">Without GST</option></select>}
       </div>
 
       <div className="card !p-0 overflow-hidden">

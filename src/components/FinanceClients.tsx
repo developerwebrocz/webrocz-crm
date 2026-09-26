@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { deleteClientFinance, addClientFromFinance, logClientFollowup } from "@/app/actions";
 import { downloadCsv } from "@/lib/csv";
+import AddInvoiceModal from "@/components/AddInvoiceModal";
 import { companyLabel, COMPANY_KEYS } from "@/lib/domain";
 import { Users, Search, ReceiptText, Wallet, CheckCircle2, ChevronRight, ChevronLeft, MessageSquarePlus, Pencil, Trash2, X, Download, UserPlus, CalendarClock } from "lucide-react";
 
@@ -20,7 +21,7 @@ type Followup = { date: string; by: string; note: string; next?: string };
 type Row = { id: string; code: string; name: string; contact: string; phone: string; email: string; accountManager: string; status: string; retainer: number; category: string; invs: MiniInv[]; lastInvoiceDate: string; billed: number; received: number; pending: number; companies: string[]; clientFollowups: Followup[]; nextFollowup: string; notes: Note[]; noteTarget: { id: string; number: string } | null };
 
 type AmUser = { id: string; name: string };
-export default function FinanceClients({ rows, amUsers, lockedCompany, lockedCategory }: { rows: Row[]; amUsers: AmUser[]; lockedCompany?: string; lockedCategory?: string }) {
+export default function FinanceClients({ rows, amUsers, lockedCompany, lockedCategory, embedded }: { rows: Row[]; amUsers: AmUser[]; lockedCompany?: string; lockedCategory?: string; embedded?: boolean }) {
   const [q, setQ] = useState("");
   const [clientSel, setClientSel] = useState("ALL"); // ALL | <clientId>
   const [companySel, setCompanySel] = useState(lockedCompany ?? "ALL"); // ALL | <company key>
@@ -32,6 +33,8 @@ export default function FinanceClients({ rows, amUsers, lockedCompany, lockedCat
   const [fuRow, setFuRow] = useState<Row | null>(null);
   const [delRow, setDelRow] = useState<Row | null>(null);
   const [addOpen, setAddOpen] = useState(false);
+  const [addInvOpen, setAddInvOpen] = useState(false);
+  const clientNames = useMemo(() => rows.map((r) => r.name).sort((a, b) => a.localeCompare(b)), [rows]);
   const nq = q.trim().toLowerCase();
 
   // Category filter is only useful where a scope carries both services: the general
@@ -57,7 +60,13 @@ export default function FinanceClients({ rows, amUsers, lockedCompany, lockedCat
     // pipeline lists just its own service (Web Solutions → Website, Web Rocz → Digital Marketing).
     const web = invs.some((i) => i.category === "Website" || i.category === "Both");
     const dm = invs.some((i) => i.category === "Digital Marketing" || i.category === "Both");
-    const category = web && dm ? "Both" : web ? "Website" : dm ? "Digital Marketing" : (invs.length ? r.category : "—");
+    let category = web && dm ? "Both" : web ? "Website" : dm ? "Digital Marketing" : (invs.length ? r.category : "—");
+    // Single-service company pipelines always label their own service (Web Rocz → Digital
+    // Marketing, Web Solutions → Website), even if a legacy invoice was tagged "Both".
+    if (invs.length) {
+      if (lockedCompany === "WEB_ROCZ") category = "Digital Marketing";
+      else if (lockedCompany === "WEB_SOLUTIONS") category = "Website";
+    }
     return { ...r, category, billed, received, pending, overdueAmt, invoices: invs.length, lastInvoiceDate };
   }), [rows, cat, companySel, gstSel, pFrom, pTo]);
 
@@ -106,6 +115,15 @@ export default function FinanceClients({ rows, amUsers, lockedCompany, lockedCat
 
   return (
     <div className="space-y-5">
+      {embedded ? (
+        // Rendered under CompanyNav (company hub) — skip the gradient title, keep the actions.
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <p className="mr-auto text-[12.5px] text-[var(--muted)]">{totals.clients} clients · Billed {inr(totals.billed)} · Pending <b style={{ color: "var(--amber)" }}>{inr(totals.pending)}</b></p>
+          {lockedCompany && <button onClick={() => setAddInvOpen(true)} className="btn btn-ghost"><ReceiptText size={15} /> Add invoice</button>}
+          {lockedCompany && <button onClick={() => setAddOpen(true)} className="btn btn-violet"><UserPlus size={15} /> Add Client</button>}
+          <button onClick={exportCsv} className="btn btn-ghost"><Download size={15} /> Export CSV</button>
+        </div>
+      ) : (
       <div className="overflow-hidden rounded-[16px] border border-[var(--line)] bg-[var(--surface)] shadow-[var(--shadow-xs)]">
         <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4" style={{ background: "linear-gradient(100deg, color-mix(in srgb, var(--violet) 10%, white), color-mix(in srgb, var(--magenta) 6%, white))" }}>
           <div className="flex items-center gap-3.5">
@@ -127,6 +145,7 @@ export default function FinanceClients({ rows, amUsers, lockedCompany, lockedCat
           </div>
         </div>
       </div>
+      )}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Kpi label={`Total billed${scopeLabel !== "All" ? ` · ${scopeLabel}` : ""}`} value={inr(totals.billed)} icon={<ReceiptText size={15} />} />
@@ -197,6 +216,7 @@ export default function FinanceClients({ rows, amUsers, lockedCompany, lockedCat
       {fuRow && <FollowupModal r={fuRow} close={() => setFuRow(null)} />}
       {delRow && <DeleteModal r={delRow} close={() => setDelRow(null)} />}
       {addOpen && <AddClientModal amUsers={amUsers} lockedCompany={lockedCompany} lockedCategory={lockedCategory} close={() => setAddOpen(false)} />}
+      {addInvOpen && <AddInvoiceModal clientNames={clientNames} close={() => setAddInvOpen(false)} lockCompany={lockedCompany} returnTo={lockedCompany ? `/pipeline/${{ WEB_SOLUTIONS: "web-solutions", WEB_ROCZ: "web-rocz", WEB_ROCZ_PVT: "web-rocz-pvt" }[lockedCompany] ?? "web-solutions"}` : "/invoices"} />}
     </div>
   );
 }

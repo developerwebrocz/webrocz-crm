@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
 import { getFinanceClients } from "@/lib/queries";
 import FinanceClients from "@/components/FinanceClients";
+import CompanyNav from "@/components/CompanyNav";
 
 export const dynamic = "force-dynamic";
 
@@ -22,5 +23,10 @@ export default async function CompanyPipelinePage({ params }: { params: Promise<
   const key = SLUG_TO_COMPANY[company];
   if (!key) notFound();
   const { rows, amUsers } = await getFinanceClients();
-  return <FinanceClients rows={rows} amUsers={amUsers} lockedCompany={key} />;
+  return (
+    <div className="space-y-5">
+      <CompanyNav company={key} active="clients" />
+      <FinanceClients rows={rows} amUsers={amUsers} lockedCompany={key} embedded />
+    </div>
+  );
 }

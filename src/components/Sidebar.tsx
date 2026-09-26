@@ -10,7 +10,7 @@ import {
   Contact, CalendarClock, ReceiptText, FileText, CheckCircle2, XCircle, UserPlus, Repeat, Landmark, Building2, Globe, FileSignature,
 } from "lucide-react";
 
-type Item = { href: string; label: string; icon: React.ElementType; badge?: number; badgeTone?: "red" };
+type Item = { href: string; label: string; icon: React.ElementType; badge?: number; badgeTone?: "red"; forceActive?: boolean; subItems?: Item[] };
 type Group = { label?: string; items: Item[] };
 
 export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0, reminderCount = 0, user }: { clientCount: number; approvalsCount?: number; taskCount?: number; reminderCount?: number; user: { name: string; role: string } }) {
@@ -60,20 +60,40 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
 
   if (isSales) groups.push(...salesGroups);
   if (isDmHead) groups.push({ label: "Digital Marketing", items: [{ href: "/dm", label: "Marketing Clients", icon: UserCog }] });
+  // Companies pipeline — each billing entity expands into its own sections
+  // (Clients / Invoices / Website renewals) when it's the one you're viewing.
+  const companyMeta = [
+    { key: "WEB_SOLUTIONS", slug: "web-solutions", label: "Web Solutions", icon: Globe, renewals: true },
+    { key: "WEB_ROCZ", slug: "web-rocz", label: "Web Rocz", icon: Megaphone, renewals: false },
+    { key: "WEB_ROCZ_PVT", slug: "web-rocz-pvt", label: "Web Rocz Pvt Ltd", icon: Building2, renewals: true },
+  ];
+  const companyParam = sp.get("company") ?? "";
+  const activeCoKey = (() => {
+    const byPipe = companyMeta.find((c) => path === `/pipeline/${c.slug}`);
+    if (byPipe) return byPipe.key;
+    if (path.startsWith("/invoices")) { const c = companyMeta.find((c) => c.key === companyParam); if (c) return c.key; }
+    if (path.startsWith("/renewals")) { const c = companyMeta.find((c) => c.slug === companyParam); if (c) return c.key; }
+    return null;
+  })();
+  const companyItems: Item[] = companyMeta.map((c) => {
+    const activeCo = activeCoKey === c.key;
+    const subItems: Item[] = activeCo ? [
+      { href: `/pipeline/${c.slug}`, label: "Clients", icon: Users, forceActive: path === `/pipeline/${c.slug}` },
+      { href: `/invoices?company=${c.key}`, label: "Invoices", icon: ReceiptText, forceActive: path.startsWith("/invoices") && companyParam === c.key },
+      ...(c.renewals ? [{ href: `/renewals?company=${c.slug}`, label: "Website renewals", icon: Repeat, forceActive: path.startsWith("/renewals") && companyParam === c.slug }] : []),
+    ] : [];
+    return { href: `/pipeline/${c.slug}`, label: c.label, icon: c.icon, forceActive: activeCo, subItems };
+  });
   // Accountant finance suite — also shown to Super/Sub Admin (they oversee finance).
   const financeGroups: Group[] = [
-    { label: "Companies", items: [
-      { href: "/pipeline/web-solutions", label: "Web Solutions", icon: Globe },
-      { href: "/pipeline/web-rocz", label: "Web Rocz", icon: Megaphone },
-      { href: "/pipeline/web-rocz-pvt", label: "Web Rocz Pvt Ltd", icon: Building2 },
-    ] },
+    { label: "Companies", items: companyItems },
     { label: "Finance", items: [
       { href: "/accounts", label: "All Clients", icon: Users },
       { href: "/dm-clients", label: "DM Clients", icon: Megaphone },
       { href: "/sla", label: "SLAs", icon: FileSignature },
       // Payments hidden for now — re-add when needed:
       // { href: "/payments", label: "Payments", icon: Wallet },
-      { href: "/renewals", label: "Website renewals", icon: Repeat },
+      // Website renewals now live under each company in the Companies group above.
       { href: "/gst", label: "GST Summary", icon: Landmark },
       { href: "/statements", label: "Reports", icon: FileBarChart },
       { href: "/invoices", label: "Invoices", icon: ReceiptText },
@@ -141,13 +161,13 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     }
   }
 
-  const Row = ({ it }: { it: Item }) => {
-    const on = active(it.href);
+  const Row = ({ it, sub }: { it: Item; sub?: boolean }) => {
+    const on = it.forceActive ?? active(it.href);
     return (
       <Link href={it.href} prefetch aria-current={on ? "page" : undefined}
-        className={`group relative flex items-center gap-3 rounded-[10px] px-3 py-2 text-[13.5px] font-medium transition-colors ${on ? "bg-[var(--sb-panel)] text-white" : "text-[var(--sb-muted-2)] hover:bg-white/[0.05] hover:text-white"}`}>
+        className={`group relative flex items-center gap-3 rounded-[10px] ${sub ? "px-3 py-1.5 text-[12.5px]" : "px-3 py-2 text-[13.5px]"} font-medium transition-colors ${on ? "bg-[var(--sb-panel)] text-white" : "text-[var(--sb-muted-2)] hover:bg-white/[0.05] hover:text-white"}`}>
         {on && <span className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-[var(--violet-soft)]" />}
-        <it.icon size={17} className={`flex-none ${on ? "text-white" : "text-[var(--sb-muted)] group-hover:text-white"}`} />
+        <it.icon size={sub ? 15 : 17} className={`flex-none ${on ? "text-white" : "text-[var(--sb-muted)] group-hover:text-white"}`} />
         <span className="flex-1 truncate">{it.label}</span>
         {typeof it.badge === "number" && it.badge > 0 && <span className={`rounded-md px-1.5 py-0.5 text-[10.5px] font-bold tnum ${it.badgeTone === "red" ? "text-white" : "bg-white/10"}`} style={it.badgeTone === "red" ? { background: "var(--rose)" } : undefined}>{it.badge}</span>}
       </Link>
@@ -160,7 +180,16 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
         {groups.map((g, i) => (
           <div key={i}>
             {g.label && <div className="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--sb-muted)]">{g.label}</div>}
-            <div className="space-y-0.5">{g.items.map((it) => <Row key={it.label} it={it} />)}</div>
+            <div className="space-y-0.5">{g.items.map((it) => (
+              <div key={it.label}>
+                <Row it={it} />
+                {it.subItems && it.subItems.length > 0 && (
+                  <div className="ml-4 mt-0.5 space-y-0.5 border-l border-[var(--sb-line)] pl-2">
+                    {it.subItems.map((s) => <Row key={s.label} it={s} sub />)}
+                  </div>
+                )}
+              </div>
+            ))}</div>
           </div>
         ))}
       </nav>
