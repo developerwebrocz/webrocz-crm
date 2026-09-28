@@ -47,7 +47,17 @@ export default async function DashboardPage({ searchParams }: PageProps<"/">) {
   }
   if (ADMIN_ROLES.includes(user.role)) {
     const period = (typeof sp.period === "string" ? sp.period : "month") as PeriodKey;
-    return <AgencyDashboard period={period} />;
+    // Super Admin sees the agency overview AND the full Accountant / Finance dashboard below it
+    // (same view the Accountant gets) — one place for the whole business + finance.
+    const fin = await getAccountantDashboard();
+    return (
+      <div className="space-y-10">
+        <AgencyDashboard period={period} />
+        <div className="border-t-2 border-[var(--line)] pt-8">
+          <AccountantDashboard totals={fin.totals} invoiceRows={fin.invoiceRows} monthlyRows={fin.monthlyRows} employees={fin.employees} aging={fin.aging} userName={user.name} />
+        </div>
+      </div>
+    );
   }
   if (SEO_ROLES.includes(user.role)) {
     const month = typeof sp.month === "string" ? sp.month : undefined;
