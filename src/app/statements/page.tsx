@@ -27,6 +27,7 @@ export default async function FinanceReportsPage({ searchParams }: { searchParam
   const spFrom = typeof sp.from === "string" ? sp.from : "";
   const spTo = typeof sp.to === "string" ? sp.to : "";
   const [from, to] = bounds(period, spFrom, spTo);
-  const { monthly, topClients, modes, totals, companies } = await getFinanceReports({ from, to });
+  const company = typeof sp.company === "string" ? sp.company : "";
+  const { monthly, topClients, modes, totals, companies } = await getFinanceReports({ from, to, company });
   return <FinanceReports monthly={monthly} topClients={topClients} modes={modes} totals={totals} companies={companies} period={period} from={spFrom} to={spTo} />;
 }

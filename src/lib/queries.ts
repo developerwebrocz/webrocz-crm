@@ -2162,23 +2162,28 @@ export async function getGstSummary() {
 
 // Finance → Reports: monthly financials, top clients by revenue, and collections by mode.
 // Optional date range (issueDate for invoices, payment date for collections) scopes everything.
-export async function getFinanceReports(opts: { from?: string; to?: string } = {}) {
+export async function getFinanceReports(opts: { from?: string; to?: string; company?: string } = {}) {
   const from = opts.from || "", to = opts.to || "";
+  const validCompanies = ["WEB_ROCZ_PVT", "WEB_SOLUTIONS", "WEB_ROCZ"];
+  const company = validCompanies.includes(opts.company || "") ? (opts.company as string) : "";
   const inRange = (d: string) => (!from || d >= from) && (!to || d <= to);
   const [invoicesAll, paymentsAll, clients, leads] = await Promise.all([
-    prisma.salesInvoice.findMany({ select: { total: true, received: true, issueDate: true, clientId: true, billTo: true, company: true, taxPct: true, items: true, leadId: true } }),
-    prisma.payment.findMany({ select: { amount: true, date: true, mode: true } }),
+    prisma.salesInvoice.findMany({ select: { id: true, total: true, received: true, issueDate: true, clientId: true, billTo: true, company: true, taxPct: true, items: true, leadId: true } }),
+    prisma.payment.findMany({ select: { amount: true, date: true, mode: true, invoiceId: true } }),
     prisma.client.findMany({ select: { id: true, name: true } }),
     prisma.lead.findMany({ select: { id: true, services: true } }),
   ]);
-  const invoices = invoicesAll.filter((i) => inRange(i.issueDate || ""));
-  const payments = paymentsAll.filter((p) => inRange(p.date || ""));
   const clientName = new Map(clients.map((c) => [c.id, c.name]));
   const nameToId = new Map(clients.map((c) => [c.name.trim().toLowerCase(), c.id]));
   const reportLeadSvc = new Map(leads.map((l) => [l.id, parseServices(l.services)]));
   // Company for an invoice: its tag, or inferred from GST + service (legacy invoices).
   const companyOf = (i: { company: string; taxPct: number; items: string; leadId: string | null }) =>
     i.company || (i.taxPct > 0 ? "WEB_ROCZ_PVT" : (catOfInvoice(i, reportLeadSvc) === "Digital Marketing" ? "WEB_ROCZ" : "WEB_SOLUTIONS"));
+  // Map invoice id → company so payments (linked to an invoice) can be company-scoped too.
+  const invCompany = new Map(invoicesAll.map((i) => [i.id, companyOf(i)]));
+  // When a company is passed (accountant/company report), scope both invoices & payments to it.
+  const invoices = invoicesAll.filter((i) => inRange(i.issueDate || "") && (!company || companyOf(i) === company));
+  const payments = paymentsAll.filter((p) => inRange(p.date || "") && (!company || invCompany.get(p.invoiceId) === company));
 
   // monthly: billed / received / pending by invoice issue month
   type M = { month: string; invoices: number; billed: number; received: number; pending: number; collected: number };
