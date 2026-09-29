@@ -47,6 +47,7 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
               <input type="hidden" name="amount" value={String(total)} />
               <input type="hidden" name="items" value={JSON.stringify(lineItems)} />
               {lineItems.map((li, i) => <input key={i} type="hidden" name="services" value={li.name} />)}
+              <label className="block"><span className="eyebrow">Invoice date</span><input name="issueDate" type="date" defaultValue={today} className="input mt-1" /></label>
               <div className="grid grid-cols-2 gap-3">
                 <label className="block"><span className="eyebrow">Company name</span>{lockClientName ? <input name="clientName" defaultValue={lockClientName} readOnly className="input mt-1 bg-[var(--surface-2)]" /> : <input name="clientName" required list="inv-client-names" className="input mt-1" placeholder="Company / client" />}</label>
                 <label className="block"><span className="eyebrow">Domain name</span><input name="domain" className="input mt-1" placeholder="e.g. acme.com" /></label>
@@ -90,10 +91,7 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
                 <span className="mt-1.5 block text-[11px] text-[var(--faint)]">Saved to the client for website-renewal tracking.</span>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <label className="block"><span className="eyebrow">Invoice date</span><input name="issueDate" type="date" defaultValue={today} className="input mt-1" /></label>
-                <label className="block"><span className="eyebrow">Description (optional)</span><input name="desc" className="input mt-1" placeholder="optional notes" /></label>
-              </div>
+              <label className="block"><span className="eyebrow">Description (optional)</span><input name="desc" className="input mt-1" placeholder="optional notes" /></label>
               <p className="rounded-[10px] bg-[var(--surface-2)] px-3 py-2 text-[11.5px] text-[var(--muted)]">→ <b>Web Solutions</b> · Non-GST serial series</p>
             </>
           ) : (
