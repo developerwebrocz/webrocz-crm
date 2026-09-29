@@ -86,10 +86,7 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
 
               <div className="rounded-[12px] border border-[var(--line)] p-3.5">
                 <span className="eyebrow">Website renewal</span>
-                <div className="mt-2 grid grid-cols-2 gap-3">
-                  <label className="block"><span className="text-[11.5px] font-medium text-[var(--muted)]">Renewal amount (₹)</span><input name="renewalAmount" type="number" min={0} className="input mt-1" placeholder="0" /></label>
-                  <label className="block"><span className="text-[11.5px] font-medium text-[var(--muted)]">Renewal / expiry date</span><input name="renewalDate" type="date" className="input mt-1" /></label>
-                </div>
+                <label className="mt-2 block"><span className="text-[11.5px] font-medium text-[var(--muted)]">Renewal / expiry date</span><input name="renewalDate" type="date" className="input mt-1" /></label>
                 <span className="mt-1.5 block text-[11px] text-[var(--faint)]">Saved to the client for website-renewal tracking.</span>
               </div>
 
