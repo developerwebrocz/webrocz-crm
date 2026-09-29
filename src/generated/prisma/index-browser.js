@@ -276,6 +276,7 @@ exports.Prisma.SalesInvoiceScalarFieldEnum = {
   total: 'total',
   received: 'received',
   paymentStatus: 'paymentStatus',
+  paymentProof: 'paymentProof',
   notes: 'notes',
   issueDate: 'issueDate',
   dueDate: 'dueDate',
