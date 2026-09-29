@@ -572,8 +572,9 @@ export async function addInvoice(fd: FormData) {
   // feed the Website Renewals tracking (domain + renewal amount).
   const domain = s(fd, "domain");
   const renewalAmount = Math.max(0, n(fd, "renewalAmount"));
-  if (domain || renewalAmount > 0) {
-    await prisma.client.update({ where: { id: client.id }, data: { ...(domain ? { websiteDomain: domain } : {}), ...(renewalAmount > 0 ? { websiteRenewAmount: renewalAmount } : {}) } });
+  const renewalDate = s(fd, "renewalDate");
+  if (domain || renewalAmount > 0 || renewalDate) {
+    await prisma.client.update({ where: { id: client.id }, data: { ...(domain ? { websiteDomain: domain } : {}), ...(renewalAmount > 0 ? { websiteRenewAmount: renewalAmount } : {}), ...(renewalDate ? { websiteExpiryDate: renewalDate } : {}) } });
   }
 
   const taxPct = gst ? (client.gstRate > 0 ? client.gstRate : 18) : 0;

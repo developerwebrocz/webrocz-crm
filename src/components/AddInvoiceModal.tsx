@@ -70,15 +70,29 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
                   <button type="button" onClick={() => setCustoms((cs) => [...cs, { name: "", amount: "" }])} className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--violet)] hover:underline"><Plus size={13} /> Add service</button>
                 </div>
               </div>
-              <div className="flex items-center justify-between rounded-[10px] bg-[var(--surface-2)] px-3 py-2.5">
-                <span className="text-[12px] font-semibold uppercase tracking-wide text-[var(--muted)]">Total amount</span>
-                <span className="text-[18px] font-extrabold tnum text-[var(--violet)]">₹{total.toLocaleString("en-IN")}</span>
+              <div className="flex items-center justify-between rounded-[12px] border border-[var(--line-2)] px-4 py-3" style={{ background: "color-mix(in srgb, var(--violet) 6%, white)" }}>
+                <span className="text-[12px] font-bold uppercase tracking-wide text-[var(--muted)]">Total amount</span>
+                <span className="text-[22px] font-extrabold tnum text-[var(--violet)]">₹{total.toLocaleString("en-IN")}</span>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <label className="block"><span className="eyebrow">Amount received (₹)</span><input name="received" type="number" min={0} className="input mt-1" placeholder="0" /></label>
-                <label className="block"><span className="eyebrow">Renewal amount (₹)</span><input name="renewalAmount" type="number" min={0} className="input mt-1" placeholder="0" /></label>
+
+              <div className="rounded-[12px] border border-[var(--line)] p-3.5">
+                <span className="eyebrow">Payment</span>
+                <div className="mt-2 grid grid-cols-2 gap-3">
+                  <label className="block"><span className="text-[11.5px] font-medium text-[var(--muted)]">Amount received (₹)</span><input name="received" type="number" min={0} className="input mt-1" placeholder="0" /></label>
+                  <label className="block"><span className="text-[11.5px] font-medium text-[var(--muted)]">Payment screenshot</span><input name="paymentProof" type="file" accept="image/*,.pdf" className="input mt-1 !py-1.5 text-[12px]" /></label>
+                </div>
+                <span className="mt-1.5 block text-[11px] text-[var(--faint)]">Optional — attach the UPI / bank payment proof.</span>
               </div>
-              <label className="block"><span className="eyebrow">Payment screenshot (optional)</span><input name="paymentProof" type="file" accept="image/*,.pdf" className="input mt-1 !py-2" /><span className="mt-1 block text-[11px] text-[var(--faint)]">Upload the payment proof — UPI / bank screenshot.</span></label>
+
+              <div className="rounded-[12px] border border-[var(--line)] p-3.5">
+                <span className="eyebrow">Website renewal</span>
+                <div className="mt-2 grid grid-cols-2 gap-3">
+                  <label className="block"><span className="text-[11.5px] font-medium text-[var(--muted)]">Renewal amount (₹)</span><input name="renewalAmount" type="number" min={0} className="input mt-1" placeholder="0" /></label>
+                  <label className="block"><span className="text-[11.5px] font-medium text-[var(--muted)]">Renewal / expiry date</span><input name="renewalDate" type="date" className="input mt-1" /></label>
+                </div>
+                <span className="mt-1.5 block text-[11px] text-[var(--faint)]">Saved to the client for website-renewal tracking.</span>
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <label className="block"><span className="eyebrow">Invoice date</span><input name="issueDate" type="date" defaultValue={today} className="input mt-1" /></label>
                 <label className="block"><span className="eyebrow">Description (optional)</span><input name="desc" className="input mt-1" placeholder="optional notes" /></label>
