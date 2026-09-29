@@ -49,7 +49,7 @@ export default function InvoicePrintable({ invoice }: { invoice: any }) {
           <div className="px-4 py-3 text-right leading-relaxed">
             <div className="text-[12px]">Invoice No. : <b>{invoice.number}</b></div>
             <div className="text-[12px]">Date : {fmt(invoice.issueDate)}</div>
-            <div className="text-[12px]">Place of supply: {invoice.placeOfSupply || seller.state}</div>
+            {hasGst && <div className="text-[12px]">Place of supply: {invoice.placeOfSupply || seller.state}</div>}
           </div>
         </div>
       </div>

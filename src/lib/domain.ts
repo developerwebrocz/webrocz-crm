@@ -67,7 +67,7 @@ export const COMPANIES: Record<string, Company> = {
   // GST entity — full seller details incl. GSTIN (reuses the registered company).
   WEB_ROCZ_PVT: { key: "WEB_ROCZ_PVT", label: "Web Rocz Pvt Ltd", gst: true, seller: SELLER },
   // Non-GST entity for website work. Address/bank default to head office — update names as needed.
-  WEB_SOLUTIONS: { key: "WEB_SOLUTIONS", label: "Web Solutions", gst: false, seller: { ...SELLER, name: "Web Solutions", gstin: "", state: "36-Telangana" } },
+  WEB_SOLUTIONS: { key: "WEB_SOLUTIONS", label: "Web Solutions", gst: false, seller: { ...SELLER, name: "Web Rocz Solutions", gstin: "", state: "36-Telangana" } },
   // Non-GST entity for digital-marketing work.
   WEB_ROCZ: { key: "WEB_ROCZ", label: "Web Rocz", gst: false, seller: { ...SELLER, name: "Web Rocz", gstin: "", state: "36-Telangana" } },
 };
