@@ -20,7 +20,7 @@ const addDaysISO = (iso: string, n: number) => { const d = new Date((iso || toda
 type MiniInv = { category: string; total: number; received: number; balance: number; overdue: boolean; issueDate: string; company: string };
 type Note = { invId: string; invNumber: string; date: string; by: string; note: string };
 type Followup = { date: string; by: string; note: string; next?: string };
-type Row = { id: string; code: string; name: string; contact: string; phone: string; email: string; slaUrl: string; slaTitle: string; slaBy: string; services: string[]; status: string; retainer: number; category: string; invs: MiniInv[]; lastInvoiceDate: string; billed: number; received: number; pending: number; companies: string[]; clientFollowups: Followup[]; nextFollowup: string; notes: Note[]; noteTarget: { id: string; number: string } | null };
+type Row = { id: string; code: string; name: string; contact: string; phone: string; email: string; accountManager: string; slaUrl: string; slaTitle: string; slaBy: string; services: string[]; status: string; retainer: number; category: string; invs: MiniInv[]; lastInvoiceDate: string; billed: number; received: number; pending: number; companies: string[]; clientFollowups: Followup[]; nextFollowup: string; notes: Note[]; noteTarget: { id: string; number: string } | null };
 
 export default function FinanceClients({ rows, lockedCompany, lockedCategory, embedded }: { rows: Row[]; lockedCompany?: string; lockedCategory?: string; embedded?: boolean }) {
   const [q, setQ] = useState("");
@@ -43,6 +43,8 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
   const showCategory = !lockedCategory && (!lockedCompany || lockedCompany === "WEB_ROCZ_PVT");
   // GST filter (With/Without GST) shown in the category-locked views (DM Clients / Website Clients).
   const showGst = !!lockedCategory;
+  // Account Manager column — shown for the DM entities (Web Rocz / Web Rocz Pvt Ltd), not Web Solutions.
+  const showAM = lockedCompany === "WEB_ROCZ" || lockedCompany === "WEB_ROCZ_PVT" || lockedCategory === "DM";
   const catMatch = (c: string) => cat === "ALL" || (cat === "WEBSITE" ? (c === "Website" || c === "Both") : (c === "Digital Marketing" || c === "Both"));
   const gstMatch = (company: string) => gstSel === "ALL" || (gstSel === "GST" ? company === "WEB_ROCZ_PVT" : company !== "WEB_ROCZ_PVT");
   const pFrom = from, pTo = to; // filter invoices by issue date within [from, to]
@@ -177,9 +179,9 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
       <div className="card !p-0 overflow-hidden">
         <div className="overflow-x-auto scroll-thin">
           <table className="w-full min-w-[1120px] text-left">
-            <thead><tr className="border-b border-[var(--line)]">{["Client ID", "Invoice date", "Client Name", "Phone / Mobile", "Email", "SLA", "Services", "Amount", "Actions"].map((h) => <th key={h} className="th px-5 py-2.5">{h}</th>)}</tr></thead>
+            <thead><tr className="border-b border-[var(--line)]">{["Client ID", "Invoice date", "Client Name", "Phone / Mobile", "Email", "SLA", ...(showAM ? ["Account Manager"] : []), "Services", "Amount", "Actions"].map((h) => <th key={h} className="th px-5 py-2.5">{h}</th>)}</tr></thead>
             <tbody>
-              {filtered.length === 0 && <tr><td colSpan={9} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No clients found.</td></tr>}
+              {filtered.length === 0 && <tr><td colSpan={showAM ? 10 : 9} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No clients found.</td></tr>}
               {paged.map((r, i) => (
                 <tr key={r.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
                   <td className="px-5 py-3 text-[12px] font-semibold tnum text-[var(--ink-2)]">{r.code || "—"}</td>
@@ -190,6 +192,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
                   <td className="px-5 py-3">{r.slaUrl
                     ? <div><a href={r.slaUrl} target="_blank" rel="noreferrer" download title={r.slaTitle || "Download SLA"} className="inline-flex items-center gap-1.5 rounded-[8px] bg-[var(--violet)] px-3 py-1.5 text-[12px] font-semibold text-white transition hover:opacity-90"><Download size={13} className="flex-none" /> Download SLA</a>{r.slaBy && <div className="mt-1 text-[10px] text-[var(--faint)]">by {r.slaBy}</div>}</div>
                     : <span className="text-[var(--faint)]">—</span>}</td>
+                  {showAM && <td className="px-5 py-3 text-[12.5px]">{r.accountManager || <span className="text-[var(--faint)]">—</span>}</td>}
                   <td className="px-5 py-3"><CatChip c={catActive ? scopeLabel : r.category} services={r.services} /></td>
                   <td className="px-5 py-3"><div className="text-[13px] font-semibold tnum">{inr(r.billed)}</div>{r.pending > 0 && <div className="text-[11px] font-semibold tnum" style={{ color: r.overdueAmt > 0 ? "var(--rose)" : "var(--amber)" }}>{inr(r.pending)} due{r.overdueAmt > 0 ? " · overdue" : ""}</div>}</td>
                   <td className="px-5 py-3">

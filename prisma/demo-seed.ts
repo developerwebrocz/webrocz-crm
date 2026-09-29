@@ -187,6 +187,22 @@ async function main() {
     console.log("dm services", name, "→", svcs.join(", "));
   }
 
+  // Account managers for the Web Rocz (DM) clients — so the AM name column shows real names.
+  async function ensureAm(name: string): Promise<string> {
+    let u = await prisma.user.findFirst({ where: { name } });
+    if (!u) u = await prisma.user.create({ data: { name, role: "ACCOUNT_MANAGER", active: true } });
+    else if (u.role !== "ACCOUNT_MANAGER" && u.role !== "AM_HEAD") await prisma.user.update({ where: { id: u.id }, data: { role: "ACCOUNT_MANAGER" } });
+    return u.id;
+  }
+  const amKalyan = await ensureAm("Kalyan");
+  const amShravan = await ensureAm("Shravan");
+  const amAssign: Record<string, string> = { "Nova Fashion": amKalyan, "Glow Skin Clinic": amShravan, "FitZone Gym": amKalyan, "FreshLeaf Cafe": amShravan };
+  for (const [name, amId] of Object.entries(amAssign)) {
+    const cl = await prisma.client.findFirst({ where: { name }, select: { id: true } });
+    if (cl) await prisma.client.update({ where: { id: cl.id }, data: { accountManagerId: amId } });
+  }
+  console.log("account managers assigned (Kalyan / Shravan)");
+
   console.log("--- SLA demo (with downloadable files) ---");
   const slaFile = ensureSampleSlaFile();
   // (A) Pending SLAs on the SLA board — sales uploaded (with a file), accountant will "Move to" a company.
