@@ -203,6 +203,22 @@ async function main() {
   }
   console.log("account managers assigned (Kalyan / Shravan)");
 
+  // Website services for the Web Solutions clients → shown on hover over the "Website" chip.
+  const webSvcMap: Record<string, string[]> = {
+    "Skyline Builders": ["Domain", "Hosting + SSL", "Website Designing"],
+    "TechnoSoft Solutions": ["Website Designing", "Hosting + SSL"],
+    "Aster Hospitals": ["Domain", "Website Designing"],
+  };
+  for (const [name, svcs] of Object.entries(webSvcMap)) {
+    const cl = await prisma.client.findFirst({ where: { name }, select: { id: true } });
+    if (!cl) continue;
+    for (const svc of svcs) {
+      const exists = await prisma.clientService.findFirst({ where: { clientId: cl.id, service: svc } });
+      if (!exists) await prisma.clientService.create({ data: { clientId: cl.id, service: svc } });
+    }
+    console.log("web services", name, "→", svcs.join(", "));
+  }
+
   console.log("--- SLA demo (with downloadable files) ---");
   const slaFile = ensureSampleSlaFile();
   // (A) Pending SLAs on the SLA board — sales uploaded (with a file), accountant will "Move to" a company.
