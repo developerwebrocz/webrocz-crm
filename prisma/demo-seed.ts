@@ -183,6 +183,8 @@ async function main() {
   await ensureSla("Glow Skin Clinic", { title: "Google Ads + SEO — 6 months", service: "DM", amount: 55000, gst: false, pocName: "Dr. Meghana", pocMobile: "9700667788", pocEmail: "info@glowskin.in", uploadedBy: "Ramya (Sales)", fileUrl: slaFile, status: "INVOICED" });
   await ensureSla("TechnoSoft Solutions", { title: "Custom website build", service: "WEBSITE", amount: 100000, gst: true, pocName: "Praveen Kumar", pocMobile: "9701778899", pocEmail: "praveen@technosoft.in", gstin: "36ABCDT1234E1Z5", uploadedBy: "Sridhar (Sales)", fileUrl: slaFile, status: "INVOICED" });
   await ensureSla("Aster Hospitals", { title: "Corporate website + AMC", service: "WEBSITE", amount: 150000, gst: true, pocName: "Dr. Kiran", pocMobile: "9700998877", pocEmail: "web@asterhospitals.in", gstin: "36AASTH5678K1Z2", uploadedBy: "Ramya (Sales)", fileUrl: slaFile, status: "INVOICED" });
+  // Web Solutions (non-GST website) client → so the SLA download shows in the Web Solutions hub too.
+  await ensureSla("Skyline Builders", { title: "Custom web application — build", service: "WEBSITE", amount: 250000, gst: false, pocName: "Ramesh Gupta", pocMobile: "9700334455", pocEmail: "ramesh@skyline.in", uploadedBy: "Sridhar (Sales)", fileUrl: slaFile, status: "INVOICED" });
 
   console.log("--- New-update notifications (bell alerts) ---");
   // Clean up dead-link notifications from earlier demo runs (the /finance page was removed).
