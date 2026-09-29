@@ -24,6 +24,9 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
   const [newInv, setNewInv] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const backUrl = `/accounts/${client.id}`;
+  // A Web Solutions client → its "New invoice" uses the website form (services + amounts +
+  // payment screenshot). Detected from the URL company context OR any Web Solutions invoice.
+  const isWebSolClient = company === "WEB_SOLUTIONS" || invoices.some((i) => i.company === "WEB_SOLUTIONS");
 
   // Date filters over this client's invoices: a month picker + a From–To calendar range.
   const [month, setMonth] = useState("ALL"); // ALL | YYYY-MM
@@ -243,7 +246,7 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
       </div>
 
       {payInv && <PaymentModal inv={payInv} clientName={client.name} back={backUrl} close={() => setPayInv(null)} />}
-      {newInv && (company === "WEB_SOLUTIONS"
+      {newInv && (isWebSolClient
         ? <AddInvoiceModal clientNames={[]} lockClientName={client.name} lockCompany="WEB_SOLUTIONS" returnTo={backUrl} close={() => setNewInv(false)} />
         : <NewInvoiceModal clientId={client.id} clientName={client.name} defaultTaxPct={client.gstApplicable ? client.gstRate : 0} defaultGstin={client.gstin} close={() => setNewInv(false)} />)}
       {editOpen && <EditModal client={client} close={() => setEditOpen(false)} />}
