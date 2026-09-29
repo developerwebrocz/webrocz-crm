@@ -257,7 +257,7 @@ function AddClientModal({ lockedCompany, lockedCategory, close }: { lockedCompan
         <form action={addClientFromFinance} className="space-y-3 overflow-y-auto scroll-thin px-6 py-5">
           <input type="hidden" name="return" value={returnPath} />
           {gstFixed !== null && <input type="hidden" name="gst" value={gstFixed} />}
-          <label className="block"><span className="eyebrow">Client / company name *</span><input name="name" required className="input mt-1" placeholder="Acme Pvt Ltd" /></label>
+          <label className="block"><span className="eyebrow">Company name *</span><input name="name" required className="input mt-1" placeholder="Acme Pvt Ltd" /></label>
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Contact person</span><input name="pocName" className="input mt-1" /></label>
             <label className="block"><span className="eyebrow">Phone</span><input name="pocMobile" className="input mt-1" /></label>
@@ -271,15 +271,6 @@ function AddClientModal({ lockedCompany, lockedCategory, close }: { lockedCompan
           ) : isPvt ? (
             <label className="block"><span className="eyebrow">Client GSTIN</span><input name="gstin" className="input mt-1" placeholder="e.g. 36AABC…" /></label>
           ) : null}
-          <div className="rounded-[10px] border border-[var(--line)] p-3">
-            <div className="eyebrow mb-2">Amount to be paid{isPvt ? " — per service (before GST)" : " (before GST)"}</div>
-            <div className={`grid gap-3 ${showWebsite && showDM ? "grid-cols-2" : "grid-cols-1"}`}>
-              {showWebsite && <label className="block"><span className="text-[12px] font-semibold text-[var(--indigo)]">Website Development (₹)</span><input name="webAmount" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>}
-              {showDM && <label className="block"><span className="text-[12px] font-semibold text-[var(--magenta)]">Digital Marketing (₹)</span><input name="dmAmount" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>}
-            </div>
-            <label className="mt-3 block"><span className="eyebrow">Amount already paid (₹)</span><input name="paid" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>
-            <p className="mt-2 text-[11.5px] text-[var(--faint)]">{showWebsite && showDM ? "Each service creates its own invoice (so Website vs DM stays separate). " : ""}Leave the amount at 0 to just register the client.</p>
-          </div>
           {showDM && (
             <div className="rounded-[10px] border border-[var(--line)] p-3">
               <div className="eyebrow mb-2">Digital Marketing services</div>
@@ -291,6 +282,15 @@ function AddClientModal({ lockedCompany, lockedCategory, close }: { lockedCompan
               <p className="mt-2 text-[11px] text-[var(--faint)]">Pick the services this client has taken — shown on hover in the clients list.</p>
             </div>
           )}
+          <div className="rounded-[10px] border border-[var(--line)] p-3">
+            <div className="eyebrow mb-2">Amount to be paid{isPvt ? " — per service (before GST)" : " (before GST)"}</div>
+            <div className={`grid gap-3 ${showWebsite && showDM ? "grid-cols-2" : "grid-cols-1"}`}>
+              {showWebsite && <label className="block"><span className="text-[12px] font-semibold text-[var(--indigo)]">Website Development (₹)</span><input name="webAmount" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>}
+              {showDM && <label className="block"><span className="text-[12px] font-semibold text-[var(--magenta)]">Digital Marketing (₹)</span><input name="dmAmount" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>}
+            </div>
+            <label className="mt-3 block"><span className="eyebrow">Amount already paid (₹)</span><input name="paid" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>
+            <p className="mt-2 text-[11.5px] text-[var(--faint)]">{showWebsite && showDM ? "Each service creates its own invoice (so Website vs DM stays separate). " : ""}Leave the amount at 0 to just register the client.</p>
+          </div>
           <div className="flex justify-end gap-2 pt-1">
             <button type="button" onClick={close} className="btn btn-ghost">Cancel</button>
             <button type="submit" className="btn btn-violet"><UserPlus size={15} /> Add client</button>
