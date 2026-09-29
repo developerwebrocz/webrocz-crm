@@ -14,6 +14,15 @@ const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
 // File name from an uploaded SLA URL, dropping the "<timestamp>-" upload prefix.
 const slaFileName = (url: string) => { const base = decodeURIComponent(url.split("/").pop() || ""); return base.replace(/^\d+-/, ""); };
+// How many months a client's payment has been pending — from its oldest still-unpaid invoice.
+function monthsPending(invs: { balance: number; issueDate: string }[]): number {
+  const open = invs.filter((i) => i.balance > 0 && i.issueDate);
+  if (!open.length) return 0;
+  const oldest = open.reduce((a, b) => (a.issueDate < b.issueDate ? a : b)).issueDate;
+  const [y, m] = oldest.split("-").map(Number);
+  const now = new Date();
+  return Math.max(0, (now.getFullYear() - y) * 12 + (now.getMonth() + 1 - m));
+}
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const addDaysISO = (iso: string, n: number) => { const d = new Date((iso || todayISO()) + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 
@@ -70,7 +79,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
       if (lockedCompany === "WEB_ROCZ") category = "Digital Marketing";
       else if (lockedCompany === "WEB_SOLUTIONS") category = "Website";
     }
-    return { ...r, category, billed, received, pending, overdueAmt, invoices: invs.length, lastInvoiceDate };
+    return { ...r, category, billed, received, pending, overdueAmt, invoices: invs.length, lastInvoiceDate, scopedInvs: invs };
   }), [rows, cat, companySel, gstSel, pFrom, pTo]);
 
   const filtered = useMemo(() => {
@@ -194,7 +203,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
                     : <span className="text-[var(--faint)]">—</span>}</td>
                   {showAM && <td className="px-5 py-3 text-[12.5px]">{r.accountManager || <span className="text-[var(--faint)]">—</span>}</td>}
                   <td className="px-5 py-3"><CatChip c={catActive ? scopeLabel : r.category} services={r.services} /></td>
-                  <td className="px-5 py-3"><div className="text-[13px] font-semibold tnum">{inr(r.billed)}</div>{r.pending > 0 && <div className="text-[11px] font-semibold tnum" style={{ color: r.overdueAmt > 0 ? "var(--rose)" : "var(--amber)" }}>{inr(r.pending)} due{r.overdueAmt > 0 ? " · overdue" : ""}</div>}</td>
+                  <td className="px-5 py-3"><div className="text-[13px] font-semibold tnum">{inr(r.billed)}</div>{r.pending > 0 && (() => { const mp = monthsPending(r.scopedInvs); return <div className="text-[11px] font-semibold tnum" style={{ color: r.overdueAmt > 0 ? "var(--rose)" : "var(--amber)" }}>{inr(r.pending)} due{mp > 0 ? ` · ${mp} month${mp === 1 ? "" : "s"}` : ""}{r.overdueAmt > 0 ? " · overdue" : ""}</div>; })()}</td>
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-1.5">
                       <button onClick={() => setFuRow(r)} title="Follow-up" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><MessageSquarePlus size={13} /> Follow-up{r.clientFollowups.length > 0 && <span className="grid h-4 min-w-[16px] place-items-center rounded-full bg-[var(--violet)] px-1 text-[9px] font-bold text-white">{r.clientFollowups.length}</span>}</button>
