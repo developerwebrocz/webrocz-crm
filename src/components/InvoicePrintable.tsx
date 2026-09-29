@@ -11,7 +11,7 @@ export default function InvoicePrintable({ invoice }: { invoice: any }) {
   // The billing entity (company) that issued this invoice drives the seller block details.
   const seller = companySeller(invoice.company || "");
   const intraState = (invoice.clientState || seller.state) === seller.state;
-  const hasGst = invoice.taxPct > 0; // no GST → hide the GST column, tax split, and "Tax" in the title
+  const hasGst = invoice.taxPct > 0 && invoice.company !== "WEB_SOLUTIONS"; // Web Solutions is non-GST → hide the GST column, tax split, and "Tax" in the title
   const halfPct = invoice.taxPct / 2;
   const halfTax = Math.round(invoice.taxAmount / 2);
   const V = "var(--violet)";

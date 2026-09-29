@@ -32,7 +32,7 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
         <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
           <div>
             <h2 className="text-[16px] font-bold">Add new invoice{lockCompany ? ` · ${target}` : ""}</h2>
-            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">Type the client name — an existing client is reused, a new name creates one.{isWebSol ? " Domain & renewal are saved for renewal tracking." : " Company & serial follow GST + service."}</p>
+            {!isWebSol && <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">Type the client name — an existing client is reused, a new name creates one. Company &amp; serial follow GST + service.</p>}
           </div>
           <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
         </div>
