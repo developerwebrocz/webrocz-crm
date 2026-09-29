@@ -608,6 +608,87 @@ export async function addInvoice(fd: FormData) {
   redirect(`/invoices/${inv.id}`);
 }
 
+// ---- Bulk import from a CSV (exported from Google Sheets) --------------------------------
+// One invoice per row. Company + GST are fixed by the hub it's run from (Web Solutions / Web
+// Rocz = non-GST, Web Rocz Pvt Ltd = GST). Columns (case-insensitive, extras ignored):
+//   Client Name, Description, Amount, Received, Invoice Date, GSTIN, Phone, Email
+function parseCsvRows(text: string): Record<string, string>[] {
+  const lines = text.replace(/\r/g, "").split("\n").filter((l) => l.trim() !== "");
+  if (!lines.length) return [];
+  const splitLine = (line: string): string[] => {
+    const out: string[] = []; let cur = ""; let q = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (q) { if (c === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+      else if (c === '"') q = true; else if (c === ",") { out.push(cur); cur = ""; } else cur += c;
+    }
+    out.push(cur); return out.map((v) => v.trim());
+  };
+  const header = splitLine(lines[0]).map((h) => h.toLowerCase().trim());
+  return lines.slice(1).map((line) => {
+    const cells = splitLine(line); const row: Record<string, string> = {};
+    header.forEach((h, i) => { row[h] = cells[i] ?? ""; }); return row;
+  });
+}
+function normDate(d: string): string {
+  const t = (d || "").trim();
+  if (/^\d{4}-\d{2}-\d{2}/.test(t)) return t.slice(0, 10);
+  const m = t.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/); // DD-MM-YYYY or DD/MM/YYYY
+  if (m) return `${m[3]}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}`;
+  return new Date().toISOString().slice(0, 10);
+}
+
+export async function importFinanceCsv(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me || !INVOICE_MANAGE.includes(me.role)) redirect("/");
+  const back = s(fd, "return") || "/accounts";
+  const VALID = ["WEB_SOLUTIONS", "WEB_ROCZ", "WEB_ROCZ_PVT"];
+  const comp = VALID.includes(s(fd, "company")) ? s(fd, "company") : "WEB_SOLUTIONS";
+  const file = fd.get("file");
+  if (!file || typeof file === "string" || !(file as File).size) redirect(`${back}?import=nofile`);
+  const rows = parseCsvRows(await (file as File).text());
+  const gst = comp === "WEB_ROCZ_PVT";
+  const category = comp === "WEB_ROCZ" ? "DM" : "WEBSITE";
+  const num = (v: string) => Math.round(Number((v || "").replace(/[^\d.]/g, "")) || 0);
+  const get = (row: Record<string, string>, ...keys: string[]) => { for (const k of keys) if (row[k]) return row[k]; return ""; };
+  const clients = await prisma.client.findMany({ select: { id: true, name: true } });
+  const nameToId = new Map(clients.map((c) => [c.name.trim().toLowerCase(), c.id]));
+  let created = 0;
+  for (const row of rows) {
+    const name = get(row, "client name", "client", "company name", "company", "name");
+    const amount = num(get(row, "amount", "amount (before gst)", "value", "total"));
+    if (!name || amount <= 0) continue;
+    const received = num(get(row, "received", "amount received", "paid"));
+    const desc = get(row, "description", "service", "details") || (category === "DM" ? "Digital Marketing" : "Website Development");
+    const gstin = get(row, "gstin", "gst no", "gst number");
+    const issueDate = normDate(get(row, "invoice date", "date", "issue date"));
+    let clientId = nameToId.get(name.trim().toLowerCase());
+    if (!clientId) {
+      const c = await prisma.client.create({ data: { code: await nextClientCode(), name, status: "ACTIVE", gstApplicable: gst, gstRate: gst ? 18 : 0, gstin, pocMobile: get(row, "phone", "mobile") || null, pocEmail: get(row, "email") || null } });
+      clientId = c.id; nameToId.set(name.trim().toLowerCase(), c.id);
+    }
+    const taxPct = gst ? 18 : 0;
+    const taxAmount = Math.round((amount * taxPct) / 100);
+    const total = amount + taxAmount;
+    const rec = Math.min(Math.max(0, received), total);
+    const clientState = stateFromGstin(gstin);
+    const inv = await prisma.salesInvoice.create({
+      data: {
+        number: await invoiceNumber(gst), clientId, pipeline: "WEBROCZ", company: comp,
+        billTo: name, clientGstin: gstin, clientState, placeOfSupply: clientState,
+        items: JSON.stringify([{ name: desc, qty: 1, rate: amount, amount }]),
+        subtotal: amount, taxPct, taxAmount, total, received: rec,
+        paymentStatus: rec >= total ? "Fully Received" : rec > 0 ? "Partially Received" : "Pending",
+        issueDate, dueDate: addDaysISO(issueDate, 15),
+      },
+    });
+    if (rec > 0) await prisma.payment.create({ data: { invoiceId: inv.id, amount: rec, date: issueDate, mode: "OTHER", note: "Imported from CSV", by: me.name } });
+    created++;
+  }
+  revalidatePath("/invoices"); revalidatePath("/accounts"); revalidatePath(back);
+  redirect(`${back}?imported=${created}`);
+}
+
 // Super Admin approves an invoice → unlocks download / send for sales + accountant.
 export async function approveInvoice(fd: FormData) {
   const me = await getCurrentUser();

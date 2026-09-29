@@ -3,10 +3,11 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { deleteClientFinance, addClientFromFinance, logClientFollowup } from "@/app/actions";
+import { importFinanceCsv } from "@/app/sales-actions";
 import { downloadCsv } from "@/lib/csv";
 import AddInvoiceModal from "@/components/AddInvoiceModal";
 import { companyLabel, COMPANY_KEYS } from "@/lib/domain";
-import { Users, Search, ReceiptText, Wallet, CheckCircle2, ChevronRight, ChevronLeft, MessageSquarePlus, Pencil, Trash2, X, Download, UserPlus, CalendarClock } from "lucide-react";
+import { Users, Search, ReceiptText, Wallet, CheckCircle2, ChevronRight, ChevronLeft, MessageSquarePlus, Pencil, Trash2, X, Download, UserPlus, CalendarClock, Upload } from "lucide-react";
 
 const PAGE_SIZE = 10;
 
@@ -44,6 +45,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
   const [delRow, setDelRow] = useState<Row | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [addInvOpen, setAddInvOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const clientNames = useMemo(() => rows.map((r) => r.name).sort((a, b) => a.localeCompare(b)), [rows]);
   const nq = q.trim().toLowerCase();
 
@@ -133,6 +135,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
           <p className="mr-auto text-[12.5px] text-[var(--muted)]">{totals.clients} clients · Billed {inr(totals.billed)} · Pending <b style={{ color: "var(--amber)" }}>{inr(totals.pending)}</b></p>
           {lockedCompany && <button onClick={() => setAddInvOpen(true)} className="btn btn-ghost"><ReceiptText size={15} /> Add invoice</button>}
           {lockedCompany && <button onClick={() => setAddOpen(true)} className="btn btn-violet"><UserPlus size={15} /> Add Client</button>}
+          {lockedCompany && <button onClick={() => setImportOpen(true)} className="btn btn-ghost"><Upload size={15} /> Import</button>}
           <button onClick={exportCsv} className="btn btn-ghost"><Download size={15} /> Export CSV</button>
         </div>
       ) : (
@@ -152,6 +155,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
             {lockedCompany && <Link href={`/invoices?company=${lockedCompany}`} prefetch className="btn btn-ghost"><ReceiptText size={15} /> Invoices</Link>}
             {/* Add Client only on the company pipelines (company + GST fixed there); hidden on All Clients and DM Clients. */}
             {lockedCompany && <button onClick={() => setAddOpen(true)} className="btn btn-violet"><UserPlus size={15} /> Add Client</button>}
+            {lockedCompany && <button onClick={() => setImportOpen(true)} className="btn btn-ghost"><Upload size={15} /> Import</button>}
             <button onClick={exportCsv} className="btn btn-ghost"><Download size={15} /> Export CSV</button>
             <Link href="/" prefetch className="btn btn-ghost">← Dashboard</Link>
           </div>
@@ -231,6 +235,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
       {fuRow && <FollowupModal r={fuRow} close={() => setFuRow(null)} />}
       {delRow && <DeleteModal r={delRow} close={() => setDelRow(null)} />}
       {addOpen && <AddClientModal lockedCompany={lockedCompany} lockedCategory={lockedCategory} close={() => setAddOpen(false)} />}
+      {importOpen && <ImportModal company={lockedCompany ?? ""} close={() => setImportOpen(false)} />}
       {addInvOpen && <AddInvoiceModal clientNames={clientNames} close={() => setAddInvOpen(false)} lockCompany={lockedCompany} returnTo={lockedCompany ? `/pipeline/${{ WEB_SOLUTIONS: "web-solutions", WEB_ROCZ: "web-rocz", WEB_ROCZ_PVT: "web-rocz-pvt" }[lockedCompany] ?? "web-solutions"}` : "/invoices"} />}
     </div>
   );
@@ -393,6 +398,40 @@ function CatChip({ c, services }: { c: string; services?: string[] }) {
       </span>
     : <span className="rounded-full px-2 py-0.5 text-[10.5px] font-bold" style={{ background: `color-mix(in srgb, ${color} 12%, white)`, color }}>{c}</span>;
 }
+// Bulk-import historical invoices from a CSV (Google Sheets export). Company + GST are fixed
+// by the hub, so the sheet only needs client + amount + date columns.
+function ImportModal({ company, close }: { company: string; close: () => void }) {
+  const slug = ({ WEB_SOLUTIONS: "web-solutions", WEB_ROCZ: "web-rocz", WEB_ROCZ_PVT: "web-rocz-pvt" } as Record<string, string>)[company] ?? "";
+  const returnTo = slug ? `/pipeline/${slug}` : "/accounts";
+  const templateHeader = "Client Name,Description,Amount,Received,Invoice Date,GSTIN,Phone,Email";
+  const templateRow = company === "WEB_ROCZ" ? "Acme Media,Meta Ads + SEO,45000,20000,2025-01-15,,9876543210,info@acme.in" : "Acme Pvt Ltd,Website Designing,60000,30000,2025-01-15,,9876543210,info@acme.in";
+  const template = "data:text/csv;charset=utf-8," + encodeURIComponent(`${templateHeader}\n${templateRow}\n`);
+  return (
+    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
+      <div className="flex w-full max-w-[500px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
+          <div>
+            <h2 className="text-[16px] font-bold">Import data · {companyLabel(company)}</h2>
+            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">Upload a CSV (export your Google Sheet as CSV) — one invoice per row. {company === "WEB_ROCZ_PVT" ? "GST" : "Non-GST"} series, {company === "WEB_ROCZ" ? "Digital Marketing" : "Website"}.</p>
+          </div>
+          <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
+        </div>
+        <form action={importFinanceCsv} encType="multipart/form-data" className="space-y-3 px-6 py-5">
+          <input type="hidden" name="company" value={company} />
+          <input type="hidden" name="return" value={returnTo} />
+          <a href={template} download={`import-template-${slug || "clients"}.csv`} className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[var(--violet)] hover:underline"><Download size={14} /> Download CSV template</a>
+          <div className="rounded-[10px] bg-[var(--surface-2)] px-3 py-2 text-[11.5px] text-[var(--muted)]">Columns: <b>Client Name</b>, Description, <b>Amount</b>, Received, Invoice Date (YYYY-MM-DD or DD-MM-YYYY), GSTIN, Phone, Email. Extra columns are ignored; up to 2 years of rows are fine.</div>
+          <label className="block"><span className="eyebrow">CSV file *</span><input name="file" type="file" accept=".csv,text/csv" required className="input mt-1 !py-2" /></label>
+          <div className="flex justify-end gap-2 pt-1">
+            <button type="button" onClick={close} className="btn btn-ghost">Cancel</button>
+            <button type="submit" className="btn btn-violet"><Upload size={15} /> Import invoices</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 function Kpi({ label, value, tone, icon }: { label: string; value: string; tone?: string; icon?: React.ReactNode }) {
   return (
     <div className="card card-pad">

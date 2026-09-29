@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { initials, ROLES } from "@/lib/domain";
@@ -7,7 +8,7 @@ import {
   LayoutDashboard, Users, UserCog, Megaphone, ClipboardList,
   FileBarChart, Search, UsersRound, Wallet, Images, Code2,
   CalendarDays, ClipboardCheck, ListChecks, Target, Palette, Clapperboard,
-  Contact, CalendarClock, ReceiptText, FileText, CheckCircle2, XCircle, UserPlus, Repeat, Landmark, Building2, Globe, FileSignature,
+  Contact, CalendarClock, ReceiptText, FileText, CheckCircle2, XCircle, UserPlus, Repeat, Landmark, Building2, Globe, FileSignature, ChevronDown,
 } from "lucide-react";
 
 type Item = { href: string; label: string; icon: React.ElementType; badge?: number; badgeTone?: "red"; forceActive?: boolean; subItems?: Item[] };
@@ -17,6 +18,14 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
   const path = usePathname();
   const sp = useSearchParams();
   const curStage = sp.get("stage") ?? "";
+  // Collapsible sidebar groups (remembered per browser).
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  useEffect(() => { try { const s = JSON.parse(localStorage.getItem("wr_sb_collapsed") || "[]"); setCollapsed(new Set(Array.isArray(s) ? s : [])); } catch { /* ignore */ } }, []);
+  const toggleGroup = (label: string) => setCollapsed((prev) => {
+    const n = new Set(prev); if (n.has(label)) n.delete(label); else n.add(label);
+    try { localStorage.setItem("wr_sb_collapsed", JSON.stringify([...n])); } catch { /* ignore */ }
+    return n;
+  });
   const active = (href: string) => {
     if (href === "/") return path === "/";
     const [p, query] = href.split("?");
@@ -175,10 +184,12 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
   return (
     <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-[240px] flex-none flex-col overflow-y-auto scroll-thin border-r border-[var(--sb-line)] bg-[var(--sb-bg)] px-3 py-4 md:flex">
       <nav className="space-y-5">
-        {groups.map((g, i) => (
+        {groups.map((g, i) => {
+          const isCol = !!g.label && collapsed.has(g.label);
+          return (
           <div key={i}>
-            {g.label && <div className="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--sb-muted)]">{g.label}</div>}
-            <div className="space-y-0.5">{g.items.map((it) => (
+            {g.label && <button type="button" onClick={() => toggleGroup(g.label!)} className="mb-1.5 flex w-full items-center justify-between px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--sb-muted)] transition-colors hover:text-white"><span>{g.label}</span><ChevronDown size={13} className={`flex-none transition-transform ${isCol ? "-rotate-90" : ""}`} /></button>}
+            {!isCol && <div className="space-y-0.5">{g.items.map((it) => (
               <div key={it.label}>
                 <Row it={it} />
                 {it.subItems && it.subItems.length > 0 && (
@@ -187,9 +198,10 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
                   </div>
                 )}
               </div>
-            ))}</div>
+            ))}</div>}
           </div>
-        ))}
+          );
+        })}
       </nav>
 
       <div className="mt-auto flex items-center gap-3 rounded-2xl border border-[var(--sb-line)] bg-[var(--sb-panel)] p-3">
