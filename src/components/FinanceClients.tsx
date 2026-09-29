@@ -20,7 +20,7 @@ const addDaysISO = (iso: string, n: number) => { const d = new Date((iso || toda
 type MiniInv = { category: string; total: number; received: number; balance: number; overdue: boolean; issueDate: string; company: string };
 type Note = { invId: string; invNumber: string; date: string; by: string; note: string };
 type Followup = { date: string; by: string; note: string; next?: string };
-type Row = { id: string; code: string; name: string; contact: string; phone: string; email: string; slaUrl: string; slaTitle: string; slaBy: string; status: string; retainer: number; category: string; invs: MiniInv[]; lastInvoiceDate: string; billed: number; received: number; pending: number; companies: string[]; clientFollowups: Followup[]; nextFollowup: string; notes: Note[]; noteTarget: { id: string; number: string } | null };
+type Row = { id: string; code: string; name: string; contact: string; phone: string; email: string; slaUrl: string; slaTitle: string; slaBy: string; services: string[]; status: string; retainer: number; category: string; invs: MiniInv[]; lastInvoiceDate: string; billed: number; received: number; pending: number; companies: string[]; clientFollowups: Followup[]; nextFollowup: string; notes: Note[]; noteTarget: { id: string; number: string } | null };
 
 export default function FinanceClients({ rows, lockedCompany, lockedCategory, embedded }: { rows: Row[]; lockedCompany?: string; lockedCategory?: string; embedded?: boolean }) {
   const [q, setQ] = useState("");
@@ -190,7 +190,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
                   <td className="px-5 py-3">{r.slaUrl
                     ? <div><a href={r.slaUrl} target="_blank" rel="noreferrer" download title={r.slaTitle || "Download SLA"} className="inline-flex items-center gap-1.5 rounded-[8px] bg-[var(--violet)] px-3 py-1.5 text-[12px] font-semibold text-white transition hover:opacity-90"><Download size={13} className="flex-none" /> Download SLA</a>{r.slaBy && <div className="mt-1 text-[10px] text-[var(--faint)]">by {r.slaBy}</div>}</div>
                     : <span className="text-[var(--faint)]">—</span>}</td>
-                  <td className="px-5 py-3"><CatChip c={catActive ? scopeLabel : r.category} /></td>
+                  <td className="px-5 py-3"><CatChip c={catActive ? scopeLabel : r.category} services={r.services} /></td>
                   <td className="px-5 py-3"><div className="text-[13px] font-semibold tnum">{inr(r.billed)}</div>{r.pending > 0 && <div className="text-[11px] font-semibold tnum" style={{ color: r.overdueAmt > 0 ? "var(--rose)" : "var(--amber)" }}>{inr(r.pending)} due{r.overdueAmt > 0 ? " · overdue" : ""}</div>}</td>
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-1.5">
@@ -280,6 +280,17 @@ function AddClientModal({ lockedCompany, lockedCategory, close }: { lockedCompan
             <label className="mt-3 block"><span className="eyebrow">Amount already paid (₹)</span><input name="paid" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>
             <p className="mt-2 text-[11.5px] text-[var(--faint)]">{showWebsite && showDM ? "Each service creates its own invoice (so Website vs DM stays separate). " : ""}Leave the amount at 0 to just register the client.</p>
           </div>
+          {showDM && (
+            <div className="rounded-[10px] border border-[var(--line)] p-3">
+              <div className="eyebrow mb-2">Digital Marketing services</div>
+              <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+                {["SEO", "Meta Ads", "Google Ads", "Social Media Marketing", "Content Marketing", "Email Marketing", "WhatsApp Marketing", "Lead Generation"].map((sv) => (
+                  <label key={sv} className="flex items-center gap-2 text-[12.5px] font-medium"><input type="checkbox" name="dmServices" value={sv} className="h-4 w-4 accent-[var(--magenta)]" /> {sv}</label>
+                ))}
+              </div>
+              <p className="mt-2 text-[11px] text-[var(--faint)]">Pick the services this client has taken — shown on hover in the clients list.</p>
+            </div>
+          )}
           <div className="flex justify-end gap-2 pt-1">
             <button type="button" onClick={close} className="btn btn-ghost">Cancel</button>
             <button type="submit" className="btn btn-violet"><UserPlus size={15} /> Add client</button>
@@ -360,10 +371,15 @@ function DeleteModal({ r, close }: { r: Row; close: () => void }) {
   );
 }
 
-function CatChip({ c }: { c: string }) {
+function CatChip({ c, services }: { c: string; services?: string[] }) {
   const map: Record<string, string> = { Website: "var(--indigo)", "Digital Marketing": "var(--magenta)", Both: "var(--violet)" };
   const color = map[c] ?? "var(--muted)";
-  return <span className="rounded-full px-2 py-0.5 text-[10.5px] font-bold" style={{ background: `color-mix(in srgb, ${color} 12%, white)`, color }}>{c}</span>;
+  const list = (services ?? []).filter(Boolean);
+  return list.length > 0
+    ? <span className="group relative inline-flex cursor-help items-center gap-0.5 rounded-full px-2 py-0.5 text-[10.5px] font-bold" style={{ background: `color-mix(in srgb, ${color} 12%, white)`, color }}>{c} ⓘ
+        <span className="pointer-events-none absolute left-0 top-full z-20 mt-1 hidden w-max max-w-[240px] rounded-[8px] border border-[var(--line-2)] bg-white px-2.5 py-1.5 text-[11px] font-medium text-[var(--ink-2)] shadow-lg group-hover:block">{list.join(", ")}</span>
+      </span>
+    : <span className="rounded-full px-2 py-0.5 text-[10.5px] font-bold" style={{ background: `color-mix(in srgb, ${color} 12%, white)`, color }}>{c}</span>;
 }
 function Kpi({ label, value, tone, icon }: { label: string; value: string; tone?: string; icon?: React.ReactNode }) {
   return (

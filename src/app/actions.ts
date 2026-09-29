@@ -622,14 +622,23 @@ export async function addClientFromFinance(fd: FormData) {
   // per service (before GST); "amount paid" is distributed across them, Website first.
   const webAmt = Math.max(0, n(fd, "webAmount"));
   const dmAmt = Math.max(0, n(fd, "dmAmount"));
+  // Specific Digital Marketing services picked in the Add-Client form (SEO / Meta Ads / …).
+  const dmServices = fd.getAll("dmServices").map((v) => String(v).trim()).filter(Boolean);
   const specs = [
     ...(webAmt > 0 ? [{ label: "Website Development", amount: webAmt }] : []),
     ...(dmAmt > 0 ? [{ label: "Digital Marketing", amount: dmAmt }] : []),
   ];
 
+  // Tag the client's services (drives Website vs DM + shown on hover in the clients list).
+  // The specific DM services are saved even when no amount is entered yet.
+  const svcTags = [...new Set([
+    ...(webAmt > 0 ? ["Website Development"] : []),
+    ...dmServices,
+    ...(dmAmt > 0 && dmServices.length === 0 ? ["Digital Marketing"] : []),
+  ])];
+  if (svcTags.length) await prisma.clientService.createMany({ data: svcTags.map((s) => ({ clientId: client.id, service: s })) });
+
   if (specs.length) {
-    // Tag the client's services (drives Website vs DM elsewhere).
-    await prisma.clientService.createMany({ data: specs.map((sp) => ({ clientId: client.id, service: sp.label })) });
 
     let paidLeft = Math.max(0, n(fd, "paid"));
     const issueDate = new Date().toISOString().slice(0, 10);

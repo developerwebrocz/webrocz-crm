@@ -170,6 +170,23 @@ async function main() {
   await ensureInvoice("WR-INV-2026-0004", "Glow Skin Clinic", "Google Ads", 55000, 0, { contact: "Dr. Meghana", phone: "9700667788", email: "info@glowskin.in", issueDate: "2026-09-05", approved: false, category: "DM", gst: false, retainer: 18000 });
   await ensureInvoice("WR-INV-2026-0006", "FitZone Gym", "SEO", 40000, 20000, { contact: "Arjun Reddy", phone: "9885112233", email: "arjun@fitzone.in", issueDate: "2026-09-22", approved: false, category: "DM", gst: false, retainer: 12000 });
 
+  console.log("--- DM services per client (shown on hover in Web Rocz clients) ---");
+  const dmSvcMap: Record<string, string[]> = {
+    "Nova Fashion": ["Meta Ads", "SEO", "Social Media Marketing"],
+    "Glow Skin Clinic": ["Google Ads", "SEO"],
+    "FitZone Gym": ["SEO", "Meta Ads"],
+    "FreshLeaf Cafe": ["Social Media Marketing", "Content Marketing"],
+  };
+  for (const [name, svcs] of Object.entries(dmSvcMap)) {
+    const cl = await prisma.client.findFirst({ where: { name }, select: { id: true } });
+    if (!cl) continue;
+    for (const svc of svcs) {
+      const exists = await prisma.clientService.findFirst({ where: { clientId: cl.id, service: svc } });
+      if (!exists) await prisma.clientService.create({ data: { clientId: cl.id, service: svc } });
+    }
+    console.log("dm services", name, "→", svcs.join(", "));
+  }
+
   console.log("--- SLA demo (with downloadable files) ---");
   const slaFile = ensureSampleSlaFile();
   // (A) Pending SLAs on the SLA board — sales uploaded (with a file), accountant will "Move to" a company.
