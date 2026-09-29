@@ -194,14 +194,17 @@ async function main() {
     else if (u.role !== "ACCOUNT_MANAGER" && u.role !== "AM_HEAD") await prisma.user.update({ where: { id: u.id }, data: { role: "ACCOUNT_MANAGER" } });
     return u.id;
   }
-  const amKalyan = await ensureAm("Kalyan");
-  const amShravan = await ensureAm("Shravan");
-  const amAssign: Record<string, string> = { "Nova Fashion": amKalyan, "Glow Skin Clinic": amShravan, "FitZone Gym": amKalyan, "FreshLeaf Cafe": amShravan };
+  const amKishore = await ensureAm("Kishore");
+  const amSowji = await ensureAm("Sowji");
+  const amVeni = await ensureAm("Veni");
+  const amAssign: Record<string, string> = { "Nova Fashion": amKishore, "Glow Skin Clinic": amSowji, "FitZone Gym": amVeni, "FreshLeaf Cafe": amKishore };
   for (const [name, amId] of Object.entries(amAssign)) {
     const cl = await prisma.client.findFirst({ where: { name }, select: { id: true } });
     if (cl) await prisma.client.update({ where: { id: cl.id }, data: { accountManagerId: amId } });
   }
-  console.log("account managers assigned (Kalyan / Shravan)");
+  // Clean up the earlier (wrong) demo AM names if they were seeded before.
+  await prisma.user.deleteMany({ where: { name: { in: ["Kalyan", "Shravan"] }, role: "ACCOUNT_MANAGER", passwordHash: null } });
+  console.log("account managers assigned (Kishore / Sowji / Veni)");
 
   // Website services for the Web Solutions clients → shown on hover over the "Website" chip.
   const webSvcMap: Record<string, string[]> = {

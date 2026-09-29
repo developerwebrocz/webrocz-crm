@@ -817,7 +817,8 @@ export async function addClientWebsite(fd: FormData) {
 // destructive, so the UI confirms first.
 export async function deleteClientFinance(fd: FormData) {
   const u = await getCurrentUser();
-  if (!u || !["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"].includes(u.role)) redirect("/");
+  // Delete is Super Admin only — accountants can raise/manage but not delete clients.
+  if (!u || !["SUPER_ADMIN", "SUB_ADMIN"].includes(u.role)) redirect("/");
   const id = s(fd, "id");
   if (id) { try { await prisma.client.delete({ where: { id } }); } catch { /* already gone */ } }
   revalidatePath("/accounts");

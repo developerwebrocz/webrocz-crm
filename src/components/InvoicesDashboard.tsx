@@ -23,7 +23,7 @@ const STATUS = [
 
 const COMPANY_TABS = [{ k: "", label: "All companies" }, ...COMPANY_KEYS.map((k) => ({ k, label: companyLabel(k) }))];
 
-export default function InvoicesDashboard({ rows, totals, companyCounts, clientNames = [], q, status, company, hideApproval, embedded }: { rows: any[]; totals: any; companyCounts: Record<string, { count: number; billed: number }>; clientNames?: string[]; q: string; status: string; company: string; hideApproval?: boolean; embedded?: boolean }) {
+export default function InvoicesDashboard({ rows, totals, companyCounts, clientNames = [], q, status, company, hideApproval, embedded, canDelete }: { rows: any[]; totals: any; companyCounts: Record<string, { count: number; billed: number }>; clientNames?: string[]; q: string; status: string; company: string; hideApproval?: boolean; embedded?: boolean; canDelete?: boolean }) {
   const statusOptions = hideApproval ? STATUS.filter((s) => s.k !== "pending_approval" && s.k !== "approved") : STATUS;
   const [fuInv, setFuInv] = useState<any>(null); // invoice whose follow-ups modal is open
   const [delInv, setDelInv] = useState<any>(null); // invoice pending delete confirmation
@@ -109,7 +109,7 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
                     <div className="flex items-center gap-1.5">
                       <button onClick={() => setFuInv(r)} title="Follow-ups" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><MessageSquarePlus size={13} /> Follow-up{r.followups?.length > 0 && <span className="grid h-4 min-w-[16px] place-items-center rounded-full bg-[var(--violet)] px-1 text-[9px] font-bold text-white">{r.followups.length}</span>}</button>
                       <Link href={`/invoices/${r.id}`} prefetch title="Open & edit invoice" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><Pencil size={13} /> Edit</Link>
-                      <button onClick={() => setDelInv(r)} title="Delete invoice" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--rose)] hover:bg-[color-mix(in_srgb,var(--rose)_10%,white)]"><Trash2 size={13} /> Delete</button>
+                      {canDelete && <button onClick={() => setDelInv(r)} title="Delete invoice" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--rose)] hover:bg-[color-mix(in_srgb,var(--rose)_10%,white)]"><Trash2 size={13} /> Delete</button>}
                     </div>
                     {r.nextFollowup && <div className="mt-1 text-[10.5px] text-[var(--amber)] tnum">next follow-up {fmtD(r.nextFollowup)}</div>}
                   </td>

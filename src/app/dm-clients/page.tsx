@@ -13,5 +13,5 @@ export default async function DmClientsPage() {
   if (!user) redirect("/login");
   if (!ALLOWED.includes(user.role)) redirect("/");
   const { rows } = await getFinanceClients();
-  return <FinanceClients rows={rows} lockedCategory="DM" />;
+  return <FinanceClients rows={rows} lockedCategory="DM" canDelete={["SUPER_ADMIN", "SUB_ADMIN"].includes(user.role)} />;
 }

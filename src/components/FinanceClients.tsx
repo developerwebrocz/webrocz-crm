@@ -32,7 +32,7 @@ type Note = { invId: string; invNumber: string; date: string; by: string; note: 
 type Followup = { date: string; by: string; note: string; next?: string };
 type Row = { id: string; code: string; name: string; contact: string; phone: string; email: string; accountManager: string; slaUrl: string; slaTitle: string; slaBy: string; services: string[]; status: string; retainer: number; category: string; invs: MiniInv[]; lastInvoiceDate: string; billed: number; received: number; pending: number; companies: string[]; clientFollowups: Followup[]; nextFollowup: string; notes: Note[]; noteTarget: { id: string; number: string } | null };
 
-export default function FinanceClients({ rows, lockedCompany, lockedCategory, embedded }: { rows: Row[]; lockedCompany?: string; lockedCategory?: string; embedded?: boolean }) {
+export default function FinanceClients({ rows, lockedCompany, lockedCategory, embedded, canDelete }: { rows: Row[]; lockedCompany?: string; lockedCategory?: string; embedded?: boolean; canDelete?: boolean }) {
   const [q, setQ] = useState("");
   const [clientSel, setClientSel] = useState("ALL"); // ALL | <clientId>
   const [companySel, setCompanySel] = useState(lockedCompany ?? "ALL"); // ALL | <company key>
@@ -212,7 +212,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
                     <div className="flex items-center gap-1.5">
                       <button onClick={() => setFuRow(r)} title="Follow-up" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><MessageSquarePlus size={13} /> Follow-up{r.clientFollowups.length > 0 && <span className="grid h-4 min-w-[16px] place-items-center rounded-full bg-[var(--violet)] px-1 text-[9px] font-bold text-white">{r.clientFollowups.length}</span>}</button>
                       <Link href={companySel !== "ALL" ? `/accounts/${r.id}?company=${companySel}` : `/accounts/${r.id}`} prefetch title="Edit info & invoices" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><Pencil size={13} /> Edit</Link>
-                      <button onClick={() => setDelRow(r)} title="Delete client" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--rose)] hover:bg-[color-mix(in_srgb,var(--rose)_10%,white)]"><Trash2 size={13} /> Delete</button>
+                      {canDelete && <button onClick={() => setDelRow(r)} title="Delete client" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--rose)] hover:bg-[color-mix(in_srgb,var(--rose)_10%,white)]"><Trash2 size={13} /> Delete</button>}
                     </div>
                   </td>
                 </tr>

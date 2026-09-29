@@ -865,7 +865,8 @@ export async function generateInvoiceFromSla(fd: FormData) {
 // Delete a sales invoice (accountant/admin). Payments cascade with it.
 export async function deleteSalesInvoice(fd: FormData) {
   const me = await getCurrentUser();
-  if (!me || !INVOICE_MANAGE.includes(me.role)) redirect("/");
+  // Delete is Super Admin only — accountants manage invoices but cannot delete them.
+  if (!me || !["SUPER_ADMIN", "SUB_ADMIN"].includes(me.role)) redirect("/");
   const id = s(fd, "invoiceId");
   const back = s(fd, "return") || "/invoices";
   if (id) {

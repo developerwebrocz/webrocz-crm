@@ -12,5 +12,5 @@ export default async function FinanceClientsPage() {
   if (!user) redirect("/login");
   if (!ALLOWED.includes(user.role)) redirect("/");
   const { rows } = await getFinanceClients();
-  return <FinanceClients rows={rows} />;
+  return <FinanceClients rows={rows} canDelete={["SUPER_ADMIN", "SUB_ADMIN"].includes(user.role)} />;
 }

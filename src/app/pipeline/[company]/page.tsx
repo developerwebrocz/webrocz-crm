@@ -26,7 +26,7 @@ export default async function CompanyPipelinePage({ params }: { params: Promise<
   return (
     <div className="space-y-5">
       <CompanyNav company={key} active="clients" />
-      <FinanceClients rows={rows} lockedCompany={key} embedded />
+      <FinanceClients rows={rows} lockedCompany={key} embedded canDelete={["SUPER_ADMIN", "SUB_ADMIN"].includes(user.role)} />
     </div>
   );
 }
