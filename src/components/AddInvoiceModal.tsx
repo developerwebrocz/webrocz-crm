@@ -7,7 +7,7 @@ import { addInvoice } from "@/app/sales-actions";
 // Create a brand-new invoice. Client is typed (matches an existing client or creates one).
 // Web Solutions gets a website-specific layout (domain + service checkboxes + renewal that
 // saves onto the client). Every other context uses the standard GST + service form.
-export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoices", lockCompany }: { clientNames: string[]; close: () => void; returnTo?: string; lockCompany?: string }) {
+export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoices", lockCompany, lockClientName }: { clientNames: string[]; close: () => void; returnTo?: string; lockCompany?: string; lockClientName?: string }) {
   const [category, setCategory] = useState(lockCompany === "WEB_ROCZ" ? "DM" : "WEBSITE");
   const [gst, setGst] = useState(lockCompany === "WEB_ROCZ_PVT");
   const lockGst = !!lockCompany;                    // every company fixes its GST flag
@@ -48,7 +48,7 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
               <input type="hidden" name="items" value={JSON.stringify(lineItems)} />
               {lineItems.map((li, i) => <input key={i} type="hidden" name="services" value={li.name} />)}
               <div className="grid grid-cols-2 gap-3">
-                <label className="block"><span className="eyebrow">Company name</span><input name="clientName" required list="inv-client-names" className="input mt-1" placeholder="Company / client" /></label>
+                <label className="block"><span className="eyebrow">Company name</span>{lockClientName ? <input name="clientName" defaultValue={lockClientName} readOnly className="input mt-1 bg-[var(--surface-2)]" /> : <input name="clientName" required list="inv-client-names" className="input mt-1" placeholder="Company / client" />}</label>
                 <label className="block"><span className="eyebrow">Domain name</span><input name="domain" className="input mt-1" placeholder="e.g. acme.com" /></label>
               </div>
               <div>
@@ -89,7 +89,7 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
             <>
               <label className="block">
                 <span className="eyebrow">Client / company name</span>
-                <input name="clientName" required list="inv-client-names" className="input mt-1" placeholder="Type the client / company name" />
+                {lockClientName ? <input name="clientName" defaultValue={lockClientName} readOnly className="input mt-1 bg-[var(--surface-2)]" /> : <input name="clientName" required list="inv-client-names" className="input mt-1" placeholder="Type the client / company name" />}
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <label className="block"><span className="eyebrow">Service</span>

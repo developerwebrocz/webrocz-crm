@@ -5,6 +5,7 @@ import Link from "next/link";
 import { recordPayment, createClientInvoice, generateInvoiceFromSla } from "@/app/sales-actions";
 import { updateClientFinance, logClientFollowup } from "@/app/actions";
 import { companyLabel } from "@/lib/domain";
+import AddInvoiceModal from "@/components/AddInvoiceModal";
 import { ReceiptText, Wallet, CheckCircle2, Clock, Phone, Mail, IndianRupee, X, ArrowLeft, Building2, Plus, Pencil, MessageSquarePlus, CalendarClock, Globe, FileSignature, FileText } from "lucide-react";
 
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
@@ -18,7 +19,7 @@ type Followup = { date: string; by: string; note: string; next?: string };
 type Sla = { id: string; title: string; service: string; amount: number; gst: boolean; fileUrl: string; notes: string; status: string; uploadedBy: string; createdAt: string };
 type Totals = { billed: number; received: number; pending: number; overdue: number; invoices: number };
 
-export default function FinanceClientDetail({ client, invoices, payments, totals, clientFollowups, slas, openPayId }: { client: Client; invoices: Inv[]; payments: Pay[]; totals: Totals; clientFollowups: Followup[]; slas: Sla[]; openPayId?: string }) {
+export default function FinanceClientDetail({ client, invoices, payments, totals, clientFollowups, slas, openPayId, company }: { client: Client; invoices: Inv[]; payments: Pay[]; totals: Totals; clientFollowups: Followup[]; slas: Sla[]; openPayId?: string; company?: string }) {
   const [payInv, setPayInv] = useState<Inv | null>(() => invoices.find((i) => i.id === openPayId && i.balance > 0) ?? null);
   const [newInv, setNewInv] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -242,7 +243,9 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
       </div>
 
       {payInv && <PaymentModal inv={payInv} clientName={client.name} back={backUrl} close={() => setPayInv(null)} />}
-      {newInv && <NewInvoiceModal clientId={client.id} clientName={client.name} defaultTaxPct={client.gstApplicable ? client.gstRate : 0} defaultGstin={client.gstin} close={() => setNewInv(false)} />}
+      {newInv && (company === "WEB_SOLUTIONS"
+        ? <AddInvoiceModal clientNames={[]} lockClientName={client.name} lockCompany="WEB_SOLUTIONS" returnTo={backUrl} close={() => setNewInv(false)} />
+        : <NewInvoiceModal clientId={client.id} clientName={client.name} defaultTaxPct={client.gstApplicable ? client.gstRate : 0} defaultGstin={client.gstin} close={() => setNewInv(false)} />)}
       {editOpen && <EditModal client={client} close={() => setEditOpen(false)} />}
     </div>
   );
