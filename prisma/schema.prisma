@@ -263,6 +263,7 @@ model SalesInvoice {
   total         Int      @default(0)
   received      Int      @default(0)
   paymentStatus String   @default("Pending")
+  paymentProof  String   @default("") // uploaded payment screenshot (Web Solutions new-invoice flow)
   notes         String?
   issueDate     String // "2026-09-18"
   dueDate       String   @default("") // "2026-10-03" — payment due date (Net-15 from issue by default)

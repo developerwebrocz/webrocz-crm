@@ -546,6 +546,14 @@ export async function addInvoice(fd: FormData) {
   const description = s(fd, "desc");
   const desc = services.length ? services.join(", ") : (description || serviceLabel);
   const gst = s(fd, "gst") === "1";
+  // Web Solutions submits per-service line items (name + amount as JSON); else a single line.
+  let invoiceItems: { name: string; qty: number; rate: number; amount: number }[] = [];
+  try {
+    const parsed = JSON.parse(s(fd, "items") || "[]");
+    if (Array.isArray(parsed)) invoiceItems = parsed.filter((it) => it && it.name).map((it) => ({ name: String(it.name), qty: Number(it.qty) || 1, rate: Number(it.rate) || 0, amount: Number(it.amount) || 0 }));
+  } catch { /* ignore */ }
+  // Uploaded payment screenshot (proof), if any.
+  const proofUrl = await saveUpload(fd.get("paymentProof"), "payments");
 
   // Match an existing client by name, else create a fresh one (CLI-#### like the finance flow).
   const all = await prisma.client.findMany({ select: { id: true, name: true, gstin: true, gstRate: true, pocName: true, pocMobile: true, pocEmail: true } });
@@ -583,15 +591,15 @@ export async function addInvoice(fd: FormData) {
       number: await invoiceNumber(gst), clientId: client.id, pipeline: "WEBROCZ", company,
       billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "", clientGstin: gstin,
       clientState, placeOfSupply: clientState,
-      items: JSON.stringify([{ name: desc, qty: 1, rate: base, amount: base }]),
-      subtotal: base, taxPct, taxAmount, total, received,
+      items: JSON.stringify(invoiceItems.length ? invoiceItems : [{ name: desc, qty: 1, rate: base, amount: base }]),
+      subtotal: base, taxPct, taxAmount, total, received, paymentProof: proofUrl,
       paymentStatus: received >= total ? "Fully Received" : received > 0 ? "Partially Received" : "Pending",
       issueDate, dueDate,
       ...(services.length && description ? { notes: description } : {}),
     },
   });
   if (received > 0) {
-    await prisma.payment.create({ data: { invoiceId: inv.id, amount: received, date: issueDate, mode: "OTHER", note: "Invoice opening", by: me.name } });
+    await prisma.payment.create({ data: { invoiceId: inv.id, amount: received, date: issueDate, mode: "OTHER", note: proofUrl ? "Invoice opening · payment screenshot attached" : "Invoice opening", ref: proofUrl, by: me.name } });
   }
   revalidatePath("/invoices");
   revalidatePath(`/accounts/${client.id}`);
