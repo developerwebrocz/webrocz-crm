@@ -55,13 +55,16 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
     return out.sort((a, b) => (a < b ? -1 : 1)); // chronological order (oldest → newest)
   }, [invoices]);
   const fInvoices = useMemo(() => invoices.filter((i) => {
+    // Company scope: inside a company hub, show only that billing entity's invoices for this
+    // client (so the same client's Web Solutions / Web Rocz / Pvt Ltd invoices stay separate).
+    if (company && i.company !== company) return false;
     const d = i.issueDate || "";
     if (month !== "ALL" && !d.startsWith(month)) return false;
     if (from && d < from) return false;
     if (to && d > to) return false;
     return true;
-  }), [invoices, month, from, to]);
-  const filterActive = month !== "ALL" || !!from || !!to;
+  }), [invoices, month, from, to, company]);
+  const filterActive = month !== "ALL" || !!from || !!to || !!company;
   const fTotals = useMemo(() => ({
     billed: fInvoices.reduce((s, i) => s + i.total, 0),
     received: fInvoices.reduce((s, i) => s + i.received, 0),
@@ -70,6 +73,12 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
     invoices: fInvoices.length,
   }), [fInvoices]);
   const view = filterActive ? fTotals : totals;
+  // Payment history scoped to the company's invoices when viewing inside a company hub.
+  const fPayments = useMemo(() => {
+    if (!company) return payments;
+    const ids = new Set(fInvoices.map((i) => i.id));
+    return payments.filter((p) => ids.has(p.invoiceId));
+  }, [payments, fInvoices, company]);
   const monthLabel = (m: string) => { const [y, mo] = m.split("-"); return `${["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][parseInt(mo, 10) - 1] ?? mo} ${y}`; };
 
   return (
@@ -189,13 +198,13 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
 
       {/* payment history */}
       <div className="card !p-0 overflow-hidden">
-        <div className="border-b border-[var(--line)] px-5 py-3"><h2 className="text-[14px] font-bold">Payment history ({payments.length})</h2></div>
+        <div className="border-b border-[var(--line)] px-5 py-3"><h2 className="text-[14px] font-bold">Payment history ({fPayments.length})</h2></div>
         <div className="overflow-x-auto scroll-thin">
           <table className="w-full min-w-[720px] text-left">
             <thead><tr className="border-b border-[var(--line)]">{["Date", "Invoice", "Amount", "Mode", "Ref", "Note", "By"].map((h) => <th key={h} className="th px-5 py-2.5">{h}</th>)}</tr></thead>
             <tbody>
-              {payments.length === 0 && <tr><td colSpan={7} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No payments recorded yet.</td></tr>}
-              {payments.map((p) => (
+              {fPayments.length === 0 && <tr><td colSpan={7} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No payments recorded yet.</td></tr>}
+              {fPayments.map((p) => (
                 <tr key={p.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
                   <td className="px-5 py-3 text-[12.5px] tnum">{fmtDate(p.date)}</td>
                   <td className="px-5 py-3 text-[12.5px] font-semibold">{p.invoiceNumber}</td>
