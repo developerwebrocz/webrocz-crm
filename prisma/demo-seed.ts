@@ -347,9 +347,9 @@ async function main() {
           assignedDate: boardDay(Math.min(p.off, 0) - 1), dueDate: boardDay(p.off), dimensions: t.dim,
           brief: `${t.brief}${cl ? ` — ${cl.name}.` : ""}`,
           notes: p.status === "COMPLETED" ? "Approved by client — all formats exported." : "",
-          refLink: kind === "DESIGN" ? "https://www.behance.net/gallery/reference" : "https://youtube.com/watch?v=ref",
-          rawLink: "https://drive.google.com/drive/folders/raw-assets",
-          finalLink: p.status === "COMPLETED" ? "https://drive.google.com/drive/folders/final-export" : "",
+          // Links left empty in demo data — placeholder Drive/Behance URLs 404 when clicked.
+          // The real designer/editor pastes working links; the fields still demo the workflow.
+          refLink: "", rawLink: "", finalLink: "",
         };
       });
       await prisma.creativeTask.createMany({ data: rows });
@@ -362,6 +362,20 @@ async function main() {
         const cl = activeClients.find((c) => c.id === r.clientId);
         await ensureNotification([worker.id], `New ${label} assigned: ${r.title}`, `From ${amName(i)}${cl ? ` · ${cl.name}` : ""} · due ${r.dueDate}`, "/", "violet");
       }
+    }
+
+    // Clean up placeholder links from earlier demo runs — these fake Drive/Behance URLs
+    // return a Google 404 when clicked, which looks broken in a client demo.
+    const badLinks = [
+      "https://drive.google.com/drive/folders/raw-assets",
+      "https://drive.google.com/drive/folders/final-export",
+      "https://www.behance.net/gallery/reference",
+      "https://youtube.com/watch?v=ref",
+    ];
+    for (const url of badLinks) {
+      await prisma.creativeTask.updateMany({ where: { refLink: url }, data: { refLink: "" } });
+      await prisma.creativeTask.updateMany({ where: { rawLink: url }, data: { rawLink: "" } });
+      await prisma.creativeTask.updateMany({ where: { finalLink: url }, data: { finalLink: "" } });
     }
 
     for (const d of designers) await seedBoard(d, "DESIGN", DESIGN_TASKS);
