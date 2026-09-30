@@ -520,7 +520,7 @@ const cssVars = `
 .cb-kpi-pill{display:inline-block;margin-top:8px;font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:999px;border:1px solid}
 .cb-chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#fff;border:1px solid #E7E9F0;border-radius:20px;padding:8px;margin-bottom:16px}
 .cb-chip{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:12px;font-size:12.5px;font-weight:600;color:#475569;background:#F8FAFC;border:1px solid #E7E9F0;cursor:pointer;transition:all .15s ease}
-.cb-chip:hover{background:#fff}
+.cb-chip:hover{background:#EEF2F7;border-color:#CBD5E1;color:#0F172A}
 .cb-chip-on{background:#0F172A;color:#fff;border-color:#0F172A;box-shadow:0 2px 8px rgba(15,23,42,.15)}
 .cb-chip-n{font-size:11px;padding:1px 7px;border-radius:999px;background:#F1F5F9;color:#475569}
 .cb-chip-on .cb-chip-n{background:rgba(255,255,255,.22);color:#fff}
