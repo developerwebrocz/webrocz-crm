@@ -13,10 +13,15 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
   const lockGst = !!lockCompany;                    // every company fixes its GST flag
   const lockCat = lockCompany === "WEB_SOLUTIONS" || lockCompany === "WEB_ROCZ"; // Pvt Ltd does both services
   const isWebSol = lockCompany === "WEB_SOLUTIONS";
+  const isPvt = lockCompany === "WEB_ROCZ_PVT";
+  const isItemized = isWebSol || isPvt; // both use the itemized services + amounts form
   const target = gst ? "Web Rocz Pvt Ltd" : category === "DM" ? "Web Rocz" : "Web Solutions";
   const today = new Date().toISOString().slice(0, 10);
-  // Web Solutions: each ticked service gets its own amount → the total is their sum.
-  const WEBSOL_SERVICES = ["Domain", "Hosting + SSL", "Website Designing"];
+  // Itemized services: each ticked service gets its own amount → the total is their sum.
+  // Web Solutions = website only; Web Rocz Pvt Ltd = website + digital marketing (GST).
+  const WEBSOL_SERVICES = isPvt
+    ? ["Domain", "Hosting + SSL", "Website Designing", "SEO", "Meta Ads", "Google Ads", "Social Media Marketing", "Content Marketing"]
+    : ["Domain", "Hosting + SSL", "Website Designing"];
   const [svc, setSvc] = useState<Record<string, { on: boolean; amount: string }>>({});
   const [customs, setCustoms] = useState<{ name: string; amount: string }[]>([]);
   const setSvcOn = (k: string, on: boolean) => setSvc((p) => ({ ...p, [k]: { on, amount: p[k]?.amount ?? "" } }));
@@ -32,7 +37,7 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
         <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
           <div>
             <h2 className="text-[16px] font-bold">Add new invoice{lockCompany ? ` · ${target}` : ""}</h2>
-            {!isWebSol && <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">Type the client name — an existing client is reused, a new name creates one. Company &amp; serial follow GST + service.</p>}
+            {!isItemized && <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">Type the client name — an existing client is reused, a new name creates one. Company &amp; serial follow GST + service.</p>}
           </div>
           <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
         </div>
@@ -40,10 +45,10 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
           <input type="hidden" name="return" value={returnTo} />
           <datalist id="inv-client-names">{clientNames.map((nm) => <option key={nm} value={nm} />)}</datalist>
 
-          {isWebSol ? (
+          {isItemized ? (
             <>
               <input type="hidden" name="category" value="WEBSITE" />
-              <input type="hidden" name="gst" value="0" />
+              <input type="hidden" name="gst" value={isPvt ? "1" : "0"} />
               <input type="hidden" name="amount" value={String(total)} />
               <input type="hidden" name="items" value={JSON.stringify(lineItems)} />
               {lineItems.map((li, i) => <input key={i} type="hidden" name="services" value={li.name} />)}
@@ -52,8 +57,9 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
                 <label className="block"><span className="eyebrow">Company name</span>{lockClientName ? <input name="clientName" defaultValue={lockClientName} readOnly className="input mt-1 bg-[var(--surface-2)]" /> : <input name="clientName" required list="inv-client-names" className="input mt-1" placeholder="Company / client" />}</label>
                 <label className="block"><span className="eyebrow">Domain name</span><input name="domain" className="input mt-1" placeholder="e.g. acme.com" /></label>
               </div>
+              {isPvt && <label className="block"><span className="eyebrow">Client GSTIN</span><input name="gstin" className="input mt-1" placeholder="e.g. 36AABCU9603R1ZM" /><span className="mt-1 block text-[11px] text-[var(--faint)]">Sets the place of supply (CGST/SGST vs IGST) on the tax invoice.</span></label>}
               <div>
-                <span className="eyebrow">Services &amp; amounts</span>
+                <span className="eyebrow">Services &amp; amounts{isPvt ? " (before GST)" : ""}</span>
                 <div className="mt-1.5 space-y-2 rounded-[10px] border border-[var(--line)] p-3">
                   {WEBSOL_SERVICES.map((sv) => (
                     <div key={sv} className="flex items-center gap-2">
@@ -71,9 +77,15 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
                   <button type="button" onClick={() => setCustoms((cs) => [...cs, { name: "", amount: "" }])} className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--violet)] hover:underline"><Plus size={13} /> Add service</button>
                 </div>
               </div>
-              <div className="flex items-center justify-between rounded-[12px] border border-[var(--line-2)] px-4 py-3" style={{ background: "color-mix(in srgb, var(--violet) 6%, white)" }}>
-                <span className="text-[12px] font-bold uppercase tracking-wide text-[var(--muted)]">Total amount</span>
-                <span className="text-[22px] font-extrabold tnum text-[var(--violet)]">₹{total.toLocaleString("en-IN")}</span>
+              <div className="rounded-[12px] border border-[var(--line-2)] px-4 py-3" style={{ background: "color-mix(in srgb, var(--violet) 6%, white)" }}>
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] font-bold uppercase tracking-wide text-[var(--muted)]">{isPvt ? "Subtotal" : "Total amount"}</span>
+                  <span className={`tnum font-extrabold ${isPvt ? "text-[15px] text-[var(--ink)]" : "text-[22px] text-[var(--violet)]"}`}>₹{total.toLocaleString("en-IN")}</span>
+                </div>
+                {isPvt && <>
+                  <div className="mt-1 flex items-center justify-between text-[12px] text-[var(--muted)]"><span>GST 18%</span><span className="tnum">₹{Math.round(total * 0.18).toLocaleString("en-IN")}</span></div>
+                  <div className="mt-1.5 flex items-center justify-between border-t border-[var(--line)] pt-1.5"><span className="text-[12px] font-bold uppercase tracking-wide text-[var(--muted)]">Total (incl. GST)</span><span className="text-[22px] font-extrabold tnum text-[var(--violet)]">₹{Math.round(total * 1.18).toLocaleString("en-IN")}</span></div>
+                </>}
               </div>
 
               <div className="rounded-[12px] border border-[var(--line)] p-3.5">
@@ -92,7 +104,7 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
               </div>
 
               <label className="block"><span className="eyebrow">Description (optional)</span><input name="desc" className="input mt-1" placeholder="optional notes" /></label>
-              <p className="rounded-[10px] bg-[var(--surface-2)] px-3 py-2 text-[11.5px] text-[var(--muted)]">→ <b>Web Solutions</b> · Non-GST serial series</p>
+              <p className="rounded-[10px] bg-[var(--surface-2)] px-3 py-2 text-[11.5px] text-[var(--muted)]">→ <b>{isPvt ? "Web Rocz Pvt Ltd" : "Web Solutions"}</b> · {isPvt ? "GST" : "Non-GST"} serial series</p>
             </>
           ) : (
             <>
