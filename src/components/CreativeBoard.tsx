@@ -293,7 +293,7 @@ export default function CreativeBoard({
                   </div>
                   <div className="cb-col">
                     <Field label={L.raw}><LinkInput name="rawLink" value={r.rawLink} placeholder={L.rawPh} /></Field>
-                    <Field label={L.final}><LinkInput name="finalLink" value={r.finalLink} placeholder={L.finalPh} /></Field>
+                    <Field label={L.final}><LinkInput name="finalLink" value={r.finalLink} placeholder={L.finalPh} openBelow /></Field>
                     <Field label="Editor Notes"><textarea name="notes" defaultValue={r.notes} rows={2} placeholder="Add notes…" className="cb-fld cb-ta" /></Field>
                     <div className="cb-infobox">
                       <div><span>Client:</span> <b>{r.client}</b></div>
@@ -459,7 +459,16 @@ export default function CreativeBoard({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return <label className="cb-field"><span>{label}</span>{children}</label>;
 }
-function LinkInput({ name, value, placeholder }: { name: string; value: string; placeholder: string }) {
+function LinkInput({ name, value, placeholder, openBelow }: { name: string; value: string; placeholder: string; openBelow?: boolean }) {
+  const [val, setVal] = useState(value);
+  if (openBelow) {
+    return (
+      <div>
+        <input name={name} value={val} onChange={(e) => setVal(e.target.value)} placeholder={placeholder} className="cb-fld" />
+        {val.trim() && <a href={val.trim()} target="_blank" rel="noreferrer" className="cb-openlink">Open Drive Link</a>}
+      </div>
+    );
+  }
   return (
     <div className="cb-linkinput">
       <input name={name} defaultValue={value} placeholder={placeholder} className="cb-fld" />
@@ -577,6 +586,8 @@ const cssVars = `
 .cb-ta{resize:none;line-height:1.5}
 .cb-linkinput{display:flex;align-items:center;gap:8px}
 .cb-linkbtn{display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:10px;border:1px solid #E7E9F0;color:#64748B}
+.cb-openlink{display:inline-block;margin-top:6px;font-size:12.5px;font-weight:600;color:#7C3AED;text-decoration:underline}
+.cb-openlink:hover{color:#6D28D9}
 .cb-linkbtn:hover{border-color:#0F172A}
 .cb-infobox{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;background:#F9FAFC;border:1px solid #EEF0F6;border-radius:12px;padding:14px;font-size:12px;color:#475569}
 .cb-infobox span{color:#94A3B8}
