@@ -231,7 +231,8 @@ export default function CreativeBoard({
         return (
           <div key={r.id} className="cb-item" style={{ background: sf?.fill, borderLeft: `4px solid ${sf?.edge}` }}>
             <div className="cb-item-inner">
-              <div className="cb-item-head">
+              <div className="cb-item-head" onClick={() => toggle(r.id)} style={{ cursor: "pointer" }} role="button" tabIndex={0}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(r.id); } }}>
                 <div className="cb-item-left">
                   <div className="cb-item-titlerow">
                     <h3 className="cb-item-title">{r.title}</h3>
@@ -253,7 +254,7 @@ export default function CreativeBoard({
                   <span className="cb-due" style={dt.over ? { background: "#DC2626", color: "#fff", borderColor: "#DC2626", fontWeight: 600 } : undefined}>
                     <CalendarClock size={12} /> {dt.text}
                   </span>
-                  <form action={setCreativeStatus} className="cb-statusform">
+                  <form action={setCreativeStatus} className="cb-statusform" onClick={(e) => e.stopPropagation()}>
                     <input type="hidden" name="id" value={r.id} />
                     <select name="status" defaultValue={r.status} onChange={(e) => e.currentTarget.form?.requestSubmit()}
                       className="cb-statussel" style={{ background: sp.bg, color: sp.fg, borderColor: sp.bd }}>
