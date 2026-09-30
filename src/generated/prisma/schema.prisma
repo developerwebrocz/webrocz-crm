@@ -799,3 +799,19 @@ model Meeting {
   @@index([leadId])
   @@index([date])
 }
+
+// Business expense — powers company-wise Profit & Loss (income − expenses).
+model Expense {
+  id        String   @id @default(cuid())
+  company   String   @default("") // WEB_SOLUTIONS | WEB_ROCZ | WEB_ROCZ_PVT | "" = general/shared
+  category  String   @default("") // Salaries | Ads Spend | Tools/Software | Rent | Utilities | Marketing | Misc
+  vendor    String   @default("") // who it was paid to
+  amount    Int      @default(0)
+  date      String   @default("") // "2026-09-15"
+  notes     String   @default("")
+  by        String   @default("") // who recorded it
+  createdAt DateTime @default(now())
+
+  @@index([company])
+  @@index([date])
+}

@@ -103,6 +103,8 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
       // { href: "/payments", label: "Payments", icon: Wallet },
       // Website renewals now live under each company in the Companies group above.
       { href: "/statements", label: "Reports", icon: FileBarChart },
+      { href: "/profit-loss", label: "Profit & Loss", icon: Wallet },
+      { href: "/gst", label: "GST Report", icon: Landmark },
       { href: "/invoices", label: "Invoices", icon: ReceiptText },
     ] },
   ];

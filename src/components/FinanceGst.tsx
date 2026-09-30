@@ -7,6 +7,8 @@ const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const monthLabel = (m: string) => { if (!m) return "—"; const [y, mo] = m.split("-"); const names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; return `${names[parseInt(mo, 10) - 1] ?? mo} ${y}`; };
 
 type Row = { month: string; count: number; taxable: number; cgst: number; sgst: number; igst: number; tax: number; total: number };
+type InvRow = { number: string; date: string; billTo: string; gstin: string; placeOfSupply: string; rate: number; taxable: number; cgst: number; sgst: number; igst: number; total: number };
+const fmtD = (iso: string) => { if (!iso) return ""; const [y, m, d] = iso.split("-"); return d ? `${d}-${m}-${y}` : iso; };
 
 // Indian financial year (Apr–Mar) month-string range, offset 0 = current FY.
 function fyRange(offset = 0): [string, string] {
@@ -21,7 +23,7 @@ function fyLabel(offset = 0) {
   return `FY ${sy}-${String((sy + 1) % 100).padStart(2, "0")}`;
 }
 
-export default function FinanceGst({ rows, supplierState }: { rows: Row[]; supplierState: string }) {
+export default function FinanceGst({ rows, invoiceRows = [], supplierState }: { rows: Row[]; invoiceRows?: InvRow[]; supplierState: string }) {
   const [period, setPeriod] = useState("THIS_FY");
   const now = new Date();
 
@@ -50,6 +52,17 @@ export default function FinanceGst({ rows, supplierState }: { rows: Row[]; suppl
     URL.revokeObjectURL(url);
   };
 
+  // GSTR-1 (B2B) invoice-wise export — the format a CA needs for filing.
+  const exportGstr1 = () => {
+    const inv = invoiceRows.filter((r) => { const m = (r.date || "").slice(0, 7); return (!pFrom || m >= pFrom) && (!pTo || m <= pTo); });
+    const head = ["Invoice No", "Invoice Date", "Client", "Client GSTIN", "Place of Supply", "Rate %", "Taxable Value", "CGST", "SGST", "IGST", "Invoice Total"];
+    const esc = (v: string | number) => { const s = String(v ?? ""); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+    const lines = inv.map((r) => [r.number, fmtD(r.date), r.billTo, r.gstin, r.placeOfSupply, r.rate, r.taxable, r.cgst, r.sgst, r.igst, r.total].map(esc).join(","));
+    const csv = [head.join(","), ...lines].join("\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const a = document.createElement("a"); a.href = url; a.download = `gstr1-b2b-${period.toLowerCase()}.csv`; a.click(); URL.revokeObjectURL(url);
+  };
+
   const periodName = period === "THIS_FY" ? fyLabel(0) : period === "LAST_FY" ? fyLabel(-1) : period === "THIS_YEAR" ? String(now.getFullYear()) : "All time";
 
   return (
@@ -73,7 +86,8 @@ export default function FinanceGst({ rows, supplierState }: { rows: Row[]; suppl
               <option value="THIS_YEAR">This year ({now.getFullYear()})</option>
               <option value="ALL">All time</option>
             </select>
-            <button onClick={exportCsv} className="btn btn-violet"><Download size={15} /> Export CSV</button>
+            <button onClick={exportCsv} className="btn btn-ghost"><Download size={15} /> Summary CSV</button>
+            <button onClick={exportGstr1} className="btn btn-violet"><ReceiptText size={15} /> GSTR-1 (invoice-wise)</button>
           </div>
         </div>
       </div>

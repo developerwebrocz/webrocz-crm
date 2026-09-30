@@ -826,6 +826,32 @@ export async function deleteClientFinance(fd: FormData) {
   redirect("/accounts?deleted=1");
 }
 
+// ---- Expenses (for company-wise Profit & Loss) -------------------------------------------
+const FINANCE_ROLES = ["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"];
+export async function addExpense(fd: FormData) {
+  const u = await getCurrentUser();
+  if (!u || !FINANCE_ROLES.includes(u.role)) redirect("/");
+  const amount = Math.max(0, n(fd, "amount"));
+  const category = s(fd, "category") || "Misc";
+  if (amount <= 0) redirect(s(fd, "return") || "/expenses");
+  await prisma.expense.create({ data: {
+    company: s(fd, "company"), category, vendor: s(fd, "vendor"),
+    amount, date: s(fd, "date") || new Date().toISOString().slice(0, 10),
+    notes: s(fd, "notes"), by: u.name,
+  } });
+  revalidatePath("/expenses"); revalidatePath("/profit-loss");
+  redirect(`${s(fd, "return") || "/expenses"}?added=1`);
+}
+export async function deleteExpense(fd: FormData) {
+  const u = await getCurrentUser();
+  // Delete is Super Admin only (same as clients/invoices).
+  if (!u || !["SUPER_ADMIN", "SUB_ADMIN"].includes(u.role)) redirect("/");
+  const id = s(fd, "id");
+  if (id) { try { await prisma.expense.delete({ where: { id } }); } catch { /* gone */ } }
+  revalidatePath("/expenses"); revalidatePath("/profit-loss");
+  redirect(`${s(fd, "return") || "/expenses"}?deleted=1`);
+}
+
 export async function updateClient(fd: FormData) {
   if (!(await isAdmin())) redirect("/");
   const id = s(fd, "id");

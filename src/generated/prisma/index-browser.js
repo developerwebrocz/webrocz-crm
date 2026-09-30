@@ -666,6 +666,18 @@ exports.Prisma.MeetingScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ExpenseScalarFieldEnum = {
+  id: 'id',
+  company: 'company',
+  category: 'category',
+  vendor: 'vendor',
+  amount: 'amount',
+  date: 'date',
+  notes: 'notes',
+  by: 'by',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -713,7 +725,8 @@ exports.Prisma.ModelName = {
   Quotation: 'Quotation',
   Proposal: 'Proposal',
   Reminder: 'Reminder',
-  Meeting: 'Meeting'
+  Meeting: 'Meeting',
+  Expense: 'Expense'
 };
 
 /**

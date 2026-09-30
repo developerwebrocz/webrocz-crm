@@ -11,6 +11,6 @@ export default async function FinanceGstPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   if (!ALLOWED.includes(user.role)) redirect("/");
-  const { rows, supplierState } = await getGstSummary();
-  return <FinanceGst rows={rows} supplierState={supplierState} />;
+  const { rows, invoiceRows, supplierState } = await getGstSummary();
+  return <FinanceGst rows={rows} invoiceRows={invoiceRows} supplierState={supplierState} />;
 }
