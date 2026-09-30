@@ -23,15 +23,11 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   // Effective user = the impersonated employee when a Super Admin is "viewing as", else self.
   const user = await getCurrentUser();
 
-  // public client-facing pages (share links) never get the internal app shell
+  // public client-facing pages (share links) never get the internal app shell.
+  // Everyone else — including Designers & Video Editors — uses the shared CRM shell
+  // (same sidebar, top bar, logout and branding across every role).
   const pathname = (await headers()).get("x-pathname") ?? "";
-  // Designers & Video Editors get a dedicated full-screen "Studio" layout (its own dark
-  // sidebar) on their board routes — so those skip the shared CRM shell. Super Admin
-  // (and anyone impersonating) keeps the normal shell so oversight + the exit banner work.
-  const studioRole = !!user && (user.role === "DESIGNER" || user.role === "EDITOR") && !user.impersonatedBy;
-  const studioRoute = pathname === "/" || pathname.startsWith("/designs") || pathname.startsWith("/videos");
-  // Only public share links + the creative studio pages skip the CRM shell.
-  const bare = pathname.startsWith("/share") || (studioRole && studioRoute);
+  const bare = pathname.startsWith("/share");
 
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${geistMono.variable} h-full antialiased`}>

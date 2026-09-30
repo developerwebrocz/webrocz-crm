@@ -394,23 +394,8 @@ export default function CreativeBoard({
     return (
       <div>
         <style>{cssVars}</style>
-        <div className="cb-head">
-          <div>
-            <div className="cb-crumb">{L.crumb} <span>›</span> My Assigned {L.noun}</div>
-            <h1 className="cb-title">{L.crumb} · {L.noun}</h1>
-            <p className="cb-sub">{counts.completed} of {counts.total} completed · {progress}% done this cycle</p>
-          </div>
-          {toolbar}
-        </div>
-        <div className="cb-card cb-prog">
-          <span className="cb-prog-icon"><L.icon size={19} /></span>
-          <div className="cb-prog-body">
-            <div className="cb-prog-title">Progress</div>
-            <div className="cb-prog-note">{counts.completed} of {counts.total} completed</div>
-          </div>
-          <span className="cb-prog-pct">{progress}%</span>
-          <div className="cb-prog-track"><div className="cb-prog-fill" style={{ width: `${progress}%` }} /></div>
-        </div>
+        {hero}
+        <div className="cb-toolrow">{toolbar}</div>
         {kpiGrid}
         {chipBar}
         {cardList}
@@ -650,6 +635,26 @@ const cssVars = `
 .cb-modal-x{display:grid;place-items:center;width:32px;height:32px;border-radius:999px;background:#F8F7FF;border:1px solid #ECE9FF;color:#475569;cursor:pointer}
 .cb-modal-body{padding:24px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
 .cb-modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:16px 24px;border-top:1px solid #ECE9FF;background:rgba(248,247,255,.6)}
+.cbs-hero{position:relative;overflow:hidden;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px;margin-bottom:16px;padding:24px 26px;border-radius:22px;background:linear-gradient(120deg,#1E1B4B 0%,#4C1D95 48%,#6D28D9 100%);color:#fff;box-shadow:0 18px 40px -18px rgba(76,29,149,.55)}
+.cbs-hero-glow{position:absolute;top:-60px;right:-30px;width:240px;height:240px;border-radius:999px;background:radial-gradient(circle,rgba(168,85,247,.55),transparent 65%);pointer-events:none}
+.cbs-hero-left{position:relative;z-index:1;min-width:0}
+.cbs-hero-eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.72);background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);padding:4px 10px;border-radius:999px}
+.cbs-hero-title{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-top:12px}
+.cbs-hero-sub{font-size:12.5px;color:rgba(255,255,255,.6);margin-top:4px}
+.cbs-hero-line{font-size:13.5px;color:rgba(255,255,255,.9);margin-top:8px;font-weight:500}
+.cbs-hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.cbs-hero-btn{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 16px;border-radius:11px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid transparent;background:#fff;color:#4C1D95;transition:transform .15s ease,box-shadow .15s ease}
+.cbs-hero-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.18)}
+.cbs-hero-btn-ghost{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.25)}
+.cbs-hero-btn-ghost:hover{background:rgba(255,255,255,.2)}
+.cbs-hero-btn-danger{background:rgba(239,68,68,.9);color:#fff}
+.cbs-hero-btn-danger:hover{background:#ef4444}
+.cbs-hero-ring{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;flex:none}
+.cbs-hero-ring-mid{position:absolute;top:0;left:0;right:0;height:128px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.cbs-hero-ring-pct{font-size:26px;font-weight:800}
+.cbs-hero-ring-cap{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:3px}
+.cbs-hero-ring-note{font-size:11.5px;color:rgba(255,255,255,.7);margin-top:8px;font-weight:500}
+.cb-toolrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:16px}
 `;
 
 const studioCss = `
@@ -694,25 +699,6 @@ const studioCss = `
 @media(min-width:1024px){.cbs-burger{display:none}}
 .cbs-content{padding:16px}
 @media(min-width:1024px){.cbs-content{padding:24px}}
-.cbs-hero{position:relative;overflow:hidden;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px;margin-bottom:16px;padding:24px 26px;border-radius:22px;background:linear-gradient(120deg,#1E1B4B 0%,#4C1D95 48%,#6D28D9 100%);color:#fff;box-shadow:0 18px 40px -18px rgba(76,29,149,.55)}
-.cbs-hero-glow{position:absolute;top:-60px;right:-30px;width:240px;height:240px;border-radius:999px;background:radial-gradient(circle,rgba(168,85,247,.55),transparent 65%);pointer-events:none}
-.cbs-hero-left{position:relative;z-index:1;min-width:0}
-.cbs-hero-eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.72);background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);padding:4px 10px;border-radius:999px}
-.cbs-hero-title{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-top:12px}
-.cbs-hero-sub{font-size:12.5px;color:rgba(255,255,255,.6);margin-top:4px}
-.cbs-hero-line{font-size:13.5px;color:rgba(255,255,255,.9);margin-top:8px;font-weight:500}
-.cbs-hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
-.cbs-hero-btn{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 16px;border-radius:11px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid transparent;background:#fff;color:#4C1D95;transition:transform .15s ease,box-shadow .15s ease}
-.cbs-hero-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.18)}
-.cbs-hero-btn-ghost{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.25)}
-.cbs-hero-btn-ghost:hover{background:rgba(255,255,255,.2)}
-.cbs-hero-btn-danger{background:rgba(239,68,68,.9);color:#fff}
-.cbs-hero-btn-danger:hover{background:#ef4444}
-.cbs-hero-ring{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;flex:none}
-.cbs-hero-ring-mid{position:absolute;top:0;left:0;right:0;height:128px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
-.cbs-hero-ring-pct{font-size:26px;font-weight:800}
-.cbs-hero-ring-cap{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:3px}
-.cbs-hero-ring-note{font-size:11.5px;color:rgba(255,255,255,.7);margin-top:8px;font-weight:500}
 .cbs-drawer-wrap{position:fixed;inset:0;z-index:70}
 .cbs-drawer-bg{position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(2px)}
 .cbs-side-drawer{display:flex;width:280px;box-shadow:0 20px 60px rgba(0,0,0,.4)}

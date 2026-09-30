@@ -6,7 +6,7 @@ import RoleDashboard from "@/components/RoleDashboard";
 import SeoEmployeeOverview from "@/components/SeoEmployeeOverview";
 import AmOverview from "@/components/AmOverview";
 import CreativeBoard from "@/components/CreativeBoard";
-import { getSeoEmployeeBoard, getCreativeBoard, getAlerts, getSalesBoard, getAccountantDashboard } from "@/lib/queries";
+import { getSeoEmployeeBoard, getCreativeBoard, getSalesBoard, getAccountantDashboard } from "@/lib/queries";
 import SalesDashboard from "@/components/SalesDashboard";
 import AccountantDashboard from "@/components/AccountantDashboard";
 
@@ -67,15 +67,15 @@ export default async function DashboardPage({ searchParams }: PageProps<"/">) {
   if (AM_ROLES.includes(user.role)) {
     return <AmOverview user={{ id: user.id, name: user.name, role: user.role }} />;
   }
-  const studioChrome = user.impersonatedBy ? "embedded" : "studio";
-  const alerts = studioChrome === "studio" ? await getAlerts(user.id) : undefined;
+  // Designers & Video Editors get their creative board inside the SAME CRM shell as every
+  // other role (shared sidebar / top bar / logout) — rendered with the embedded chrome.
   if (DESIGN_ROLES.includes(user.role)) {
     const d = await getCreativeBoard(user.id, user.role, "DESIGN");
-    return <CreativeBoard kind="DESIGN" chrome={studioChrome} rows={d.rows} counts={d.counts} clients={d.clients} types={d.types} progress={d.progress} today={d.today} clientOptions={d.clientOptions} userName={user.name} alerts={alerts} />;
+    return <CreativeBoard kind="DESIGN" chrome="embedded" rows={d.rows} counts={d.counts} clients={d.clients} types={d.types} progress={d.progress} today={d.today} clientOptions={d.clientOptions} userName={user.name} />;
   }
   if (VIDEO_ROLES.includes(user.role)) {
     const d = await getCreativeBoard(user.id, user.role, "VIDEO");
-    return <CreativeBoard kind="VIDEO" chrome={studioChrome} rows={d.rows} counts={d.counts} clients={d.clients} types={d.types} progress={d.progress} today={d.today} clientOptions={d.clientOptions} userName={user.name} alerts={alerts} />;
+    return <CreativeBoard kind="VIDEO" chrome="embedded" rows={d.rows} counts={d.counts} clients={d.clients} types={d.types} progress={d.progress} today={d.today} clientOptions={d.clientOptions} userName={user.name} />;
   }
   return <RoleDashboard user={{ id: user.id, name: user.name, role: user.role }} />;
 }
