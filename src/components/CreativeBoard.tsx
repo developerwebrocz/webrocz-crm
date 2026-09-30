@@ -105,7 +105,7 @@ export default function CreativeBoard({
   // Reset the "add new client" sub-form each time the Add modal is closed.
   useEffect(() => { if (!modal) setAddingClient(false); }, [modal]);
   const [drawer, setDrawer] = useState(false);
-  const [viewMode, setViewMode] = useState<"board" | "table">("board");
+  const [viewMode, setViewMode] = useState<"board" | "table">("table");
   const toggle = (id: string) => setOpen((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
   const visible = useMemo(() => {
