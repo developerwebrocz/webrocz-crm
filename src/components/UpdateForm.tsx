@@ -21,13 +21,27 @@ function Submit() {
   return <button className="btn btn-dark disabled:opacity-60" disabled={pending}>{pending ? "Saving…" : "Save update"}</button>;
 }
 
+// Which work-type department each role logs against — so the "Work type" list only shows
+// options relevant to that person (a designer never sees SEO / video types, etc.).
+function workDeptForRole(role?: string): string | null {
+  if (!role) return null;
+  if (role === "DESIGNER") return "DESIGN";
+  if (role === "EDITOR") return "VIDEO";
+  if (role === "SEO" || role === "SEO_HEAD") return "SEO";
+  if (role === "ACCOUNT_MANAGER" || role === "AM_HEAD" || role === "DM_EXEC" || role === "DM_HEAD") return "ACCOUNT";
+  return null; // Super Admin / others → all types
+}
+
 export default function UpdateForm({
-  clients, users, action, defaultClientId, today, currentUser, lockUser = false,
+  clients, users, action, defaultClientId, today, currentUser, lockUser = false, role,
 }: {
   clients: Opt[]; users: Opt[]; action: (fd: FormData) => void; defaultClientId?: string; today: string;
-  currentUser?: { id: string; name: string }; lockUser?: boolean;
+  currentUser?: { id: string; name: string }; lockUser?: boolean; role?: string;
 }) {
-  const [workType, setWorkType] = useState("static");
+  const dept = workDeptForRole(role);
+  // Show this role's own work types, plus the two generic ones everyone uses (meeting / task).
+  const types = dept ? WORK_TYPES.filter((w) => w.dept === dept || w.v === "meeting" || w.v === "task") : [...WORK_TYPES];
+  const [workType, setWorkType] = useState<string>(types[0]?.v ?? "task");
   const isRanking = workType === "ranking";
 
   return (
@@ -57,7 +71,7 @@ export default function UpdateForm({
       </Field>
       <Field label="Work type" required>
         <select name="workType" className="select" value={workType} onChange={(e) => setWorkType(e.target.value)}>
-          {WORK_TYPES.map((w) => <option key={w.v} value={w.v}>{w.l}</option>)}
+          {types.map((w) => <option key={w.v} value={w.v}>{w.l}</option>)}
         </select>
       </Field>
 

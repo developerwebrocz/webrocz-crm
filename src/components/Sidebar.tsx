@@ -68,7 +68,10 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
   const salesGroups: Group[] = [leadsGroup, pipelineGroup, ...(isAdmin || isSales ? [{ label: "Insights", items: [{ href: "/sales/reports", label: "Sales Reports", icon: FileBarChart }] }] : [])];
 
   if (isSales) groups.push(...salesGroups);
-  if (isDmHead) groups.push({ label: "Digital Marketing", items: [{ href: "/dm", label: "Marketing Clients", icon: UserCog }] });
+  if (isDmHead) groups.push({ label: "Digital Marketing", items: [
+    { href: "/dm", label: "Marketing Clients", icon: UserCog },
+    { href: "/reports/creative", label: "Creative Report", icon: FileBarChart },
+  ] });
   // Companies pipeline — each billing entity expands into its own sections
   // (Clients / Invoices / Website renewals) when it's the one you're viewing.
   const companyMeta = [
@@ -165,6 +168,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
         { href: "/google-ads", label: "Google Ads", icon: Target },
         { href: "/smo", label: "SM Posts", icon: Images },
         ...(user.role === "DM_EXEC" ? [{ href: "/dm", label: "My Marketing Clients", icon: UserCog }] : []),
+        { href: "/reports/creative", label: "Creative Report", icon: FileBarChart },
         { href: "/calendar", label: "Calendar", icon: CalendarDays },
       ] });
       groups.push({ label: "Clients", items: [{ href: "/clients", label: "Clients", icon: Users, badge: clientCount }] });

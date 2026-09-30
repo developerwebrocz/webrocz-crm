@@ -113,7 +113,7 @@ export default function CreativeReport({
       {/* header */}
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <span className="eyebrow">Super Admin · Creative Team</span>
+          <span className="eyebrow">Creative Team · Work Report</span>
           <h1 className="mt-1 text-[24px] font-extrabold tracking-tight">Designer & Video Editor Report</h1>
           <p className="mt-1 text-sm text-[var(--muted)]">Every design & video task — filter by member, client, day or status to see exactly what each person worked on.</p>
         </div>

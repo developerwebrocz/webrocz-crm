@@ -1,4 +1,5 @@
 import { getClientOptions, getUsers, getReport, workScopeFor } from "@/lib/queries";
+import { now } from "@/lib/period";
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { createUpdate } from "@/app/actions";
@@ -22,7 +23,8 @@ export default async function UpdatesPage({ searchParams }: PageProps<"/updates"
     isAdmin ? getUsers() : Promise.resolve([]),
     getReport("today", scope),
   ]);
-  const today = new Date().toISOString().slice(0, 10);
+  // Match the report's "today" window (respects DEMO_DATE) so a saved update counts immediately.
+  const today = `${now().getFullYear()}-${String(now().getMonth() + 1).padStart(2, "0")}-${String(now().getDate()).padStart(2, "0")}`;
 
   return (
     <div className="space-y-5">
@@ -51,6 +53,7 @@ export default async function UpdatesPage({ searchParams }: PageProps<"/updates"
           today={today}
           currentUser={{ id: user.id, name: user.name }}
           lockUser={!isAdmin}
+          role={user.role}
         />
       </div>
 
