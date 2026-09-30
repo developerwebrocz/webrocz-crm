@@ -85,6 +85,14 @@ export default function CreativeBoard({
         final: "Final Design Link", finalPh: "Paste final design Drive link", brief: "Brief / Content", briefPh: "Content, offer details, text to include…",
         refPh: "Reference link (Behance / Dribbble / Drive)", searchPh: "Search designs, client, type…", icon: Palette, allTypes: "All Design Types" };
   const modalTypes = isVideo ? [...VIDEO_TYPES] : [...DESIGN_TYPES];
+  // Each board has its own identity so a designer and a video editor never see the same look:
+  // Design = indigo studio, Video = rose studio, with workflow words tuned to each craft.
+  const accent = isVideo
+    ? { main: "#E11D48", soft: "#FFF1F2", ring: "#FECDD3" }   // Video Studio — rose
+    : { main: "#4F46E5", soft: "#EEF2FF", ring: "#C7D2FE" };  // Design Studio — indigo
+  const flow = isVideo
+    ? { inProgress: "Editing", review: "In Review", completed: "Delivered" }
+    : { inProgress: "In Progress", review: "Review Pending", completed: "Completed" };
 
   const [q, setQ] = useState("");
   const TAB_KEYS = ["ALL", "DUE_TODAY", "IN_PROGRESS", "REVIEW", "COMPLETED", "OVERDUE"];
@@ -131,9 +139,9 @@ export default function CreativeBoard({
   const TABS = [
     { key: "ALL", label: `All ${L.noun}`, n: counts.total },
     { key: "DUE_TODAY", label: "Due Today", n: counts.dueToday },
-    { key: "IN_PROGRESS", label: "In Progress", n: counts.inProgress },
-    { key: "REVIEW", label: "Review Pending", n: counts.review },
-    { key: "COMPLETED", label: "Completed", n: counts.completed },
+    { key: "IN_PROGRESS", label: flow.inProgress, n: counts.inProgress },
+    { key: "REVIEW", label: flow.review, n: counts.review },
+    { key: "COMPLETED", label: flow.completed, n: counts.completed },
     { key: "OVERDUE", label: "Overdue", n: counts.overdue },
   ];
   const NAV = [
@@ -168,16 +176,16 @@ export default function CreativeBoard({
       <Sel value={due} onChange={setDue} raw={[["ALL", "All Due Dates"], ["TODAY", "Today"], ["WEEK", "This Week"], ["OVERDUE", "Overdue"]]} />
       <Sel value={origin} onChange={setOrigin} raw={[["ALL", "All Types"], ["ONBOARDING", "Onboarding Agreed"], ["ADDITIONAL", "Additional"]]} />
       <Sel value={type} onChange={setType} all={L.allTypes} options={types} />
-      <button onClick={() => setModal(true)} className="cb-btn cb-btn-purple"><Plus size={15} /> Add Additional {L.nounOne}</button>
+      <button onClick={() => setModal(true)} className="cb-btn" style={{ background: accent.main, color: "#fff" }}><Plus size={15} /> Add Additional {L.nounOne}</button>
     </div>
   );
 
   const kpiGrid = (
     <div className="cb-kpis">
-      <Kpi label="Total Assigned" value={counts.total} sub={`all ${L.nounLow}`} tone="ink" />
+      <Kpi label={`Total ${L.noun}`} value={counts.total} sub={`all ${L.nounLow}`} tone="ink" />
       <Kpi label="Due Today" value={counts.dueToday} sub="due today" tone="orange" />
-      <Kpi label="In Progress" value={counts.inProgress} sub="active" tone="ink" />
-      <Kpi label="Completed" value={counts.completed} sub={`${progress}% done`} tone="ink" />
+      <Kpi label={flow.inProgress} value={counts.inProgress} sub="active" tone="ink" />
+      <Kpi label={flow.completed} value={counts.completed} sub={`${progress}% done`} tone="ink" />
       <Kpi label="Overdue" value={counts.overdue} sub="need action" tone="red" />
     </div>
   );
@@ -185,7 +193,8 @@ export default function CreativeBoard({
   const chipBar = (
     <div className="cb-chips">
       {TABS.map((t) => (
-        <button key={t.key} onClick={() => setTab(t.key)} className={`cb-chip ${tab === t.key ? "cb-chip-on" : ""}`}>
+        <button key={t.key} onClick={() => setTab(t.key)} className={`cb-chip ${tab === t.key ? "cb-chip-on" : ""}`}
+          style={tab === t.key ? { background: accent.main, borderColor: accent.main } : undefined}>
           {t.label}<span className="cb-chip-n">{t.n}</span>
         </button>
       ))}
@@ -197,10 +206,14 @@ export default function CreativeBoard({
   const hero = (
     <div className="cb-hd">
       <div className="cb-hd-main">
-        <h1 className="cb-hd-title">My {L.noun}</h1>
-        <p className="cb-hd-sub">Welcome back, {firstName} · {counts.completed} of {counts.total} completed ({progress}%)</p>
+        <span className="cb-hd-badge" style={{ background: accent.soft, color: accent.main, borderColor: accent.ring }}><L.icon size={22} /></span>
+        <div>
+          <div className="cb-hd-eyebrow" style={{ color: accent.main }}>{L.studio}</div>
+          <h1 className="cb-hd-title">My {L.noun}</h1>
+          <p className="cb-hd-sub">Welcome back, {firstName} · {counts.completed} of {counts.total} completed ({progress}%)</p>
+        </div>
       </div>
-      <button onClick={() => setModal(true)} className="cb-btn cb-btn-dark"><Plus size={15} /> Add {L.nounOne}</button>
+      <button onClick={() => setModal(true)} className="cb-btn" style={{ background: accent.main, color: "#fff" }}><Plus size={15} /> Add {L.nounOne}</button>
     </div>
   );
 
@@ -212,7 +225,7 @@ export default function CreativeBoard({
             <span className="cb-empty-icon cb-empty-icon-lg"><L.icon size={30} /></span>
             <div className="cb-empty-title">No {L.nounLow} assigned yet</div>
             <div className="cb-empty-sub">When the team assigns work to you, it will show up here. You can also add your own additional {L.nounLow}.</div>
-            <button onClick={() => setModal(true)} className="cb-btn cb-btn-purple" style={{ marginTop: 16 }}><Plus size={15} /> Add Additional {L.nounOne}</button>
+            <button onClick={() => setModal(true)} className="cb-btn" style={{ marginTop: 16, background: accent.main, color: "#fff" }}><Plus size={15} /> Add Additional {L.nounOne}</button>
           </div>
         ) : (
           <div className="cb-empty">
@@ -696,7 +709,10 @@ const cssVars = `
 .cb-modal-body{padding:24px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
 .cb-modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:16px 24px;border-top:1px solid #E7E9F0;background:rgba(248,247,255,.6)}
 .cb-hd{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
-.cb-hd-title{font-size:22px;font-weight:800;letter-spacing:-.02em;color:#0F172A}
+.cb-hd-main{display:flex;align-items:center;gap:14px;min-width:0}
+.cb-hd-badge{display:grid;place-items:center;width:48px;height:48px;flex:none;border-radius:14px;border:1px solid}
+.cb-hd-eyebrow{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.cb-hd-title{font-size:22px;font-weight:800;letter-spacing:-.02em;color:#0F172A;margin-top:1px}
 .cb-hd-sub{font-size:13px;color:#64748B;margin-top:3px}
 .cb-toolrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:16px}
 `;
