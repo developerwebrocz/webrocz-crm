@@ -21,25 +21,26 @@ type Row = {
 type Counts = { total: number; dueToday: number; inProgress: number; review: number; completed: number; overdue: number };
 type ClientOpt = { id: string; name: string };
 
-// Clean, professional look: a STRONG left accent + a very faint background wash
-// (not a heavy pastel flood). The expanded form always sits on pure white.
+// Simple, neutral look: grey cards + tidy grey badges (meaning carried by the label),
+// with a single violet accent reserved for active/primary controls. No colour combinations.
+const NEU = { bg: "#F1F5F9", fg: "#475569", bd: "#E2E8F0" };
 const STATUS_FILL: Record<string, { fill: string; edge: string }> = {
-  PENDING: { fill: "rgba(245,158,11,.05)", edge: "#F59E0B" },
-  IN_PROGRESS: { fill: "rgba(59,130,246,.05)", edge: "#3B82F6" },
-  REVIEW: { fill: "rgba(139,92,246,.05)", edge: "#8B5CF6" },
-  COMPLETED: { fill: "rgba(16,185,129,.05)", edge: "#10B981" },
+  PENDING: { fill: "transparent", edge: "#E2E8F0" },
+  IN_PROGRESS: { fill: "transparent", edge: "#E2E8F0" },
+  REVIEW: { fill: "transparent", edge: "#E2E8F0" },
+  COMPLETED: { fill: "transparent", edge: "#E2E8F0" },
 };
-const OVERDUE_FILL = { fill: "rgba(239,68,68,.05)", edge: "#EF4444" };
+const OVERDUE_FILL = { fill: "transparent", edge: "#CBD5E1" };
 const STATUS_PILL: Record<string, { bg: string; fg: string; bd: string; label: string }> = {
-  PENDING: { bg: "#FEF3C7", fg: "#92400E", bd: "#FDE68A", label: "Pending" },
-  IN_PROGRESS: { bg: "#DBEAFE", fg: "#1E40AF", bd: "#BFDBFE", label: "In Progress" },
-  REVIEW: { bg: "#E9D5FF", fg: "#6B21A8", bd: "#DDD6FE", label: "Review Pending" },
-  COMPLETED: { bg: "#D1FAE5", fg: "#065F46", bd: "#A7F3D0", label: "Completed" },
+  PENDING: { ...NEU, label: "Pending" },
+  IN_PROGRESS: { ...NEU, label: "In Progress" },
+  REVIEW: { ...NEU, label: "Review Pending" },
+  COMPLETED: { ...NEU, label: "Completed" },
 };
 const PRIORITY_PILL: Record<string, { bg: string; fg: string; bd: string }> = {
-  HIGH: { bg: "#FEE2E2", fg: "#B91C1C", bd: "#FECACA" },
-  MEDIUM: { bg: "#FEF9C3", fg: "#A16207", bd: "#FDE68A" },
-  LOW: { bg: "#DCFCE7", fg: "#15803D", bd: "#BBF7D0" },
+  HIGH: { ...NEU },
+  MEDIUM: { ...NEU },
+  LOW: { ...NEU },
 };
 const STATUS_KEYS = ["PENDING", "IN_PROGRESS", "REVIEW", "COMPLETED"] as const;
 const NEXT: Record<string, { label: (v: boolean) => string; to: string; kind: "primary" | "outline" | "green" } | null> = {
@@ -49,13 +50,9 @@ const NEXT: Record<string, { label: (v: boolean) => string; to: string; kind: "p
   COMPLETED: null,
 };
 // sidebar count-pill tints (on dark)
+const NAV_NEUTRAL = { bg: "rgba(255,255,255,.10)", fg: "rgba(255,255,255,.75)" };
 const NAV_TONE: Record<string, { bg: string; fg: string }> = {
-  slate: { bg: "rgba(255,255,255,.10)", fg: "rgba(255,255,255,.75)" },
-  orange: { bg: "rgba(249,115,22,.20)", fg: "#FDBA74" },
-  blue: { bg: "rgba(59,130,246,.20)", fg: "#93C5FD" },
-  purple: { bg: "rgba(168,85,247,.20)", fg: "#D8B4FE" },
-  green: { bg: "rgba(16,185,129,.20)", fg: "#6EE7B7" },
-  red: { bg: "rgba(239,68,68,.20)", fg: "#FCA5A5" },
+  slate: NAV_NEUTRAL, orange: NAV_NEUTRAL, blue: NAV_NEUTRAL, purple: NAV_NEUTRAL, green: NAV_NEUTRAL, red: NAV_NEUTRAL,
 };
 
 function dayDiff(due: string, today: string) {
@@ -229,8 +226,8 @@ export default function CreativeBoard({
                     <h3 className="cb-item-title">{r.title}</h3>
                     <span className="cb-idpill">{r.code}</span>
                     <span className="cb-origin" style={r.source === "ADDITIONAL"
-                      ? { background: "#FFEDD5", color: "#C2410C", borderColor: "#FED7AA" }
-                      : { background: "#E2E8F0", color: "#0F172A", borderColor: "#DDD6FE" }}>
+                      ? { background: "#E2E8F0", color: "#334155", borderColor: "#CBD5E1" }
+                      : { background: "#F1F5F9", color: "#475569", borderColor: "#E2E8F0" }}>
                       {r.source === "ADDITIONAL" ? "Additional" : "Onboarding Agreed"}
                     </span>
                   </div>
@@ -242,7 +239,7 @@ export default function CreativeBoard({
                   </div>
                 </div>
                 <div className="cb-item-right">
-                  <span className="cb-due" style={dt.over ? { background: "#DC2626", color: "#fff", borderColor: "#DC2626", fontWeight: 600 } : undefined}>
+                  <span className="cb-due" style={dt.over ? { background: "#E2E8F0", color: "#334155", borderColor: "#CBD5E1", fontWeight: 600 } : undefined}>
                     <CalendarClock size={12} /> {dt.text}
                   </span>
                   <form action={setCreativeStatus} className="cb-statusform">
@@ -345,7 +342,7 @@ export default function CreativeBoard({
               <Field label={L.raw}><input name="rawLink" placeholder={L.rawPh} className="cb-fld" /></Field>
             </div>
             <div className="cb-two">
-              <Field label="Origin"><input disabled value="Additional" className="cb-fld" style={{ background: "#FFF7ED", color: "#C2410C", borderColor: "#FED7AA" }} /></Field>
+              <Field label="Origin"><input disabled value="Additional" className="cb-fld" style={{ background: "#F8FAFC", color: "#475569", borderColor: "#E2E8F0" }} /></Field>
               <Field label="Assigned To"><input disabled value={`${userName ?? "You"} · ${L.role}`} className="cb-fld cb-fld-ro" /></Field>
             </div>
           </div>
@@ -472,7 +469,7 @@ function Sel({ value, onChange, all, options, raw }: { value: string; onChange: 
 }
 function Kpi({ label, value, sub, tone }: { label: string; value: number; sub: string; tone?: string }) {
   // Simple, minimal: neutral cards; only urgent counts get a subtle coloured number.
-  const valColor = tone === "red" ? "#DC2626" : tone === "orange" ? "#B45309" : "#0F172A";
+  const valColor = "#0F172A"; // neutral — KPI numbers all read the same, meaning is in the label
   return (
     <div className="cb-kpi">
       <div className="cb-kpi-label">{label}</div>
@@ -497,10 +494,10 @@ const cssVars = `
 .cb-sel:focus{border-color:#0F172A}
 .cb-sel-chev{position:absolute;right:9px;top:50%;transform:translateY(-50%);color:#94A3B8;pointer-events:none}
 .cb-btn{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 16px;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;white-space:nowrap;transition:all .15s ease}
-.cb-btn-purple{background:#0F172A;color:#fff;box-shadow:0 2px 8px rgba(15,23,42,.15)}.cb-btn-purple:hover{background:#1E293B}
+.cb-btn-purple{background:var(--violet);color:#fff;box-shadow:0 2px 8px rgba(109,40,217,.20)}.cb-btn-purple:hover{background:#5b21b6}
 .cb-btn-outline{background:#fff;border-color:#0F172A;color:#0F172A}.cb-btn-outline:hover{background:#F8FAFC}
-.cb-btn-green{background:#059669;color:#fff}.cb-btn-green:hover{background:#047857}
-.cb-btn-dark{background:#0F172A;color:#fff}.cb-btn-dark:hover{background:#000}
+.cb-btn-green{background:var(--violet);color:#fff}.cb-btn-green:hover{background:#5b21b6}
+.cb-btn-dark{background:var(--violet);color:#fff}.cb-btn-dark:hover{background:#5b21b6}
 .cb-btn-danger{background:#fff;border-color:#FECACA;color:#DC2626}.cb-btn-danger:hover{background:#FEF2F2;border-color:#DC2626}
 .cb-card{background:#fff;border:1px solid #E7E9F0;border-radius:20px}
 .cb-prog{display:flex;align-items:center;gap:14px;padding:18px 20px;margin-bottom:16px;flex-wrap:wrap}
@@ -510,7 +507,7 @@ const cssVars = `
 .cb-prog-note{font-size:11px;color:#64748B;margin-top:2px}
 .cb-prog-pct{margin-left:auto;font-size:13px;font-weight:800;color:#0F172A}
 .cb-prog-track{flex-basis:100%;height:10px;border-radius:999px;background:#F8FAFC;border:1px solid #E7E9F0;overflow:hidden}
-.cb-prog-fill{height:100%;border-radius:999px;background:#0F172A;transition:width .5s ease}
+.cb-prog-fill{height:100%;border-radius:999px;background:var(--violet);transition:width .5s ease}
 .cb-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
 @media(min-width:1024px){.cb-kpis{grid-template-columns:repeat(5,1fr);gap:16px}}
 .cb-kpi{background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:16px}
@@ -521,7 +518,7 @@ const cssVars = `
 .cb-chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#fff;border:1px solid #E7E9F0;border-radius:20px;padding:8px;margin-bottom:16px}
 .cb-chip{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:12px;font-size:12.5px;font-weight:600;color:#475569;background:#F8FAFC;border:1px solid #E7E9F0;cursor:pointer;transition:all .15s ease}
 .cb-chip:hover{background:#EEF2F7;border-color:#CBD5E1;color:#0F172A}
-.cb-chip-on{background:#0F172A;color:#fff;border-color:#0F172A;box-shadow:0 2px 8px rgba(15,23,42,.15)}
+.cb-chip-on{background:var(--violet);color:#fff;border-color:var(--violet);box-shadow:0 2px 8px rgba(109,40,217,.20)}
 .cb-chip-n{font-size:11px;padding:1px 7px;border-radius:999px;background:#F1F5F9;color:#475569}
 .cb-chip-on .cb-chip-n{background:rgba(255,255,255,.22);color:#fff}
 .cb-showing{margin-left:auto;font-size:12px;color:#64748B}
