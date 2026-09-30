@@ -9,15 +9,18 @@ import {
   FileBarChart, Search, UsersRound, Wallet, Images, Code2,
   CalendarDays, ClipboardCheck, ListChecks, Target, Palette, Clapperboard,
   Contact, CalendarClock, ReceiptText, FileText, CheckCircle2, XCircle, UserPlus, Repeat, Landmark, Building2, Globe, FileSignature, ChevronDown, PieChart,
+  Loader, Eye, AlertTriangle,
 } from "lucide-react";
 
-type Item = { href: string; label: string; icon: React.ElementType; badge?: number; badgeTone?: "red"; forceActive?: boolean; subItems?: Item[] };
+type Item = { href: string; label: string; icon: React.ElementType; badge?: number; badgeTone?: "red"; forceActive?: boolean; subItems?: Item[]; iconColor?: string; badgeBg?: string; badgeFg?: string; showZero?: boolean };
 type Group = { label?: string; items: Item[] };
 
-export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0, reminderCount = 0, user }: { clientCount: number; approvalsCount?: number; taskCount?: number; reminderCount?: number; user: { name: string; role: string } }) {
+type Pipeline = { dueToday: number; inProgress: number; review: number; completed: number; overdue: number };
+export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0, reminderCount = 0, pipeline, user }: { clientCount: number; approvalsCount?: number; taskCount?: number; reminderCount?: number; pipeline?: Pipeline; user: { name: string; role: string } }) {
   const path = usePathname();
   const sp = useSearchParams();
   const curStage = sp.get("stage") ?? "";
+  const fParam = sp.get("f") ?? "";
   // Collapsible sidebar groups (remembered per browser).
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   useEffect(() => { try { const s = JSON.parse(localStorage.getItem("wr_sb_collapsed") || "[]"); setCollapsed(new Set(Array.isArray(s) ? s : [])); } catch { /* ignore */ } }, []);
@@ -162,6 +165,24 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     work.push({ href: "/reports", label: "Reports", icon: FileBarChart });
     groups.push({ label: "My Work", items: work });
 
+    // Designer / Editor status pipeline — colour-coded shortcuts that filter their board.
+    if (isDesigner || isEditor) {
+      const base = isDesigner ? "/designs" : "/videos";
+      const p = pipeline ?? { dueToday: 0, inProgress: 0, review: 0, completed: 0, overdue: 0 };
+      const pipe = [
+        { key: "DUE_TODAY", label: "Due Today", icon: CalendarClock, color: "#F59E0B", bg: "rgba(245,158,11,.20)", fg: "#FDBA74", n: p.dueToday },
+        { key: "IN_PROGRESS", label: "In Progress", icon: Loader, color: "#3B82F6", bg: "rgba(59,130,246,.20)", fg: "#93C5FD", n: p.inProgress },
+        { key: "REVIEW", label: "Review Pending", icon: Eye, color: "#8B5CF6", bg: "rgba(139,92,246,.22)", fg: "#C4B5FD", n: p.review },
+        { key: "COMPLETED", label: "Completed", icon: CheckCircle2, color: "#10B981", bg: "rgba(16,185,129,.20)", fg: "#6EE7B7", n: p.completed },
+        { key: "OVERDUE", label: "Overdue", icon: AlertTriangle, color: "#EF4545", bg: "rgba(239,69,69,.20)", fg: "#FCA5A5", n: p.overdue },
+      ];
+      groups.push({ label: "Workspace", items: pipe.map((x) => ({
+        href: `${base}?f=${x.key}`, label: x.label, icon: x.icon, iconColor: x.color,
+        badge: x.n, badgeBg: x.bg, badgeFg: x.fg, showZero: true,
+        forceActive: path.startsWith(base) && fParam === x.key,
+      })) });
+    }
+
     if (isManager) {
       groups.push({ label: "Marketing", items: [
         { href: "/ads", label: "Meta Ads", icon: Megaphone },
@@ -181,9 +202,13 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
       <Link href={it.href} prefetch aria-current={on ? "page" : undefined}
         className={`group relative flex items-center gap-3 rounded-[10px] ${sub ? "px-3 py-1.5 text-[12.5px]" : "px-3 py-2 text-[13.5px]"} font-medium transition-colors ${on ? "bg-[var(--sb-panel)] text-white" : "text-[var(--sb-muted-2)] hover:bg-white/[0.05] hover:text-white"}`}>
         {on && <span className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-[var(--violet-soft)]" />}
-        <it.icon size={sub ? 15 : 17} className={`flex-none ${on ? "text-white" : "text-[var(--sb-muted)] group-hover:text-white"}`} />
+        <it.icon size={sub ? 15 : 17} className={`flex-none ${!it.iconColor ? (on ? "text-white" : "text-[var(--sb-muted)] group-hover:text-white") : ""}`} style={it.iconColor ? { color: it.iconColor } : undefined} />
         <span className="flex-1 truncate">{it.label}</span>
-        {typeof it.badge === "number" && it.badge > 0 && <span className={`rounded-md px-1.5 py-0.5 text-[10.5px] font-bold tnum ${it.badgeTone === "red" ? "text-white" : "bg-white/10"}`} style={it.badgeTone === "red" ? { background: "var(--rose)" } : undefined}>{it.badge}</span>}
+        {typeof it.badge === "number" && (it.badge > 0 || it.showZero) && (
+          it.badgeBg
+            ? <span className="rounded-md px-1.5 py-0.5 text-[10.5px] font-bold tnum" style={{ background: it.badgeBg, color: it.badgeFg }}>{it.badge}</span>
+            : <span className={`rounded-md px-1.5 py-0.5 text-[10.5px] font-bold tnum ${it.badgeTone === "red" ? "text-white" : "bg-white/10"}`} style={it.badgeTone === "red" ? { background: "var(--rose)" } : undefined}>{it.badge}</span>
+        )}
       </Link>
     );
   };

@@ -5,7 +5,7 @@ import TopBar from "@/components/TopBar";
 import Sidebar from "@/components/Sidebar";
 import MobileNav from "@/components/MobileNav";
 import { prisma } from "@/lib/prisma";
-import { getSearchIndex, getAlerts, getApprovalsCount, getMyOpenTaskCount, deptForRole, getDueReminderCount } from "@/lib/queries";
+import { getSearchIndex, getAlerts, getApprovalsCount, getMyOpenTaskCount, deptForRole, getDueReminderCount, getCreativeBoard } from "@/lib/queries";
 import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/auth";
 import { stopImpersonate } from "@/app/actions";
@@ -48,6 +48,10 @@ async function AppShell({ user, userId, impersonatedBy, children }: { user: { na
     getMyOpenTaskCount(userId).catch(() => 0),
     getDueReminderCount().catch(() => 0),
   ]);
+  // Designer / Editor: status counts for the sidebar pipeline shortcuts.
+  const pipeline = (user.role === "DESIGNER" || user.role === "EDITOR")
+    ? await getCreativeBoard(userId, user.role, user.role === "EDITOR" ? "VIDEO" : "DESIGN").then((d) => d.counts).catch(() => undefined)
+    : undefined;
   return (
     <>
       {impersonatedBy && (
@@ -61,7 +65,7 @@ async function AppShell({ user, userId, impersonatedBy, children }: { user: { na
       <TopBar user={user} search={search} alerts={alerts} />
       <MobileNav role={user.role} />
       <div className="flex">
-        <Sidebar clientCount={clientCount} approvalsCount={approvalsCount} taskCount={taskCount} reminderCount={reminderCount} user={user} />
+        <Sidebar clientCount={clientCount} approvalsCount={approvalsCount} taskCount={taskCount} reminderCount={reminderCount} pipeline={pipeline} user={user} />
         <main className="min-w-0 flex-1 px-5 py-7 sm:px-8">
           <div className="mx-auto w-full max-w-[1600px]">{children}</div>
         </main>

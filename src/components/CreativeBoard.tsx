@@ -29,7 +29,6 @@ const STATUS_FILL: Record<string, { fill: string; edge: string }> = {
   REVIEW: { fill: "rgba(139,92,246,.05)", edge: "#8B5CF6" },
   COMPLETED: { fill: "rgba(16,185,129,.05)", edge: "#10B981" },
 };
-const OVERDUE_FILL = { fill: "rgba(239,68,68,.05)", edge: "#EF4444" };
 const STATUS_PILL: Record<string, { bg: string; fg: string; bd: string; label: string }> = {
   PENDING: { bg: "#FEF3C7", fg: "#92400E", bd: "#FDE68A", label: "Pending" },
   IN_PROGRESS: { bg: "#DBEAFE", fg: "#1E40AF", bd: "#BFDBFE", label: "In Progress" },
@@ -70,10 +69,10 @@ function initials(name: string) {
 }
 
 export default function CreativeBoard({
-  kind, chrome = "embedded", rows, counts, clients, types, progress, today, clientOptions, userName, alerts,
+  kind, chrome = "embedded", rows, counts, clients, types, progress, today, clientOptions, userName, alerts, initialTab,
 }: {
   kind: "DESIGN" | "VIDEO"; chrome?: "studio" | "embedded"; rows: Row[]; counts: Counts; clients: string[]; types: string[];
-  progress: number; today: string; clientOptions: ClientOpt[]; userName?: string; alerts?: AlertData;
+  progress: number; today: string; clientOptions: ClientOpt[]; userName?: string; alerts?: AlertData; initialTab?: string;
 }) {
   const isVideo = kind === "VIDEO";
   const L = isVideo
@@ -88,7 +87,8 @@ export default function CreativeBoard({
   const modalTypes = isVideo ? [...VIDEO_TYPES] : [...DESIGN_TYPES];
 
   const [q, setQ] = useState("");
-  const [tab, setTab] = useState("ALL");
+  const TAB_KEYS = ["ALL", "DUE_TODAY", "IN_PROGRESS", "REVIEW", "COMPLETED", "OVERDUE"];
+  const [tab, setTab] = useState(initialTab && TAB_KEYS.includes(initialTab) ? initialTab : "ALL");
   const [client, setClient] = useState("ALL");
   const [due, setDue] = useState("ALL");
   const [origin, setOrigin] = useState("ALL");
@@ -214,7 +214,9 @@ export default function CreativeBoard({
         )
       )}
       {visible.map((r) => {
-        const sf = r.overdue ? OVERDUE_FILL : STATUS_FILL[r.status];
+        // Card colour always follows the STATUS (in-progress blue, review purple, completed
+        // green, pending amber). Being overdue is shown by the red "Overdue" badge, not the card.
+        const sf = STATUS_FILL[r.status];
         const isOpen = open.has(r.id);
         const next = NEXT[r.status];
         const dt = dueText(r);
