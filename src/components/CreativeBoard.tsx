@@ -292,7 +292,7 @@ export default function CreativeBoard({
                     <Field label="Reference Link"><LinkInput name="refLink" value={r.refLink} placeholder={L.refPh} /></Field>
                   </div>
                   <div className="cb-col">
-                    <Field label={L.raw}><LinkInput name="rawLink" value={r.rawLink} placeholder={L.rawPh} /></Field>
+                    <Field label={L.raw}><LinkInput name="rawLink" value={r.rawLink} placeholder={L.rawPh} openBelow /></Field>
                     <Field label={L.final}><LinkInput name="finalLink" value={r.finalLink} placeholder={L.finalPh} openBelow /></Field>
                     <Field label="Editor Notes"><textarea name="notes" defaultValue={r.notes} rows={2} placeholder="Add notes…" className="cb-fld cb-ta" /></Field>
                     <div className="cb-infobox">
