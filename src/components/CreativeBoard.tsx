@@ -368,7 +368,7 @@ export default function CreativeBoard({
         {hero}
         <div className="cb-toolrow">{toolbar}</div>
         {kpiGrid}
-        {chipBar}
+        <div className="cb-showingrow"><span className="cb-showing">Showing {visible.length} of {counts.total}</span></div>
         {cardList}
         {modalEl}
       </div>
@@ -527,6 +527,7 @@ const cssVars = `
 .cb-chip-n{font-size:11px;padding:1px 7px;border-radius:999px;background:#F1F5F9;color:#475569}
 .cb-chip-on .cb-chip-n{background:rgba(255,255,255,.22);color:#fff}
 .cb-showing{margin-left:auto;font-size:12px;color:#64748B}
+.cb-showingrow{display:flex;justify-content:flex-end;margin-bottom:12px}
 .cb-list{display:flex;flex-direction:column;gap:16px}
 .cb-empty{display:flex;flex-direction:column;align-items:center;background:#fff;border:1px solid #E7E9F0;border-radius:20px;padding:56px 32px;text-align:center}
 .cb-empty-icon{display:inline-grid;place-items:center;width:52px;height:52px;border-radius:14px;background:#F1F5F9;color:#8B5CF6;margin-bottom:12px}

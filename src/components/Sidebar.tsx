@@ -9,13 +9,13 @@ import {
   FileBarChart, Search, UsersRound, Wallet, Images, Code2,
   CalendarDays, ClipboardCheck, ListChecks, Target, Palette, Clapperboard,
   Contact, CalendarClock, ReceiptText, FileText, CheckCircle2, XCircle, UserPlus, Repeat, Landmark, Building2, Globe, FileSignature, ChevronDown, PieChart,
-  Loader, Eye, AlertTriangle,
+  Loader, Eye, AlertTriangle, LayoutGrid,
 } from "lucide-react";
 
 type Item = { href: string; label: string; icon: React.ElementType; badge?: number; badgeTone?: "red"; forceActive?: boolean; subItems?: Item[]; iconColor?: string; badgeBg?: string; badgeFg?: string; showZero?: boolean };
 type Group = { label?: string; items: Item[] };
 
-type Pipeline = { dueToday: number; inProgress: number; review: number; completed: number; overdue: number };
+type Pipeline = { total: number; dueToday: number; inProgress: number; review: number; completed: number; overdue: number };
 export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0, reminderCount = 0, pipeline, user }: { clientCount: number; approvalsCount?: number; taskCount?: number; reminderCount?: number; pipeline?: Pipeline; user: { name: string; role: string } }) {
   const path = usePathname();
   const sp = useSearchParams();
@@ -168,8 +168,10 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     // Designer / Editor status pipeline — colour-coded shortcuts that filter their board.
     if (isDesigner || isEditor) {
       const base = isDesigner ? "/designs" : "/videos";
-      const p = pipeline ?? { dueToday: 0, inProgress: 0, review: 0, completed: 0, overdue: 0 };
+      const p = pipeline ?? { total: 0, dueToday: 0, inProgress: 0, review: 0, completed: 0, overdue: 0 };
+      const noun = isDesigner ? "Designs" : "Videos";
       const pipe = [
+        { key: "ALL", label: `Assigned ${noun}`, icon: LayoutGrid, color: "#CBD5E1", bg: "rgba(148,163,184,.22)", fg: "#E2E8F0", n: p.total },
         { key: "DUE_TODAY", label: "Due Today", icon: CalendarClock, color: "#F59E0B", bg: "rgba(245,158,11,.20)", fg: "#FDBA74", n: p.dueToday },
         { key: "IN_PROGRESS", label: "In Progress", icon: Loader, color: "#3B82F6", bg: "rgba(59,130,246,.20)", fg: "#93C5FD", n: p.inProgress },
         { key: "REVIEW", label: "Review Pending", icon: Eye, color: "#8B5CF6", bg: "rgba(139,92,246,.22)", fg: "#C4B5FD", n: p.review },
@@ -177,9 +179,9 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
         { key: "OVERDUE", label: "Overdue", icon: AlertTriangle, color: "#EF4545", bg: "rgba(239,69,69,.20)", fg: "#FCA5A5", n: p.overdue },
       ];
       groups.push({ label: "Workspace", items: pipe.map((x) => ({
-        href: `${base}?f=${x.key}`, label: x.label, icon: x.icon, iconColor: x.color,
+        href: x.key === "ALL" ? base : `${base}?f=${x.key}`, label: x.label, icon: x.icon, iconColor: x.color,
         badge: x.n, badgeBg: x.bg, badgeFg: x.fg, showZero: true,
-        forceActive: path.startsWith(base) && fParam === x.key,
+        forceActive: path.startsWith(base) && (x.key === "ALL" ? fParam === "" : fParam === x.key),
       })) });
     }
 
