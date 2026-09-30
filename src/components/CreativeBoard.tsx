@@ -377,7 +377,7 @@ export default function CreativeBoard({
 
   const viewToggle = (
     <div className="cb-viewtoggle">
-      {([["board", LayoutGrid, "Board"], ["table", List, "Table"]] as const).map(([v, Icon, label]) => (
+      {([["table", List, "Table"], ["board", LayoutGrid, "Board"]] as const).map(([v, Icon, label]) => (
         <button key={v} type="button" onClick={() => setViewMode(v)} className={`cb-vt-btn ${viewMode === v ? "cb-vt-on" : ""}`}><Icon size={14} /> {label}</button>
       ))}
     </div>
