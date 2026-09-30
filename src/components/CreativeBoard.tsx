@@ -24,20 +24,23 @@ type ClientOpt = { id: string; name: string };
 // Simple, neutral look: grey cards + tidy grey badges (meaning carried by the label),
 // with a single violet accent reserved for active/primary controls. No colour combinations.
 const NEU = { bg: "#F1F5F9", fg: "#475569", bd: "#E2E8F0" };
-// Kept colours: green = completed, orange = due/overdue. Everything else stays neutral grey.
+// Status colours (per request): pending amber, in-progress blue, review purple,
+// completed green, overdue red. Left-edge = the strong colour, pill = a light tint.
 const GREEN = { bg: "#D1FAE5", fg: "#065F46", bd: "#A7F3D0" };
 const ORANGE = { bg: "#FFEDD5", fg: "#C2410C", bd: "#FED7AA" };
+const RED = { bg: "#FEE2E2", fg: "#B91C1C", bd: "#FECACA" };
+const YELLOW = { bg: "#FEF3C7", fg: "#92400E", bd: "#FDE68A" };
 const STATUS_FILL: Record<string, { fill: string; edge: string }> = {
-  PENDING: { fill: "transparent", edge: "#E2E8F0" },
-  IN_PROGRESS: { fill: "transparent", edge: "#E2E8F0" },
-  REVIEW: { fill: "transparent", edge: "#E2E8F0" },
+  PENDING: { fill: "transparent", edge: "#F59E0B" },
+  IN_PROGRESS: { fill: "transparent", edge: "#3B82F6" },
+  REVIEW: { fill: "transparent", edge: "#8B5CF6" },
   COMPLETED: { fill: "transparent", edge: "#10B981" },
 };
-const OVERDUE_FILL = { fill: "transparent", edge: "#F59E0B" };
+const OVERDUE_FILL = { fill: "transparent", edge: "#EF4545" };
 const STATUS_PILL: Record<string, { bg: string; fg: string; bd: string; label: string }> = {
-  PENDING: { ...NEU, label: "Pending" },
-  IN_PROGRESS: { ...NEU, label: "In Progress" },
-  REVIEW: { ...NEU, label: "Review Pending" },
+  PENDING: { bg: "#FEF3C7", fg: "#92400E", bd: "#FDE68A", label: "Pending" },
+  IN_PROGRESS: { bg: "#DBEAFE", fg: "#1E40AF", bd: "#BFDBFE", label: "In Progress" },
+  REVIEW: { bg: "#EDE9FE", fg: "#5B21B6", bd: "#DDD6FE", label: "Review Pending" },
   COMPLETED: { ...GREEN, label: "Completed" },
 };
 const PRIORITY_PILL: Record<string, { bg: string; fg: string; bd: string }> = {
@@ -165,10 +168,10 @@ export default function CreativeBoard({
   const kpiGrid = (
     <div className="cb-kpis">
       <Kpi label="Total" value={counts.total} sub={`all ${L.nounLow}`} tone="ink" />
-      <Kpi label="Due Today" value={counts.dueToday} sub="due today" tone="orange" />
-      <Kpi label="In Progress" value={counts.inProgress} sub="active" tone="ink" />
+      <Kpi label="Due Today" value={counts.dueToday} sub="due today" tone="yellow" />
+      <Kpi label="In Progress" value={counts.inProgress} sub="active" tone="blue" />
       <Kpi label="Completed" value={counts.completed} sub={`${progress}% done`} tone="green" />
-      <Kpi label="Overdue" value={counts.overdue} sub="need action" tone="orange" />
+      <Kpi label="Overdue" value={counts.overdue} sub="need action" tone="red" />
     </div>
   );
 
@@ -242,7 +245,7 @@ export default function CreativeBoard({
                   </div>
                 </div>
                 <div className="cb-item-right">
-                  <span className="cb-due" style={(dt.over || dt.today) ? { background: ORANGE.bg, color: ORANGE.fg, borderColor: ORANGE.bd, fontWeight: 600 } : undefined}>
+                  <span className="cb-due" style={dt.over ? { background: RED.bg, color: RED.fg, borderColor: RED.bd, fontWeight: 600 } : dt.today ? { background: YELLOW.bg, color: YELLOW.fg, borderColor: YELLOW.bd, fontWeight: 600 } : undefined}>
                     <CalendarClock size={12} /> {dt.text}
                   </span>
                   <form action={setCreativeStatus} className="cb-statusform">
@@ -472,7 +475,7 @@ function Sel({ value, onChange, all, options, raw }: { value: string; onChange: 
 }
 function Kpi({ label, value, sub, tone }: { label: string; value: number; sub: string; tone?: string }) {
   // Simple, minimal: neutral cards; only urgent counts get a subtle coloured number.
-  const valColor = tone === "green" ? "#059669" : tone === "orange" ? "#C2410C" : "#0F172A";
+  const valColor = tone === "green" ? "#059669" : tone === "blue" ? "#2563EB" : tone === "red" ? "#DC2626" : tone === "yellow" ? "#B45309" : tone === "orange" ? "#C2410C" : "#0F172A";
   return (
     <div className="cb-kpi">
       <div className="cb-kpi-label">{label}</div>
