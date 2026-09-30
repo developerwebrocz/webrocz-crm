@@ -7,7 +7,7 @@ import Notifications from "@/components/Notifications";
 import {
   Search, ChevronDown, Plus, ExternalLink, X, Palette, Clapperboard,
   CalendarClock, Play, Send, Check, Save, Eye, Home, Loader, CheckCircle2,
-  AlertTriangle, ListChecks, Settings, Menu, Trash2, LogOut,
+  AlertTriangle, ListChecks, Settings, Menu, Trash2, LogOut, LayoutGrid, List,
 } from "lucide-react";
 
 type AlertData = { count: number; items: { tone: string; title: string; sub: string; href: string }[] };
@@ -105,6 +105,7 @@ export default function CreativeBoard({
   // Reset the "add new client" sub-form each time the Add modal is closed.
   useEffect(() => { if (!modal) setAddingClient(false); }, [modal]);
   const [drawer, setDrawer] = useState(false);
+  const [viewMode, setViewMode] = useState<"board" | "table">("board");
   const toggle = (id: string) => setOpen((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
   const visible = useMemo(() => {
@@ -327,6 +328,61 @@ export default function CreativeBoard({
     </div>
   );
 
+  // ---- TABLE VIEW (compact rows, like the sales dashboard's Table view) ----
+  const tableList = (
+    <div className="cb-tblwrap">
+      <table className="cb-tbl">
+        <thead>
+          <tr>{[L.nounOne, "Client", "Type", "Priority", "Due", "Status", "Links"].map((h) => <th key={h}>{h}</th>)}</tr>
+        </thead>
+        <tbody>
+          {visible.map((r) => {
+            const dt = dueText(r);
+            const pr = PRIORITY_PILL[r.priority] ?? PRIORITY_PILL.MEDIUM;
+            const sp = STATUS_PILL[r.status];
+            return (
+              <tr key={r.id}>
+                <td>
+                  <div className="cb-tbl-title">{r.title}</div>
+                  <div className="cb-tbl-sub">{r.code} · {r.source === "ADDITIONAL" ? "Additional" : "Onboarding"}</div>
+                </td>
+                <td>{r.client}</td>
+                <td>{r.type}</td>
+                <td><span className="cb-pill-prio" style={{ background: pr.bg, color: pr.fg, borderColor: pr.bd }}>{r.priority}</span></td>
+                <td><span className="cb-due" style={dt.over ? { background: "#DC2626", color: "#fff", borderColor: "#DC2626", fontWeight: 600 } : undefined}><CalendarClock size={12} /> {dt.text}</span></td>
+                <td>
+                  <form action={setCreativeStatus}>
+                    <input type="hidden" name="id" value={r.id} />
+                    <select name="status" defaultValue={r.status} onChange={(e) => e.currentTarget.form?.requestSubmit()}
+                      className="cb-statussel" style={{ background: sp.bg, color: sp.fg, borderColor: sp.bd }}>
+                      {STATUS_KEYS.map((k) => <option key={k} value={k}>{STATUS_PILL[k].label}</option>)}
+                    </select>
+                  </form>
+                </td>
+                <td>
+                  <div className="cb-tbl-links">
+                    {r.rawLink && <a href={r.rawLink} target="_blank" rel="noreferrer">Raw</a>}
+                    {r.finalLink && <a href={r.finalLink} target="_blank" rel="noreferrer">Final</a>}
+                    {!r.rawLink && !r.finalLink && <span className="cb-tbl-dash">—</span>}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+          {visible.length === 0 && <tr><td colSpan={7} className="cb-tbl-empty">No {L.nounLow} match your filters.</td></tr>}
+        </tbody>
+      </table>
+    </div>
+  );
+
+  const viewToggle = (
+    <div className="cb-viewtoggle">
+      {([["board", LayoutGrid, "Board"], ["table", List, "Table"]] as const).map(([v, Icon, label]) => (
+        <button key={v} type="button" onClick={() => setViewMode(v)} className={`cb-vt-btn ${viewMode === v ? "cb-vt-on" : ""}`}><Icon size={14} /> {label}</button>
+      ))}
+    </div>
+  );
+
   const modalEl = modal && (
     <div className="cb-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) setModal(false); }}>
       <div className="cb-modal">
@@ -392,8 +448,8 @@ export default function CreativeBoard({
         {hero}
         <div className="cb-toolrow">{toolbar}</div>
         {kpiGrid}
-        <div className="cb-showingrow"><span className="cb-showing">Showing {visible.length} of {counts.total}</span></div>
-        {cardList}
+        <div className="cb-showingrow">{viewToggle}<span className="cb-showing">Showing {visible.length} of {counts.total}</span></div>
+        {viewMode === "board" ? cardList : tableList}
         {modalEl}
       </div>
     );
@@ -560,7 +616,7 @@ const cssVars = `
 .cb-chip-n{font-size:11px;padding:1px 7px;border-radius:999px;background:#F1F5F9;color:#475569}
 .cb-chip-on .cb-chip-n{background:rgba(255,255,255,.22);color:#fff}
 .cb-showing{margin-left:auto;font-size:12px;color:#64748B}
-.cb-showingrow{display:flex;justify-content:flex-end;margin-bottom:12px}
+.cb-showingrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
 .cb-list{display:flex;flex-direction:column;gap:16px}
 .cb-empty{display:flex;flex-direction:column;align-items:center;background:#fff;border:1px solid #E7E9F0;border-radius:20px;padding:56px 32px;text-align:center}
 .cb-empty-icon{display:inline-grid;place-items:center;width:52px;height:52px;border-radius:14px;background:#F1F5F9;color:#8B5CF6;margin-bottom:12px}
@@ -606,6 +662,22 @@ const cssVars = `
 .cb-linkbtn{display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:10px;border:1px solid #E7E9F0;color:#64748B}
 .cb-openlink{display:inline-block;margin-top:6px;font-size:12.5px;font-weight:600;color:#7C3AED;text-decoration:underline}
 .cb-openlink:hover{color:#6D28D9}
+.cb-viewtoggle{display:inline-flex;gap:2px;background:#fff;border:1px solid #E7E9F0;border-radius:10px;padding:3px}
+.cb-vt-btn{display:inline-flex;align-items:center;gap:6px;border-radius:7px;padding:6px 12px;font-size:12.5px;font-weight:600;color:#64748B;background:transparent;border:none;cursor:pointer}
+.cb-vt-btn:hover{color:#0F172A}
+.cb-vt-on,.cb-vt-on:hover{background:#0F172A;color:#fff}
+.cb-tblwrap{background:#fff;border:1px solid #E7E9F0;border-radius:14px;overflow-x:auto}
+.cb-tbl{width:100%;min-width:820px;border-collapse:collapse;text-align:left}
+.cb-tbl th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#94A3B8;font-weight:700;padding:12px 16px;border-bottom:1px solid #EEF0F5;background:#FAFBFC;white-space:nowrap}
+.cb-tbl td{padding:12px 16px;border-bottom:1px solid #F1F3F8;font-size:13px;color:#334155;vertical-align:middle}
+.cb-tbl tbody tr:last-child td{border-bottom:none}
+.cb-tbl tbody tr:hover{background:#F8FAFC}
+.cb-tbl-title{font-weight:700;color:#0F172A}
+.cb-tbl-sub{font-size:11px;color:#94A3B8;margin-top:2px}
+.cb-tbl-links{display:flex;gap:10px}
+.cb-tbl-links a{font-size:12px;font-weight:600;color:#7C3AED;text-decoration:underline}
+.cb-tbl-dash{color:#CBD5E1}
+.cb-tbl-empty{text-align:center;color:#94A3B8;padding:40px 0}
 .cb-linkbtn:hover{border-color:#0F172A}
 .cb-infobox{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;background:#F9FAFC;border:1px solid #EEF0F6;border-radius:12px;padding:14px;font-size:12px;color:#475569}
 .cb-infobox span{color:#94A3B8}
