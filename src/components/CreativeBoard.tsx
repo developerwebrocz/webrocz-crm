@@ -448,7 +448,7 @@ export default function CreativeBoard({
         {hero}
         <div className="cb-toolrow">{toolbar}</div>
         {kpiGrid}
-        <div className="cb-showingrow">{viewToggle}<span className="cb-showing">Showing {visible.length} of {counts.total}</span></div>
+        <div className="cb-showingrow"><span className="cb-showing" style={{ marginLeft: 0 }}>Showing {visible.length} of {counts.total}</span>{viewToggle}</div>
         {viewMode === "board" ? cardList : tableList}
         {modalEl}
       </div>
