@@ -762,7 +762,9 @@ export async function getCreativeBoard(userId: string, role: string, kind: "DESI
   const tasks = await prisma.creativeTask.findMany({
     where: { kind, ...(isAdmin ? {} : { assignedToId: userId }) },
     include: { client: true },
-    orderBy: [{ dueDate: "asc" }, { code: "asc" }],
+    // Unscheduled (no due date) first, then by due date; newest-created first within each
+    // group so a freshly added design/video lands at the very top where it's easy to find.
+    orderBy: [{ dueDate: "asc" }, { createdAt: "desc" }],
   });
   const today = creativeToday();
   const dayMs = 86400000;
