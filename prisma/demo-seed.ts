@@ -5,7 +5,26 @@
 // Run:  npx tsx prisma/demo-seed.ts     ·  Undo: npx tsx prisma/clear-demo.ts
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaClient } from "../src/generated/prisma/client.js";
-import { writeFileSync, mkdirSync } from "node:fs";
+import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
+
+// Load .env manually (no dotenv dependency) so a standalone `tsx` run sees the SAME
+// DATABASE_URL + DEMO_DATE the running app uses — keeps seeded due dates aligned with
+// the board's "today". Only fills vars not already set in the environment.
+(function loadEnv() {
+  for (const p of [".env", "prisma/../.env"]) {
+    try {
+      for (const line of readFileSync(p, "utf8").split(/\r?\n/)) {
+        const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/i);
+        if (!m) continue;
+        const key = m[1];
+        let val = m[2].trim();
+        if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) val = val.slice(1, -1);
+        if (process.env[key] === undefined) process.env[key] = val;
+      }
+      break;
+    } catch { /* try next path / already set */ }
+  }
+})();
 const prisma = new PrismaClient({ adapter: new PrismaBetterSqlite3({ url: process.env.DATABASE_URL ?? "file:./prisma/dev.db" }) });
 
 // Write a small placeholder SLA document so the "Download" link in the finance/company
@@ -22,6 +41,15 @@ function ensureSampleSlaFile(): string {
 
 const TODAY = "2026-09-25";
 const DUE = "2026-09-24"; // reminders due (shows in the "due" counter / bell)
+
+// A date offset from the board's "today" (respects DEMO_DATE, same as the app's now()),
+// so the seeded creative boards always show a live mix of overdue / due-today / upcoming.
+function boardDay(offset: number): string {
+  const base = (process.env.DEMO_DATE ?? new Date().toISOString()).slice(0, 10);
+  const d = new Date(base + "T00:00:00Z");
+  d.setUTCDate(d.getUTCDate() + offset);
+  return d.toISOString().slice(0, 10);
+}
 
 async function nextLeadCode(): Promise<string> {
   const last = await prisma.lead.findFirst({ orderBy: { code: "desc" }, select: { code: true } });
@@ -248,6 +276,96 @@ async function main() {
     await ensureNotification(alertUsers, "Payment received", "Nova Fashion paid ₹30,000 against Meta Ads invoice", "/invoices", "emerald");
     await ensureNotification(alertUsers, "Invoice pending approval", "Glow Skin Clinic · WR-INV-2026-0004 (₹64,900) awaiting approval", "/invoices", "amber");
     await ensureNotification(alertUsers, "Payment overdue", "Glow Skin Clinic · ₹64,900 overdue — follow up", "/invoices", "rose");
+  }
+
+  console.log("--- Creative boards (designer / video-editor demo work + AM assignment alerts) ---");
+  {
+    const [designers, editors, ams, activeClients] = await Promise.all([
+      prisma.user.findMany({ where: { active: true, role: "DESIGNER" }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
+      prisma.user.findMany({ where: { active: true, role: "EDITOR" }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
+      prisma.user.findMany({ where: { active: true, role: { in: ["ACCOUNT_MANAGER", "AM_HEAD"] } }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
+      prisma.client.findMany({ where: { status: "ACTIVE" }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
+    ]);
+    const amName = (i: number) => (ams.length ? ams[i % ams.length].name : "Account Manager");
+
+    const DESIGN_TASKS = [
+      { title: "Festival Offer Poster", type: "Poster", dim: "1080×1080 px", brief: "Bold festive creative with the offer % and a clear CTA. Keep brand colours, high contrast." },
+      { title: "Instagram Carousel — 5 Tips", type: "Social Creative", dim: "1080×1080 px", brief: "5-slide carousel, clean layout, consistent icons and one accent colour." },
+      { title: "Google Display Banner Set", type: "Ad Creative", dim: "1200×628 px", brief: "Display ad set — headline, product shot and CTA button. Provide all standard sizes." },
+      { title: "Brand Logo Refresh", type: "Logo", dim: "Vector — AI, EPS, PNG", brief: "Modernise the primary mark, keep it recognisable. Deliver mono + colour versions." },
+      { title: "Product Launch Teaser", type: "Social Creative", dim: "1080×1920 px (Story)", brief: "Story teaser for the new launch — punchy headline, launch date and swipe-up." },
+      { title: "Services Brochure", type: "Brochure", dim: "A4 Print 300dpi", brief: "3-fold brochure covering services, pricing and contact. Print-ready with bleed." },
+      { title: "Diwali Greeting Post", type: "Social Creative", dim: "1080×1080 px", brief: "Warm festive greeting with the logo lockup and tagline." },
+      { title: "Grand Opening Hoarding", type: "Banner", dim: "20ft × 10ft", brief: "Outdoor hoarding — large readable headline, date, venue and QR code." },
+      { title: "LinkedIn Company Banner", type: "Banner", dim: "1584×396 px", brief: "Professional cover banner with the tagline and brand pattern." },
+      { title: "Pricing Table Creative", type: "Social Creative", dim: "1080×1350 px", brief: "Clean 3-tier pricing comparison, highlight the recommended plan." },
+      { title: "Testimonial Graphic", type: "Social Creative", dim: "1080×1080 px", brief: "Client quote card with photo, star rating and brand frame." },
+      { title: "Web Hero Banner", type: "Banner", dim: "1920×1080 px", brief: "Website hero visual — headline, sub-text and CTA. Layered source file." },
+    ];
+    const VIDEO_TASKS = [
+      { title: "New Launch Reel 15 sec", type: "Reel", dim: "15 sec", brief: "Fast-cut launch reel, captions, brand intro/outro, upbeat trending music." },
+      { title: "Client Testimonial 45 sec", type: "Testimonial", dim: "45 sec", brief: "Edit the raw interview, add lower-thirds, captions and light colour grade." },
+      { title: "Offer Ad Video 20 sec", type: "Ad Video", dim: "20 sec", brief: "Promo ad — hook in first 3 sec, offer, CTA end card." },
+      { title: "YouTube Explainer 2 min", type: "YouTube", dim: "2 min", brief: "Explainer edit with b-roll, on-screen text and background score." },
+      { title: "Instagram Reel — Before/After", type: "Reel", dim: "30 sec", brief: "Before/after transformation reel with transitions and captions." },
+      { title: "Brand Intro Video 30 sec", type: "Intro", dim: "30 sec", brief: "Studio intro — logo animation, tagline, contact end card." },
+      { title: "Process Walkthrough Reel", type: "Reel", dim: "30 sec", brief: "Step-by-step process reel, numbered captions, clean pacing." },
+      { title: "Product Testimonial 60 sec", type: "Testimonial", dim: "60 sec", brief: "Customer story edit with subtitles and brand frames." },
+      { title: "Festive Ad Video 15 sec", type: "Ad Video", dim: "15 sec", brief: "Festive promo — warm tone, offer, CTA. Vertical + square exports." },
+      { title: "YouTube Review 5 min", type: "YouTube", dim: "5 min", brief: "Long-form review edit, chapters, b-roll and captions." },
+      { title: "Showroom Intro 30 sec", type: "Intro", dim: "30 sec", brief: "Walkthrough intro with smooth transitions and background music." },
+      { title: "Highlights Reel 30 sec", type: "Reel", dim: "30 sec", brief: "Event highlights reel, upbeat music, quick cuts, brand outro." },
+    ];
+
+    // Status + due-date spread → a realistic live board (overdue, due-today, upcoming, completed).
+    const plan: { off: number; status: string; prio: string }[] = [
+      { off: -3, status: "IN_PROGRESS", prio: "HIGH" },
+      { off: -2, status: "REVIEW", prio: "HIGH" },
+      { off: -1, status: "PENDING", prio: "HIGH" },
+      { off: 0, status: "IN_PROGRESS", prio: "HIGH" },
+      { off: 0, status: "REVIEW", prio: "MEDIUM" },
+      { off: 1, status: "PENDING", prio: "MEDIUM" },
+      { off: 2, status: "IN_PROGRESS", prio: "MEDIUM" },
+      { off: 3, status: "PENDING", prio: "LOW" },
+      { off: 5, status: "PENDING", prio: "MEDIUM" },
+      { off: -6, status: "COMPLETED", prio: "MEDIUM" },
+      { off: -4, status: "COMPLETED", prio: "HIGH" },
+      { off: 4, status: "PENDING", prio: "LOW" },
+    ];
+
+    async function seedBoard(worker: { id: string; name: string }, kind: "DESIGN" | "VIDEO", tasks: { title: string; type: string; dim: string; brief: string }[]) {
+      const existing = await prisma.creativeTask.count({ where: { assignedToId: worker.id, kind } });
+      if (existing > 0) { console.log(`  skip ${worker.name} — already has ${existing} ${kind} tasks`); return; }
+      const prefix = kind === "DESIGN" ? "DSG" : "VID";
+      const rows = plan.map((p, i) => {
+        const t = tasks[i % tasks.length];
+        const cl = activeClients.length ? activeClients[(i + 1) % activeClients.length] : null;
+        return {
+          kind, code: `${prefix}-${String(i + 1).padStart(3, "0")}`, title: t.title,
+          clientId: cl?.id ?? null, assignedToId: worker.id, type: t.type,
+          priority: p.prio, status: p.status, source: i % 4 === 0 ? "ADDITIONAL" : "ONBOARDING",
+          assignedDate: boardDay(Math.min(p.off, 0) - 1), dueDate: boardDay(p.off), dimensions: t.dim,
+          brief: `${t.brief}${cl ? ` — ${cl.name}.` : ""}`,
+          notes: p.status === "COMPLETED" ? "Approved by client — all formats exported." : "",
+          refLink: kind === "DESIGN" ? "https://www.behance.net/gallery/reference" : "https://youtube.com/watch?v=ref",
+          rawLink: "https://drive.google.com/drive/folders/raw-assets",
+          finalLink: p.status === "COMPLETED" ? "https://drive.google.com/drive/folders/final-export" : "",
+        };
+      });
+      await prisma.creativeTask.createMany({ data: rows });
+      console.log(`  ${worker.name}: seeded ${rows.length} ${kind} tasks`);
+      // Fresh "assigned by an Account Manager" bell alerts for the live (upcoming/due) items.
+      const label = kind === "DESIGN" ? "design" : "video";
+      const hot = rows.filter((r) => r.dueDate >= boardDay(0) && r.status !== "COMPLETED").slice(0, 3);
+      for (let i = 0; i < hot.length; i++) {
+        const r = hot[i];
+        const cl = activeClients.find((c) => c.id === r.clientId);
+        await ensureNotification([worker.id], `New ${label} assigned: ${r.title}`, `From ${amName(i)}${cl ? ` · ${cl.name}` : ""} · due ${r.dueDate}`, "/", "violet");
+      }
+    }
+
+    for (const d of designers) await seedBoard(d, "DESIGN", DESIGN_TASKS);
+    for (const e of editors) await seedBoard(e, "VIDEO", VIDEO_TASKS);
   }
 
   const leads = await prisma.lead.count();
