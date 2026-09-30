@@ -440,7 +440,14 @@ export async function addCreativeTask(fd: FormData) {
   const prefix = kind === "VIDEO" ? "VID" : "DSG";
   const count = await prisma.creativeTask.count({ where: { assignedToId: u.id, kind } });
   const title = s(fd, "title") || (kind === "VIDEO" ? "Additional Video" : "Additional Design");
-  const clientId = s(fd, "clientId") || null;
+  // "New Client - Add Name": when the designer picks the new-client option and types a name,
+  // create a minimal client on the fly and attach the task to it.
+  const newClientName = s(fd, "newClient").trim();
+  let clientId = s(fd, "clientId") || null;
+  if (newClientName) {
+    const created = await prisma.client.create({ data: { code: await nextClientCode(), name: newClientName, status: "ACTIVE" } });
+    clientId = created.id;
+  }
   await prisma.creativeTask.create({
     data: {
       kind, code: `${prefix}-${String(count + 1).padStart(3, "0")}`, title,

@@ -101,6 +101,9 @@ export default function CreativeBoard({
   const [type, setType] = useState("ALL");
   const [open, setOpen] = useState<Set<string>>(() => new Set(rows[0] ? [rows[0].id] : []));
   const [modal, setModal] = useState(false);
+  const [addingClient, setAddingClient] = useState(false);
+  // Reset the "add new client" sub-form each time the Add modal is closed.
+  useEffect(() => { if (!modal) setAddingClient(false); }, [modal]);
   const [drawer, setDrawer] = useState(false);
   const toggle = (id: string) => setOpen((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
@@ -170,7 +173,7 @@ export default function CreativeBoard({
 
   const kpiGrid = (
     <div className="cb-kpis">
-      <Kpi label="Total" value={counts.total} sub={`all ${L.nounLow}`} tone="ink" />
+      <Kpi label="Total Assigned" value={counts.total} sub={`all ${L.nounLow}`} tone="ink" />
       <Kpi label="Due Today" value={counts.dueToday} sub="due today" tone="orange" />
       <Kpi label="In Progress" value={counts.inProgress} sub="active" tone="ink" />
       <Kpi label="Completed" value={counts.completed} sub={`${progress}% done`} tone="ink" />
@@ -339,7 +342,21 @@ export default function CreativeBoard({
           <input type="hidden" name="assignedDate" value={today} />
           <div className="cb-modal-body">
             <div className="cb-two">
-              <Field label="Client"><select name="clientId" className="cb-fld"><option value="">— Select client —</option>{clientOptions.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></Field>
+              <Field label="Client">
+                {addingClient ? (
+                  <div className="cb-linkinput">
+                    <input name="newClient" autoFocus placeholder="New client name…" className="cb-fld" />
+                    <button type="button" onClick={() => setAddingClient(false)} className="cb-linkbtn" title="Pick existing client"><X size={15} /></button>
+                  </div>
+                ) : (
+                  <select name="clientId" className="cb-fld" defaultValue=""
+                    onChange={(e) => { if (e.target.value === "__NEW__") setAddingClient(true); }}>
+                    <option value="">— Select client —</option>
+                    {clientOptions.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    <option value="__NEW__">＋ New Client – Add Name</option>
+                  </select>
+                )}
+              </Field>
               <Field label={`${L.nounOne} Type`}><select name="type" className="cb-fld">{modalTypes.map((t) => <option key={t} value={t}>{t}</option>)}</select></Field>
             </div>
             <Field label={`${L.nounOne} Title`}><input name="title" required placeholder={isVideo ? "Ex: Product Launch Reel 15 sec" : "Ex: Instagram Post — Offer Creative"} className="cb-fld" /></Field>
