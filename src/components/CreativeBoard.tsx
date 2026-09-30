@@ -164,11 +164,11 @@ export default function CreativeBoard({
 
   const kpiGrid = (
     <div className="cb-kpis">
-      <Kpi label="Total Assigned" value={counts.total} sub={`all ${L.nounLow}`} tone="ink" bar={100} />
-      <Kpi label="Due Today · Urgent" value={counts.dueToday} sub="needs attention" tone="orange" pill="Needs attention" alert={counts.dueToday > 0} />
-      <Kpi label="In Progress" value={counts.inProgress} sub="active" tone="blue" bar={counts.total ? Math.round((counts.inProgress / counts.total) * 100) : 0} />
-      <Kpi label="Completed" value={counts.completed} sub={`${progress}% done`} tone="green" bar={progress} />
-      <Kpi label="Overdue" value={counts.overdue} sub="critical" tone="red" pill="Immediate action" alert={counts.overdue > 0} span2 />
+      <Kpi label="Total Assigned" value={counts.total} sub={`all ${L.nounLow}`} tone="ink" bar={100} icon={<L.icon size={16} />} />
+      <Kpi label="Due Today · Urgent" value={counts.dueToday} sub="needs attention" tone="orange" pill="Needs attention" alert={counts.dueToday > 0} icon={<CalendarClock size={16} />} />
+      <Kpi label="In Progress" value={counts.inProgress} sub="active" tone="blue" bar={counts.total ? Math.round((counts.inProgress / counts.total) * 100) : 0} icon={<Loader size={16} />} />
+      <Kpi label="Completed" value={counts.completed} sub={`${progress}% done`} tone="green" bar={progress} icon={<CheckCircle2 size={16} />} />
+      <Kpi label="Overdue" value={counts.overdue} sub="critical" tone="red" pill="Immediate action" alert={counts.overdue > 0} span2 icon={<AlertTriangle size={16} />} />
     </div>
   );
 
@@ -183,14 +183,66 @@ export default function CreativeBoard({
     </div>
   );
 
+  const firstName = (userName || L.role).trim().split(" ")[0];
+  const longDate = today
+    ? new Date(today + "T00:00:00").toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+    : "";
+  const RING_C = 2 * Math.PI * 26;
+  const heroLine = (() => {
+    if (counts.total === 0) return `No ${L.nounLow} assigned yet — you're all caught up.`;
+    const bits = [`${counts.total} ${counts.total === 1 ? L.nounOne.toLowerCase() : L.nounLow} assigned`];
+    if (counts.dueToday > 0) bits.push(`${counts.dueToday} due today`);
+    if (counts.overdue > 0) bits.push(`${counts.overdue} overdue`);
+    return bits.join(" · ") + ".";
+  })();
+  const hero = (
+    <div className="cbs-hero">
+      <div className="cbs-hero-glow" />
+      <div className="cbs-hero-left">
+        <div className="cbs-hero-eyebrow"><L.icon size={13} /> {L.studio}</div>
+        <h1 className="cbs-hero-title">Welcome back, {firstName} 👋</h1>
+        <p className="cbs-hero-sub">{longDate}</p>
+        <p className="cbs-hero-line">{heroLine}</p>
+        <div className="cbs-hero-actions">
+          <button onClick={() => setModal(true)} className="cbs-hero-btn"><Plus size={15} /> Add {L.nounOne}</button>
+          {counts.dueToday > 0 && <button onClick={() => pickTab("DUE_TODAY")} className="cbs-hero-btn cbs-hero-btn-ghost"><CalendarClock size={15} /> {counts.dueToday} due today</button>}
+          {counts.overdue > 0 && <button onClick={() => pickTab("OVERDUE")} className="cbs-hero-btn cbs-hero-btn-danger"><AlertTriangle size={15} /> {counts.overdue} overdue</button>}
+        </div>
+      </div>
+      <div className="cbs-hero-ring">
+        <svg width="128" height="128" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(255,255,255,.14)" strokeWidth="7" />
+          <circle cx="32" cy="32" r="26" fill="none" stroke="#fff" strokeWidth="7" strokeLinecap="round"
+            strokeDasharray={RING_C} strokeDashoffset={RING_C * (1 - progress / 100)} transform="rotate(-90 32 32)"
+            style={{ transition: "stroke-dashoffset .6s ease" }} />
+        </svg>
+        <div className="cbs-hero-ring-mid">
+          <span className="cbs-hero-ring-pct">{progress}%</span>
+          <span className="cbs-hero-ring-cap">completed</span>
+        </div>
+        <div className="cbs-hero-ring-note">{counts.completed} of {counts.total} done</div>
+      </div>
+    </div>
+  );
+
   const cardList = (
     <div className="cb-list">
       {visible.length === 0 && (
-        <div className="cb-empty">
-          <span className="cb-empty-icon"><L.icon size={22} /></span>
-          <div className="cb-empty-title">No {L.nounLow} found</div>
-          <div className="cb-empty-sub">Adjust filters or search query</div>
-        </div>
+        counts.total === 0 ? (
+          <div className="cb-empty">
+            <span className="cb-empty-icon cb-empty-icon-lg"><L.icon size={30} /></span>
+            <div className="cb-empty-title">No {L.nounLow} assigned yet</div>
+            <div className="cb-empty-sub">When the team assigns work to you, it will show up here. You can also add your own additional {L.nounLow}.</div>
+            <button onClick={() => setModal(true)} className="cb-btn cb-btn-purple" style={{ marginTop: 16 }}><Plus size={15} /> Add Additional {L.nounOne}</button>
+          </div>
+        ) : (
+          <div className="cb-empty">
+            <span className="cb-empty-icon"><Search size={22} /></span>
+            <div className="cb-empty-title">No {L.nounLow} match your filters</div>
+            <div className="cb-empty-sub">Try a different search or clear the filters to see all {counts.total} {L.nounLow}.</div>
+            <button onClick={() => { setQ(""); setTab("ALL"); setClient("ALL"); setDue("ALL"); setOrigin("ALL"); setType("ALL"); }} className="cb-btn cb-btn-outline" style={{ marginTop: 16 }}>Clear filters</button>
+          </div>
+        )
       )}
       {visible.map((r) => {
         const sf = r.overdue ? OVERDUE_FILL : STATUS_FILL[r.status];
@@ -431,6 +483,7 @@ export default function CreativeBoard({
           </div>
         </header>
         <main className="cbs-content">
+          {hero}
           {kpiGrid}
           {chipBar}
           {cardList}
@@ -463,18 +516,21 @@ function Sel({ value, onChange, all, options, raw }: { value: string; onChange: 
     </div>
   );
 }
-function Kpi({ label, value, sub, tone, bar, pill, alert, span2 }: { label: string; value: number; sub: string; tone: string; bar?: number; pill?: string; alert?: boolean; span2?: boolean }) {
-  const tint: Record<string, { fg: string; barBg: string; barFill: string; pillBg: string; pillBd: string }> = {
-    ink: { fg: "#64748B", barBg: "#F8F7FF", barFill: "#0F172A", pillBg: "", pillBd: "" },
-    orange: { fg: "#EA580C", barBg: "#FFF7ED", barFill: "#EA580C", pillBg: "#FFF7ED", pillBd: "#FFEDD5" },
-    blue: { fg: "#2563EB", barBg: "#EFF6FF", barFill: "#3B82F6", pillBg: "", pillBd: "" },
-    green: { fg: "#059669", barBg: "#ECFDF5", barFill: "#10B981", pillBg: "", pillBd: "" },
-    red: { fg: "#DC2626", barBg: "#FEF2F2", barFill: "#EF4444", pillBg: "#FEF2F2", pillBd: "#FEE2E2" },
+function Kpi({ label, value, sub, tone, bar, pill, alert, span2, icon }: { label: string; value: number; sub: string; tone: string; bar?: number; pill?: string; alert?: boolean; span2?: boolean; icon?: React.ReactNode }) {
+  const tint: Record<string, { fg: string; barBg: string; barFill: string; pillBg: string; pillBd: string; icoBg: string }> = {
+    ink: { fg: "#64748B", barBg: "#F8F7FF", barFill: "#0F172A", pillBg: "", pillBd: "", icoBg: "#F1F5F9" },
+    orange: { fg: "#EA580C", barBg: "#FFF7ED", barFill: "#EA580C", pillBg: "#FFF7ED", pillBd: "#FFEDD5", icoBg: "#FFF7ED" },
+    blue: { fg: "#2563EB", barBg: "#EFF6FF", barFill: "#3B82F6", pillBg: "", pillBd: "", icoBg: "#EFF6FF" },
+    green: { fg: "#059669", barBg: "#ECFDF5", barFill: "#10B981", pillBg: "", pillBd: "", icoBg: "#ECFDF5" },
+    red: { fg: "#DC2626", barBg: "#FEF2F2", barFill: "#EF4444", pillBg: "#FEF2F2", pillBd: "#FEE2E2", icoBg: "#FEE2E2" },
   };
   const t = tint[tone];
   return (
-    <div className={`cb-kpi ${span2 ? "cb-kpi-span2" : ""}`} style={tone === "red" ? { borderColor: "#FECACA", background: "#FEF2F2" } : undefined}>
-      <div className="cb-kpi-label" style={{ color: tone === "ink" ? "#64748B" : t.fg }}>{label}</div>
+    <div className={`cb-kpi ${span2 ? "cb-kpi-span2" : ""} ${alert ? "cb-kpi-alert" : ""}`} style={tone === "red" ? { borderColor: "#FECACA", background: "#FEF2F2" } : undefined}>
+      <div className="cb-kpi-top">
+        <div className="cb-kpi-label" style={{ color: tone === "ink" ? "#64748B" : t.fg }}>{label}</div>
+        {icon && <span className="cb-kpi-ico" style={{ background: t.icoBg, color: tone === "ink" ? "#0F172A" : t.fg }}>{icon}</span>}
+      </div>
       <div className="cb-kpi-value" style={{ color: tone === "ink" ? "#0F172A" : t.fg }}>{value}</div>
       <div className="cb-kpi-sub" style={{ color: t.fg }}>{sub}</div>
       {pill
@@ -515,12 +571,17 @@ const cssVars = `
 .cb-prog-fill{height:100%;border-radius:999px;background:#6D28D9;transition:width .5s ease}
 .cb-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
 @media(min-width:1024px){.cb-kpis{grid-template-columns:repeat(5,1fr);gap:16px}}
-.cb-kpi{background:#fff;border:1px solid #ECE9FF;border-radius:16px;padding:16px}
+.cb-kpi{background:#fff;border:1px solid #ECE9FF;border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(15,23,42,.04);transition:box-shadow .18s ease,transform .18s ease}
+.cb-kpi:hover{box-shadow:0 10px 30px rgba(15,23,42,.08);transform:translateY(-2px)}
 .cb-kpi-span2{grid-column:span 2}@media(min-width:1024px){.cb-kpi-span2{grid-column:span 1}}
+.cb-kpi-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.cb-kpi-ico{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;flex:none}
 .cb-kpi-label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
-.cb-kpi-value{font-size:26px;font-weight:800;line-height:1;margin-top:8px;letter-spacing:-.02em}
+.cb-kpi-value{font-size:28px;font-weight:800;line-height:1;margin-top:10px;letter-spacing:-.02em}
 .cb-kpi-sub{font-size:11px;margin-top:6px}
-.cb-kpi-track{height:4px;border-radius:999px;margin-top:10px;overflow:hidden}
+.cb-kpi-track{height:5px;border-radius:999px;margin-top:12px;overflow:hidden}
+.cb-kpi-alert{animation:cbPulse 2.4s ease-in-out infinite}
+@keyframes cbPulse{0%,100%{box-shadow:0 1px 2px rgba(15,23,42,.04)}50%{box-shadow:0 0 0 4px rgba(239,68,68,.10)}}
 .cb-kpi-pill{display:inline-block;margin-top:8px;font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:999px;border:1px solid}
 .cb-chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#fff;border:1px solid #ECE9FF;border-radius:20px;padding:8px;margin-bottom:16px}
 .cb-chip{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:12px;font-size:12.5px;font-weight:600;color:#475569;background:#F8F7FF;border:1px solid #ECE9FF;cursor:pointer;transition:all .15s ease}
@@ -530,9 +591,10 @@ const cssVars = `
 .cb-chip-on .cb-chip-n{background:rgba(255,255,255,.22);color:#fff}
 .cb-showing{margin-left:auto;font-size:12px;color:#64748B}
 .cb-list{display:flex;flex-direction:column;gap:16px}
-.cb-empty{background:#fff;border:1px solid #ECE9FF;border-radius:20px;padding:48px;text-align:center}
-.cb-empty-icon{display:inline-grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#F8F7FF;color:#94A3B8;margin-bottom:8px}
-.cb-empty-title{font-size:14px;font-weight:500;color:#334155}.cb-empty-sub{font-size:13px;color:#64748B;margin-top:2px}
+.cb-empty{display:flex;flex-direction:column;align-items:center;background:#fff;border:1px solid #ECE9FF;border-radius:20px;padding:56px 32px;text-align:center}
+.cb-empty-icon{display:inline-grid;place-items:center;width:52px;height:52px;border-radius:14px;background:#F5F3FF;color:#8B5CF6;margin-bottom:12px}
+.cb-empty-icon-lg{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#EDE9FE,#F5F3FF);color:#6D28D9}
+.cb-empty-title{font-size:16px;font-weight:700;color:#0F172A}.cb-empty-sub{font-size:13px;color:#64748B;margin-top:6px;max-width:380px;line-height:1.5}
 .cb-item{border:1px solid #ECE9FF;border-radius:16px;overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,.04);transition:box-shadow .18s ease,transform .18s ease}
 .cb-item:hover{box-shadow:0 8px 28px rgba(15,23,42,.08);transform:translateY(-1px)}
 .cb-item-inner{padding:18px 20px}
@@ -632,6 +694,25 @@ const studioCss = `
 @media(min-width:1024px){.cbs-burger{display:none}}
 .cbs-content{padding:16px}
 @media(min-width:1024px){.cbs-content{padding:24px}}
+.cbs-hero{position:relative;overflow:hidden;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px;margin-bottom:16px;padding:24px 26px;border-radius:22px;background:linear-gradient(120deg,#1E1B4B 0%,#4C1D95 48%,#6D28D9 100%);color:#fff;box-shadow:0 18px 40px -18px rgba(76,29,149,.55)}
+.cbs-hero-glow{position:absolute;top:-60px;right:-30px;width:240px;height:240px;border-radius:999px;background:radial-gradient(circle,rgba(168,85,247,.55),transparent 65%);pointer-events:none}
+.cbs-hero-left{position:relative;z-index:1;min-width:0}
+.cbs-hero-eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.72);background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);padding:4px 10px;border-radius:999px}
+.cbs-hero-title{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-top:12px}
+.cbs-hero-sub{font-size:12.5px;color:rgba(255,255,255,.6);margin-top:4px}
+.cbs-hero-line{font-size:13.5px;color:rgba(255,255,255,.9);margin-top:8px;font-weight:500}
+.cbs-hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.cbs-hero-btn{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 16px;border-radius:11px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid transparent;background:#fff;color:#4C1D95;transition:transform .15s ease,box-shadow .15s ease}
+.cbs-hero-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.18)}
+.cbs-hero-btn-ghost{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.25)}
+.cbs-hero-btn-ghost:hover{background:rgba(255,255,255,.2)}
+.cbs-hero-btn-danger{background:rgba(239,68,68,.9);color:#fff}
+.cbs-hero-btn-danger:hover{background:#ef4444}
+.cbs-hero-ring{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;flex:none}
+.cbs-hero-ring-mid{position:absolute;top:0;left:0;right:0;height:128px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.cbs-hero-ring-pct{font-size:26px;font-weight:800}
+.cbs-hero-ring-cap{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:3px}
+.cbs-hero-ring-note{font-size:11.5px;color:rgba(255,255,255,.7);margin-top:8px;font-weight:500}
 .cbs-drawer-wrap{position:fixed;inset:0;z-index:70}
 .cbs-drawer-bg{position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(2px)}
 .cbs-side-drawer{display:flex;width:280px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
