@@ -24,18 +24,21 @@ type ClientOpt = { id: string; name: string };
 // Simple, neutral look: grey cards + tidy grey badges (meaning carried by the label),
 // with a single violet accent reserved for active/primary controls. No colour combinations.
 const NEU = { bg: "#F1F5F9", fg: "#475569", bd: "#E2E8F0" };
+// Kept colours: green = completed, orange = due/overdue. Everything else stays neutral grey.
+const GREEN = { bg: "#D1FAE5", fg: "#065F46", bd: "#A7F3D0" };
+const ORANGE = { bg: "#FFEDD5", fg: "#C2410C", bd: "#FED7AA" };
 const STATUS_FILL: Record<string, { fill: string; edge: string }> = {
   PENDING: { fill: "transparent", edge: "#E2E8F0" },
   IN_PROGRESS: { fill: "transparent", edge: "#E2E8F0" },
   REVIEW: { fill: "transparent", edge: "#E2E8F0" },
-  COMPLETED: { fill: "transparent", edge: "#E2E8F0" },
+  COMPLETED: { fill: "transparent", edge: "#10B981" },
 };
-const OVERDUE_FILL = { fill: "transparent", edge: "#CBD5E1" };
+const OVERDUE_FILL = { fill: "transparent", edge: "#F59E0B" };
 const STATUS_PILL: Record<string, { bg: string; fg: string; bd: string; label: string }> = {
   PENDING: { ...NEU, label: "Pending" },
   IN_PROGRESS: { ...NEU, label: "In Progress" },
   REVIEW: { ...NEU, label: "Review Pending" },
-  COMPLETED: { ...NEU, label: "Completed" },
+  COMPLETED: { ...GREEN, label: "Completed" },
 };
 const PRIORITY_PILL: Record<string, { bg: string; fg: string; bd: string }> = {
   HIGH: { ...NEU },
@@ -133,13 +136,13 @@ export default function CreativeBoard({
   ];
 
   const dueText = (r: Row) => {
-    if (r.status === "COMPLETED") return { text: `Done · ${shortDate(r.dueDate)}`, over: false };
+    if (r.status === "COMPLETED") return { text: `Done · ${shortDate(r.dueDate)}`, over: false, today: false };
     const d = dayDiff(r.dueDate, today);
-    if (d === null) return { text: "No due date", over: false };
-    if (d < 0) return { text: `Overdue · ${-d}d ago`, over: true };
-    if (d === 0) return { text: "Due Today", over: false };
-    if (d === 1) return { text: "Due Tomorrow · 1 day left", over: false };
-    return { text: `Due ${shortDate(r.dueDate)} · ${d} days left`, over: false };
+    if (d === null) return { text: "No due date", over: false, today: false };
+    if (d < 0) return { text: `Overdue · ${-d}d ago`, over: true, today: false };
+    if (d === 0) return { text: "Due Today", over: false, today: true };
+    if (d === 1) return { text: "Due Tomorrow · 1 day left", over: false, today: false };
+    return { text: `Due ${shortDate(r.dueDate)} · ${d} days left`, over: false, today: false };
   };
 
   const pickTab = (k: string) => { setTab(k); setDrawer(false); if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" }); };
@@ -164,8 +167,8 @@ export default function CreativeBoard({
       <Kpi label="Total" value={counts.total} sub={`all ${L.nounLow}`} tone="ink" />
       <Kpi label="Due Today" value={counts.dueToday} sub="due today" tone="orange" />
       <Kpi label="In Progress" value={counts.inProgress} sub="active" tone="ink" />
-      <Kpi label="Completed" value={counts.completed} sub={`${progress}% done`} tone="ink" />
-      <Kpi label="Overdue" value={counts.overdue} sub="need action" tone="red" />
+      <Kpi label="Completed" value={counts.completed} sub={`${progress}% done`} tone="green" />
+      <Kpi label="Overdue" value={counts.overdue} sub="need action" tone="orange" />
     </div>
   );
 
@@ -226,7 +229,7 @@ export default function CreativeBoard({
                     <h3 className="cb-item-title">{r.title}</h3>
                     <span className="cb-idpill">{r.code}</span>
                     <span className="cb-origin" style={r.source === "ADDITIONAL"
-                      ? { background: "#E2E8F0", color: "#334155", borderColor: "#CBD5E1" }
+                      ? { background: ORANGE.bg, color: ORANGE.fg, borderColor: ORANGE.bd }
                       : { background: "#F1F5F9", color: "#475569", borderColor: "#E2E8F0" }}>
                       {r.source === "ADDITIONAL" ? "Additional" : "Onboarding Agreed"}
                     </span>
@@ -239,7 +242,7 @@ export default function CreativeBoard({
                   </div>
                 </div>
                 <div className="cb-item-right">
-                  <span className="cb-due" style={dt.over ? { background: "#E2E8F0", color: "#334155", borderColor: "#CBD5E1", fontWeight: 600 } : undefined}>
+                  <span className="cb-due" style={(dt.over || dt.today) ? { background: ORANGE.bg, color: ORANGE.fg, borderColor: ORANGE.bd, fontWeight: 600 } : undefined}>
                     <CalendarClock size={12} /> {dt.text}
                   </span>
                   <form action={setCreativeStatus} className="cb-statusform">
@@ -469,7 +472,7 @@ function Sel({ value, onChange, all, options, raw }: { value: string; onChange: 
 }
 function Kpi({ label, value, sub, tone }: { label: string; value: number; sub: string; tone?: string }) {
   // Simple, minimal: neutral cards; only urgent counts get a subtle coloured number.
-  const valColor = "#0F172A"; // neutral — KPI numbers all read the same, meaning is in the label
+  const valColor = tone === "green" ? "#059669" : tone === "orange" ? "#C2410C" : "#0F172A";
   return (
     <div className="cb-kpi">
       <div className="cb-kpi-label">{label}</div>
@@ -496,7 +499,7 @@ const cssVars = `
 .cb-btn{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 16px;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;white-space:nowrap;transition:all .15s ease}
 .cb-btn-purple{background:var(--violet);color:#fff;box-shadow:0 2px 8px rgba(109,40,217,.20)}.cb-btn-purple:hover{background:#5b21b6}
 .cb-btn-outline{background:#fff;border-color:#0F172A;color:#0F172A}.cb-btn-outline:hover{background:#F8FAFC}
-.cb-btn-green{background:var(--violet);color:#fff}.cb-btn-green:hover{background:#5b21b6}
+.cb-btn-green{background:#059669;color:#fff}.cb-btn-green:hover{background:#047857}
 .cb-btn-dark{background:var(--violet);color:#fff}.cb-btn-dark:hover{background:#5b21b6}
 .cb-btn-danger{background:#fff;border-color:#FECACA;color:#DC2626}.cb-btn-danger:hover{background:#FEF2F2;border-color:#DC2626}
 .cb-card{background:#fff;border:1px solid #E7E9F0;border-radius:20px}
