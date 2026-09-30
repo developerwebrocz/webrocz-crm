@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { DESIGN_TYPES, VIDEO_TYPES } from "@/lib/domain";
 import { saveCreativeTask, setCreativeStatus, addCreativeTask, deleteCreativeTask, logout } from "@/app/actions";
 import Notifications from "@/components/Notifications";
@@ -89,6 +89,12 @@ export default function CreativeBoard({
   const [q, setQ] = useState("");
   const TAB_KEYS = ["ALL", "DUE_TODAY", "IN_PROGRESS", "REVIEW", "COMPLETED", "OVERDUE"];
   const [tab, setTab] = useState(initialTab && TAB_KEYS.includes(initialTab) ? initialTab : "ALL");
+  // Keep the active filter in sync with the URL (?f=) on client-side navigation
+  // from the sidebar Workspace links — the useState initializer runs only once.
+  useEffect(() => {
+    setTab(initialTab && TAB_KEYS.includes(initialTab) ? initialTab : "ALL");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialTab]);
   const [client, setClient] = useState("ALL");
   const [due, setDue] = useState("ALL");
   const [origin, setOrigin] = useState("ALL");
