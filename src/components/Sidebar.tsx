@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Users, UserCog, Megaphone, ClipboardList,
   FileBarChart, Search, UsersRound, Wallet, Images, Code2,
   CalendarDays, ClipboardCheck, ListChecks, Target, Palette, Clapperboard,
-  Contact, CalendarClock, ReceiptText, FileText, CheckCircle2, XCircle, UserPlus, Repeat, Landmark, Building2, Globe, FileSignature, ChevronDown,
+  Contact, CalendarClock, ReceiptText, FileText, CheckCircle2, XCircle, UserPlus, Repeat, Landmark, Building2, Globe, FileSignature, ChevronDown, PieChart,
 } from "lucide-react";
 
 type Item = { href: string; label: string; icon: React.ElementType; badge?: number; badgeTone?: "red"; forceActive?: boolean; subItems?: Item[] };
@@ -103,7 +103,8 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
       // { href: "/payments", label: "Payments", icon: Wallet },
       // Website renewals now live under each company in the Companies group above.
       { href: "/statements", label: "Reports", icon: FileBarChart },
-      { href: "/profit-loss", label: "Profit & Loss", icon: Wallet },
+      { href: "/expenses", label: "Expenses", icon: Wallet },
+      ...(isAdmin ? [{ href: "/profit-loss", label: "Profit & Loss", icon: PieChart }] : []),
       { href: "/gst", label: "GST Report", icon: Landmark },
       { href: "/invoices", label: "Invoices", icon: ReceiptText },
     ] },

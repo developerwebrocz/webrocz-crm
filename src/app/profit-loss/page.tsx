@@ -5,7 +5,8 @@ import ProfitLoss from "@/components/ProfitLoss";
 
 export const dynamic = "force-dynamic";
 
-const ALLOWED = ["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"];
+// Profit & Loss (actual profit) is Super Admin only — accountants add expenses at /expenses.
+const ALLOWED = ["SUPER_ADMIN", "SUB_ADMIN"];
 
 export default async function ProfitLossPage() {
   const user = await getCurrentUser();

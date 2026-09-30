@@ -91,6 +91,7 @@ export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, 
           <div className="flex items-center gap-2">
             <button onClick={() => setAddClient(true)} className="btn btn-ghost"><UserPlus size={16} /> Add Client</button>
             <Link href="/accounts" prefetch className="btn btn-ghost"><Users size={16} /> Clients</Link>
+            <Link href="/expenses" prefetch className="btn btn-ghost"><Wallet size={16} /> Expenses</Link>
             <Link href="/invoices" prefetch className="btn btn-violet"><ReceiptText size={16} /> All Invoices</Link>
           </div>
         </div>
