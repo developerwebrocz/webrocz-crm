@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { SERVICES, SERVICE_KEYS, type ServiceKey, financialYear, companyFor, stateFromGstin } from "@/lib/domain";
+import { SERVICES, SERVICE_KEYS, type ServiceKey, financialYear, companyFor, stateFromGstin, GADS_TYPE_KEYS } from "@/lib/domain";
 import { hashPassword, verifyPassword, getCurrentUser, getRealUser } from "@/lib/auth";
 import { sendEmail, inviteEmailHtml } from "@/lib/email";
 import { SESSION_COOKIE, IMPERSONATE_COOKIE, signSession, signImpersonation } from "@/lib/session";
@@ -47,7 +47,7 @@ export async function saveGoogleAdsDay(fd: FormData) {
   if (!client || (!isHead && client.accountManagerId !== u.id)) redirect(`/google-ads?period=${period}`);
 
   const rowCount = n(fd, "rows") || 8;
-  const GADS_TYPES_OK = ["SEARCH", "DISPLAY", "PMAX", "SMART"];
+  const GADS_TYPES_OK = GADS_TYPE_KEYS as readonly string[];
   const data: { clientId: string; date: string; name: string; type: string; spent: number; leads: number; conversions: number; status: string; updatedBy: string }[] = [];
   for (let i = 0; i < rowCount; i++) {
     const name = s(fd, `name_${i}`);

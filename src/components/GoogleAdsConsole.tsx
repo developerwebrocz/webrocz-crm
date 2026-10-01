@@ -3,9 +3,9 @@
 import { useMemo, useState } from "react";
 import { inr, GADS_TYPES } from "@/lib/domain";
 import {
-  Users, CircleAlert,
+  Users, CircleAlert, Building2, Gauge,
   ChevronDown, Search, SlidersHorizontal, Plus, Download, Eye, Pencil,
-  Send, MessageCircle, TrendingUp, TrendingDown, CircleCheck,
+  Send, MessageCircle, TrendingUp, CircleCheck,
 } from "lucide-react";
 
 type Campaign = { name: string; type: string; spent: number; leads: number; conv: number; status: string; cpl: number; convPct: number };
@@ -15,7 +15,7 @@ type Row = {
   campaigns: Campaign[]; ready: boolean; updatedBy: string; updatedAt: string | null;
   monthSpend: number; usedPct: number;
 };
-type Kpis = { totalSpent: number; totalLeads: number; totalConv: number; costPerLead: number; convPct: number };
+type Kpis = { totalSpent: number; totalLeads: number; totalConv: number; costPerLead: number; convPct: number; budgetUtil: number; totalBudget: number; totalMonthSpend: number };
 type Counts = { clients: number; campaigns: number; smart: number; pending: number };
 type BudgetClient = { name: string; budget: number; spend: number; usedPct: number } | null;
 
@@ -37,10 +37,10 @@ const k1 = (n: number) => {
   if (n >= 1000) return `₹${(n / 1000).toFixed(n % 1000 ? 1 : 0)}k`;
   return `₹${n}`;
 };
-const typeTone: Record<string, string> = { SEARCH: "var(--muted)", DISPLAY: "var(--amber)", PMAX: "var(--violet)", SMART: "var(--sky)" };
+const typeTone: Record<string, string> = { SEARCH: "var(--muted)", DISPLAY: "var(--amber)", PMAX: "var(--violet)", SMART: "var(--sky)", SHOPPING: "var(--emerald)", DEMAND_GEN: "var(--indigo)", YOUTUBE: "var(--rose)" };
 
 export default function GoogleAdsConsole({
-  rows, kpis, budgetClient, period, periodDate,
+  rows, kpis, counts, budgetClient, period, periodDate,
 }: {
   rows: Row[]; kpis: Kpis; counts?: Counts; budgetClient: BudgetClient;
   period: string; periodDate: string; userName?: string; userRole?: string;
@@ -138,11 +138,13 @@ export default function GoogleAdsConsole({
 
         <div className="space-y-4">
           {/* KPIs */}
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             <Kpi label={`Total spent ${suffix}`} value={inr(kpis.totalSpent)} sub={periodDate} icon={TrendingUp} tone="violet" />
             <Kpi label={`Total leads ${suffix}`} value={String(kpis.totalLeads)} sub="across active clients" icon={Users} tone="emerald" />
-            <Kpi label={`Cost / lead ${suffix}`} value={inr(kpis.costPerLead)} sub="spend / leads" icon={TrendingDown} tone="sky" />
             <Kpi label="Total conversions / sale" value={String(kpis.totalConv)} sub={`${kpis.convPct}% conv%`} icon={CircleCheck} tone="amber" chip={`${kpis.convPct}% Conv%`} />
+            <Kpi label="Total clients / campaigns" value={`${counts?.clients ?? 0} / ${counts?.campaigns ?? 0}`} sub={`${counts?.smart ?? 0} smart · ${counts?.pending ?? 0} pending`} icon={Building2} tone="sky" />
+            <Kpi label="Budget utilization" value={`${kpis.budgetUtil}%`} sub={`${k1(kpis.totalMonthSpend)} of ${k1(kpis.totalBudget)} this month`} icon={Gauge}
+              tone={kpis.budgetUtil >= 100 ? "rose" : kpis.budgetUtil >= 85 ? "amber" : "emerald"} />
           </div>
 
           {/* budget banner */}
@@ -271,7 +273,7 @@ function ActionBtn({ icon: Icon, label, href }: { icon: typeof Eye; label: strin
 }
 
 function Kpi({ label, value, sub, icon: Icon, tone, chip }: { label: string; value: string; sub: string; icon: typeof Users; tone: string; chip?: string }) {
-  const c: Record<string, string> = { violet: "var(--violet)", emerald: "var(--emerald)", sky: "var(--sky)", amber: "var(--amber)" };
+  const c: Record<string, string> = { violet: "var(--violet)", emerald: "var(--emerald)", sky: "var(--sky)", amber: "var(--amber)", rose: "var(--rose)", indigo: "var(--indigo)" };
   return (
     <div className="card card-pad">
       <div className="flex items-start justify-between">

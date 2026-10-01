@@ -906,6 +906,10 @@ export async function getGoogleAdsBoard(userId: string, role: string, periodIn =
   const pending = rows.filter((r) => !r.ready).length;
   // Budget banner: the client closest to (or over) their monthly budget.
   const budgetClient = rows.length ? [...rows].sort((a, b) => b.usedPct - a.usedPct)[0] : null;
+  // Overall budget utilisation this month across all of this AM's clients.
+  const totalBudget = rows.reduce((s, r) => s + r.budget, 0);
+  const totalMonthSpend = rows.reduce((s, r) => s + r.monthSpend, 0);
+  const budgetUtil = totalBudget ? Math.round((totalMonthSpend / totalBudget) * 100) : 0;
 
   return {
     period, periodDate, singleDay: single,
@@ -914,6 +918,7 @@ export async function getGoogleAdsBoard(userId: string, role: string, periodIn =
       totalSpent, totalLeads, totalConv,
       costPerLead: totalLeads ? Math.round(totalSpent / totalLeads) : 0,
       convPct: totalLeads ? +((totalConv / totalLeads) * 100).toFixed(1) : 0,
+      budgetUtil, totalBudget, totalMonthSpend,
     },
     counts: { clients: rows.length, campaigns: totalCampaigns, smart: smartCampaigns, pending },
     budgetClient: budgetClient && { name: budgetClient.name, budget: budgetClient.budget, spend: budgetClient.monthSpend, usedPct: budgetClient.usedPct },

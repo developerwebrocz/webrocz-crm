@@ -310,6 +310,9 @@ export const GADS_TYPES = {
   DISPLAY: { label: "Display", tone: "amber" },
   PMAX: { label: "PMax", tone: "violet" },
   SMART: { label: "Smart Campaign", tone: "sky" },
+  SHOPPING: { label: "Shopping", tone: "emerald" },
+  DEMAND_GEN: { label: "Demand Gen", tone: "indigo" },
+  YOUTUBE: { label: "YouTube", tone: "rose" },
 } as const;
 export type GAdsType = keyof typeof GADS_TYPES;
 export const GADS_TYPE_KEYS = Object.keys(GADS_TYPES) as GAdsType[];
