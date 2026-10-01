@@ -331,13 +331,15 @@ export const PLATFORMS = {
   FACEBOOK: { label: "Facebook", icon: "👍", tone: "sky" },
   LINKEDIN: { label: "LinkedIn", icon: "💼", tone: "indigo" },
   YOUTUBE: { label: "YouTube", icon: "▶️", tone: "rose" },
+  TWITTER: { label: "Twitter", icon: "🐦", tone: "muted" },
 } as const;
 export type Platform = keyof typeof PLATFORMS;
 export const PLATFORM_KEYS = Object.keys(PLATFORMS) as Platform[];
 
-export const POST_TYPES = ["Post", "Reel", "Story", "Carousel"] as const;
-export const POST_STATUS = { POSTED: "Posted", SCHEDULED: "Scheduled" } as const;
+export const POST_TYPES = ["Post", "Reel", "Story", "Carousel", "Video"] as const;
+export const POST_STATUS = { POSTED: "Posted", SCHEDULED: "Scheduled", DRAFT: "Draft" } as const;
 export type PostStatus = keyof typeof POST_STATUS;
+export const POST_STATUS_KEYS = Object.keys(POST_STATUS) as PostStatus[];
 
 // Development team — website / landing-page project tracker.
 export const DEV_PLATFORMS = {

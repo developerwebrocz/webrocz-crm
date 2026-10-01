@@ -1289,7 +1289,7 @@ export async function saveClientPosts(fd: FormData) {
         platform: p.platform,
         postType: p.postType || "Post",
         link: p.link || "",
-        status: p.status === "POSTED" ? "POSTED" : "SCHEDULED",
+        status: ["POSTED", "SCHEDULED", "DRAFT"].includes(p.status) ? p.status : "SCHEDULED",
         slot: i,
       })),
     });

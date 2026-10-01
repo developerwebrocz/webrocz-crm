@@ -5,11 +5,11 @@ import { PLATFORMS, PLATFORM_KEYS, type Platform } from "@/lib/domain";
 import ClientPostCard from "./ClientPostCard";
 import { IconChip } from "./ui";
 import { Plus } from "lucide-react";
-import { Images, CheckCircle2, Clock, Users } from "lucide-react";
+import { Images, CheckCircle2, Clock, Users, FileText, Send } from "lucide-react";
 
 type PF = { platform: string; posts: { postType: string; link: string; status: string }[] };
 type Row = { id: string; code: string; name: string; industry: string | null; retainer: number; pocName: string | null; am: string | null; platforms: PF[] };
-type Totals = { posts: number; posted: number; scheduled: number; activeClients: number; platforms: number };
+type Totals = { posts: number; posted: number; scheduled: number; draft: number; activeClients: number; platforms: number };
 
 export default function SmoBoard({
   rows, date, action, counts, totalPosts, totals, amName, dateLabel,
@@ -35,10 +35,11 @@ export default function SmoBoard({
   return (
     <>
       {/* day summary KPIs */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <Kpi icon={Images} tone="violet" label="Total posts" value={totals.posts} sub={`across ${totals.platforms} platform${totals.platforms !== 1 ? "s" : ""}`} />
         <Kpi icon={CheckCircle2} tone="emerald" label="Posted" value={totals.posted} sub={`${postedPct}% of today`} />
         <Kpi icon={Clock} tone="amber" label="Scheduled" value={totals.scheduled} sub="queued to publish" />
+        <Kpi icon={FileText} tone="muted" label="Draft" value={totals.draft} sub="not scheduled yet" />
         <Kpi icon={Users} tone="sky" label="Active clients" value={totals.activeClients} sub={`of ${rows.length} total`} />
       </div>
 
@@ -49,6 +50,7 @@ export default function SmoBoard({
           <div className="flex items-center gap-3 text-[12px]">
             <span className="badge badge-violet tnum">Showing {visible.length} of {rows.length} clients</span>
             <button type="button" onClick={() => setFilter(null)} className="font-semibold text-[var(--violet)] hover:underline">Select all</button>
+            {filter && <button type="button" onClick={() => setFilter(null)} className="font-semibold text-[var(--muted)] hover:underline">Clear</button>}
           </div>
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -85,7 +87,10 @@ export default function SmoBoard({
               <div className="text-[13px] font-bold">Daily submission · {amName}</div>
               <div className="text-[11.5px] text-white/70 tnum">{totalPosts} saved posts · {visible.length} clients visible · {dateLabel}</div>
             </div>
-            <button type="button" onClick={saveAllVisible} className="ml-auto rounded-[var(--r-md)] bg-white/15 px-4 py-2 text-[13px] font-semibold hover:bg-white/25">Save all visible</button>
+            <div className="ml-auto flex items-center gap-2">
+              <button type="button" onClick={saveAllVisible} className="rounded-[var(--r-md)] bg-white/15 px-4 py-2 text-[13px] font-semibold hover:bg-white/25">Save all visible</button>
+              <button type="button" onClick={saveAllVisible} className="inline-flex items-center gap-1.5 rounded-[var(--r-md)] bg-[var(--violet)] px-4 py-2 text-[13px] font-bold hover:opacity-90"><Send size={14} /> Submit all ({visible.length})</button>
+            </div>
           </div>
         </div>
       </div>
@@ -93,7 +98,7 @@ export default function SmoBoard({
   );
 }
 
-const TONEV: Record<string, string> = { violet: "var(--violet)", sky: "var(--sky)", emerald: "var(--emerald)", amber: "var(--amber)" };
+const TONEV: Record<string, string> = { violet: "var(--violet)", sky: "var(--sky)", emerald: "var(--emerald)", amber: "var(--amber)", muted: "var(--muted)" };
 function Kpi({ icon, tone, label, value, sub }: { icon: typeof Images; tone: string; label: string; value: React.ReactNode; sub: string }) {
   return (
     <div className="card card-pad">

@@ -1565,10 +1565,14 @@ export async function getSmoEntry(date: string, amId?: string) {
   const totalPosts = rows.reduce((s, r) => s + r.platforms.reduce((a, pf) => a + pf.posts.length, 0), 0);
 
   // day rollup for the summary cards
-  let posted = 0, scheduled = 0;
-  for (const r of rows) for (const pf of r.platforms) for (const p of pf.posts) (p.status === "POSTED" ? posted++ : scheduled++);
+  let posted = 0, scheduled = 0, draft = 0;
+  for (const r of rows) for (const pf of r.platforms) for (const p of pf.posts) {
+    if (p.status === "POSTED") posted++;
+    else if (p.status === "DRAFT") draft++;
+    else scheduled++;
+  }
   const activeClients = rows.filter((r) => r.platforms.length > 0).length;
-  const totals = { posts: totalPosts, posted, scheduled, activeClients, platforms: Object.keys(counts).length };
+  const totals = { posts: totalPosts, posted, scheduled, draft, activeClients, platforms: Object.keys(counts).length };
 
   return { ams, activeAm, date, rows, counts, totalPosts, totals };
 }

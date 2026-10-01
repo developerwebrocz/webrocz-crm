@@ -14,7 +14,7 @@ function todayKey() { return keyOf(now()); }
 function yesterdayKey() { const d = now(); d.setDate(d.getDate() - 1); return keyOf(d); }
 
 type AdsTotals = { spend: number; leads: number; conversions: number; saleValue: number; reach: number; cpl: number; roas: number; bestClient: { name: string; cpl: number } | null };
-type SmoTotals = { posts: number; posted: number; scheduled: number; activeClients: number; platforms: number };
+type SmoTotals = { posts: number; posted: number; scheduled: number; draft: number; activeClients: number; platforms: number };
 
 export default async function AdsWorkspace({
   mode, searchParams,
