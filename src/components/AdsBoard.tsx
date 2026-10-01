@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { CAMPAIGN_TYPES, CAMPAIGN_KEYS, inr, inrShort, type CampaignType } from "@/lib/domain";
 import ClientAdCard from "./ClientAdCard";
 import { IconChip } from "./ui";
-import { Plus } from "lucide-react";
+import { Plus, Send } from "lucide-react";
 import { Wallet, Target, TrendingDown, CheckCircle2, Award } from "lucide-react";
 
 type Entry = { type: string; results: number; spent: number; conversions: number; saleValue: number; ordersConverted: number };
@@ -89,7 +89,10 @@ export default function AdsBoard({
               <div className="text-[13px] font-bold">Daily submission · {amName}</div>
               <div className="text-[11.5px] text-white/70 tnum">{totalEntries} saved entries · {visible.length} clients visible · {dateLabel}</div>
             </div>
-            <button type="button" onClick={saveAllVisible} className="ml-auto rounded-[var(--r-md)] bg-white/15 px-4 py-2 text-[13px] font-semibold hover:bg-white/25">Save all visible</button>
+            <div className="ml-auto flex items-center gap-2">
+              <button type="button" onClick={saveAllVisible} className="rounded-[var(--r-md)] bg-white/15 px-4 py-2 text-[13px] font-semibold hover:bg-white/25">Save all visible</button>
+              <button type="button" onClick={saveAllVisible} className="inline-flex items-center gap-1.5 rounded-[var(--r-md)] bg-[var(--violet)] px-4 py-2 text-[13px] font-bold hover:opacity-90"><Send size={14} /> Submit all ({visible.length})</button>
+            </div>
           </div>
         </div>
       </div>

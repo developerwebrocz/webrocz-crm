@@ -32,6 +32,8 @@ export default function ClientAdCard({ row, date, action }: { row: Row; date: st
   const [vals, setVals] = useState<Record<string, Vals>>(initVals);
 
   const toggle = (t: CampaignType) => setActive((a) => (a.includes(t) ? a.filter((x) => x !== t) : [...a, t]));
+  const selectAll = () => setActive([...CAMPAIGN_KEYS]);
+  const clearAll = () => setActive([]);
   const set = (t: CampaignType, k: keyof Vals, val: number) =>
     setVals((s) => ({ ...s, [t]: { ...(s[t] ?? blank()), [k]: val } }));
   const val = (t: CampaignType) => vals[t] ?? blank();
@@ -69,7 +71,13 @@ export default function ClientAdCard({ row, date, action }: { row: Row; date: st
 
       {/* campaign toggles */}
       <div className="mt-4">
-        <div className="eyebrow mb-2">Campaigns running for this client</div>
+        <div className="flex items-center justify-between mb-2">
+          <div className="eyebrow">Select campaigns running for this client</div>
+          <div className="flex items-center gap-3 text-[12px]">
+            <button type="button" onClick={selectAll} className="font-semibold text-[var(--violet)] hover:underline">Select all</button>
+            {active.length > 0 && <button type="button" onClick={clearAll} className="font-semibold text-[var(--muted)] hover:underline">Clear</button>}
+          </div>
+        </div>
         <div className="flex flex-wrap gap-2">
           {CAMPAIGN_KEYS.map((t) => {
             const on = active.includes(t);

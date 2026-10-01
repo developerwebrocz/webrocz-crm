@@ -5,7 +5,7 @@ import { inr, GADS_TYPES } from "@/lib/domain";
 import {
   Users, CircleAlert, Building2, Gauge,
   ChevronDown, Search, SlidersHorizontal, Plus, Download, Eye, Pencil,
-  Send, MessageCircle, TrendingUp, CircleCheck,
+  Send, MessageCircle, TrendingUp, TrendingDown, CircleCheck,
 } from "lucide-react";
 
 type Campaign = { name: string; type: string; spent: number; leads: number; conv: number; status: string; cpl: number; convPct: number };
@@ -166,11 +166,12 @@ export default function GoogleAdsConsole({
 
         <div className="space-y-4">
           {/* KPIs */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Kpi label={`Total spent ${suffix}`} value={inr(kpis.totalSpent)} sub={periodDate} icon={TrendingUp} tone="violet" />
             <Kpi label={`Total leads ${suffix}`} value={String(kpis.totalLeads)} sub="across active clients" icon={Users} tone="emerald" />
+            <Kpi label={`Cost / lead ${suffix}`} value={inr(kpis.costPerLead)} sub="spend / leads" icon={TrendingDown} tone="sky" />
             <Kpi label="Total conversions / sale" value={String(kpis.totalConv)} sub={`${kpis.convPct}% conv%`} icon={CircleCheck} tone="amber" chip={`${kpis.convPct}% Conv%`} />
-            <Kpi label="Total clients / campaigns" value={`${counts?.clients ?? 0} / ${counts?.campaigns ?? 0}`} sub={`${counts?.smart ?? 0} smart · ${counts?.pending ?? 0} pending`} icon={Building2} tone="sky" />
+            <Kpi label="Total clients / campaigns" value={`${counts?.clients ?? 0} / ${counts?.campaigns ?? 0}`} sub={`${counts?.smart ?? 0} smart · ${counts?.pending ?? 0} pending`} icon={Building2} tone="indigo" />
             <Kpi label="Budget utilization" value={`${kpis.budgetUtil}%`} sub={`${k1(kpis.totalMonthSpend)} of ${k1(kpis.totalBudget)} this month`} icon={Gauge}
               tone={kpis.budgetUtil >= 100 ? "rose" : kpis.budgetUtil > 90 ? "amber" : "emerald"} />
           </div>
