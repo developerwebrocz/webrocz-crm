@@ -40,13 +40,17 @@ const k1 = (n: number) => {
 const typeTone: Record<string, string> = { SEARCH: "var(--muted)", DISPLAY: "var(--amber)", PMAX: "var(--violet)", SMART: "var(--sky)", SHOPPING: "var(--emerald)", DEMAND_GEN: "var(--indigo)", YOUTUBE: "var(--rose)" };
 
 export default function GoogleAdsConsole({
-  rows, kpis, counts, budgetClient, period, periodDate, isHead = false, ams = [], viewAs = null,
+  rows, kpis, counts, budgetClient, period, periodDate, isHead = false, ams = [], viewAs = null, selectedDate = null, maxDate,
 }: {
   rows: Row[]; kpis: Kpis; counts?: Counts; budgetClient: BudgetClient;
   period: string; periodDate: string; userName?: string; userRole?: string;
   isHead?: boolean; ams?: { id: string; name: string }[]; viewAs?: string | null;
+  selectedDate?: string | null; maxDate?: string;
 }) {
-  const suffix = SUFFIX[period] ?? "Yesterday";
+  const suffix = period === "DATE" ? periodDate : (SUFFIX[period] ?? "Yesterday");
+  const amQ = viewAs ? `&am=${viewAs}` : "";
+  // current time-scope (specific date or period) — so "View as" keeps the chosen date.
+  const scopeQ = period === "DATE" && selectedDate ? `date=${selectedDate}` : `period=${period}`;
   const [adminView, setAdminView] = useState<"SUMMARY" | "DETAIL">("SUMMARY");
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("ALL");
@@ -82,13 +86,20 @@ export default function GoogleAdsConsole({
           <h1 className="mt-1 text-[24px] font-extrabold tracking-tight">My Clients — {suffix} Ready</h1>
           <p className="mt-1 text-sm text-[var(--muted)]">Daily campaign performance across your Google Ads clients · {periodDate}</p>
         </div>
-        <div className="flex items-center gap-1 rounded-xl border border-[var(--line-2)] bg-[var(--surface-2)] p-1">
-          {PERIODS.map((p) => (
-            <a key={p.key} href={`/google-ads?period=${p.key}${viewAs ? `&am=${viewAs}` : ""}`}
-              className={`rounded-lg px-3 py-1.5 text-[12.5px] font-semibold transition ${period === p.key ? "bg-[var(--violet)] text-white shadow-sm" : "text-[var(--ink-2)] hover:bg-white"}`}>
-              {p.label}
-            </a>
-          ))}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1 rounded-xl border border-[var(--line-2)] bg-[var(--surface-2)] p-1">
+            {PERIODS.map((p) => (
+              <a key={p.key} href={`/google-ads?period=${p.key}${amQ}`}
+                className={`rounded-lg px-3 py-1.5 text-[12.5px] font-semibold transition ${period === p.key ? "bg-[var(--violet)] text-white shadow-sm" : "text-[var(--ink-2)] hover:bg-white"}`}>
+                {p.label}
+              </a>
+            ))}
+          </div>
+          {/* pick a specific past date */}
+          <input type="date" value={selectedDate ?? ""} max={maxDate}
+            onChange={(e) => { const v = e.target.value; if (v) window.location.assign(`/google-ads?date=${v}${amQ}`); }}
+            title="Pick a specific date"
+            className={`rounded-xl border bg-[var(--surface)] px-3 py-1.5 text-[12.5px] font-semibold outline-none focus:border-[var(--violet)] ${period === "DATE" ? "border-[var(--violet)] text-[var(--violet)]" : "border-[var(--line-2)] text-[var(--ink-2)]"}`} />
         </div>
       </div>
 
@@ -97,10 +108,10 @@ export default function GoogleAdsConsole({
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-[11px] font-bold uppercase tracking-wide text-[var(--muted)]">View as</span>
           <div className="flex flex-wrap items-center gap-1 rounded-xl border border-[var(--line-2)] bg-[var(--surface-2)] p-1">
-            <a href={`/google-ads?period=${period}`}
+            <a href={`/google-ads?${scopeQ}`}
               className={`rounded-lg px-3 py-1.5 text-[12.5px] font-semibold transition ${!viewAs ? "bg-[var(--ink)] text-white shadow-sm" : "text-[var(--ink-2)] hover:bg-white"}`}>All clients</a>
             {ams.map((a) => (
-              <a key={a.id} href={`/google-ads?period=${period}&am=${a.id}`}
+              <a key={a.id} href={`/google-ads?${scopeQ}&am=${a.id}`}
                 className={`rounded-lg px-3 py-1.5 text-[12.5px] font-semibold transition ${viewAs === a.id ? "bg-[var(--ink)] text-white shadow-sm" : "text-[var(--ink-2)] hover:bg-white"}`}>{a.name}</a>
             ))}
           </div>

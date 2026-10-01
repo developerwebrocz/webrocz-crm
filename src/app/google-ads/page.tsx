@@ -11,7 +11,8 @@ export default async function GoogleAdsPage({ searchParams }: PageProps<"/google
   const sp = await searchParams;
   const period = typeof sp.period === "string" ? sp.period : "YESTERDAY";
   const am = typeof sp.am === "string" ? sp.am : null;
-  const d = await getGoogleAdsBoard(user.id, user.role, period, am);
+  const date = typeof sp.date === "string" ? sp.date : null;
+  const d = await getGoogleAdsBoard(user.id, user.role, period, am, date);
 
   return (
     <GoogleAdsConsole
@@ -19,6 +20,7 @@ export default async function GoogleAdsPage({ searchParams }: PageProps<"/google
       period={d.period} periodDate={d.periodDate}
       userName={user.name} userRole={user.role}
       isHead={d.isHead} ams={d.ams} viewAs={d.viewAs}
+      selectedDate={d.selectedDate} maxDate={d.maxDate}
     />
   );
 }
