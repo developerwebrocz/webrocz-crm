@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { GADS_TYPES, inrShort } from "@/lib/domain";
+import { GADS_TYPES, inr, inrShort } from "@/lib/domain";
 import { ArrowLeft, ArrowRight, Check, CalendarClock, CircleCheck } from "lucide-react";
 
 type Client = { id: string; name: string; googleBudget: number };
@@ -15,6 +15,17 @@ export default function AdsDayEntry({
 }) {
   const [step, setStep] = useState(1);
   const selectedClient = clients.find((c) => c.id === selected);
+
+  // Live totals / auto-calc for the campaign checklist (display only — inputs stay uncontrolled).
+  const [calc, setCalc] = useState(() => rows.map((r) => ({ name: r.name, spent: r.spent || 0, leads: r.leads || 0, conv: r.conv || 0 })));
+  const upd = (i: number, field: "name" | "spent" | "leads" | "conv", v: string) =>
+    setCalc((c) => c.map((x, j) => (j === i ? { ...x, [field]: field === "name" ? v : Number(v) || 0 } : x)));
+  const cpl = (spent: number, leads: number) => (leads > 0 ? Math.round(spent / leads) : 0);
+  const convPct = (conv: number, leads: number) => (leads > 0 ? +((conv / leads) * 100).toFixed(1) : 0);
+  const active = calc.filter((r) => r.name.trim());
+  const totSpent = active.reduce((s, r) => s + r.spent, 0);
+  const totLeads = active.reduce((s, r) => s + r.leads, 0);
+  const totConv = active.reduce((s, r) => s + r.conv, 0);
 
   return (
     <>
@@ -70,20 +81,25 @@ export default function AdsDayEntry({
           </div>
 
           <div className="overflow-x-auto scroll-thin">
-            <table className="w-full min-w-[760px] text-left">
-              <thead><tr className="border-b border-[var(--line)]">{["Campaign name", "Type", "Spent (₹)", "Leads", "Conv", "Status"].map((h) => <th key={h} className="th px-4 py-2.5">{h}</th>)}</tr></thead>
+            <table className="w-full min-w-[860px] text-left">
+              <thead><tr className="border-b border-[var(--line)]">{["Campaign name", "Type", "Spent (₹)", "Leads", "Conv", "CPL auto", "Conv% auto", "Status"].map((h) => <th key={h} className="th px-4 py-2.5">{h}</th>)}</tr></thead>
               <tbody>
-                {rows.map((r, i) => (
+                {rows.map((r, i) => {
+                  const c = calc[i] ?? { spent: 0, leads: 0, conv: 0 };
+                  const hasName = (c.name ?? r.name).trim().length > 0;
+                  return (
                   <tr key={i} className="border-b border-[var(--line)] last:border-0">
-                    <td className="px-4 py-2"><input name={`name_${i}`} defaultValue={r.name} placeholder="e.g. Search - Brand" className="w-full min-w-[180px] rounded-lg border border-[var(--line-2)] bg-[var(--surface)] px-3 py-2 text-[13px] outline-none focus:border-[var(--violet)]" /></td>
+                    <td className="px-4 py-2"><input name={`name_${i}`} defaultValue={r.name} onChange={(e) => upd(i, "name", e.target.value)} placeholder="e.g. Search - Brand" className="w-full min-w-[180px] rounded-lg border border-[var(--line-2)] bg-[var(--surface)] px-3 py-2 text-[13px] outline-none focus:border-[var(--violet)]" /></td>
                     <td className="px-4 py-2">
                       <select name={`type_${i}`} defaultValue={r.type} className="rounded-lg border border-[var(--line-2)] bg-[var(--surface)] px-2 py-2 text-[13px] outline-none focus:border-[var(--violet)]">
                         {Object.entries(GADS_TYPES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
                       </select>
                     </td>
-                    <td className="px-4 py-2"><input name={`spent_${i}`} type="number" min={0} defaultValue={r.spent || ""} className="w-24 rounded-lg border border-[var(--line-2)] bg-[var(--surface)] px-3 py-2 text-[13px] tnum outline-none focus:border-[var(--violet)]" /></td>
-                    <td className="px-4 py-2"><input name={`leads_${i}`} type="number" min={0} defaultValue={r.leads || ""} className="w-20 rounded-lg border border-[var(--line-2)] bg-[var(--surface)] px-3 py-2 text-[13px] tnum outline-none focus:border-[var(--violet)]" /></td>
-                    <td className="px-4 py-2"><input name={`conv_${i}`} type="number" min={0} defaultValue={r.conv || ""} className="w-20 rounded-lg border border-[var(--line-2)] bg-[var(--surface)] px-3 py-2 text-[13px] tnum outline-none focus:border-[var(--violet)]" /></td>
+                    <td className="px-4 py-2"><input name={`spent_${i}`} type="number" min={0} defaultValue={r.spent || ""} onChange={(e) => upd(i, "spent", e.target.value)} className="w-24 rounded-lg border border-[var(--line-2)] bg-[var(--surface)] px-3 py-2 text-[13px] tnum outline-none focus:border-[var(--violet)]" /></td>
+                    <td className="px-4 py-2"><input name={`leads_${i}`} type="number" min={0} defaultValue={r.leads || ""} onChange={(e) => upd(i, "leads", e.target.value)} className="w-20 rounded-lg border border-[var(--line-2)] bg-[var(--surface)] px-3 py-2 text-[13px] tnum outline-none focus:border-[var(--violet)]" /></td>
+                    <td className="px-4 py-2"><input name={`conv_${i}`} type="number" min={0} defaultValue={r.conv || ""} onChange={(e) => upd(i, "conv", e.target.value)} className="w-20 rounded-lg border border-[var(--line-2)] bg-[var(--surface)] px-3 py-2 text-[13px] tnum outline-none focus:border-[var(--violet)]" /></td>
+                    <td className="px-4 py-2 text-[13px] tnum text-[var(--muted)]">{hasName && c.leads > 0 ? inr(cpl(c.spent, c.leads)) : "—"}</td>
+                    <td className="px-4 py-2 text-[13px] tnum text-[var(--muted)]">{hasName && c.leads > 0 ? `${convPct(c.conv, c.leads)}%` : "—"}</td>
                     <td className="px-4 py-2">
                       <select name={`status_${i}`} defaultValue={r.status} className="rounded-lg border border-[var(--line-2)] bg-[var(--surface)] px-2 py-2 text-[13px] outline-none focus:border-[var(--violet)]">
                         <option value="ACTIVE">Active</option>
@@ -91,8 +107,21 @@ export default function AdsDayEntry({
                       </select>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
+              <tfoot>
+                <tr className="border-t-2 border-[var(--line)] bg-[var(--surface-2)] font-bold">
+                  <td className="px-4 py-3 text-[13px]">Total · {active.length} campaign{active.length === 1 ? "" : "s"}</td>
+                  <td />
+                  <td className="px-4 py-3 text-[13px] tnum">{inr(totSpent)}</td>
+                  <td className="px-4 py-3 text-[13px] tnum">{totLeads}</td>
+                  <td className="px-4 py-3 text-[13px] tnum">{totConv}</td>
+                  <td className="px-4 py-3 text-[13px] tnum">{totLeads > 0 ? inr(cpl(totSpent, totLeads)) : "—"}</td>
+                  <td className="px-4 py-3 text-[13px] tnum">{totLeads > 0 ? `${convPct(totConv, totLeads)}%` : "—"}</td>
+                  <td />
+                </tr>
+              </tfoot>
             </table>
           </div>
 

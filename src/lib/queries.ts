@@ -845,13 +845,25 @@ function gadsDateWhere(period: string): { where: GadsDateWhere; label: string; s
   return { where: { in: [GADS_YESTERDAY] }, label: "30 Aug 2026", single: GADS_YESTERDAY }; // YESTERDAY
 }
 
-export async function getGoogleAdsBoard(userId: string, role: string, periodIn = "YESTERDAY") {
+export async function getGoogleAdsBoard(userId: string, role: string, periodIn = "YESTERDAY", viewAsIn: string | null = null) {
   const period = (GADS_PERIOD_KEYS as readonly string[]).includes(periodIn) ? periodIn : "YESTERDAY";
   const isHead = role === "AM_HEAD" || role === "SUPER_ADMIN" || role === "SUB_ADMIN";
   const { where: dateWhere, label: periodDate, single } = gadsDateWhere(period);
 
+  // "View As" — heads/admins can scope the board to one Account Manager's clients.
+  let ams: { id: string; name: string }[] = [];
+  if (isHead) {
+    const amClients = await prisma.client.findMany({
+      where: { googleBudget: { gt: 0 }, accountManagerId: { not: null } },
+      select: { accountManagerId: true }, distinct: ["accountManagerId"],
+    });
+    const amIds = amClients.map((c) => c.accountManagerId!).filter(Boolean);
+    ams = amIds.length ? await prisma.user.findMany({ where: { id: { in: amIds } }, select: { id: true, name: true }, orderBy: { name: "asc" } }) : [];
+  }
+  const viewAs = isHead && viewAsIn && ams.some((a) => a.id === viewAsIn) ? viewAsIn : null;
+
   const clients = await prisma.client.findMany({
-    where: { googleBudget: { gt: 0 }, ...(isHead ? {} : { accountManagerId: userId }) },
+    where: { googleBudget: { gt: 0 }, ...(isHead ? (viewAs ? { accountManagerId: viewAs } : {}) : { accountManagerId: userId }) },
     include: { googleCampaigns: { where: { date: dateWhere }, orderBy: { name: "asc" } } },
     orderBy: { code: "asc" },
   });
@@ -922,6 +934,7 @@ export async function getGoogleAdsBoard(userId: string, role: string, periodIn =
     },
     counts: { clients: rows.length, campaigns: totalCampaigns, smart: smartCampaigns, pending },
     budgetClient: budgetClient && { name: budgetClient.name, budget: budgetClient.budget, spend: budgetClient.monthSpend, usedPct: budgetClient.usedPct },
+    isHead, ams, viewAs,
   };
 }
 

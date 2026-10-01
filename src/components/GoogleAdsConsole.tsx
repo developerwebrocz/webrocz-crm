@@ -40,12 +40,14 @@ const k1 = (n: number) => {
 const typeTone: Record<string, string> = { SEARCH: "var(--muted)", DISPLAY: "var(--amber)", PMAX: "var(--violet)", SMART: "var(--sky)", SHOPPING: "var(--emerald)", DEMAND_GEN: "var(--indigo)", YOUTUBE: "var(--rose)" };
 
 export default function GoogleAdsConsole({
-  rows, kpis, counts, budgetClient, period, periodDate,
+  rows, kpis, counts, budgetClient, period, periodDate, isHead = false, ams = [], viewAs = null,
 }: {
   rows: Row[]; kpis: Kpis; counts?: Counts; budgetClient: BudgetClient;
   period: string; periodDate: string; userName?: string; userRole?: string;
+  isHead?: boolean; ams?: { id: string; name: string }[]; viewAs?: string | null;
 }) {
   const suffix = SUFFIX[period] ?? "Yesterday";
+  const [adminView, setAdminView] = useState<"SUMMARY" | "DETAIL">("SUMMARY");
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("ALL");
   const [type, setType] = useState("ALL");
@@ -82,13 +84,28 @@ export default function GoogleAdsConsole({
         </div>
         <div className="flex items-center gap-1 rounded-xl border border-[var(--line-2)] bg-[var(--surface-2)] p-1">
           {PERIODS.map((p) => (
-            <a key={p.key} href={`/google-ads?period=${p.key}`}
+            <a key={p.key} href={`/google-ads?period=${p.key}${viewAs ? `&am=${viewAs}` : ""}`}
               className={`rounded-lg px-3 py-1.5 text-[12.5px] font-semibold transition ${period === p.key ? "bg-[var(--violet)] text-white shadow-sm" : "text-[var(--ink-2)] hover:bg-white"}`}>
               {p.label}
             </a>
           ))}
         </div>
       </div>
+
+      {/* View As — heads / admins scope the board to one Account Manager */}
+      {isHead && ams.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-[11px] font-bold uppercase tracking-wide text-[var(--muted)]">View as</span>
+          <div className="flex flex-wrap items-center gap-1 rounded-xl border border-[var(--line-2)] bg-[var(--surface-2)] p-1">
+            <a href={`/google-ads?period=${period}`}
+              className={`rounded-lg px-3 py-1.5 text-[12.5px] font-semibold transition ${!viewAs ? "bg-[var(--ink)] text-white shadow-sm" : "text-[var(--ink-2)] hover:bg-white"}`}>All clients</a>
+            {ams.map((a) => (
+              <a key={a.id} href={`/google-ads?period=${period}&am=${a.id}`}
+                className={`rounded-lg px-3 py-1.5 text-[12.5px] font-semibold transition ${viewAs === a.id ? "bg-[var(--ink)] text-white shadow-sm" : "text-[var(--ink-2)] hover:bg-white"}`}>{a.name}</a>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* filter row */}
       <div className="flex flex-wrap items-center gap-2">
@@ -144,7 +161,7 @@ export default function GoogleAdsConsole({
             <Kpi label="Total conversions / sale" value={String(kpis.totalConv)} sub={`${kpis.convPct}% conv%`} icon={CircleCheck} tone="amber" chip={`${kpis.convPct}% Conv%`} />
             <Kpi label="Total clients / campaigns" value={`${counts?.clients ?? 0} / ${counts?.campaigns ?? 0}`} sub={`${counts?.smart ?? 0} smart · ${counts?.pending ?? 0} pending`} icon={Building2} tone="sky" />
             <Kpi label="Budget utilization" value={`${kpis.budgetUtil}%`} sub={`${k1(kpis.totalMonthSpend)} of ${k1(kpis.totalBudget)} this month`} icon={Gauge}
-              tone={kpis.budgetUtil >= 100 ? "rose" : kpis.budgetUtil >= 85 ? "amber" : "emerald"} />
+              tone={kpis.budgetUtil >= 100 ? "rose" : kpis.budgetUtil > 90 ? "amber" : "emerald"} />
           </div>
 
           {/* budget banner */}
@@ -161,15 +178,59 @@ export default function GoogleAdsConsole({
                 </div>
                 <div className="text-right">
                   <div className="text-[12px] font-bold tnum">{budgetClient.usedPct}% used</div>
-                  <div className={`text-[12px] font-bold ${budgetClient.usedPct >= 85 ? "text-[var(--amber)]" : "text-[var(--emerald)]"}`}>{budgetClient.usedPct >= 100 ? "Over budget" : budgetClient.usedPct >= 85 ? "Needs attention" : "On track"}</div>
+                  <div className={`text-[12px] font-bold ${budgetClient.usedPct > 90 ? "text-[var(--amber)]" : "text-[var(--emerald)]"}`}>{budgetClient.usedPct >= 100 ? "Over budget" : budgetClient.usedPct > 90 ? "Needs attention" : "On track"}</div>
                 </div>
               </div>
               <div className="mt-3 h-2 w-full rounded-full bg-[var(--surface-3)]">
-                <div className="h-full rounded-full" style={{ width: `${Math.min(100, budgetClient.usedPct)}%`, background: budgetClient.usedPct >= 100 ? "var(--rose)" : budgetClient.usedPct >= 85 ? "var(--amber)" : "var(--violet)" }} />
+                <div className="h-full rounded-full" style={{ width: `${Math.min(100, budgetClient.usedPct)}%`, background: budgetClient.usedPct >= 100 ? "var(--rose)" : budgetClient.usedPct > 90 ? "var(--amber)" : "var(--violet)" }} />
               </div>
             </div>
           )}
 
+          {/* heads/admins: switch between the per-client summary and a flat all-campaigns detail */}
+          {isHead && (
+            <div className="flex items-center gap-1 rounded-xl border border-[var(--line-2)] bg-[var(--surface-2)] p-1 w-fit">
+              <button onClick={() => setAdminView("SUMMARY")} className={`rounded-lg px-3 py-1.5 text-[12.5px] font-semibold transition ${adminView === "SUMMARY" ? "bg-[var(--violet)] text-white shadow-sm" : "text-[var(--ink-2)] hover:bg-white"}`}>All Clients {suffix} Summary</button>
+              <button onClick={() => setAdminView("DETAIL")} className={`rounded-lg px-3 py-1.5 text-[12.5px] font-semibold transition ${adminView === "DETAIL" ? "bg-[var(--violet)] text-white shadow-sm" : "text-[var(--ink-2)] hover:bg-white"}`}>All Campaigns {suffix} Detail</button>
+            </div>
+          )}
+
+          {/* ---- ALL CAMPAIGNS DETAIL (heads only) ---- */}
+          {isHead && adminView === "DETAIL" ? (
+            <div className="card !p-0 overflow-hidden">
+              <div className="overflow-x-auto scroll-thin">
+                <table className="w-full min-w-[920px] text-left">
+                  <thead><tr className="border-b border-[var(--line)]">{["Client", "Campaign", "Type", "Spent", "Leads", "CPL auto", "Conv", "Conv% auto", "Status"].map((h, i) => <th key={i} className={`th px-5 py-2.5 ${i >= 3 && i <= 7 ? "text-right" : ""}`}>{h}</th>)}</tr></thead>
+                  <tbody>
+                    {visible.flatMap((r) => filterCampaigns(r.campaigns).map((c, i) => (
+                      <tr key={`${r.id}-${i}`} className="border-b border-[var(--line)] hover:bg-[var(--surface-2)]">
+                        <td className="px-5 py-3 text-[13px] font-semibold">{r.name}</td>
+                        <td className="px-5 py-3 text-[13px]">{c.name}</td>
+                        <td className="px-5 py-3"><span className="rounded-md px-2 py-1 text-[11.5px] font-semibold" style={{ background: `color-mix(in srgb, ${typeTone[c.type]} 12%, white)`, color: typeTone[c.type] }}>{GADS_TYPES[c.type as keyof typeof GADS_TYPES]?.label ?? c.type}</span></td>
+                        <td className="px-5 py-3 text-right text-[13px] tnum">{inr(c.spent)}</td>
+                        <td className="px-5 py-3 text-right text-[13px] font-semibold tnum">{c.leads}</td>
+                        <td className="px-5 py-3 text-right text-[13px] tnum text-[var(--muted)]">{inr(c.cpl)}</td>
+                        <td className="px-5 py-3 text-right text-[13px] tnum">{c.conv}</td>
+                        <td className="px-5 py-3 text-right text-[13px] tnum text-[var(--muted)]">{c.convPct}%</td>
+                        <td className="px-5 py-3"><span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${c.status === "ACTIVE" ? "bg-[color-mix(in_srgb,var(--emerald)_12%,white)] text-[var(--emerald)]" : "bg-[var(--surface-2)] text-[var(--muted)]"}`}>{c.status === "ACTIVE" ? "Active" : "Paused"}</span></td>
+                      </tr>
+                    )))}
+                    {visible.every((r) => filterCampaigns(r.campaigns).length === 0) && <tr><td colSpan={9} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No campaigns match current filters.</td></tr>}
+                    <tr className="bg-[var(--surface-2)] font-bold">
+                      <td className="px-5 py-3 text-[13px]" colSpan={3}>Total {suffix}</td>
+                      <td className="px-5 py-3 text-right text-[13px] tnum">{inr(kpis.totalSpent)}</td>
+                      <td className="px-5 py-3 text-right text-[13px] tnum">{kpis.totalLeads}</td>
+                      <td className="px-5 py-3 text-right text-[13px] tnum">{inr(kpis.costPerLead)}</td>
+                      <td className="px-5 py-3 text-right text-[13px] tnum">{kpis.totalConv}</td>
+                      <td className="px-5 py-3 text-right text-[13px] tnum">{kpis.convPct}%</td>
+                      <td />
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : (
+          <>
           {/* client cards */}
           {visible.length === 0 && <div className="card card-pad text-center text-sm text-[var(--muted)]">No clients match your filters.</div>}
           {visible.map((r) => {
@@ -263,6 +324,8 @@ export default function GoogleAdsConsole({
               </div>
             );
           })}
+          </>
+          )}
         </div>
     </div>
   );
