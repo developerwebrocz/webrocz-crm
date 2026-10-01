@@ -337,7 +337,7 @@ export type Platform = keyof typeof PLATFORMS;
 export const PLATFORM_KEYS = Object.keys(PLATFORMS) as Platform[];
 
 export const POST_TYPES = ["Post", "Reel", "Story", "Carousel", "Video"] as const;
-export const POST_STATUS = { POSTED: "Posted", SCHEDULED: "Scheduled", DRAFT: "Draft" } as const;
+export const POST_STATUS = { POSTED: "Posted", SCHEDULED: "Scheduled", DRAFT: "Draft", PENDING: "Pending" } as const;
 export type PostStatus = keyof typeof POST_STATUS;
 export const POST_STATUS_KEYS = Object.keys(POST_STATUS) as PostStatus[];
 

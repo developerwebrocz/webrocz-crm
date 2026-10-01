@@ -10,7 +10,7 @@ import {
 
 type Campaign = { name: string; type: string; spent: number; leads: number; conv: number; status: string; cpl: number; convPct: number };
 type Row = {
-  id: string; name: string; budget: number; onHold: boolean;
+  id: string; name: string; budget: number; am: string | null; onHold: boolean;
   spent: number; leads: number; conv: number; cpl: number; convPct: number;
   campaigns: Campaign[]; ready: boolean; updatedBy: string; updatedAt: string | null;
   monthSpend: number; usedPct: number;
@@ -237,6 +237,35 @@ export default function GoogleAdsConsole({
                       <td className="px-5 py-3 text-right text-[13px] tnum">{kpis.convPct}%</td>
                       <td />
                     </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : isHead ? (
+            /* ---- ALL CLIENTS SUMMARY (heads only) — one row per client ---- */
+            <div className="card !p-0 overflow-hidden">
+              <div className="overflow-x-auto scroll-thin">
+                <table className="w-full min-w-[920px] text-left">
+                  <thead><tr className="border-b border-[var(--line)]">{["Client", "AM", "Budget/mo", `Spend ${suffix}`, "Remaining", "Leads", "CPL", "% Used", "Updated", ""].map((h, i) => <th key={i} className={`th px-5 py-2.5 ${i >= 2 && i <= 7 ? "text-right" : ""}`}>{h}</th>)}</tr></thead>
+                  <tbody>
+                    {visible.map((r) => (
+                      <tr key={r.id} className="border-b border-[var(--line)] hover:bg-[var(--surface-2)]">
+                        <td className="px-5 py-3"><div className="text-[13.5px] font-semibold">{r.name}</div><div className="text-[11px] text-[var(--faint)]">{r.onHold ? "On Hold" : "Active"}</div></td>
+                        <td className="px-5 py-3 text-[12.5px] text-[var(--ink-2)]">{r.am ?? "—"}</td>
+                        <td className="px-5 py-3 text-right text-[13px] tnum">{k1(r.budget)}</td>
+                        <td className="px-5 py-3 text-right text-[13px] tnum">{r.ready ? inr(r.spent) : "—"}</td>
+                        <td className="px-5 py-3 text-right text-[13px] tnum">{k1(Math.max(0, r.budget - r.monthSpend))}</td>
+                        <td className="px-5 py-3 text-right text-[13px] font-semibold tnum">{r.ready ? r.leads : "—"}</td>
+                        <td className="px-5 py-3 text-right text-[13px] tnum text-[var(--muted)]">{r.ready && r.cpl ? inr(r.cpl) : "—"}</td>
+                        <td className="px-5 py-3 text-right text-[13px] tnum"><span className={r.usedPct >= 100 ? "text-[var(--rose)]" : r.usedPct > 90 ? "text-[var(--amber)]" : ""}>{r.usedPct}%</span></td>
+                        <td className="px-5 py-3">{r.ready
+                          ? <span className="inline-flex items-center gap-1 rounded-full bg-[color-mix(in_srgb,var(--emerald)_12%,white)] px-2 py-0.5 text-[11px] font-semibold text-[var(--emerald)]"><CircleCheck size={12} /> Ready</span>
+                          : <span className="inline-flex items-center gap-1 rounded-full bg-[color-mix(in_srgb,var(--rose)_12%,white)] px-2 py-0.5 text-[11px] font-semibold text-[var(--rose)]"><CircleAlert size={12} /> Pending</span>}
+                        </td>
+                        <td className="px-5 py-3 text-right"><a href={`/google-ads/entry?client=${r.id}&period=${period}`} className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--violet)] hover:underline"><Eye size={13} /> View</a></td>
+                      </tr>
+                    ))}
+                    {visible.length === 0 && <tr><td colSpan={10} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No clients match your filters.</td></tr>}
                   </tbody>
                 </table>
               </div>

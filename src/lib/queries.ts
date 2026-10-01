@@ -874,7 +874,7 @@ export async function getGoogleAdsBoard(userId: string, role: string, periodIn =
 
   const clients = await prisma.client.findMany({
     where: { googleBudget: { gt: 0 }, ...(isHead ? (viewAs ? { accountManagerId: viewAs } : {}) : { accountManagerId: userId }) },
-    include: { googleCampaigns: { where: { date: dateWhere }, orderBy: { name: "asc" } } },
+    include: { googleCampaigns: { where: { date: dateWhere }, orderBy: { name: "asc" } }, accountManager: { select: { name: true } } },
     orderBy: { code: "asc" },
   });
 
@@ -910,6 +910,7 @@ export async function getGoogleAdsBoard(userId: string, role: string, periodIn =
     const usedPct = c.googleBudget ? Math.round((ms / c.googleBudget) * 100) : 0;
     return {
       id: c.id, name: c.name, budget: c.googleBudget,
+      am: c.accountManager?.name ?? null,
       onHold: c.status === "ON_HOLD",
       spent, leads, conv,
       cpl: leads ? Math.round(spent / leads) : 0,

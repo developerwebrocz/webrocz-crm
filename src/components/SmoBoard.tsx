@@ -89,7 +89,7 @@ export default function SmoBoard({
             </div>
             <div className="ml-auto flex items-center gap-2">
               <button type="button" onClick={saveAllVisible} className="rounded-[var(--r-md)] bg-white/15 px-4 py-2 text-[13px] font-semibold hover:bg-white/25">Save all visible</button>
-              <button type="button" onClick={saveAllVisible} className="inline-flex items-center gap-1.5 rounded-[var(--r-md)] bg-[var(--violet)] px-4 py-2 text-[13px] font-bold hover:opacity-90"><Send size={14} /> Submit all ({visible.length})</button>
+              <button type="button" onClick={saveAllVisible} className="inline-flex items-center gap-1.5 rounded-[var(--r-md)] bg-[var(--violet)] px-4 py-2 text-[13px] font-bold hover:opacity-90"><Send size={14} /> Final submit ({visible.length})</button>
             </div>
           </div>
         </div>
