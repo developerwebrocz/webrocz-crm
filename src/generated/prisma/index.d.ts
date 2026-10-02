@@ -36788,6 +36788,7 @@ export namespace Prisma {
     date: string | null
     startTime: string | null
     endTime: string | null
+    locationType: string | null
     location: string | null
     assignedToId: string | null
     status: string | null
@@ -36809,6 +36810,7 @@ export namespace Prisma {
     date: string | null
     startTime: string | null
     endTime: string | null
+    locationType: string | null
     location: string | null
     assignedToId: string | null
     status: string | null
@@ -36830,6 +36832,7 @@ export namespace Prisma {
     date: number
     startTime: number
     endTime: number
+    locationType: number
     location: number
     assignedToId: number
     status: number
@@ -36861,6 +36864,7 @@ export namespace Prisma {
     date?: true
     startTime?: true
     endTime?: true
+    locationType?: true
     location?: true
     assignedToId?: true
     status?: true
@@ -36882,6 +36886,7 @@ export namespace Prisma {
     date?: true
     startTime?: true
     endTime?: true
+    locationType?: true
     location?: true
     assignedToId?: true
     status?: true
@@ -36903,6 +36908,7 @@ export namespace Prisma {
     date?: true
     startTime?: true
     endTime?: true
+    locationType?: true
     location?: true
     assignedToId?: true
     status?: true
@@ -37011,6 +37017,7 @@ export namespace Prisma {
     date: string
     startTime: string
     endTime: string
+    locationType: string
     location: string
     assignedToId: string | null
     status: string
@@ -37051,6 +37058,7 @@ export namespace Prisma {
     date?: boolean
     startTime?: boolean
     endTime?: boolean
+    locationType?: boolean
     location?: boolean
     assignedToId?: boolean
     status?: boolean
@@ -37074,6 +37082,7 @@ export namespace Prisma {
     date?: boolean
     startTime?: boolean
     endTime?: boolean
+    locationType?: boolean
     location?: boolean
     assignedToId?: boolean
     status?: boolean
@@ -37097,6 +37106,7 @@ export namespace Prisma {
     date?: boolean
     startTime?: boolean
     endTime?: boolean
+    locationType?: boolean
     location?: boolean
     assignedToId?: boolean
     status?: boolean
@@ -37120,6 +37130,7 @@ export namespace Prisma {
     date?: boolean
     startTime?: boolean
     endTime?: boolean
+    locationType?: boolean
     location?: boolean
     assignedToId?: boolean
     status?: boolean
@@ -37130,7 +37141,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ShootOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "category" | "title" | "clientId" | "renterName" | "phone" | "date" | "startTime" | "endTime" | "location" | "assignedToId" | "status" | "rentAmount" | "paid" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["shoot"]>
+  export type ShootOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "category" | "title" | "clientId" | "renterName" | "phone" | "date" | "startTime" | "endTime" | "locationType" | "location" | "assignedToId" | "status" | "rentAmount" | "paid" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["shoot"]>
   export type ShootInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | Shoot$clientArgs<ExtArgs>
     assignedTo?: boolean | Shoot$assignedToArgs<ExtArgs>
@@ -37161,6 +37172,7 @@ export namespace Prisma {
       date: string
       startTime: string
       endTime: string
+      locationType: string
       location: string
       assignedToId: string | null
       status: string
@@ -37604,6 +37616,7 @@ export namespace Prisma {
     readonly date: FieldRef<"Shoot", 'String'>
     readonly startTime: FieldRef<"Shoot", 'String'>
     readonly endTime: FieldRef<"Shoot", 'String'>
+    readonly locationType: FieldRef<"Shoot", 'String'>
     readonly location: FieldRef<"Shoot", 'String'>
     readonly assignedToId: FieldRef<"Shoot", 'String'>
     readonly status: FieldRef<"Shoot", 'String'>
@@ -51503,6 +51516,7 @@ export namespace Prisma {
     date: 'date',
     startTime: 'startTime',
     endTime: 'endTime',
+    locationType: 'locationType',
     location: 'location',
     assignedToId: 'assignedToId',
     status: 'status',
@@ -54345,6 +54359,7 @@ export namespace Prisma {
     date?: StringFilter<"Shoot"> | string
     startTime?: StringFilter<"Shoot"> | string
     endTime?: StringFilter<"Shoot"> | string
+    locationType?: StringFilter<"Shoot"> | string
     location?: StringFilter<"Shoot"> | string
     assignedToId?: StringNullableFilter<"Shoot"> | string | null
     status?: StringFilter<"Shoot"> | string
@@ -54368,6 +54383,7 @@ export namespace Prisma {
     date?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    locationType?: SortOrder
     location?: SortOrder
     assignedToId?: SortOrderInput | SortOrder
     status?: SortOrder
@@ -54394,6 +54410,7 @@ export namespace Prisma {
     date?: StringFilter<"Shoot"> | string
     startTime?: StringFilter<"Shoot"> | string
     endTime?: StringFilter<"Shoot"> | string
+    locationType?: StringFilter<"Shoot"> | string
     location?: StringFilter<"Shoot"> | string
     assignedToId?: StringNullableFilter<"Shoot"> | string | null
     status?: StringFilter<"Shoot"> | string
@@ -54417,6 +54434,7 @@ export namespace Prisma {
     date?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    locationType?: SortOrder
     location?: SortOrder
     assignedToId?: SortOrderInput | SortOrder
     status?: SortOrder
@@ -54446,6 +54464,7 @@ export namespace Prisma {
     date?: StringWithAggregatesFilter<"Shoot"> | string
     startTime?: StringWithAggregatesFilter<"Shoot"> | string
     endTime?: StringWithAggregatesFilter<"Shoot"> | string
+    locationType?: StringWithAggregatesFilter<"Shoot"> | string
     location?: StringWithAggregatesFilter<"Shoot"> | string
     assignedToId?: StringNullableWithAggregatesFilter<"Shoot"> | string | null
     status?: StringWithAggregatesFilter<"Shoot"> | string
@@ -58381,6 +58400,7 @@ export namespace Prisma {
     date: string
     startTime?: string
     endTime?: string
+    locationType?: string
     location?: string
     status?: string
     rentAmount?: number
@@ -58403,6 +58423,7 @@ export namespace Prisma {
     date: string
     startTime?: string
     endTime?: string
+    locationType?: string
     location?: string
     assignedToId?: string | null
     status?: string
@@ -58423,6 +58444,7 @@ export namespace Prisma {
     date?: StringFieldUpdateOperationsInput | string
     startTime?: StringFieldUpdateOperationsInput | string
     endTime?: StringFieldUpdateOperationsInput | string
+    locationType?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
@@ -58445,6 +58467,7 @@ export namespace Prisma {
     date?: StringFieldUpdateOperationsInput | string
     startTime?: StringFieldUpdateOperationsInput | string
     endTime?: StringFieldUpdateOperationsInput | string
+    locationType?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
@@ -58466,6 +58489,7 @@ export namespace Prisma {
     date: string
     startTime?: string
     endTime?: string
+    locationType?: string
     location?: string
     assignedToId?: string | null
     status?: string
@@ -58486,6 +58510,7 @@ export namespace Prisma {
     date?: StringFieldUpdateOperationsInput | string
     startTime?: StringFieldUpdateOperationsInput | string
     endTime?: StringFieldUpdateOperationsInput | string
+    locationType?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
@@ -58506,6 +58531,7 @@ export namespace Prisma {
     date?: StringFieldUpdateOperationsInput | string
     startTime?: StringFieldUpdateOperationsInput | string
     endTime?: StringFieldUpdateOperationsInput | string
+    locationType?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
@@ -61651,6 +61677,7 @@ export namespace Prisma {
     date?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    locationType?: SortOrder
     location?: SortOrder
     assignedToId?: SortOrder
     status?: SortOrder
@@ -61676,6 +61703,7 @@ export namespace Prisma {
     date?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    locationType?: SortOrder
     location?: SortOrder
     assignedToId?: SortOrder
     status?: SortOrder
@@ -61697,6 +61725,7 @@ export namespace Prisma {
     date?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    locationType?: SortOrder
     location?: SortOrder
     assignedToId?: SortOrder
     status?: SortOrder
@@ -65532,6 +65561,7 @@ export namespace Prisma {
     date: string
     startTime?: string
     endTime?: string
+    locationType?: string
     location?: string
     status?: string
     rentAmount?: number
@@ -65553,6 +65583,7 @@ export namespace Prisma {
     date: string
     startTime?: string
     endTime?: string
+    locationType?: string
     location?: string
     status?: string
     rentAmount?: number
@@ -65955,6 +65986,7 @@ export namespace Prisma {
     date?: StringFilter<"Shoot"> | string
     startTime?: StringFilter<"Shoot"> | string
     endTime?: StringFilter<"Shoot"> | string
+    locationType?: StringFilter<"Shoot"> | string
     location?: StringFilter<"Shoot"> | string
     assignedToId?: StringNullableFilter<"Shoot"> | string | null
     status?: StringFilter<"Shoot"> | string
@@ -67379,6 +67411,7 @@ export namespace Prisma {
     date: string
     startTime?: string
     endTime?: string
+    locationType?: string
     location?: string
     status?: string
     rentAmount?: number
@@ -67399,6 +67432,7 @@ export namespace Prisma {
     date: string
     startTime?: string
     endTime?: string
+    locationType?: string
     location?: string
     assignedToId?: string | null
     status?: string
@@ -76633,6 +76667,7 @@ export namespace Prisma {
     date: string
     startTime?: string
     endTime?: string
+    locationType?: string
     location?: string
     status?: string
     rentAmount?: number
@@ -77309,6 +77344,7 @@ export namespace Prisma {
     date?: StringFieldUpdateOperationsInput | string
     startTime?: StringFieldUpdateOperationsInput | string
     endTime?: StringFieldUpdateOperationsInput | string
+    locationType?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
@@ -77330,6 +77366,7 @@ export namespace Prisma {
     date?: StringFieldUpdateOperationsInput | string
     startTime?: StringFieldUpdateOperationsInput | string
     endTime?: StringFieldUpdateOperationsInput | string
+    locationType?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
@@ -77350,6 +77387,7 @@ export namespace Prisma {
     date?: StringFieldUpdateOperationsInput | string
     startTime?: StringFieldUpdateOperationsInput | string
     endTime?: StringFieldUpdateOperationsInput | string
+    locationType?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
@@ -77664,6 +77702,7 @@ export namespace Prisma {
     date: string
     startTime?: string
     endTime?: string
+    locationType?: string
     location?: string
     assignedToId?: string | null
     status?: string
@@ -78575,6 +78614,7 @@ export namespace Prisma {
     date?: StringFieldUpdateOperationsInput | string
     startTime?: StringFieldUpdateOperationsInput | string
     endTime?: StringFieldUpdateOperationsInput | string
+    locationType?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
@@ -78595,6 +78635,7 @@ export namespace Prisma {
     date?: StringFieldUpdateOperationsInput | string
     startTime?: StringFieldUpdateOperationsInput | string
     endTime?: StringFieldUpdateOperationsInput | string
+    locationType?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
@@ -78615,6 +78656,7 @@ export namespace Prisma {
     date?: StringFieldUpdateOperationsInput | string
     startTime?: StringFieldUpdateOperationsInput | string
     endTime?: StringFieldUpdateOperationsInput | string
+    locationType?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string

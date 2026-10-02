@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { saveShoot, setShootStatus, toggleShootPaid, deleteShoot } from "@/app/actions";
-import { SHOOT_CATEGORIES, SHOOT_STATUS, SHOOT_STATUS_KEYS, inr, inrShort, initials } from "@/lib/domain";
+import { SHOOT_CATEGORIES, SHOOT_STATUS, SHOOT_STATUS_KEYS, SHOOT_LOCATIONS, inr, inrShort, initials } from "@/lib/domain";
 import {
   Camera, Video, CalendarClock, IndianRupee, Plus, X, Pencil, Trash2,
   MapPin, Phone, CheckCircle2, CircleAlert, List, CalendarDays, ChevronLeft, ChevronRight,
@@ -11,7 +11,7 @@ import {
 type Row = {
   id: string; code: string; category: string; title: string;
   client: string | null; clientId: string | null; renterName: string; phone: string;
-  date: string; startTime: string; endTime: string; location: string;
+  date: string; startTime: string; endTime: string; locationType: string; location: string;
   assignee: string | null; assignedToId: string | null;
   status: string; rentAmount: number; paid: boolean; notes: string;
 };
@@ -123,6 +123,9 @@ export default function ShootBoard({
 
 function ShootModal({ row, clientOptions, shooters, today, defaultAssignee = "", onClose }: { row: Row | null; clientOptions: Opt[]; shooters: Shooter[]; today: string; defaultAssignee?: string; onClose: () => void }) {
   const [category, setCategory] = useState<"WEBROCZ" | "STUDIO_RENT">((row?.category as "WEBROCZ" | "STUDIO_RENT") ?? "WEBROCZ");
+  const [locType, setLocType] = useState<"IN_HOUSE" | "ON_LOCATION">((row?.locationType as "IN_HOUSE" | "ON_LOCATION") ?? "ON_LOCATION");
+  // new shoot: default a rental to in-house and a WebRocz client shoot to on-location.
+  useEffect(() => { if (!row) setLocType(category === "STUDIO_RENT" ? "IN_HOUSE" : "ON_LOCATION"); }, [category, row]);
   const isRent = category === "STUDIO_RENT";
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" style={{ background: "rgba(15,23,42,.45)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
@@ -169,12 +172,20 @@ function ShootModal({ row, clientOptions, shooters, today, defaultAssignee = "",
             <label className="block"><span className="eyebrow">End time</span><input type="time" name="endTime" defaultValue={row?.endTime} className="input mt-1.5" /></label>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="block"><span className="eyebrow">Location</span><input name="location" defaultValue={row?.location} placeholder={isRent ? "Studio X" : "On location / Studio X"} className="input mt-1.5" /></label>
-            <label className="block"><span className="eyebrow">Assign shooter</span>
-              <select name="assignedToId" defaultValue={row?.assignedToId ?? defaultAssignee} className="select mt-1.5"><option value="">— Unassigned —</option>{shooters.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}</select>
-            </label>
+          <div className="block">
+            <span className="eyebrow">Where is the shoot?</span>
+            <div className="mt-1.5 grid grid-cols-2 gap-2">
+              {(["IN_HOUSE", "ON_LOCATION"] as const).map((k) => (
+                <button type="button" key={k} onClick={() => setLocType(k)} className={`inline-flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2 text-[12.5px] font-semibold transition ${locType === k ? "border-[var(--violet)] bg-[color-mix(in_srgb,var(--violet)_8%,white)] text-[var(--violet)]" : "border-[var(--line-2)] text-[var(--ink-2)] hover:border-[var(--ink)]"}`}><MapPin size={13} /> {SHOOT_LOCATIONS[k].label}</button>
+              ))}
+            </div>
+            <input type="hidden" name="locationType" value={locType} />
+            <input name="location" defaultValue={row?.location} placeholder={locType === "IN_HOUSE" ? "Studio X — floor / set (optional)" : "Client address / location"} className="input mt-2" />
           </div>
+
+          <label className="block"><span className="eyebrow">Assign shooter</span>
+            <select name="assignedToId" defaultValue={row?.assignedToId ?? defaultAssignee} className="select mt-1.5"><option value="">— Unassigned —</option>{shooters.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}</select>
+          </label>
 
           {isRent && (
             <div className="grid items-end gap-3 sm:grid-cols-3">
@@ -297,7 +308,12 @@ function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, o
                     <div>{isRentSection ? (r.renterName || "—") : (r.client ?? "—")}</div>
                     {r.phone && <div className="inline-flex items-center gap-1 text-[11px] text-[var(--muted)] tnum"><Phone size={10} /> {r.phone}</div>}
                   </td>
-                  <td className="px-4 py-3 text-[12px] text-[var(--muted)]">{r.location ? <span className="inline-flex items-center gap-1"><MapPin size={11} /> {r.location}</span> : <span className="text-[var(--faint)]">{isRentSection ? "Studio X" : "Client location"}</span>}</td>
+                  <td className="px-4 py-3 text-[12px]">
+                    <span className="inline-flex items-center gap-1 font-semibold" style={{ color: r.locationType === "ON_LOCATION" ? "var(--amber)" : "var(--sky)" }}>
+                      <MapPin size={11} /> {SHOOT_LOCATIONS[r.locationType as keyof typeof SHOOT_LOCATIONS]?.short ?? "In-house"}
+                    </span>
+                    {r.location && <div className="mt-0.5 text-[11px] text-[var(--muted)]">{r.location}</div>}
+                  </td>
                   <td className="px-4 py-3 text-[12.5px]">{r.assignee
                     ? <span className="inline-flex items-center gap-1.5"><span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--surface-3)] text-[10px] font-bold text-[var(--ink-2)]">{initials(r.assignee)}</span> {r.assignee}</span>
                     : <span className="text-[var(--faint)]">Unassigned</span>}</td>

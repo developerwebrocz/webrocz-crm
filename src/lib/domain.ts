@@ -30,6 +30,13 @@ export const SHOOT_CATEGORIES = {
 export type ShootCategory = keyof typeof SHOOT_CATEGORIES;
 export const SHOOT_CATEGORY_KEYS = Object.keys(SHOOT_CATEGORIES) as ShootCategory[];
 
+// Where the shoot happens — at the studio, or at the client/renter's location.
+export const SHOOT_LOCATIONS = {
+  IN_HOUSE: { label: "In-house · Studio X", short: "In-house" },
+  ON_LOCATION: { label: "Client location", short: "On location" },
+} as const;
+export type ShootLocation = keyof typeof SHOOT_LOCATIONS;
+
 export const SHOOT_STATUS = {
   SCHEDULED: { label: "Scheduled", tone: "sky" },
   IN_PROGRESS: { label: "In Progress", tone: "violet" },

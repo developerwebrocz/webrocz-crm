@@ -826,7 +826,7 @@ export async function getShootBoard(userId: string, role: string) {
     id: s.id, code: s.code, category: s.category, title: s.title,
     client: s.client?.name ?? null, clientId: s.clientId,
     renterName: s.renterName, phone: s.phone,
-    date: s.date, startTime: s.startTime, endTime: s.endTime, location: s.location,
+    date: s.date, startTime: s.startTime, endTime: s.endTime, locationType: s.locationType, location: s.location,
     assignee: s.assignedTo?.name ?? null, assignedToId: s.assignedToId,
     status: s.status, rentAmount: s.rentAmount, paid: s.paid, notes: s.notes,
   }));

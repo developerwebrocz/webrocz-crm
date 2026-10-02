@@ -1608,6 +1608,7 @@ export async function saveShoot(fd: FormData) {
     date: s(fd, "date"),
     startTime: s(fd, "startTime"),
     endTime: s(fd, "endTime"),
+    locationType: s(fd, "locationType") === "ON_LOCATION" ? "ON_LOCATION" : "IN_HOUSE",
     location: s(fd, "location"),
     rentAmount: category === "STUDIO_RENT" ? n(fd, "rentAmount") : 0,
     paid: category === "STUDIO_RENT" ? fd.get("paid") === "on" : false,

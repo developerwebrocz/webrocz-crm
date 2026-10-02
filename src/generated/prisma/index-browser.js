@@ -529,6 +529,7 @@ exports.Prisma.ShootScalarFieldEnum = {
   date: 'date',
   startTime: 'startTime',
   endTime: 'endTime',
+  locationType: 'locationType',
   location: 'location',
   assignedToId: 'assignedToId',
   status: 'status',

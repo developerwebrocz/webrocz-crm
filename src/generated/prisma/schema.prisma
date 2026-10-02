@@ -614,7 +614,8 @@ model Shoot {
   date         String // "2026-10-05"
   startTime    String   @default("") // "10:00"
   endTime      String   @default("") // "13:00"
-  location     String   @default("")
+  locationType String   @default("IN_HOUSE") // IN_HOUSE (Studio X) | ON_LOCATION (client's place)
+  location     String   @default("") // address / details
   assignedToId String? // the shooter (Mallesh)
   assignedTo   User?    @relation("ShootAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
   status       String   @default("SCHEDULED") // SCHEDULED | IN_PROGRESS | COMPLETED | CANCELLED
