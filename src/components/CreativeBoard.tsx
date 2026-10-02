@@ -16,6 +16,7 @@ type Row = {
   id: string; code: string; title: string; client: string; type: string;
   priority: string; status: string; source: string; assignedDate: string; dueDate: string;
   dimensions: string; brief: string; notes: string; refLink: string; rawLink: string; finalLink: string;
+  createdAt: string;
   overdue: boolean; dueToday: boolean; dueLabel: string; rel: string;
 };
 type Counts = { total: number; dueToday: number; inProgress: number; review: number; completed: number; overdue: number };
@@ -114,11 +115,12 @@ export default function CreativeBoard({
   useEffect(() => { if (!modal) setAddingClient(false); }, [modal]);
   const [drawer, setDrawer] = useState(false);
   const [viewMode, setViewMode] = useState<"board" | "table">("table");
+  const [sort, setSort] = useState("DEFAULT");
   const toggle = (id: string) => setOpen((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
   const visible = useMemo(() => {
     const n = q.trim().toLowerCase();
-    return rows.filter((r) => {
+    const filtered = rows.filter((r) => {
       if (tab === "DUE_TODAY" && !r.dueToday) return false;
       if (tab === "IN_PROGRESS" && r.status !== "IN_PROGRESS") return false;
       if (tab === "REVIEW" && r.status !== "REVIEW") return false;
@@ -134,7 +136,16 @@ export default function CreativeBoard({
       if (n && !(r.title.toLowerCase().includes(n) || r.client.toLowerCase().includes(n) || r.code.toLowerCase().includes(n) || r.type.toLowerCase().includes(n))) return false;
       return true;
     });
-  }, [rows, q, tab, client, type, origin, due, today]);
+    // DEFAULT keeps the server order (unscheduled first, then due date, newest within group).
+    if (sort === "DEFAULT") return filtered;
+    const arr = [...filtered];
+    const prio: Record<string, number> = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+    if (sort === "NEW") arr.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    else if (sort === "OLD") arr.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+    else if (sort === "DUE") arr.sort((a, b) => (!a.dueDate && !b.dueDate ? 0 : !a.dueDate ? 1 : !b.dueDate ? -1 : a.dueDate.localeCompare(b.dueDate)));
+    else if (sort === "PRIORITY") arr.sort((a, b) => (prio[a.priority] ?? 1) - (prio[b.priority] ?? 1));
+    return arr;
+  }, [rows, q, tab, client, type, origin, due, today, sort]);
 
   const TABS = [
     { key: "ALL", label: `All ${L.noun}`, n: counts.total },
@@ -176,6 +187,7 @@ export default function CreativeBoard({
       <Sel value={due} onChange={setDue} raw={[["ALL", "All Due Dates"], ["TODAY", "Today"], ["WEEK", "This Week"], ["OVERDUE", "Overdue"]]} />
       <Sel value={origin} onChange={setOrigin} raw={[["ALL", "All Types"], ["ONBOARDING", "Onboarding Agreed"], ["ADDITIONAL", "Additional"]]} />
       <Sel value={type} onChange={setType} all={L.allTypes} options={types} />
+      <Sel value={sort} onChange={setSort} raw={[["DEFAULT", "Sort: Default"], ["NEW", "Newest first"], ["OLD", "Oldest first"], ["DUE", "Due date (earliest)"], ["PRIORITY", "Priority (high→low)"]]} />
       <button onClick={() => setModal(true)} className="cb-btn" style={{ background: accent.main, color: "#fff" }}><Plus size={15} /> Add Additional {L.nounOne}</button>
     </div>
   );

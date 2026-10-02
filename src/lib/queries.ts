@@ -762,8 +762,8 @@ export async function getCreativeBoard(userId: string, role: string, kind: "DESI
   const tasks = await prisma.creativeTask.findMany({
     where: { kind, ...(isAdmin ? {} : { assignedToId: userId }) },
     include: { client: true },
-    // Unscheduled (no due date) first, then by due date; newest-created first within each
-    // group so a freshly added design/video lands at the very top where it's easy to find.
+    // Default: unscheduled (no due date) first, then by due date; newest-created first within
+    // each group. The board offers a sort control to switch to newest/oldest/priority etc.
     orderBy: [{ dueDate: "asc" }, { createdAt: "desc" }],
   });
   const today = creativeToday();
@@ -782,6 +782,7 @@ export async function getCreativeBoard(userId: string, role: string, kind: "DESI
       type: t.type, priority: t.priority, status: t.status, source: t.source,
       assignedDate: t.assignedDate, dueDate: t.dueDate, dimensions: t.dimensions,
       brief: t.brief, notes: t.notes, refLink: t.refLink, rawLink: t.rawLink, finalLink: t.finalLink,
+      createdAt: t.createdAt.toISOString(),
       overdue, dueToday, dueLabel, rel,
     };
   });
