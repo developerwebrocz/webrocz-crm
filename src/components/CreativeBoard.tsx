@@ -116,6 +116,7 @@ export default function CreativeBoard({
   const [drawer, setDrawer] = useState(false);
   const [viewMode, setViewMode] = useState<"board" | "table">("table");
   const [sort, setSort] = useState("DEFAULT");
+  const [statusF, setStatusF] = useState("ALL");
   const toggle = (id: string) => setOpen((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
   const visible = useMemo(() => {
@@ -133,6 +134,7 @@ export default function CreativeBoard({
       if (due === "TODAY" && !r.dueToday) return false;
       if (due === "OVERDUE" && !r.overdue) return false;
       if (due === "WEEK") { const d = dayDiff(r.dueDate, today); if (d === null || d < 0 || d > 7) return false; }
+      if (statusF === "OVERDUE" ? !r.overdue : statusF !== "ALL" && r.status !== statusF) return false;
       if (n && !(r.title.toLowerCase().includes(n) || r.client.toLowerCase().includes(n) || r.code.toLowerCase().includes(n) || r.type.toLowerCase().includes(n))) return false;
       return true;
     });
@@ -145,7 +147,7 @@ export default function CreativeBoard({
     else if (sort === "DUE") arr.sort((a, b) => (!a.dueDate && !b.dueDate ? 0 : !a.dueDate ? 1 : !b.dueDate ? -1 : a.dueDate.localeCompare(b.dueDate)));
     else if (sort === "PRIORITY") arr.sort((a, b) => (prio[a.priority] ?? 1) - (prio[b.priority] ?? 1));
     return arr;
-  }, [rows, q, tab, client, type, origin, due, today, sort]);
+  }, [rows, q, tab, client, type, origin, due, today, sort, statusF]);
 
   const TABS = [
     { key: "ALL", label: `All ${L.noun}`, n: counts.total },
@@ -187,6 +189,7 @@ export default function CreativeBoard({
       <Sel value={due} onChange={setDue} raw={[["ALL", "All Due Dates"], ["TODAY", "Today"], ["WEEK", "This Week"], ["OVERDUE", "Overdue"]]} />
       <Sel value={origin} onChange={setOrigin} raw={[["ALL", "All Types"], ["ONBOARDING", "Onboarding Agreed"], ["ADDITIONAL", "Additional"]]} />
       <Sel value={type} onChange={setType} all={L.allTypes} options={types} />
+      <Sel value={statusF} onChange={setStatusF} raw={[["ALL", "All Status"], ["PENDING", "Pending"], ["IN_PROGRESS", "In Progress"], ["REVIEW", "Review Pending"], ["COMPLETED", "Completed"], ["OVERDUE", "Overdue"]]} />
       <Sel value={sort} onChange={setSort} raw={[["DEFAULT", "Sort: Default"], ["NEW", "Newest first"], ["OLD", "Oldest first"], ["DUE", "Due date (earliest)"], ["PRIORITY", "Priority (high→low)"]]} />
       <button onClick={() => setModal(true)} className="cb-btn" style={{ background: accent.main, color: "#fff" }}><Plus size={15} /> Add Additional {L.nounOne}</button>
     </div>
