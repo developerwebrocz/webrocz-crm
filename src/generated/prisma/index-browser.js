@@ -536,6 +536,9 @@ exports.Prisma.ShootScalarFieldEnum = {
   rentAmount: 'rentAmount',
   paid: 'paid',
   notes: 'notes',
+  requestedById: 'requestedById',
+  footageLink: 'footageLink',
+  handedOff: 'handedOff',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

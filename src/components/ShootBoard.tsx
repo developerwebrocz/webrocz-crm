@@ -1,11 +1,12 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
-import { saveShoot, setShootStatus, toggleShootPaid, deleteShoot } from "@/app/actions";
+import { saveShoot, setShootStatus, toggleShootPaid, deleteShoot, saveShootFootage, handOffToEditor } from "@/app/actions";
 import { SHOOT_CATEGORIES, SHOOT_STATUS, SHOOT_STATUS_KEYS, SHOOT_LOCATIONS, inr, inrShort, initials } from "@/lib/domain";
 import {
   Camera, Video, CalendarClock, IndianRupee, Plus, X, Pencil, Trash2,
   MapPin, Phone, CheckCircle2, CircleAlert, List, CalendarDays, ChevronLeft, ChevronRight,
+  Users, Film, Send, ExternalLink,
 } from "lucide-react";
 
 type Row = {
@@ -14,8 +15,9 @@ type Row = {
   date: string; startTime: string; endTime: string; locationType: string; location: string;
   assignee: string | null; assignedToId: string | null;
   status: string; rentAmount: number; paid: boolean; notes: string;
+  requestedBy: string | null; footageLink: string; handedOff: boolean; conflict: string | null;
 };
-type Kpis = { todayShoots: number; upcoming: number; rentalsThisMonth: number; rentalRevenue: number; rentalUnpaid: number; webroczCount: number; rentCount: number; completed: number };
+type Kpis = { todayShoots: number; upcoming: number; rentalsThisMonth: number; rentalRevenue: number; rentalUnpaid: number; webroczCount: number; rentCount: number; completed: number; conflicts: number; requests: number };
 type Opt = { id: string; name: string };
 type Shooter = { id: string; name: string; role: string };
 
@@ -32,6 +34,8 @@ export default function ShootBoard({
   const [view, setView] = useState<"list" | "calendar">("list");
   const [edit, setEdit] = useState<Row | null>(null);
   const [adding, setAdding] = useState(false);
+  const [footageFor, setFootageFor] = useState<Row | null>(null);
+  const editors = shooters.filter((s) => s.role === "EDITOR");
 
   const statusRows = useMemo(() => rows.filter((r) => (status === "ALL" || r.status === status) && (cat === "ALL" || r.category === cat)), [rows, status, cat]);
   const webroczRows = statusRows.filter((r) => r.category === "WEBROCZ");
@@ -64,6 +68,22 @@ export default function ShootBoard({
         <Kpi icon={Video} tone="amber" label="Studio X rentals" value={String(kpis.rentalsThisMonth)} sub="this month" />
         <Kpi icon={IndianRupee} tone="emerald" label="Rental revenue" value={inrShort(kpis.rentalRevenue)} sub={kpis.rentalUnpaid ? <span className="inline-flex items-center gap-1 rounded-full bg-[color-mix(in_srgb,var(--rose)_12%,white)] px-1.5 py-0.5 text-[11px] font-bold text-[var(--rose)]"><CircleAlert size={10} /> {inrShort(kpis.rentalUnpaid)} unpaid</span> : <span className="inline-flex items-center gap-1 text-[var(--emerald)]"><CheckCircle2 size={11} /> all collected</span>} />
       </div>
+
+      {/* alerts: double-booking + pending requests (managers) */}
+      {canManage && (kpis.conflicts > 0 || kpis.requests > 0) && (
+        <div className="flex flex-wrap gap-2">
+          {kpis.conflicts > 0 && (
+            <div className="flex items-center gap-2 rounded-[var(--r-md)] border border-[color-mix(in_srgb,var(--rose)_30%,white)] bg-[color-mix(in_srgb,var(--rose)_7%,white)] px-3.5 py-2 text-[12.5px] font-semibold text-[var(--rose)]">
+              <CircleAlert size={15} /> {kpis.conflicts} scheduling conflict{kpis.conflicts > 1 ? "s" : ""} — check overlapping times below.
+            </div>
+          )}
+          {kpis.requests > 0 && (
+            <div className="flex items-center gap-2 rounded-[var(--r-md)] border border-[color-mix(in_srgb,var(--violet)_30%,white)] bg-[color-mix(in_srgb,var(--violet)_7%,white)] px-3.5 py-2 text-[12.5px] font-semibold text-[var(--violet)]">
+              <Users size={15} /> {kpis.requests} shoot request{kpis.requests > 1 ? "s" : ""} from AMs — assign a shooter.
+            </div>
+          )}
+        </div>
+      )}
 
       {/* category + view toggle */}
       <div className="flex flex-wrap items-center gap-2">
@@ -102,13 +122,13 @@ export default function ShootBoard({
           {showWebrocz && (
             <ShootSection
               title="WebRocz Client Shoots" desc="WebRocz clients who need a shoot — Mallesh travels to the client's location."
-              icon={Camera} tone="violet" rows={webroczRows} canManage={canManage} today={today} onEdit={onEdit}
+              icon={Camera} tone="violet" rows={webroczRows} canManage={canManage} today={today} onEdit={onEdit} onFootage={setFootageFor}
               empty={canAdd ? "No WebRocz client shoots yet — add one above." : "No WebRocz shoots assigned to you."} />
           )}
           {showRent && (
             <ShootSection
               title="Studio X Rentals" desc="People who book Studio X for rent — Mallesh shoots their content at the studio."
-              icon={Video} tone="amber" rows={rentRows} canManage={canManage} today={today} onEdit={onEdit}
+              icon={Video} tone="amber" rows={rentRows} canManage={canManage} today={today} onEdit={onEdit} onFootage={setFootageFor}
               empty={canAdd ? "No studio rentals yet — add one above." : "No studio rentals assigned to you."} />
           )}
         </>
@@ -116,6 +136,9 @@ export default function ShootBoard({
 
       {(adding || edit) && canAdd && (
         <ShootModal row={edit} clientOptions={clientOptions} shooters={shooters} today={today} defaultAssignee={!canManage && selfId ? selfId : ""} onClose={() => { setAdding(false); setEdit(null); }} />
+      )}
+      {footageFor && (
+        <FootageModal row={footageFor} editors={editors} onClose={() => setFootageFor(null)} />
       )}
     </div>
   );
@@ -212,6 +235,53 @@ function ShootModal({ row, clientOptions, shooters, today, defaultAssignee = "",
   );
 }
 
+function FootageModal({ row, editors, onClose }: { row: Row; editors: Shooter[]; onClose: () => void }) {
+  const [link, setLink] = useState(row.footageLink);
+  return (
+    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" style={{ background: "rgba(15,23,42,.45)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="flex max-h-[92vh] w-full max-w-[520px] flex-col overflow-hidden rounded-[18px] border border-[var(--line-2)] bg-[var(--surface)] shadow-2xl">
+        <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
+          <div>
+            <h2 className="text-[16px] font-bold">Footage &amp; hand-off</h2>
+            <p className="text-[12px] text-[var(--muted)]">{row.title} · {row.code}</p>
+          </div>
+          <button onClick={onClose} className="grid h-8 w-8 place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
+        </div>
+        <div className="space-y-5 overflow-y-auto p-6">
+          <form action={saveShootFootage} className="space-y-2">
+            <input type="hidden" name="id" value={row.id} />
+            <label className="block"><span className="eyebrow">Raw footage link</span>
+              <div className="mt-1.5 flex items-center gap-2">
+                <input name="footageLink" value={link} onChange={(e) => setLink(e.target.value)} placeholder="Paste Drive / storage link…" className="input" />
+                {link && <a href={link} target="_blank" rel="noreferrer" className="grid h-9 w-9 flex-none place-items-center rounded-md border border-[var(--line-2)] text-[var(--muted)] hover:border-[var(--ink)]"><ExternalLink size={15} /></a>}
+              </div>
+            </label>
+            <div className="flex justify-end"><button className="btn btn-dark btn-sm">Save footage link</button></div>
+          </form>
+
+          <div className="border-t border-[var(--line)] pt-5">
+            <div className="eyebrow mb-1.5">Hand off to a video editor</div>
+            {row.handedOff && <p className="mb-2 inline-flex items-center gap-1.5 text-[12px] font-semibold text-[var(--emerald)]"><CheckCircle2 size={13} /> Already handed off — creating another will add a new edit task.</p>}
+            <form action={handOffToEditor} className="space-y-3">
+              <input type="hidden" name="id" value={row.id} />
+              <input type="hidden" name="footageLink" value={link} />
+              <label className="block"><span className="eyebrow">Editor</span>
+                <select name="editorId" required className="select mt-1.5"><option value="">— Select editor —</option>{editors.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}</select>
+              </label>
+              <label className="block"><span className="eyebrow">Note for the editor (optional)</span><textarea name="note" rows={2} placeholder="What to edit, deliverables, deadline…" className="textarea mt-1.5" /></label>
+              <p className="text-[11.5px] text-[var(--muted)]">Creates a VIDEO task on the editor&apos;s board with this footage as the raw link, and notifies them.</p>
+              <div className="flex justify-end gap-2">
+                <button type="button" onClick={onClose} className="btn btn-ghost btn-sm">Close</button>
+                <button type="submit" className="btn btn-violet btn-sm"><Send size={14} /> Create edit task</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ShootCalendar({ rows, today, canManage, onEdit }: { rows: Row[]; today: string; canManage: boolean; onEdit: (r: Row) => void }) {
   const [ym, setYm] = useState(() => today.slice(0, 7));
   const [y, m] = ym.split("-").map(Number);
@@ -274,8 +344,8 @@ function ShootCalendar({ rows, today, canManage, onEdit }: { rows: Row[]; today:
   );
 }
 
-function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, onEdit, empty }: {
-  title: string; desc: string; icon: typeof Camera; tone: string; rows: Row[]; canManage: boolean; today: string; onEdit: (r: Row) => void; empty: string;
+function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, onEdit, onFootage, empty }: {
+  title: string; desc: string; icon: typeof Camera; tone: string; rows: Row[]; canManage: boolean; today: string; onEdit: (r: Row) => void; onFootage: (r: Row) => void; empty: string;
 }) {
   const isRentSection = title.toLowerCase().includes("rental");
   return (
@@ -303,7 +373,16 @@ function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, o
                     <div className="text-[13px] font-semibold">{fmtDate(r.date)} {isToday && <span className="ml-1 rounded bg-[color-mix(in_srgb,var(--violet)_14%,white)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--violet)]">Today</span>}</div>
                     <div className="text-[11.5px] text-[var(--muted)] tnum">{r.startTime || "—"}{r.endTime ? ` – ${r.endTime}` : ""}</div>
                   </td>
-                  <td className="px-4 py-3"><div className="text-[13px] font-semibold">{r.title}</div><div className="text-[11px] text-[var(--faint)] tnum">{r.code}</div></td>
+                  <td className="px-4 py-3">
+                    <div className="text-[13px] font-semibold">{r.title}</div>
+                    <div className="text-[11px] text-[var(--faint)] tnum">{r.code}</div>
+                    <div className="mt-1 flex flex-wrap gap-1">
+                      {r.conflict && <span className="inline-flex items-center gap-1 rounded-full bg-[color-mix(in_srgb,var(--rose)_12%,white)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--rose)]"><CircleAlert size={9} /> {r.conflict}</span>}
+                      {r.requestedBy && !r.assignedToId && <span className="rounded-full bg-[color-mix(in_srgb,var(--violet)_12%,white)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--violet)]">Requested · {r.requestedBy}</span>}
+                      {r.footageLink && <a href={r.footageLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-full bg-[var(--surface-2)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--sky)]"><Film size={9} /> Footage</a>}
+                      {r.handedOff && <span className="inline-flex items-center gap-1 rounded-full bg-[color-mix(in_srgb,var(--emerald)_12%,white)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--emerald)]"><CheckCircle2 size={9} /> Handed off</span>}
+                    </div>
+                  </td>
                   <td className="px-4 py-3 text-[12.5px]">
                     <div>{isRentSection ? (r.renterName || "—") : (r.client ?? "—")}</div>
                     {r.phone && <div className="inline-flex items-center gap-1 text-[11px] text-[var(--muted)] tnum"><Phone size={10} /> {r.phone}</div>}
@@ -330,13 +409,16 @@ function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, o
                     </td>
                   )}
                   <td className="px-4 py-3">
-                    <form action={setShootStatus}>
-                      <input type="hidden" name="id" value={r.id} />
-                      <select name="status" defaultValue={r.status} onChange={(e) => e.currentTarget.form?.requestSubmit()}
-                        className="rounded-full px-2.5 py-1 text-[11.5px] font-semibold outline-none" style={{ background: `color-mix(in srgb, ${TONE[st?.tone ?? "muted"]} 13%, white)`, color: TONE[st?.tone ?? "muted"] }}>
-                        {SHOOT_STATUS_KEYS.map((k) => <option key={k} value={k}>{SHOOT_STATUS[k].label}</option>)}
-                      </select>
-                    </form>
+                    <div className="flex items-center gap-1.5">
+                      <form action={setShootStatus}>
+                        <input type="hidden" name="id" value={r.id} />
+                        <select name="status" defaultValue={r.status} onChange={(e) => e.currentTarget.form?.requestSubmit()}
+                          className="rounded-full px-2.5 py-1 text-[11.5px] font-semibold outline-none" style={{ background: `color-mix(in srgb, ${TONE[st?.tone ?? "muted"]} 13%, white)`, color: TONE[st?.tone ?? "muted"] }}>
+                          {SHOOT_STATUS_KEYS.map((k) => <option key={k} value={k}>{SHOOT_STATUS[k].label}</option>)}
+                        </select>
+                      </form>
+                      {!isRentSection && <button onClick={() => onFootage(r)} title="Footage & hand-off to editor" className={`grid h-7 w-7 place-items-center rounded-md border text-[var(--muted)] hover:border-[var(--ink)] ${r.footageLink || r.handedOff ? "border-[var(--sky)] text-[var(--sky)]" : "border-[var(--line-2)]"}`}><Film size={13} /></button>}
+                    </div>
                   </td>
                   {canManage && (
                     <td className="px-4 py-3">

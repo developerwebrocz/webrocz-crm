@@ -1666,3 +1666,74 @@ export async function deleteShoot(fd: FormData) {
   revalidatePath("/shoots");
   redirect("/shoots");
 }
+
+// ---- Shoot workflow: AM requests, footage hand-off ----
+const SHOOT_REQUESTERS = ["ACCOUNT_MANAGER", "DM_EXEC", "AM_HEAD", "SUPER_ADMIN", "SUB_ADMIN"];
+
+// An Account Manager requests a WebRocz client shoot — it lands unassigned on the
+// Studio X board for Raj to schedule & assign, and notifies the studio head(s).
+export async function requestShoot(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me || !SHOOT_REQUESTERS.includes(me.role)) redirect("/");
+  const date = s(fd, "date");
+  const from = s(fd, "from") || "/";
+  if (!date) redirect(from);
+  const clientId = s(fd, "clientId") || null;
+  const title = s(fd, "title") || "Client shoot request";
+  await prisma.shoot.create({
+    data: {
+      code: await nextShootCodeLocal(), category: "WEBROCZ", title, clientId,
+      date, startTime: s(fd, "startTime"), endTime: s(fd, "endTime"),
+      locationType: s(fd, "locationType") === "IN_HOUSE" ? "IN_HOUSE" : "ON_LOCATION",
+      location: s(fd, "location"), notes: s(fd, "notes"),
+      requestedById: me.id, status: "SCHEDULED", assignedToId: null,
+    },
+  });
+  const heads = await prisma.user.findMany({ where: { active: true, role: "STUDIO_HEAD" }, select: { id: true } });
+  const client = clientId ? await prisma.client.findUnique({ where: { id: clientId }, select: { name: true } }) : null;
+  for (const h of heads) await notify(h.id, `New shoot request: ${title}`, `From ${me.name}${client ? ` · ${client.name}` : ""} · ${date}`, "/shoots", "violet");
+  revalidatePath("/shoots");
+  redirect(from === "/" ? "/shoots" : from);
+}
+
+// Shooter or manager saves the raw-footage link for a shoot.
+export async function saveShootFootage(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me) redirect("/login");
+  const id = s(fd, "id");
+  const shoot = await prisma.shoot.findUnique({ where: { id } });
+  if (!shoot) redirect("/shoots");
+  if (!STUDIO_MANAGERS.includes(me.role) && shoot.assignedToId !== me.id) redirect("/shoots");
+  await prisma.shoot.update({ where: { id }, data: { footageLink: s(fd, "footageLink") } });
+  revalidatePath("/shoots");
+  redirect("/shoots");
+}
+
+// Hand the shot footage to a video editor — creates a VIDEO task on their board.
+export async function handOffToEditor(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me || !(STUDIO_MANAGERS.includes(me.role) || me.role === "VIDEOGRAPHER")) redirect("/");
+  const id = s(fd, "id");
+  const editorId = s(fd, "editorId");
+  const shoot = await prisma.shoot.findUnique({ where: { id }, include: { client: true } });
+  if (!shoot || !editorId) redirect("/shoots");
+  const editor = await prisma.user.findUnique({ where: { id: editorId } });
+  if (!editor || editor.role !== "EDITOR") redirect("/shoots");
+  const footage = s(fd, "footageLink") || shoot.footageLink || "";
+  const count = await prisma.creativeTask.count({ where: { assignedToId: editorId, kind: "VIDEO" } });
+  await prisma.creativeTask.create({
+    data: {
+      kind: "VIDEO", code: `VID-${String(count + 1).padStart(3, "0")}`,
+      title: `Edit: ${shoot.title}`, clientId: shoot.clientId, assignedToId: editorId, assignedById: me.id,
+      type: "Reel", priority: "MEDIUM", status: "PENDING", source: "ADDITIONAL",
+      assignedDate: new Date().toISOString().slice(0, 10), dueDate: "",
+      brief: `Footage from shoot ${shoot.code}${shoot.client ? ` · ${shoot.client.name}` : ""}.${s(fd, "note") ? ` ${s(fd, "note")}` : ""}`,
+      rawLink: footage,
+    },
+  });
+  await prisma.shoot.update({ where: { id }, data: { handedOff: true, footageLink: footage } });
+  await notify(editorId, `Footage to edit: ${shoot.title}`, `From ${me.name} · shoot ${shoot.code}`, "/videos", "violet");
+  revalidatePath("/shoots");
+  revalidatePath("/videos");
+  redirect("/shoots");
+}

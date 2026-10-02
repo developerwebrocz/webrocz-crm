@@ -33,6 +33,7 @@ model User {
   creativeAssigned CreativeTask[] @relation("CreativeAssigner")
   salesLeads       Lead[]         @relation("LeadOwner")
   shoots           Shoot[]        @relation("ShootAssignee")
+  shootRequests    Shoot[]        @relation("ShootRequester")
 }
 
 model Task {
@@ -603,27 +604,31 @@ model CreativeTask {
 // Shooting & Studio X: in-house WebRocz client shoots + paid Studio X rentals.
 // Raj (Studio X Head) / admins schedule and assign; Mallesh (Videographer) shoots.
 model Shoot {
-  id           String   @id @default(cuid())
-  code         String // SHT-001
-  category     String // WEBROCZ | STUDIO_RENT
-  title        String
-  clientId     String? // set for WebRocz client shoots
-  client       Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
-  renterName   String   @default("") // renter / contact name (esp. Studio X rent)
-  phone        String   @default("")
-  date         String // "2026-10-05"
-  startTime    String   @default("") // "10:00"
-  endTime      String   @default("") // "13:00"
-  locationType String   @default("IN_HOUSE") // IN_HOUSE (Studio X) | ON_LOCATION (client's place)
-  location     String   @default("") // address / details
-  assignedToId String? // the shooter (Mallesh)
-  assignedTo   User?    @relation("ShootAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
-  status       String   @default("SCHEDULED") // SCHEDULED | IN_PROGRESS | COMPLETED | CANCELLED
-  rentAmount   Int      @default(0) // ₹ for Studio X rentals
-  paid         Boolean  @default(false)
-  notes        String   @default("")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String   @id @default(cuid())
+  code          String // SHT-001
+  category      String // WEBROCZ | STUDIO_RENT
+  title         String
+  clientId      String? // set for WebRocz client shoots
+  client        Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  renterName    String   @default("") // renter / contact name (esp. Studio X rent)
+  phone         String   @default("")
+  date          String // "2026-10-05"
+  startTime     String   @default("") // "10:00"
+  endTime       String   @default("") // "13:00"
+  locationType  String   @default("IN_HOUSE") // IN_HOUSE (Studio X) | ON_LOCATION (client's place)
+  location      String   @default("") // address / details
+  assignedToId  String? // the shooter (Mallesh)
+  assignedTo    User?    @relation("ShootAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  status        String   @default("SCHEDULED") // SCHEDULED | IN_PROGRESS | COMPLETED | CANCELLED
+  rentAmount    Int      @default(0) // ₹ for Studio X rentals
+  paid          Boolean  @default(false)
+  notes         String   @default("")
+  requestedById String? // an AM who requested this WebRocz shoot (Raj then assigns a shooter)
+  requestedBy   User?    @relation("ShootRequester", fields: [requestedById], references: [id], onDelete: SetNull)
+  footageLink   String   @default("") // raw footage drive link after the shoot
+  handedOff     Boolean  @default(false) // handed to a video editor
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([date])
   @@index([assignedToId])

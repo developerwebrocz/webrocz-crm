@@ -815,12 +815,31 @@ export async function getShootBoard(userId: string, role: string) {
   const canAdd = canManage || role === "VIDEOGRAPHER";
   const shoots = await prisma.shoot.findMany({
     where: canManage ? {} : { assignedToId: userId },
-    include: { client: true, assignedTo: { select: { name: true } } },
+    include: { client: true, assignedTo: { select: { name: true } }, requestedBy: { select: { name: true } } },
     orderBy: [{ date: "asc" }, { startTime: "asc" }],
   });
   const today = ymd(new Date());
   const monthPrefix = today.slice(0, 7);
   const weekEnd = ymd(new Date(Date.now() + 7 * 86400000));
+
+  // ---- double-booking detection (same date, overlapping times) ----
+  const conflicts: Record<string, string> = {};
+  const toMin = (t: string) => { const m = /^(\d{1,2}):(\d{2})$/.exec(t); return m ? +m[1] * 60 + +m[2] : null; };
+  const live = shoots.filter((x) => x.status !== "CANCELLED");
+  for (let i = 0; i < live.length; i++) for (let j = i + 1; j < live.length; j++) {
+    const a = live[i], b = live[j];
+    if (a.date !== b.date) continue;
+    const as = toMin(a.startTime), ae = toMin(a.endTime), bs = toMin(b.startTime), be = toMin(b.endTime);
+    if (as === null || ae === null || bs === null || be === null) continue;
+    if (!(as < be && bs < ae)) continue; // no time overlap
+    if (a.assignedToId && a.assignedToId === b.assignedToId) {
+      conflicts[a.id] = "Shooter double-booked"; conflicts[b.id] = "Shooter double-booked";
+    }
+    if (a.locationType === "IN_HOUSE" && b.locationType === "IN_HOUSE") {
+      conflicts[a.id] = conflicts[a.id] ? conflicts[a.id] : "Studio X double-booked";
+      conflicts[b.id] = conflicts[b.id] ? conflicts[b.id] : "Studio X double-booked";
+    }
+  }
 
   const rows = shoots.map((s) => ({
     id: s.id, code: s.code, category: s.category, title: s.title,
@@ -829,6 +848,8 @@ export async function getShootBoard(userId: string, role: string) {
     date: s.date, startTime: s.startTime, endTime: s.endTime, locationType: s.locationType, location: s.location,
     assignee: s.assignedTo?.name ?? null, assignedToId: s.assignedToId,
     status: s.status, rentAmount: s.rentAmount, paid: s.paid, notes: s.notes,
+    requestedBy: s.requestedBy?.name ?? null, footageLink: s.footageLink, handedOff: s.handedOff,
+    conflict: conflicts[s.id] ?? null,
   }));
 
   const active = rows.filter((r) => r.status !== "CANCELLED");
@@ -843,6 +864,8 @@ export async function getShootBoard(userId: string, role: string) {
     webroczCount: active.filter((r) => r.category === "WEBROCZ").length,
     rentCount: rentals.length,
     completed: rows.filter((r) => r.status === "COMPLETED").length,
+    conflicts: Object.keys(conflicts).length,
+    requests: active.filter((r) => r.requestedBy && !r.assignedToId).length,
   };
 
   const clientOptions = canAdd

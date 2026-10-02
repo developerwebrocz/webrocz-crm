@@ -43,6 +43,7 @@ export default function UpdateForm({
   const types = dept ? WORK_TYPES.filter((w) => w.dept === dept || w.v === "meeting" || w.v === "task") : [...WORK_TYPES];
   const [workType, setWorkType] = useState<string>(types[0]?.v ?? "task");
   const isRanking = workType === "ranking";
+  const isOther = workType === "task"; // "Other task" → let them type what the work was
 
   return (
     <form action={action} className="card card-pad grid gap-4 sm:grid-cols-2">
@@ -83,7 +84,9 @@ export default function UpdateForm({
       </Field>
 
       <div className="sm:col-span-2">
-        <Field label="Title / description"><input name="title" className="input" placeholder="Short summary of the work" /></Field>
+        {isOther
+          ? <Field label="Specify the work" required><input name="title" required className="input" placeholder="Type the work you did — e.g. Client call, data entry, research…" /></Field>
+          : <Field label="Title / description"><input name="title" className="input" placeholder="Short summary of the work" /></Field>}
       </div>
 
       {isRanking && (

@@ -4272,6 +4272,7 @@ export namespace Prisma {
     creativeAssigned: number
     salesLeads: number
     shoots: number
+    shootRequests: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4286,6 +4287,7 @@ export namespace Prisma {
     creativeAssigned?: boolean | UserCountOutputTypeCountCreativeAssignedArgs
     salesLeads?: boolean | UserCountOutputTypeCountSalesLeadsArgs
     shoots?: boolean | UserCountOutputTypeCountShootsArgs
+    shootRequests?: boolean | UserCountOutputTypeCountShootRequestsArgs
   }
 
   // Custom InputTypes
@@ -4373,6 +4375,13 @@ export namespace Prisma {
    * UserCountOutputType without action
    */
   export type UserCountOutputTypeCountShootsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ShootWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountShootRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ShootWhereInput
   }
 
@@ -4947,6 +4956,7 @@ export namespace Prisma {
     creativeAssigned?: boolean | User$creativeAssignedArgs<ExtArgs>
     salesLeads?: boolean | User$salesLeadsArgs<ExtArgs>
     shoots?: boolean | User$shootsArgs<ExtArgs>
+    shootRequests?: boolean | User$shootRequestsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4996,6 +5006,7 @@ export namespace Prisma {
     creativeAssigned?: boolean | User$creativeAssignedArgs<ExtArgs>
     salesLeads?: boolean | User$salesLeadsArgs<ExtArgs>
     shoots?: boolean | User$shootsArgs<ExtArgs>
+    shootRequests?: boolean | User$shootRequestsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5015,6 +5026,7 @@ export namespace Prisma {
       creativeAssigned: Prisma.$CreativeTaskPayload<ExtArgs>[]
       salesLeads: Prisma.$LeadPayload<ExtArgs>[]
       shoots: Prisma.$ShootPayload<ExtArgs>[]
+      shootRequests: Prisma.$ShootPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5430,6 +5442,7 @@ export namespace Prisma {
     creativeAssigned<T extends User$creativeAssignedArgs<ExtArgs> = {}>(args?: Subset<T, User$creativeAssignedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CreativeTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     salesLeads<T extends User$salesLeadsArgs<ExtArgs> = {}>(args?: Subset<T, User$salesLeadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     shoots<T extends User$shootsArgs<ExtArgs> = {}>(args?: Subset<T, User$shootsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    shootRequests<T extends User$shootRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$shootRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6101,6 +6114,30 @@ export namespace Prisma {
    * User.shoots
    */
   export type User$shootsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shoot
+     */
+    select?: ShootSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shoot
+     */
+    omit?: ShootOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShootInclude<ExtArgs> | null
+    where?: ShootWhereInput
+    orderBy?: ShootOrderByWithRelationInput | ShootOrderByWithRelationInput[]
+    cursor?: ShootWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ShootScalarFieldEnum | ShootScalarFieldEnum[]
+  }
+
+  /**
+   * User.shootRequests
+   */
+  export type User$shootRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Shoot
      */
@@ -36795,6 +36832,9 @@ export namespace Prisma {
     rentAmount: number | null
     paid: boolean | null
     notes: string | null
+    requestedById: string | null
+    footageLink: string | null
+    handedOff: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -36817,6 +36857,9 @@ export namespace Prisma {
     rentAmount: number | null
     paid: boolean | null
     notes: string | null
+    requestedById: string | null
+    footageLink: string | null
+    handedOff: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -36839,6 +36882,9 @@ export namespace Prisma {
     rentAmount: number
     paid: number
     notes: number
+    requestedById: number
+    footageLink: number
+    handedOff: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -36871,6 +36917,9 @@ export namespace Prisma {
     rentAmount?: true
     paid?: true
     notes?: true
+    requestedById?: true
+    footageLink?: true
+    handedOff?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -36893,6 +36942,9 @@ export namespace Prisma {
     rentAmount?: true
     paid?: true
     notes?: true
+    requestedById?: true
+    footageLink?: true
+    handedOff?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -36915,6 +36967,9 @@ export namespace Prisma {
     rentAmount?: true
     paid?: true
     notes?: true
+    requestedById?: true
+    footageLink?: true
+    handedOff?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -37024,6 +37079,9 @@ export namespace Prisma {
     rentAmount: number
     paid: boolean
     notes: string
+    requestedById: string | null
+    footageLink: string
+    handedOff: boolean
     createdAt: Date
     updatedAt: Date
     _count: ShootCountAggregateOutputType | null
@@ -37065,10 +37123,14 @@ export namespace Prisma {
     rentAmount?: boolean
     paid?: boolean
     notes?: boolean
+    requestedById?: boolean
+    footageLink?: boolean
+    handedOff?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     client?: boolean | Shoot$clientArgs<ExtArgs>
     assignedTo?: boolean | Shoot$assignedToArgs<ExtArgs>
+    requestedBy?: boolean | Shoot$requestedByArgs<ExtArgs>
   }, ExtArgs["result"]["shoot"]>
 
   export type ShootSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -37089,10 +37151,14 @@ export namespace Prisma {
     rentAmount?: boolean
     paid?: boolean
     notes?: boolean
+    requestedById?: boolean
+    footageLink?: boolean
+    handedOff?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     client?: boolean | Shoot$clientArgs<ExtArgs>
     assignedTo?: boolean | Shoot$assignedToArgs<ExtArgs>
+    requestedBy?: boolean | Shoot$requestedByArgs<ExtArgs>
   }, ExtArgs["result"]["shoot"]>
 
   export type ShootSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -37113,10 +37179,14 @@ export namespace Prisma {
     rentAmount?: boolean
     paid?: boolean
     notes?: boolean
+    requestedById?: boolean
+    footageLink?: boolean
+    handedOff?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     client?: boolean | Shoot$clientArgs<ExtArgs>
     assignedTo?: boolean | Shoot$assignedToArgs<ExtArgs>
+    requestedBy?: boolean | Shoot$requestedByArgs<ExtArgs>
   }, ExtArgs["result"]["shoot"]>
 
   export type ShootSelectScalar = {
@@ -37137,22 +37207,28 @@ export namespace Prisma {
     rentAmount?: boolean
     paid?: boolean
     notes?: boolean
+    requestedById?: boolean
+    footageLink?: boolean
+    handedOff?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ShootOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "category" | "title" | "clientId" | "renterName" | "phone" | "date" | "startTime" | "endTime" | "locationType" | "location" | "assignedToId" | "status" | "rentAmount" | "paid" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["shoot"]>
+  export type ShootOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "category" | "title" | "clientId" | "renterName" | "phone" | "date" | "startTime" | "endTime" | "locationType" | "location" | "assignedToId" | "status" | "rentAmount" | "paid" | "notes" | "requestedById" | "footageLink" | "handedOff" | "createdAt" | "updatedAt", ExtArgs["result"]["shoot"]>
   export type ShootInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | Shoot$clientArgs<ExtArgs>
     assignedTo?: boolean | Shoot$assignedToArgs<ExtArgs>
+    requestedBy?: boolean | Shoot$requestedByArgs<ExtArgs>
   }
   export type ShootIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | Shoot$clientArgs<ExtArgs>
     assignedTo?: boolean | Shoot$assignedToArgs<ExtArgs>
+    requestedBy?: boolean | Shoot$requestedByArgs<ExtArgs>
   }
   export type ShootIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | Shoot$clientArgs<ExtArgs>
     assignedTo?: boolean | Shoot$assignedToArgs<ExtArgs>
+    requestedBy?: boolean | Shoot$requestedByArgs<ExtArgs>
   }
 
   export type $ShootPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -37160,6 +37236,7 @@ export namespace Prisma {
     objects: {
       client: Prisma.$ClientPayload<ExtArgs> | null
       assignedTo: Prisma.$UserPayload<ExtArgs> | null
+      requestedBy: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -37179,6 +37256,9 @@ export namespace Prisma {
       rentAmount: number
       paid: boolean
       notes: string
+      requestedById: string | null
+      footageLink: string
+      handedOff: boolean
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["shoot"]>
@@ -37577,6 +37657,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     client<T extends Shoot$clientArgs<ExtArgs> = {}>(args?: Subset<T, Shoot$clientArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     assignedTo<T extends Shoot$assignedToArgs<ExtArgs> = {}>(args?: Subset<T, Shoot$assignedToArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    requestedBy<T extends Shoot$requestedByArgs<ExtArgs> = {}>(args?: Subset<T, Shoot$requestedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -37623,6 +37704,9 @@ export namespace Prisma {
     readonly rentAmount: FieldRef<"Shoot", 'Int'>
     readonly paid: FieldRef<"Shoot", 'Boolean'>
     readonly notes: FieldRef<"Shoot", 'String'>
+    readonly requestedById: FieldRef<"Shoot", 'String'>
+    readonly footageLink: FieldRef<"Shoot", 'String'>
+    readonly handedOff: FieldRef<"Shoot", 'Boolean'>
     readonly createdAt: FieldRef<"Shoot", 'DateTime'>
     readonly updatedAt: FieldRef<"Shoot", 'DateTime'>
   }
@@ -38046,6 +38130,25 @@ export namespace Prisma {
    * Shoot.assignedTo
    */
   export type Shoot$assignedToArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * Shoot.requestedBy
+   */
+  export type Shoot$requestedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -51523,6 +51626,9 @@ export namespace Prisma {
     rentAmount: 'rentAmount',
     paid: 'paid',
     notes: 'notes',
+    requestedById: 'requestedById',
+    footageLink: 'footageLink',
+    handedOff: 'handedOff',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -51806,6 +51912,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskListRelationFilter
     salesLeads?: LeadListRelationFilter
     shoots?: ShootListRelationFilter
+    shootRequests?: ShootListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -51828,6 +51935,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskOrderByRelationAggregateInput
     salesLeads?: LeadOrderByRelationAggregateInput
     shoots?: ShootOrderByRelationAggregateInput
+    shootRequests?: ShootOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -51853,6 +51961,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskListRelationFilter
     salesLeads?: LeadListRelationFilter
     shoots?: ShootListRelationFilter
+    shootRequests?: ShootListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -54366,10 +54475,14 @@ export namespace Prisma {
     rentAmount?: IntFilter<"Shoot"> | number
     paid?: BoolFilter<"Shoot"> | boolean
     notes?: StringFilter<"Shoot"> | string
+    requestedById?: StringNullableFilter<"Shoot"> | string | null
+    footageLink?: StringFilter<"Shoot"> | string
+    handedOff?: BoolFilter<"Shoot"> | boolean
     createdAt?: DateTimeFilter<"Shoot"> | Date | string
     updatedAt?: DateTimeFilter<"Shoot"> | Date | string
     client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
     assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    requestedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
   export type ShootOrderByWithRelationInput = {
@@ -54390,10 +54503,14 @@ export namespace Prisma {
     rentAmount?: SortOrder
     paid?: SortOrder
     notes?: SortOrder
+    requestedById?: SortOrderInput | SortOrder
+    footageLink?: SortOrder
+    handedOff?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     client?: ClientOrderByWithRelationInput
     assignedTo?: UserOrderByWithRelationInput
+    requestedBy?: UserOrderByWithRelationInput
   }
 
   export type ShootWhereUniqueInput = Prisma.AtLeast<{
@@ -54417,10 +54534,14 @@ export namespace Prisma {
     rentAmount?: IntFilter<"Shoot"> | number
     paid?: BoolFilter<"Shoot"> | boolean
     notes?: StringFilter<"Shoot"> | string
+    requestedById?: StringNullableFilter<"Shoot"> | string | null
+    footageLink?: StringFilter<"Shoot"> | string
+    handedOff?: BoolFilter<"Shoot"> | boolean
     createdAt?: DateTimeFilter<"Shoot"> | Date | string
     updatedAt?: DateTimeFilter<"Shoot"> | Date | string
     client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
     assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    requestedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id">
 
   export type ShootOrderByWithAggregationInput = {
@@ -54441,6 +54562,9 @@ export namespace Prisma {
     rentAmount?: SortOrder
     paid?: SortOrder
     notes?: SortOrder
+    requestedById?: SortOrderInput | SortOrder
+    footageLink?: SortOrder
+    handedOff?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ShootCountOrderByAggregateInput
@@ -54471,6 +54595,9 @@ export namespace Prisma {
     rentAmount?: IntWithAggregatesFilter<"Shoot"> | number
     paid?: BoolWithAggregatesFilter<"Shoot"> | boolean
     notes?: StringWithAggregatesFilter<"Shoot"> | string
+    requestedById?: StringNullableWithAggregatesFilter<"Shoot"> | string | null
+    footageLink?: StringWithAggregatesFilter<"Shoot"> | string
+    handedOff?: BoolWithAggregatesFilter<"Shoot"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Shoot"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Shoot"> | Date | string
   }
@@ -55490,6 +55617,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -55512,6 +55640,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserUpdateInput = {
@@ -55534,6 +55663,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -55556,6 +55686,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -58406,10 +58537,13 @@ export namespace Prisma {
     rentAmount?: number
     paid?: boolean
     notes?: string
+    footageLink?: string
+    handedOff?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     client?: ClientCreateNestedOneWithoutShootsInput
     assignedTo?: UserCreateNestedOneWithoutShootsInput
+    requestedBy?: UserCreateNestedOneWithoutShootRequestsInput
   }
 
   export type ShootUncheckedCreateInput = {
@@ -58430,6 +58564,9 @@ export namespace Prisma {
     rentAmount?: number
     paid?: boolean
     notes?: string
+    requestedById?: string | null
+    footageLink?: string
+    handedOff?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -58450,10 +58587,13 @@ export namespace Prisma {
     rentAmount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
+    footageLink?: StringFieldUpdateOperationsInput | string
+    handedOff?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneWithoutShootsNestedInput
     assignedTo?: UserUpdateOneWithoutShootsNestedInput
+    requestedBy?: UserUpdateOneWithoutShootRequestsNestedInput
   }
 
   export type ShootUncheckedUpdateInput = {
@@ -58474,6 +58614,9 @@ export namespace Prisma {
     rentAmount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
+    requestedById?: NullableStringFieldUpdateOperationsInput | string | null
+    footageLink?: StringFieldUpdateOperationsInput | string
+    handedOff?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -58496,6 +58639,9 @@ export namespace Prisma {
     rentAmount?: number
     paid?: boolean
     notes?: string
+    requestedById?: string | null
+    footageLink?: string
+    handedOff?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -58516,6 +58662,8 @@ export namespace Prisma {
     rentAmount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
+    footageLink?: StringFieldUpdateOperationsInput | string
+    handedOff?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -58538,6 +58686,9 @@ export namespace Prisma {
     rentAmount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
+    requestedById?: NullableStringFieldUpdateOperationsInput | string | null
+    footageLink?: StringFieldUpdateOperationsInput | string
+    handedOff?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -61684,6 +61835,9 @@ export namespace Prisma {
     rentAmount?: SortOrder
     paid?: SortOrder
     notes?: SortOrder
+    requestedById?: SortOrder
+    footageLink?: SortOrder
+    handedOff?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -61710,6 +61864,9 @@ export namespace Prisma {
     rentAmount?: SortOrder
     paid?: SortOrder
     notes?: SortOrder
+    requestedById?: SortOrder
+    footageLink?: SortOrder
+    handedOff?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -61732,6 +61889,9 @@ export namespace Prisma {
     rentAmount?: SortOrder
     paid?: SortOrder
     notes?: SortOrder
+    requestedById?: SortOrder
+    footageLink?: SortOrder
+    handedOff?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -62443,6 +62603,13 @@ export namespace Prisma {
     connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
   }
 
+  export type ShootCreateNestedManyWithoutRequestedByInput = {
+    create?: XOR<ShootCreateWithoutRequestedByInput, ShootUncheckedCreateWithoutRequestedByInput> | ShootCreateWithoutRequestedByInput[] | ShootUncheckedCreateWithoutRequestedByInput[]
+    connectOrCreate?: ShootCreateOrConnectWithoutRequestedByInput | ShootCreateOrConnectWithoutRequestedByInput[]
+    createMany?: ShootCreateManyRequestedByInputEnvelope
+    connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+  }
+
   export type ClientUncheckedCreateNestedManyWithoutAccountManagerInput = {
     create?: XOR<ClientCreateWithoutAccountManagerInput, ClientUncheckedCreateWithoutAccountManagerInput> | ClientCreateWithoutAccountManagerInput[] | ClientUncheckedCreateWithoutAccountManagerInput[]
     connectOrCreate?: ClientCreateOrConnectWithoutAccountManagerInput | ClientCreateOrConnectWithoutAccountManagerInput[]
@@ -62517,6 +62684,13 @@ export namespace Prisma {
     create?: XOR<ShootCreateWithoutAssignedToInput, ShootUncheckedCreateWithoutAssignedToInput> | ShootCreateWithoutAssignedToInput[] | ShootUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: ShootCreateOrConnectWithoutAssignedToInput | ShootCreateOrConnectWithoutAssignedToInput[]
     createMany?: ShootCreateManyAssignedToInputEnvelope
+    connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+  }
+
+  export type ShootUncheckedCreateNestedManyWithoutRequestedByInput = {
+    create?: XOR<ShootCreateWithoutRequestedByInput, ShootUncheckedCreateWithoutRequestedByInput> | ShootCreateWithoutRequestedByInput[] | ShootUncheckedCreateWithoutRequestedByInput[]
+    connectOrCreate?: ShootCreateOrConnectWithoutRequestedByInput | ShootCreateOrConnectWithoutRequestedByInput[]
+    createMany?: ShootCreateManyRequestedByInputEnvelope
     connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
   }
 
@@ -62690,6 +62864,20 @@ export namespace Prisma {
     deleteMany?: ShootScalarWhereInput | ShootScalarWhereInput[]
   }
 
+  export type ShootUpdateManyWithoutRequestedByNestedInput = {
+    create?: XOR<ShootCreateWithoutRequestedByInput, ShootUncheckedCreateWithoutRequestedByInput> | ShootCreateWithoutRequestedByInput[] | ShootUncheckedCreateWithoutRequestedByInput[]
+    connectOrCreate?: ShootCreateOrConnectWithoutRequestedByInput | ShootCreateOrConnectWithoutRequestedByInput[]
+    upsert?: ShootUpsertWithWhereUniqueWithoutRequestedByInput | ShootUpsertWithWhereUniqueWithoutRequestedByInput[]
+    createMany?: ShootCreateManyRequestedByInputEnvelope
+    set?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    disconnect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    delete?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    update?: ShootUpdateWithWhereUniqueWithoutRequestedByInput | ShootUpdateWithWhereUniqueWithoutRequestedByInput[]
+    updateMany?: ShootUpdateManyWithWhereWithoutRequestedByInput | ShootUpdateManyWithWhereWithoutRequestedByInput[]
+    deleteMany?: ShootScalarWhereInput | ShootScalarWhereInput[]
+  }
+
   export type ClientUncheckedUpdateManyWithoutAccountManagerNestedInput = {
     create?: XOR<ClientCreateWithoutAccountManagerInput, ClientUncheckedCreateWithoutAccountManagerInput> | ClientCreateWithoutAccountManagerInput[] | ClientUncheckedCreateWithoutAccountManagerInput[]
     connectOrCreate?: ClientCreateOrConnectWithoutAccountManagerInput | ClientCreateOrConnectWithoutAccountManagerInput[]
@@ -62841,6 +63029,20 @@ export namespace Prisma {
     connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
     update?: ShootUpdateWithWhereUniqueWithoutAssignedToInput | ShootUpdateWithWhereUniqueWithoutAssignedToInput[]
     updateMany?: ShootUpdateManyWithWhereWithoutAssignedToInput | ShootUpdateManyWithWhereWithoutAssignedToInput[]
+    deleteMany?: ShootScalarWhereInput | ShootScalarWhereInput[]
+  }
+
+  export type ShootUncheckedUpdateManyWithoutRequestedByNestedInput = {
+    create?: XOR<ShootCreateWithoutRequestedByInput, ShootUncheckedCreateWithoutRequestedByInput> | ShootCreateWithoutRequestedByInput[] | ShootUncheckedCreateWithoutRequestedByInput[]
+    connectOrCreate?: ShootCreateOrConnectWithoutRequestedByInput | ShootCreateOrConnectWithoutRequestedByInput[]
+    upsert?: ShootUpsertWithWhereUniqueWithoutRequestedByInput | ShootUpsertWithWhereUniqueWithoutRequestedByInput[]
+    createMany?: ShootCreateManyRequestedByInputEnvelope
+    set?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    disconnect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    delete?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    update?: ShootUpdateWithWhereUniqueWithoutRequestedByInput | ShootUpdateWithWhereUniqueWithoutRequestedByInput[]
+    updateMany?: ShootUpdateManyWithWhereWithoutRequestedByInput | ShootUpdateManyWithWhereWithoutRequestedByInput[]
     deleteMany?: ShootScalarWhereInput | ShootScalarWhereInput[]
   }
 
@@ -64386,6 +64588,12 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type UserCreateNestedOneWithoutShootRequestsInput = {
+    create?: XOR<UserCreateWithoutShootRequestsInput, UserUncheckedCreateWithoutShootRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutShootRequestsInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type ClientUpdateOneWithoutShootsNestedInput = {
     create?: XOR<ClientCreateWithoutShootsInput, ClientUncheckedCreateWithoutShootsInput>
     connectOrCreate?: ClientCreateOrConnectWithoutShootsInput
@@ -64404,6 +64612,16 @@ export namespace Prisma {
     delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutShootsInput, UserUpdateWithoutShootsInput>, UserUncheckedUpdateWithoutShootsInput>
+  }
+
+  export type UserUpdateOneWithoutShootRequestsNestedInput = {
+    create?: XOR<UserCreateWithoutShootRequestsInput, UserUncheckedCreateWithoutShootRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutShootRequestsInput
+    upsert?: UserUpsertWithoutShootRequestsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutShootRequestsInput, UserUpdateWithoutShootRequestsInput>, UserUncheckedUpdateWithoutShootRequestsInput>
   }
 
   export type ClientCreateNestedOneWithoutGoogleCampaignsInput = {
@@ -65567,9 +65785,12 @@ export namespace Prisma {
     rentAmount?: number
     paid?: boolean
     notes?: string
+    footageLink?: string
+    handedOff?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     client?: ClientCreateNestedOneWithoutShootsInput
+    requestedBy?: UserCreateNestedOneWithoutShootRequestsInput
   }
 
   export type ShootUncheckedCreateWithoutAssignedToInput = {
@@ -65589,6 +65810,9 @@ export namespace Prisma {
     rentAmount?: number
     paid?: boolean
     notes?: string
+    requestedById?: string | null
+    footageLink?: string
+    handedOff?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -65600,6 +65824,63 @@ export namespace Prisma {
 
   export type ShootCreateManyAssignedToInputEnvelope = {
     data: ShootCreateManyAssignedToInput | ShootCreateManyAssignedToInput[]
+  }
+
+  export type ShootCreateWithoutRequestedByInput = {
+    id?: string
+    code: string
+    category: string
+    title: string
+    renterName?: string
+    phone?: string
+    date: string
+    startTime?: string
+    endTime?: string
+    locationType?: string
+    location?: string
+    status?: string
+    rentAmount?: number
+    paid?: boolean
+    notes?: string
+    footageLink?: string
+    handedOff?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    client?: ClientCreateNestedOneWithoutShootsInput
+    assignedTo?: UserCreateNestedOneWithoutShootsInput
+  }
+
+  export type ShootUncheckedCreateWithoutRequestedByInput = {
+    id?: string
+    code: string
+    category: string
+    title: string
+    clientId?: string | null
+    renterName?: string
+    phone?: string
+    date: string
+    startTime?: string
+    endTime?: string
+    locationType?: string
+    location?: string
+    assignedToId?: string | null
+    status?: string
+    rentAmount?: number
+    paid?: boolean
+    notes?: string
+    footageLink?: string
+    handedOff?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ShootCreateOrConnectWithoutRequestedByInput = {
+    where: ShootWhereUniqueInput
+    create: XOR<ShootCreateWithoutRequestedByInput, ShootUncheckedCreateWithoutRequestedByInput>
+  }
+
+  export type ShootCreateManyRequestedByInputEnvelope = {
+    data: ShootCreateManyRequestedByInput | ShootCreateManyRequestedByInput[]
   }
 
   export type ClientUpsertWithWhereUniqueWithoutAccountManagerInput = {
@@ -65993,8 +66274,27 @@ export namespace Prisma {
     rentAmount?: IntFilter<"Shoot"> | number
     paid?: BoolFilter<"Shoot"> | boolean
     notes?: StringFilter<"Shoot"> | string
+    requestedById?: StringNullableFilter<"Shoot"> | string | null
+    footageLink?: StringFilter<"Shoot"> | string
+    handedOff?: BoolFilter<"Shoot"> | boolean
     createdAt?: DateTimeFilter<"Shoot"> | Date | string
     updatedAt?: DateTimeFilter<"Shoot"> | Date | string
+  }
+
+  export type ShootUpsertWithWhereUniqueWithoutRequestedByInput = {
+    where: ShootWhereUniqueInput
+    update: XOR<ShootUpdateWithoutRequestedByInput, ShootUncheckedUpdateWithoutRequestedByInput>
+    create: XOR<ShootCreateWithoutRequestedByInput, ShootUncheckedCreateWithoutRequestedByInput>
+  }
+
+  export type ShootUpdateWithWhereUniqueWithoutRequestedByInput = {
+    where: ShootWhereUniqueInput
+    data: XOR<ShootUpdateWithoutRequestedByInput, ShootUncheckedUpdateWithoutRequestedByInput>
+  }
+
+  export type ShootUpdateManyWithWhereWithoutRequestedByInput = {
+    where: ShootScalarWhereInput
+    data: XOR<ShootUpdateManyMutationInput, ShootUncheckedUpdateManyWithoutRequestedByInput>
   }
 
   export type UserCreateWithoutTasksAssignedInput = {
@@ -66016,6 +66316,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserUncheckedCreateWithoutTasksAssignedInput = {
@@ -66037,6 +66338,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserCreateOrConnectWithoutTasksAssignedInput = {
@@ -66063,6 +66365,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserUncheckedCreateWithoutTasksReceivedInput = {
@@ -66084,6 +66387,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserCreateOrConnectWithoutTasksReceivedInput = {
@@ -66254,6 +66558,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTasksAssignedInput = {
@@ -66275,6 +66580,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type UserUpsertWithoutTasksReceivedInput = {
@@ -66307,6 +66613,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTasksReceivedInput = {
@@ -66328,6 +66635,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type ClientUpsertWithoutTasksInput = {
@@ -66488,6 +66796,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserUncheckedCreateWithoutTimeSessionsInput = {
@@ -66509,6 +66818,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserCreateOrConnectWithoutTimeSessionsInput = {
@@ -66546,6 +66856,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTimeSessionsInput = {
@@ -66567,6 +66878,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type UserCreateWithoutManagedClientsInput = {
@@ -66588,6 +66900,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserUncheckedCreateWithoutManagedClientsInput = {
@@ -66609,6 +66922,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserCreateOrConnectWithoutManagedClientsInput = {
@@ -67417,9 +67731,12 @@ export namespace Prisma {
     rentAmount?: number
     paid?: boolean
     notes?: string
+    footageLink?: string
+    handedOff?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedTo?: UserCreateNestedOneWithoutShootsInput
+    requestedBy?: UserCreateNestedOneWithoutShootRequestsInput
   }
 
   export type ShootUncheckedCreateWithoutClientInput = {
@@ -67439,6 +67756,9 @@ export namespace Prisma {
     rentAmount?: number
     paid?: boolean
     notes?: string
+    requestedById?: string | null
+    footageLink?: string
+    handedOff?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -67482,6 +67802,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutManagedClientsInput = {
@@ -67503,6 +67824,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type ClientServiceUpsertWithWhereUniqueWithoutClientInput = {
@@ -69105,6 +69427,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserUncheckedCreateWithoutAssignmentsInput = {
@@ -69126,6 +69449,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserCreateOrConnectWithoutAssignmentsInput = {
@@ -69302,6 +69626,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignmentsInput = {
@@ -69323,6 +69648,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type ClientCreateWithoutUpdatesInput = {
@@ -69477,6 +69803,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserUncheckedCreateWithoutUpdatesInput = {
@@ -69498,6 +69825,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserCreateOrConnectWithoutUpdatesInput = {
@@ -69674,6 +70002,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUpdatesInput = {
@@ -69695,6 +70024,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type ClientCreateWithoutInvoicesInput = {
@@ -71155,6 +71485,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserUncheckedCreateWithoutDevProjectsInput = {
@@ -71176,6 +71507,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserCreateOrConnectWithoutDevProjectsInput = {
@@ -71400,6 +71732,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDevProjectsInput = {
@@ -71421,6 +71754,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type DevTaskUpsertWithWhereUniqueWithoutProjectInput = {
@@ -73726,6 +74060,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserUncheckedCreateWithoutCreativeTasksInput = {
@@ -73747,6 +74082,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserCreateOrConnectWithoutCreativeTasksInput = {
@@ -73773,6 +74109,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserUncheckedCreateWithoutCreativeAssignedInput = {
@@ -73794,6 +74131,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserCreateOrConnectWithoutCreativeAssignedInput = {
@@ -73970,6 +74308,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreativeTasksInput = {
@@ -73991,6 +74330,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type UserUpsertWithoutCreativeAssignedInput = {
@@ -74023,6 +74363,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreativeAssignedInput = {
@@ -74044,6 +74385,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type ClientCreateWithoutShootsInput = {
@@ -74198,6 +74540,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserUncheckedCreateWithoutShootsInput = {
@@ -74219,11 +74562,61 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserCreateOrConnectWithoutShootsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutShootsInput, UserUncheckedCreateWithoutShootsInput>
+  }
+
+  export type UserCreateWithoutShootRequestsInput = {
+    id?: string
+    name: string
+    role: string
+    email?: string | null
+    phone?: string | null
+    passwordHash?: string | null
+    active?: boolean
+    createdAt?: Date | string
+    managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    assignments?: AssignmentCreateNestedManyWithoutUserInput
+    updates?: WorkUpdateCreateNestedManyWithoutUserInput
+    devProjects?: DevProjectCreateNestedManyWithoutAssignedToInput
+    timeSessions?: TimeSessionCreateNestedManyWithoutUserInput
+    tasksAssigned?: TaskCreateNestedManyWithoutAssignedByInput
+    tasksReceived?: TaskCreateNestedManyWithoutAssignedToInput
+    creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
+    salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootCreateNestedManyWithoutAssignedToInput
+  }
+
+  export type UserUncheckedCreateWithoutShootRequestsInput = {
+    id?: string
+    name: string
+    role: string
+    email?: string | null
+    phone?: string | null
+    passwordHash?: string | null
+    active?: boolean
+    createdAt?: Date | string
+    managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
+    updates?: WorkUpdateUncheckedCreateNestedManyWithoutUserInput
+    devProjects?: DevProjectUncheckedCreateNestedManyWithoutAssignedToInput
+    timeSessions?: TimeSessionUncheckedCreateNestedManyWithoutUserInput
+    tasksAssigned?: TaskUncheckedCreateNestedManyWithoutAssignedByInput
+    tasksReceived?: TaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
+    salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
+  }
+
+  export type UserCreateOrConnectWithoutShootRequestsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutShootRequestsInput, UserUncheckedCreateWithoutShootRequestsInput>
   }
 
   export type ClientUpsertWithoutShootsInput = {
@@ -74395,6 +74788,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutShootsInput = {
@@ -74416,6 +74810,62 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
+  }
+
+  export type UserUpsertWithoutShootRequestsInput = {
+    update: XOR<UserUpdateWithoutShootRequestsInput, UserUncheckedUpdateWithoutShootRequestsInput>
+    create: XOR<UserCreateWithoutShootRequestsInput, UserUncheckedCreateWithoutShootRequestsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutShootRequestsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutShootRequestsInput, UserUncheckedUpdateWithoutShootRequestsInput>
+  }
+
+  export type UserUpdateWithoutShootRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    assignments?: AssignmentUpdateManyWithoutUserNestedInput
+    updates?: WorkUpdateUpdateManyWithoutUserNestedInput
+    devProjects?: DevProjectUpdateManyWithoutAssignedToNestedInput
+    timeSessions?: TimeSessionUpdateManyWithoutUserNestedInput
+    tasksAssigned?: TaskUpdateManyWithoutAssignedByNestedInput
+    tasksReceived?: TaskUpdateManyWithoutAssignedToNestedInput
+    creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
+    salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUpdateManyWithoutAssignedToNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutShootRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
+    updates?: WorkUpdateUncheckedUpdateManyWithoutUserNestedInput
+    devProjects?: DevProjectUncheckedUpdateManyWithoutAssignedToNestedInput
+    timeSessions?: TimeSessionUncheckedUpdateManyWithoutUserNestedInput
+    tasksAssigned?: TaskUncheckedUpdateManyWithoutAssignedByNestedInput
+    tasksReceived?: TaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
+    salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type ClientCreateWithoutGoogleCampaignsInput = {
@@ -74981,6 +75431,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserUncheckedCreateWithoutSalesLeadsInput = {
@@ -75002,6 +75453,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type UserCreateOrConnectWithoutSalesLeadsInput = {
@@ -75235,6 +75687,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSalesLeadsInput = {
@@ -75256,6 +75709,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type FollowupUpsertWithWhereUniqueWithoutLeadInput = {
@@ -76673,6 +77127,33 @@ export namespace Prisma {
     rentAmount?: number
     paid?: boolean
     notes?: string
+    requestedById?: string | null
+    footageLink?: string
+    handedOff?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ShootCreateManyRequestedByInput = {
+    id?: string
+    code: string
+    category: string
+    title: string
+    clientId?: string | null
+    renterName?: string
+    phone?: string
+    date: string
+    startTime?: string
+    endTime?: string
+    locationType?: string
+    location?: string
+    assignedToId?: string | null
+    status?: string
+    rentAmount?: number
+    paid?: boolean
+    notes?: string
+    footageLink?: string
+    handedOff?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -77350,9 +77831,12 @@ export namespace Prisma {
     rentAmount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
+    footageLink?: StringFieldUpdateOperationsInput | string
+    handedOff?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneWithoutShootsNestedInput
+    requestedBy?: UserUpdateOneWithoutShootRequestsNestedInput
   }
 
   export type ShootUncheckedUpdateWithoutAssignedToInput = {
@@ -77372,6 +77856,9 @@ export namespace Prisma {
     rentAmount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
+    requestedById?: NullableStringFieldUpdateOperationsInput | string | null
+    footageLink?: StringFieldUpdateOperationsInput | string
+    handedOff?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -77393,6 +77880,81 @@ export namespace Prisma {
     rentAmount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
+    requestedById?: NullableStringFieldUpdateOperationsInput | string | null
+    footageLink?: StringFieldUpdateOperationsInput | string
+    handedOff?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShootUpdateWithoutRequestedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    renterName?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    locationType?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    rentAmount?: IntFieldUpdateOperationsInput | number
+    paid?: BoolFieldUpdateOperationsInput | boolean
+    notes?: StringFieldUpdateOperationsInput | string
+    footageLink?: StringFieldUpdateOperationsInput | string
+    handedOff?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    client?: ClientUpdateOneWithoutShootsNestedInput
+    assignedTo?: UserUpdateOneWithoutShootsNestedInput
+  }
+
+  export type ShootUncheckedUpdateWithoutRequestedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    renterName?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    locationType?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    rentAmount?: IntFieldUpdateOperationsInput | number
+    paid?: BoolFieldUpdateOperationsInput | boolean
+    notes?: StringFieldUpdateOperationsInput | string
+    footageLink?: StringFieldUpdateOperationsInput | string
+    handedOff?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShootUncheckedUpdateManyWithoutRequestedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    renterName?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    locationType?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    rentAmount?: IntFieldUpdateOperationsInput | number
+    paid?: BoolFieldUpdateOperationsInput | boolean
+    notes?: StringFieldUpdateOperationsInput | string
+    footageLink?: StringFieldUpdateOperationsInput | string
+    handedOff?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -77709,6 +78271,9 @@ export namespace Prisma {
     rentAmount?: number
     paid?: boolean
     notes?: string
+    requestedById?: string | null
+    footageLink?: string
+    handedOff?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -78620,9 +79185,12 @@ export namespace Prisma {
     rentAmount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
+    footageLink?: StringFieldUpdateOperationsInput | string
+    handedOff?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedTo?: UserUpdateOneWithoutShootsNestedInput
+    requestedBy?: UserUpdateOneWithoutShootRequestsNestedInput
   }
 
   export type ShootUncheckedUpdateWithoutClientInput = {
@@ -78642,6 +79210,9 @@ export namespace Prisma {
     rentAmount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
+    requestedById?: NullableStringFieldUpdateOperationsInput | string | null
+    footageLink?: StringFieldUpdateOperationsInput | string
+    handedOff?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -78663,6 +79234,9 @@ export namespace Prisma {
     rentAmount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
+    requestedById?: NullableStringFieldUpdateOperationsInput | string | null
+    footageLink?: StringFieldUpdateOperationsInput | string
+    handedOff?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

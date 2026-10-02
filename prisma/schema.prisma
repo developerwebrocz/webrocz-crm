@@ -33,6 +33,7 @@ model User {
   creativeAssigned CreativeTask[] @relation("CreativeAssigner")
   salesLeads     Lead[]       @relation("LeadOwner")
   shoots         Shoot[]      @relation("ShootAssignee")
+  shootRequests  Shoot[]      @relation("ShootRequester")
 }
 
 model Task {
@@ -622,6 +623,10 @@ model Shoot {
   rentAmount   Int      @default(0) // ₹ for Studio X rentals
   paid         Boolean  @default(false)
   notes        String   @default("")
+  requestedById String? // an AM who requested this WebRocz shoot (Raj then assigns a shooter)
+  requestedBy  User?    @relation("ShootRequester", fields: [requestedById], references: [id], onDelete: SetNull)
+  footageLink  String   @default("") // raw footage drive link after the shoot
+  handedOff    Boolean  @default(false) // handed to a video editor
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

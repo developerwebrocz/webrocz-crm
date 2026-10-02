@@ -1,6 +1,7 @@
 import { getAmDashboard, getCreativeTeam, getClientOptions, getAssignedByMe } from "@/lib/queries";
 import { inrShort, inr } from "@/lib/domain";
 import AssignCreativeForm from "@/components/AssignCreativeForm";
+import RequestShootForm from "@/components/RequestShootForm";
 import {
   Users, Megaphone, Target, Images, IndianRupee, TrendingUp, AlertTriangle,
   ArrowRight, Wallet, Zap, Palette, Clapperboard,
@@ -34,6 +35,7 @@ export default async function AmOverview({ user }: { user: { id: string; name: s
         <div className="flex flex-wrap items-center gap-2">
           <a href="/ads" className="btn btn-ghost"><Megaphone size={15} /> Meta entry</a>
           <a href="/google-ads" className="btn btn-ghost"><Target size={15} /> Google Ads</a>
+          <RequestShootForm clients={clientOpts.map((c) => ({ id: c.id, name: c.name }))} />
           <AssignCreativeForm members={creativeTeam} clients={clientOpts.map((c) => ({ id: c.id, name: c.name }))} />
         </div>
       </div>
