@@ -451,7 +451,7 @@ export async function addCreativeTask(fd: FormData) {
   await prisma.creativeTask.create({
     data: {
       kind, code: `${prefix}-${String(count + 1).padStart(3, "0")}`, title,
-      clientId, assignedToId: u.id,
+      clientId, assignedToId: u.id, assignedById: u.id,
       type: s(fd, "type") || (kind === "VIDEO" ? "Reel" : "Social Creative"),
       priority: ["HIGH", "MEDIUM", "LOW"].includes(s(fd, "priority")) ? s(fd, "priority") : "MEDIUM",
       status: "PENDING", source: "ADDITIONAL",
@@ -511,7 +511,7 @@ export async function assignCreativeTask(fd: FormData) {
   await prisma.creativeTask.create({
     data: {
       kind, code: `${prefix}-${String(count + 1).padStart(3, "0")}`, title,
-      clientId, assignedToId,
+      clientId, assignedToId, assignedById: me.id,
       type: s(fd, "type") || (kind === "VIDEO" ? "Reel" : "Social Creative"),
       priority: ["HIGH", "MEDIUM", "LOW"].includes(s(fd, "priority")) ? s(fd, "priority") : "MEDIUM",
       status: "PENDING", source: "ADDITIONAL",

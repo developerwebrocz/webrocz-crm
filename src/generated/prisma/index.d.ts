@@ -4178,6 +4178,7 @@ export namespace Prisma {
     tasksAssigned: number
     tasksReceived: number
     creativeTasks: number
+    creativeAssigned: number
     salesLeads: number
   }
 
@@ -4190,6 +4191,7 @@ export namespace Prisma {
     tasksAssigned?: boolean | UserCountOutputTypeCountTasksAssignedArgs
     tasksReceived?: boolean | UserCountOutputTypeCountTasksReceivedArgs
     creativeTasks?: boolean | UserCountOutputTypeCountCreativeTasksArgs
+    creativeAssigned?: boolean | UserCountOutputTypeCountCreativeAssignedArgs
     salesLeads?: boolean | UserCountOutputTypeCountSalesLeadsArgs
   }
 
@@ -4257,6 +4259,13 @@ export namespace Prisma {
    * UserCountOutputType without action
    */
   export type UserCountOutputTypeCountCreativeTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CreativeTaskWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountCreativeAssignedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CreativeTaskWhereInput
   }
 
@@ -4826,6 +4835,7 @@ export namespace Prisma {
     tasksAssigned?: boolean | User$tasksAssignedArgs<ExtArgs>
     tasksReceived?: boolean | User$tasksReceivedArgs<ExtArgs>
     creativeTasks?: boolean | User$creativeTasksArgs<ExtArgs>
+    creativeAssigned?: boolean | User$creativeAssignedArgs<ExtArgs>
     salesLeads?: boolean | User$salesLeadsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
@@ -4873,6 +4883,7 @@ export namespace Prisma {
     tasksAssigned?: boolean | User$tasksAssignedArgs<ExtArgs>
     tasksReceived?: boolean | User$tasksReceivedArgs<ExtArgs>
     creativeTasks?: boolean | User$creativeTasksArgs<ExtArgs>
+    creativeAssigned?: boolean | User$creativeAssignedArgs<ExtArgs>
     salesLeads?: boolean | User$salesLeadsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -4890,6 +4901,7 @@ export namespace Prisma {
       tasksAssigned: Prisma.$TaskPayload<ExtArgs>[]
       tasksReceived: Prisma.$TaskPayload<ExtArgs>[]
       creativeTasks: Prisma.$CreativeTaskPayload<ExtArgs>[]
+      creativeAssigned: Prisma.$CreativeTaskPayload<ExtArgs>[]
       salesLeads: Prisma.$LeadPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -5303,6 +5315,7 @@ export namespace Prisma {
     tasksAssigned<T extends User$tasksAssignedArgs<ExtArgs> = {}>(args?: Subset<T, User$tasksAssignedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     tasksReceived<T extends User$tasksReceivedArgs<ExtArgs> = {}>(args?: Subset<T, User$tasksReceivedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     creativeTasks<T extends User$creativeTasksArgs<ExtArgs> = {}>(args?: Subset<T, User$creativeTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CreativeTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    creativeAssigned<T extends User$creativeAssignedArgs<ExtArgs> = {}>(args?: Subset<T, User$creativeAssignedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CreativeTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     salesLeads<T extends User$salesLeadsArgs<ExtArgs> = {}>(args?: Subset<T, User$salesLeadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -5903,6 +5916,30 @@ export namespace Prisma {
    * User.creativeTasks
    */
   export type User$creativeTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CreativeTask
+     */
+    select?: CreativeTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CreativeTask
+     */
+    omit?: CreativeTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CreativeTaskInclude<ExtArgs> | null
+    where?: CreativeTaskWhereInput
+    orderBy?: CreativeTaskOrderByWithRelationInput | CreativeTaskOrderByWithRelationInput[]
+    cursor?: CreativeTaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CreativeTaskScalarFieldEnum | CreativeTaskScalarFieldEnum[]
+  }
+
+  /**
+   * User.creativeAssigned
+   */
+  export type User$creativeAssignedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the CreativeTask
      */
@@ -35249,6 +35286,7 @@ export namespace Prisma {
     title: string | null
     clientId: string | null
     assignedToId: string | null
+    assignedById: string | null
     type: string | null
     priority: string | null
     status: string | null
@@ -35272,6 +35310,7 @@ export namespace Prisma {
     title: string | null
     clientId: string | null
     assignedToId: string | null
+    assignedById: string | null
     type: string | null
     priority: string | null
     status: string | null
@@ -35295,6 +35334,7 @@ export namespace Prisma {
     title: number
     clientId: number
     assignedToId: number
+    assignedById: number
     type: number
     priority: number
     status: number
@@ -35320,6 +35360,7 @@ export namespace Prisma {
     title?: true
     clientId?: true
     assignedToId?: true
+    assignedById?: true
     type?: true
     priority?: true
     status?: true
@@ -35343,6 +35384,7 @@ export namespace Prisma {
     title?: true
     clientId?: true
     assignedToId?: true
+    assignedById?: true
     type?: true
     priority?: true
     status?: true
@@ -35366,6 +35408,7 @@ export namespace Prisma {
     title?: true
     clientId?: true
     assignedToId?: true
+    assignedById?: true
     type?: true
     priority?: true
     status?: true
@@ -35462,6 +35505,7 @@ export namespace Prisma {
     title: string
     clientId: string | null
     assignedToId: string
+    assignedById: string | null
     type: string
     priority: string
     status: string
@@ -35502,6 +35546,7 @@ export namespace Prisma {
     title?: boolean
     clientId?: boolean
     assignedToId?: boolean
+    assignedById?: boolean
     type?: boolean
     priority?: boolean
     status?: boolean
@@ -35518,6 +35563,7 @@ export namespace Prisma {
     updatedAt?: boolean
     client?: boolean | CreativeTask$clientArgs<ExtArgs>
     assignedTo?: boolean | UserDefaultArgs<ExtArgs>
+    assignedByUser?: boolean | CreativeTask$assignedByUserArgs<ExtArgs>
   }, ExtArgs["result"]["creativeTask"]>
 
   export type CreativeTaskSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -35527,6 +35573,7 @@ export namespace Prisma {
     title?: boolean
     clientId?: boolean
     assignedToId?: boolean
+    assignedById?: boolean
     type?: boolean
     priority?: boolean
     status?: boolean
@@ -35543,6 +35590,7 @@ export namespace Prisma {
     updatedAt?: boolean
     client?: boolean | CreativeTask$clientArgs<ExtArgs>
     assignedTo?: boolean | UserDefaultArgs<ExtArgs>
+    assignedByUser?: boolean | CreativeTask$assignedByUserArgs<ExtArgs>
   }, ExtArgs["result"]["creativeTask"]>
 
   export type CreativeTaskSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -35552,6 +35600,7 @@ export namespace Prisma {
     title?: boolean
     clientId?: boolean
     assignedToId?: boolean
+    assignedById?: boolean
     type?: boolean
     priority?: boolean
     status?: boolean
@@ -35568,6 +35617,7 @@ export namespace Prisma {
     updatedAt?: boolean
     client?: boolean | CreativeTask$clientArgs<ExtArgs>
     assignedTo?: boolean | UserDefaultArgs<ExtArgs>
+    assignedByUser?: boolean | CreativeTask$assignedByUserArgs<ExtArgs>
   }, ExtArgs["result"]["creativeTask"]>
 
   export type CreativeTaskSelectScalar = {
@@ -35577,6 +35627,7 @@ export namespace Prisma {
     title?: boolean
     clientId?: boolean
     assignedToId?: boolean
+    assignedById?: boolean
     type?: boolean
     priority?: boolean
     status?: boolean
@@ -35593,18 +35644,21 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type CreativeTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "kind" | "code" | "title" | "clientId" | "assignedToId" | "type" | "priority" | "status" | "source" | "assignedDate" | "dueDate" | "dimensions" | "brief" | "notes" | "refLink" | "rawLink" | "finalLink" | "createdAt" | "updatedAt", ExtArgs["result"]["creativeTask"]>
+  export type CreativeTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "kind" | "code" | "title" | "clientId" | "assignedToId" | "assignedById" | "type" | "priority" | "status" | "source" | "assignedDate" | "dueDate" | "dimensions" | "brief" | "notes" | "refLink" | "rawLink" | "finalLink" | "createdAt" | "updatedAt", ExtArgs["result"]["creativeTask"]>
   export type CreativeTaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | CreativeTask$clientArgs<ExtArgs>
     assignedTo?: boolean | UserDefaultArgs<ExtArgs>
+    assignedByUser?: boolean | CreativeTask$assignedByUserArgs<ExtArgs>
   }
   export type CreativeTaskIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | CreativeTask$clientArgs<ExtArgs>
     assignedTo?: boolean | UserDefaultArgs<ExtArgs>
+    assignedByUser?: boolean | CreativeTask$assignedByUserArgs<ExtArgs>
   }
   export type CreativeTaskIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | CreativeTask$clientArgs<ExtArgs>
     assignedTo?: boolean | UserDefaultArgs<ExtArgs>
+    assignedByUser?: boolean | CreativeTask$assignedByUserArgs<ExtArgs>
   }
 
   export type $CreativeTaskPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -35612,6 +35666,7 @@ export namespace Prisma {
     objects: {
       client: Prisma.$ClientPayload<ExtArgs> | null
       assignedTo: Prisma.$UserPayload<ExtArgs>
+      assignedByUser: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -35620,6 +35675,7 @@ export namespace Prisma {
       title: string
       clientId: string | null
       assignedToId: string
+      assignedById: string | null
       type: string
       priority: string
       status: string
@@ -36030,6 +36086,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     client<T extends CreativeTask$clientArgs<ExtArgs> = {}>(args?: Subset<T, CreativeTask$clientArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     assignedTo<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    assignedByUser<T extends CreativeTask$assignedByUserArgs<ExtArgs> = {}>(args?: Subset<T, CreativeTask$assignedByUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -36065,6 +36122,7 @@ export namespace Prisma {
     readonly title: FieldRef<"CreativeTask", 'String'>
     readonly clientId: FieldRef<"CreativeTask", 'String'>
     readonly assignedToId: FieldRef<"CreativeTask", 'String'>
+    readonly assignedById: FieldRef<"CreativeTask", 'String'>
     readonly type: FieldRef<"CreativeTask", 'String'>
     readonly priority: FieldRef<"CreativeTask", 'String'>
     readonly status: FieldRef<"CreativeTask", 'String'>
@@ -36494,6 +36552,25 @@ export namespace Prisma {
      */
     include?: ClientInclude<ExtArgs> | null
     where?: ClientWhereInput
+  }
+
+  /**
+   * CreativeTask.assignedByUser
+   */
+  export type CreativeTask$assignedByUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -49920,6 +49997,7 @@ export namespace Prisma {
     title: 'title',
     clientId: 'clientId',
     assignedToId: 'assignedToId',
+    assignedById: 'assignedById',
     type: 'type',
     priority: 'priority',
     status: 'status',
@@ -50212,6 +50290,7 @@ export namespace Prisma {
     tasksAssigned?: TaskListRelationFilter
     tasksReceived?: TaskListRelationFilter
     creativeTasks?: CreativeTaskListRelationFilter
+    creativeAssigned?: CreativeTaskListRelationFilter
     salesLeads?: LeadListRelationFilter
   }
 
@@ -50232,6 +50311,7 @@ export namespace Prisma {
     tasksAssigned?: TaskOrderByRelationAggregateInput
     tasksReceived?: TaskOrderByRelationAggregateInput
     creativeTasks?: CreativeTaskOrderByRelationAggregateInput
+    creativeAssigned?: CreativeTaskOrderByRelationAggregateInput
     salesLeads?: LeadOrderByRelationAggregateInput
   }
 
@@ -50255,6 +50335,7 @@ export namespace Prisma {
     tasksAssigned?: TaskListRelationFilter
     tasksReceived?: TaskListRelationFilter
     creativeTasks?: CreativeTaskListRelationFilter
+    creativeAssigned?: CreativeTaskListRelationFilter
     salesLeads?: LeadListRelationFilter
   }, "id" | "email">
 
@@ -52614,6 +52695,7 @@ export namespace Prisma {
     title?: StringFilter<"CreativeTask"> | string
     clientId?: StringNullableFilter<"CreativeTask"> | string | null
     assignedToId?: StringFilter<"CreativeTask"> | string
+    assignedById?: StringNullableFilter<"CreativeTask"> | string | null
     type?: StringFilter<"CreativeTask"> | string
     priority?: StringFilter<"CreativeTask"> | string
     status?: StringFilter<"CreativeTask"> | string
@@ -52630,6 +52712,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"CreativeTask"> | Date | string
     client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
     assignedTo?: XOR<UserScalarRelationFilter, UserWhereInput>
+    assignedByUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
   export type CreativeTaskOrderByWithRelationInput = {
@@ -52639,6 +52722,7 @@ export namespace Prisma {
     title?: SortOrder
     clientId?: SortOrderInput | SortOrder
     assignedToId?: SortOrder
+    assignedById?: SortOrderInput | SortOrder
     type?: SortOrder
     priority?: SortOrder
     status?: SortOrder
@@ -52655,6 +52739,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     client?: ClientOrderByWithRelationInput
     assignedTo?: UserOrderByWithRelationInput
+    assignedByUser?: UserOrderByWithRelationInput
   }
 
   export type CreativeTaskWhereUniqueInput = Prisma.AtLeast<{
@@ -52667,6 +52752,7 @@ export namespace Prisma {
     title?: StringFilter<"CreativeTask"> | string
     clientId?: StringNullableFilter<"CreativeTask"> | string | null
     assignedToId?: StringFilter<"CreativeTask"> | string
+    assignedById?: StringNullableFilter<"CreativeTask"> | string | null
     type?: StringFilter<"CreativeTask"> | string
     priority?: StringFilter<"CreativeTask"> | string
     status?: StringFilter<"CreativeTask"> | string
@@ -52683,6 +52769,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"CreativeTask"> | Date | string
     client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
     assignedTo?: XOR<UserScalarRelationFilter, UserWhereInput>
+    assignedByUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id">
 
   export type CreativeTaskOrderByWithAggregationInput = {
@@ -52692,6 +52779,7 @@ export namespace Prisma {
     title?: SortOrder
     clientId?: SortOrderInput | SortOrder
     assignedToId?: SortOrder
+    assignedById?: SortOrderInput | SortOrder
     type?: SortOrder
     priority?: SortOrder
     status?: SortOrder
@@ -52721,6 +52809,7 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter<"CreativeTask"> | string
     clientId?: StringNullableWithAggregatesFilter<"CreativeTask"> | string | null
     assignedToId?: StringWithAggregatesFilter<"CreativeTask"> | string
+    assignedById?: StringNullableWithAggregatesFilter<"CreativeTask"> | string | null
     type?: StringWithAggregatesFilter<"CreativeTask"> | string
     priority?: StringWithAggregatesFilter<"CreativeTask"> | string
     status?: StringWithAggregatesFilter<"CreativeTask"> | string
@@ -53749,6 +53838,7 @@ export namespace Prisma {
     tasksAssigned?: TaskCreateNestedManyWithoutAssignedByInput
     tasksReceived?: TaskCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
   }
 
@@ -53769,6 +53859,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUncheckedCreateNestedManyWithoutAssignedByInput
     tasksReceived?: TaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
@@ -53789,6 +53880,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUpdateManyWithoutAssignedByNestedInput
     tasksReceived?: TaskUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -53809,6 +53901,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUncheckedUpdateManyWithoutAssignedByNestedInput
     tasksReceived?: TaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -56496,6 +56589,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     client?: ClientCreateNestedOneWithoutCreativeTasksInput
     assignedTo: UserCreateNestedOneWithoutCreativeTasksInput
+    assignedByUser?: UserCreateNestedOneWithoutCreativeAssignedInput
   }
 
   export type CreativeTaskUncheckedCreateInput = {
@@ -56505,6 +56599,7 @@ export namespace Prisma {
     title: string
     clientId?: string | null
     assignedToId: string
+    assignedById?: string | null
     type: string
     priority?: string
     status?: string
@@ -56542,6 +56637,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneWithoutCreativeTasksNestedInput
     assignedTo?: UserUpdateOneRequiredWithoutCreativeTasksNestedInput
+    assignedByUser?: UserUpdateOneWithoutCreativeAssignedNestedInput
   }
 
   export type CreativeTaskUncheckedUpdateInput = {
@@ -56551,6 +56647,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
     assignedToId?: StringFieldUpdateOperationsInput | string
+    assignedById?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -56574,6 +56671,7 @@ export namespace Prisma {
     title: string
     clientId?: string | null
     assignedToId: string
+    assignedById?: string | null
     type: string
     priority?: string
     status?: string
@@ -56618,6 +56716,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
     assignedToId?: StringFieldUpdateOperationsInput | string
+    assignedById?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -59683,6 +59782,7 @@ export namespace Prisma {
     title?: SortOrder
     clientId?: SortOrder
     assignedToId?: SortOrder
+    assignedById?: SortOrder
     type?: SortOrder
     priority?: SortOrder
     status?: SortOrder
@@ -59706,6 +59806,7 @@ export namespace Prisma {
     title?: SortOrder
     clientId?: SortOrder
     assignedToId?: SortOrder
+    assignedById?: SortOrder
     type?: SortOrder
     priority?: SortOrder
     status?: SortOrder
@@ -59729,6 +59830,7 @@ export namespace Prisma {
     title?: SortOrder
     clientId?: SortOrder
     assignedToId?: SortOrder
+    assignedById?: SortOrder
     type?: SortOrder
     priority?: SortOrder
     status?: SortOrder
@@ -60427,6 +60529,13 @@ export namespace Prisma {
     connect?: CreativeTaskWhereUniqueInput | CreativeTaskWhereUniqueInput[]
   }
 
+  export type CreativeTaskCreateNestedManyWithoutAssignedByUserInput = {
+    create?: XOR<CreativeTaskCreateWithoutAssignedByUserInput, CreativeTaskUncheckedCreateWithoutAssignedByUserInput> | CreativeTaskCreateWithoutAssignedByUserInput[] | CreativeTaskUncheckedCreateWithoutAssignedByUserInput[]
+    connectOrCreate?: CreativeTaskCreateOrConnectWithoutAssignedByUserInput | CreativeTaskCreateOrConnectWithoutAssignedByUserInput[]
+    createMany?: CreativeTaskCreateManyAssignedByUserInputEnvelope
+    connect?: CreativeTaskWhereUniqueInput | CreativeTaskWhereUniqueInput[]
+  }
+
   export type LeadCreateNestedManyWithoutAssignedToInput = {
     create?: XOR<LeadCreateWithoutAssignedToInput, LeadUncheckedCreateWithoutAssignedToInput> | LeadCreateWithoutAssignedToInput[] | LeadUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: LeadCreateOrConnectWithoutAssignedToInput | LeadCreateOrConnectWithoutAssignedToInput[]
@@ -60487,6 +60596,13 @@ export namespace Prisma {
     create?: XOR<CreativeTaskCreateWithoutAssignedToInput, CreativeTaskUncheckedCreateWithoutAssignedToInput> | CreativeTaskCreateWithoutAssignedToInput[] | CreativeTaskUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: CreativeTaskCreateOrConnectWithoutAssignedToInput | CreativeTaskCreateOrConnectWithoutAssignedToInput[]
     createMany?: CreativeTaskCreateManyAssignedToInputEnvelope
+    connect?: CreativeTaskWhereUniqueInput | CreativeTaskWhereUniqueInput[]
+  }
+
+  export type CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput = {
+    create?: XOR<CreativeTaskCreateWithoutAssignedByUserInput, CreativeTaskUncheckedCreateWithoutAssignedByUserInput> | CreativeTaskCreateWithoutAssignedByUserInput[] | CreativeTaskUncheckedCreateWithoutAssignedByUserInput[]
+    connectOrCreate?: CreativeTaskCreateOrConnectWithoutAssignedByUserInput | CreativeTaskCreateOrConnectWithoutAssignedByUserInput[]
+    createMany?: CreativeTaskCreateManyAssignedByUserInputEnvelope
     connect?: CreativeTaskWhereUniqueInput | CreativeTaskWhereUniqueInput[]
   }
 
@@ -60625,6 +60741,20 @@ export namespace Prisma {
     deleteMany?: CreativeTaskScalarWhereInput | CreativeTaskScalarWhereInput[]
   }
 
+  export type CreativeTaskUpdateManyWithoutAssignedByUserNestedInput = {
+    create?: XOR<CreativeTaskCreateWithoutAssignedByUserInput, CreativeTaskUncheckedCreateWithoutAssignedByUserInput> | CreativeTaskCreateWithoutAssignedByUserInput[] | CreativeTaskUncheckedCreateWithoutAssignedByUserInput[]
+    connectOrCreate?: CreativeTaskCreateOrConnectWithoutAssignedByUserInput | CreativeTaskCreateOrConnectWithoutAssignedByUserInput[]
+    upsert?: CreativeTaskUpsertWithWhereUniqueWithoutAssignedByUserInput | CreativeTaskUpsertWithWhereUniqueWithoutAssignedByUserInput[]
+    createMany?: CreativeTaskCreateManyAssignedByUserInputEnvelope
+    set?: CreativeTaskWhereUniqueInput | CreativeTaskWhereUniqueInput[]
+    disconnect?: CreativeTaskWhereUniqueInput | CreativeTaskWhereUniqueInput[]
+    delete?: CreativeTaskWhereUniqueInput | CreativeTaskWhereUniqueInput[]
+    connect?: CreativeTaskWhereUniqueInput | CreativeTaskWhereUniqueInput[]
+    update?: CreativeTaskUpdateWithWhereUniqueWithoutAssignedByUserInput | CreativeTaskUpdateWithWhereUniqueWithoutAssignedByUserInput[]
+    updateMany?: CreativeTaskUpdateManyWithWhereWithoutAssignedByUserInput | CreativeTaskUpdateManyWithWhereWithoutAssignedByUserInput[]
+    deleteMany?: CreativeTaskScalarWhereInput | CreativeTaskScalarWhereInput[]
+  }
+
   export type LeadUpdateManyWithoutAssignedToNestedInput = {
     create?: XOR<LeadCreateWithoutAssignedToInput, LeadUncheckedCreateWithoutAssignedToInput> | LeadCreateWithoutAssignedToInput[] | LeadUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: LeadCreateOrConnectWithoutAssignedToInput | LeadCreateOrConnectWithoutAssignedToInput[]
@@ -60748,6 +60878,20 @@ export namespace Prisma {
     connect?: CreativeTaskWhereUniqueInput | CreativeTaskWhereUniqueInput[]
     update?: CreativeTaskUpdateWithWhereUniqueWithoutAssignedToInput | CreativeTaskUpdateWithWhereUniqueWithoutAssignedToInput[]
     updateMany?: CreativeTaskUpdateManyWithWhereWithoutAssignedToInput | CreativeTaskUpdateManyWithWhereWithoutAssignedToInput[]
+    deleteMany?: CreativeTaskScalarWhereInput | CreativeTaskScalarWhereInput[]
+  }
+
+  export type CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput = {
+    create?: XOR<CreativeTaskCreateWithoutAssignedByUserInput, CreativeTaskUncheckedCreateWithoutAssignedByUserInput> | CreativeTaskCreateWithoutAssignedByUserInput[] | CreativeTaskUncheckedCreateWithoutAssignedByUserInput[]
+    connectOrCreate?: CreativeTaskCreateOrConnectWithoutAssignedByUserInput | CreativeTaskCreateOrConnectWithoutAssignedByUserInput[]
+    upsert?: CreativeTaskUpsertWithWhereUniqueWithoutAssignedByUserInput | CreativeTaskUpsertWithWhereUniqueWithoutAssignedByUserInput[]
+    createMany?: CreativeTaskCreateManyAssignedByUserInputEnvelope
+    set?: CreativeTaskWhereUniqueInput | CreativeTaskWhereUniqueInput[]
+    disconnect?: CreativeTaskWhereUniqueInput | CreativeTaskWhereUniqueInput[]
+    delete?: CreativeTaskWhereUniqueInput | CreativeTaskWhereUniqueInput[]
+    connect?: CreativeTaskWhereUniqueInput | CreativeTaskWhereUniqueInput[]
+    update?: CreativeTaskUpdateWithWhereUniqueWithoutAssignedByUserInput | CreativeTaskUpdateWithWhereUniqueWithoutAssignedByUserInput[]
+    updateMany?: CreativeTaskUpdateManyWithWhereWithoutAssignedByUserInput | CreativeTaskUpdateManyWithWhereWithoutAssignedByUserInput[]
     deleteMany?: CreativeTaskScalarWhereInput | CreativeTaskScalarWhereInput[]
   }
 
@@ -62219,6 +62363,12 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type UserCreateNestedOneWithoutCreativeAssignedInput = {
+    create?: XOR<UserCreateWithoutCreativeAssignedInput, UserUncheckedCreateWithoutCreativeAssignedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCreativeAssignedInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type ClientUpdateOneWithoutCreativeTasksNestedInput = {
     create?: XOR<ClientCreateWithoutCreativeTasksInput, ClientUncheckedCreateWithoutCreativeTasksInput>
     connectOrCreate?: ClientCreateOrConnectWithoutCreativeTasksInput
@@ -62235,6 +62385,16 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutCreativeTasksInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCreativeTasksInput, UserUpdateWithoutCreativeTasksInput>, UserUncheckedUpdateWithoutCreativeTasksInput>
+  }
+
+  export type UserUpdateOneWithoutCreativeAssignedNestedInput = {
+    create?: XOR<UserCreateWithoutCreativeAssignedInput, UserUncheckedCreateWithoutCreativeAssignedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCreativeAssignedInput
+    upsert?: UserUpsertWithoutCreativeAssignedInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCreativeAssignedInput, UserUpdateWithoutCreativeAssignedInput>, UserUncheckedUpdateWithoutCreativeAssignedInput>
   }
 
   export type ClientCreateNestedOneWithoutGoogleCampaignsInput = {
@@ -63205,6 +63365,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     client?: ClientCreateNestedOneWithoutCreativeTasksInput
+    assignedByUser?: UserCreateNestedOneWithoutCreativeAssignedInput
   }
 
   export type CreativeTaskUncheckedCreateWithoutAssignedToInput = {
@@ -63213,6 +63374,7 @@ export namespace Prisma {
     code: string
     title: string
     clientId?: string | null
+    assignedById?: string | null
     type: string
     priority?: string
     status?: string
@@ -63236,6 +63398,61 @@ export namespace Prisma {
 
   export type CreativeTaskCreateManyAssignedToInputEnvelope = {
     data: CreativeTaskCreateManyAssignedToInput | CreativeTaskCreateManyAssignedToInput[]
+  }
+
+  export type CreativeTaskCreateWithoutAssignedByUserInput = {
+    id?: string
+    kind: string
+    code: string
+    title: string
+    type: string
+    priority?: string
+    status?: string
+    source?: string
+    assignedDate?: string
+    dueDate?: string
+    dimensions?: string
+    brief?: string
+    notes?: string
+    refLink?: string
+    rawLink?: string
+    finalLink?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    client?: ClientCreateNestedOneWithoutCreativeTasksInput
+    assignedTo: UserCreateNestedOneWithoutCreativeTasksInput
+  }
+
+  export type CreativeTaskUncheckedCreateWithoutAssignedByUserInput = {
+    id?: string
+    kind: string
+    code: string
+    title: string
+    clientId?: string | null
+    assignedToId: string
+    type: string
+    priority?: string
+    status?: string
+    source?: string
+    assignedDate?: string
+    dueDate?: string
+    dimensions?: string
+    brief?: string
+    notes?: string
+    refLink?: string
+    rawLink?: string
+    finalLink?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CreativeTaskCreateOrConnectWithoutAssignedByUserInput = {
+    where: CreativeTaskWhereUniqueInput
+    create: XOR<CreativeTaskCreateWithoutAssignedByUserInput, CreativeTaskUncheckedCreateWithoutAssignedByUserInput>
+  }
+
+  export type CreativeTaskCreateManyAssignedByUserInputEnvelope = {
+    data: CreativeTaskCreateManyAssignedByUserInput | CreativeTaskCreateManyAssignedByUserInput[]
   }
 
   export type LeadCreateWithoutAssignedToInput = {
@@ -63592,6 +63809,7 @@ export namespace Prisma {
     title?: StringFilter<"CreativeTask"> | string
     clientId?: StringNullableFilter<"CreativeTask"> | string | null
     assignedToId?: StringFilter<"CreativeTask"> | string
+    assignedById?: StringNullableFilter<"CreativeTask"> | string | null
     type?: StringFilter<"CreativeTask"> | string
     priority?: StringFilter<"CreativeTask"> | string
     status?: StringFilter<"CreativeTask"> | string
@@ -63606,6 +63824,22 @@ export namespace Prisma {
     finalLink?: StringFilter<"CreativeTask"> | string
     createdAt?: DateTimeFilter<"CreativeTask"> | Date | string
     updatedAt?: DateTimeFilter<"CreativeTask"> | Date | string
+  }
+
+  export type CreativeTaskUpsertWithWhereUniqueWithoutAssignedByUserInput = {
+    where: CreativeTaskWhereUniqueInput
+    update: XOR<CreativeTaskUpdateWithoutAssignedByUserInput, CreativeTaskUncheckedUpdateWithoutAssignedByUserInput>
+    create: XOR<CreativeTaskCreateWithoutAssignedByUserInput, CreativeTaskUncheckedCreateWithoutAssignedByUserInput>
+  }
+
+  export type CreativeTaskUpdateWithWhereUniqueWithoutAssignedByUserInput = {
+    where: CreativeTaskWhereUniqueInput
+    data: XOR<CreativeTaskUpdateWithoutAssignedByUserInput, CreativeTaskUncheckedUpdateWithoutAssignedByUserInput>
+  }
+
+  export type CreativeTaskUpdateManyWithWhereWithoutAssignedByUserInput = {
+    where: CreativeTaskScalarWhereInput
+    data: XOR<CreativeTaskUpdateManyMutationInput, CreativeTaskUncheckedUpdateManyWithoutAssignedByUserInput>
   }
 
   export type LeadUpsertWithWhereUniqueWithoutAssignedToInput = {
@@ -63676,6 +63910,7 @@ export namespace Prisma {
     timeSessions?: TimeSessionCreateNestedManyWithoutUserInput
     tasksReceived?: TaskCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
   }
 
@@ -63695,6 +63930,7 @@ export namespace Prisma {
     timeSessions?: TimeSessionUncheckedCreateNestedManyWithoutUserInput
     tasksReceived?: TaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
@@ -63719,6 +63955,7 @@ export namespace Prisma {
     timeSessions?: TimeSessionCreateNestedManyWithoutUserInput
     tasksAssigned?: TaskCreateNestedManyWithoutAssignedByInput
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
   }
 
@@ -63738,6 +63975,7 @@ export namespace Prisma {
     timeSessions?: TimeSessionUncheckedCreateNestedManyWithoutUserInput
     tasksAssigned?: TaskUncheckedCreateNestedManyWithoutAssignedByInput
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
@@ -63904,6 +64142,7 @@ export namespace Prisma {
     timeSessions?: TimeSessionUpdateManyWithoutUserNestedInput
     tasksReceived?: TaskUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -63923,6 +64162,7 @@ export namespace Prisma {
     timeSessions?: TimeSessionUncheckedUpdateManyWithoutUserNestedInput
     tasksReceived?: TaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -63953,6 +64193,7 @@ export namespace Prisma {
     timeSessions?: TimeSessionUpdateManyWithoutUserNestedInput
     tasksAssigned?: TaskUpdateManyWithoutAssignedByNestedInput
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -63972,6 +64213,7 @@ export namespace Prisma {
     timeSessions?: TimeSessionUncheckedUpdateManyWithoutUserNestedInput
     tasksAssigned?: TaskUncheckedUpdateManyWithoutAssignedByNestedInput
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -64128,6 +64370,7 @@ export namespace Prisma {
     tasksAssigned?: TaskCreateNestedManyWithoutAssignedByInput
     tasksReceived?: TaskCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
   }
 
@@ -64147,6 +64390,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUncheckedCreateNestedManyWithoutAssignedByInput
     tasksReceived?: TaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
@@ -64182,6 +64426,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUpdateManyWithoutAssignedByNestedInput
     tasksReceived?: TaskUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -64201,6 +64446,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUncheckedUpdateManyWithoutAssignedByNestedInput
     tasksReceived?: TaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -64220,6 +64466,7 @@ export namespace Prisma {
     tasksAssigned?: TaskCreateNestedManyWithoutAssignedByInput
     tasksReceived?: TaskCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
   }
 
@@ -64239,6 +64486,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUncheckedCreateNestedManyWithoutAssignedByInput
     tasksReceived?: TaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
@@ -64779,6 +65027,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedTo: UserCreateNestedOneWithoutCreativeTasksInput
+    assignedByUser?: UserCreateNestedOneWithoutCreativeAssignedInput
   }
 
   export type CreativeTaskUncheckedCreateWithoutClientInput = {
@@ -64787,6 +65036,7 @@ export namespace Prisma {
     code: string
     title: string
     assignedToId: string
+    assignedById?: string | null
     type: string
     priority?: string
     status?: string
@@ -65057,6 +65307,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUpdateManyWithoutAssignedByNestedInput
     tasksReceived?: TaskUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -65076,6 +65327,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUncheckedUpdateManyWithoutAssignedByNestedInput
     tasksReceived?: TaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -66646,6 +66898,7 @@ export namespace Prisma {
     tasksAssigned?: TaskCreateNestedManyWithoutAssignedByInput
     tasksReceived?: TaskCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
   }
 
@@ -66665,6 +66918,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUncheckedCreateNestedManyWithoutAssignedByInput
     tasksReceived?: TaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
@@ -66837,6 +67091,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUpdateManyWithoutAssignedByNestedInput
     tasksReceived?: TaskUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -66856,6 +67111,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUncheckedUpdateManyWithoutAssignedByNestedInput
     tasksReceived?: TaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -67006,6 +67262,7 @@ export namespace Prisma {
     tasksAssigned?: TaskCreateNestedManyWithoutAssignedByInput
     tasksReceived?: TaskCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
   }
 
@@ -67025,6 +67282,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUncheckedCreateNestedManyWithoutAssignedByInput
     tasksReceived?: TaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
@@ -67197,6 +67455,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUpdateManyWithoutAssignedByNestedInput
     tasksReceived?: TaskUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -67216,6 +67475,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUncheckedUpdateManyWithoutAssignedByNestedInput
     tasksReceived?: TaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -68656,6 +68916,7 @@ export namespace Prisma {
     tasksAssigned?: TaskCreateNestedManyWithoutAssignedByInput
     tasksReceived?: TaskCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
   }
 
@@ -68675,6 +68936,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUncheckedCreateNestedManyWithoutAssignedByInput
     tasksReceived?: TaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
@@ -68895,6 +69157,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUpdateManyWithoutAssignedByNestedInput
     tasksReceived?: TaskUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -68914,6 +69177,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUncheckedUpdateManyWithoutAssignedByNestedInput
     tasksReceived?: TaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -71187,6 +71451,7 @@ export namespace Prisma {
     timeSessions?: TimeSessionCreateNestedManyWithoutUserInput
     tasksAssigned?: TaskCreateNestedManyWithoutAssignedByInput
     tasksReceived?: TaskCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
   }
 
@@ -71206,12 +71471,58 @@ export namespace Prisma {
     timeSessions?: TimeSessionUncheckedCreateNestedManyWithoutUserInput
     tasksAssigned?: TaskUncheckedCreateNestedManyWithoutAssignedByInput
     tasksReceived?: TaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutCreativeTasksInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutCreativeTasksInput, UserUncheckedCreateWithoutCreativeTasksInput>
+  }
+
+  export type UserCreateWithoutCreativeAssignedInput = {
+    id?: string
+    name: string
+    role: string
+    email?: string | null
+    phone?: string | null
+    passwordHash?: string | null
+    active?: boolean
+    createdAt?: Date | string
+    managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    assignments?: AssignmentCreateNestedManyWithoutUserInput
+    updates?: WorkUpdateCreateNestedManyWithoutUserInput
+    devProjects?: DevProjectCreateNestedManyWithoutAssignedToInput
+    timeSessions?: TimeSessionCreateNestedManyWithoutUserInput
+    tasksAssigned?: TaskCreateNestedManyWithoutAssignedByInput
+    tasksReceived?: TaskCreateNestedManyWithoutAssignedToInput
+    creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
+    salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
+  }
+
+  export type UserUncheckedCreateWithoutCreativeAssignedInput = {
+    id?: string
+    name: string
+    role: string
+    email?: string | null
+    phone?: string | null
+    passwordHash?: string | null
+    active?: boolean
+    createdAt?: Date | string
+    managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
+    updates?: WorkUpdateUncheckedCreateNestedManyWithoutUserInput
+    devProjects?: DevProjectUncheckedCreateNestedManyWithoutAssignedToInput
+    timeSessions?: TimeSessionUncheckedCreateNestedManyWithoutUserInput
+    tasksAssigned?: TaskUncheckedCreateNestedManyWithoutAssignedByInput
+    tasksReceived?: TaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
+  }
+
+  export type UserCreateOrConnectWithoutCreativeAssignedInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCreativeAssignedInput, UserUncheckedCreateWithoutCreativeAssignedInput>
   }
 
   export type ClientUpsertWithoutCreativeTasksInput = {
@@ -71378,6 +71689,7 @@ export namespace Prisma {
     timeSessions?: TimeSessionUpdateManyWithoutUserNestedInput
     tasksAssigned?: TaskUpdateManyWithoutAssignedByNestedInput
     tasksReceived?: TaskUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -71397,6 +71709,58 @@ export namespace Prisma {
     timeSessions?: TimeSessionUncheckedUpdateManyWithoutUserNestedInput
     tasksAssigned?: TaskUncheckedUpdateManyWithoutAssignedByNestedInput
     tasksReceived?: TaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
+    salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
+  }
+
+  export type UserUpsertWithoutCreativeAssignedInput = {
+    update: XOR<UserUpdateWithoutCreativeAssignedInput, UserUncheckedUpdateWithoutCreativeAssignedInput>
+    create: XOR<UserCreateWithoutCreativeAssignedInput, UserUncheckedCreateWithoutCreativeAssignedInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutCreativeAssignedInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutCreativeAssignedInput, UserUncheckedUpdateWithoutCreativeAssignedInput>
+  }
+
+  export type UserUpdateWithoutCreativeAssignedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    assignments?: AssignmentUpdateManyWithoutUserNestedInput
+    updates?: WorkUpdateUpdateManyWithoutUserNestedInput
+    devProjects?: DevProjectUpdateManyWithoutAssignedToNestedInput
+    timeSessions?: TimeSessionUpdateManyWithoutUserNestedInput
+    tasksAssigned?: TaskUpdateManyWithoutAssignedByNestedInput
+    tasksReceived?: TaskUpdateManyWithoutAssignedToNestedInput
+    creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
+    salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCreativeAssignedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
+    updates?: WorkUpdateUncheckedUpdateManyWithoutUserNestedInput
+    devProjects?: DevProjectUncheckedUpdateManyWithoutAssignedToNestedInput
+    timeSessions?: TimeSessionUncheckedUpdateManyWithoutUserNestedInput
+    tasksAssigned?: TaskUncheckedUpdateManyWithoutAssignedByNestedInput
+    tasksReceived?: TaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -71953,6 +72317,7 @@ export namespace Prisma {
     tasksAssigned?: TaskCreateNestedManyWithoutAssignedByInput
     tasksReceived?: TaskCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
   }
 
   export type UserUncheckedCreateWithoutSalesLeadsInput = {
@@ -71972,6 +72337,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUncheckedCreateNestedManyWithoutAssignedByInput
     tasksReceived?: TaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
   }
 
   export type UserCreateOrConnectWithoutSalesLeadsInput = {
@@ -72203,6 +72569,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUpdateManyWithoutAssignedByNestedInput
     tasksReceived?: TaskUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSalesLeadsInput = {
@@ -72222,6 +72589,7 @@ export namespace Prisma {
     tasksAssigned?: TaskUncheckedUpdateManyWithoutAssignedByNestedInput
     tasksReceived?: TaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
   }
 
   export type FollowupUpsertWithWhereUniqueWithoutLeadInput = {
@@ -73550,6 +73918,30 @@ export namespace Prisma {
     code: string
     title: string
     clientId?: string | null
+    assignedById?: string | null
+    type: string
+    priority?: string
+    status?: string
+    source?: string
+    assignedDate?: string
+    dueDate?: string
+    dimensions?: string
+    brief?: string
+    notes?: string
+    refLink?: string
+    rawLink?: string
+    finalLink?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CreativeTaskCreateManyAssignedByUserInput = {
+    id?: string
+    kind: string
+    code: string
+    title: string
+    clientId?: string | null
+    assignedToId: string
     type: string
     priority?: string
     status?: string
@@ -74027,6 +74419,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneWithoutCreativeTasksNestedInput
+    assignedByUser?: UserUpdateOneWithoutCreativeAssignedNestedInput
   }
 
   export type CreativeTaskUncheckedUpdateWithoutAssignedToInput = {
@@ -74035,6 +74428,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedById?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -74057,6 +74451,76 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedById?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    assignedDate?: StringFieldUpdateOperationsInput | string
+    dueDate?: StringFieldUpdateOperationsInput | string
+    dimensions?: StringFieldUpdateOperationsInput | string
+    brief?: StringFieldUpdateOperationsInput | string
+    notes?: StringFieldUpdateOperationsInput | string
+    refLink?: StringFieldUpdateOperationsInput | string
+    rawLink?: StringFieldUpdateOperationsInput | string
+    finalLink?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CreativeTaskUpdateWithoutAssignedByUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    assignedDate?: StringFieldUpdateOperationsInput | string
+    dueDate?: StringFieldUpdateOperationsInput | string
+    dimensions?: StringFieldUpdateOperationsInput | string
+    brief?: StringFieldUpdateOperationsInput | string
+    notes?: StringFieldUpdateOperationsInput | string
+    refLink?: StringFieldUpdateOperationsInput | string
+    rawLink?: StringFieldUpdateOperationsInput | string
+    finalLink?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    client?: ClientUpdateOneWithoutCreativeTasksNestedInput
+    assignedTo?: UserUpdateOneRequiredWithoutCreativeTasksNestedInput
+  }
+
+  export type CreativeTaskUncheckedUpdateWithoutAssignedByUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    assignedDate?: StringFieldUpdateOperationsInput | string
+    dueDate?: StringFieldUpdateOperationsInput | string
+    dimensions?: StringFieldUpdateOperationsInput | string
+    brief?: StringFieldUpdateOperationsInput | string
+    notes?: StringFieldUpdateOperationsInput | string
+    refLink?: StringFieldUpdateOperationsInput | string
+    rawLink?: StringFieldUpdateOperationsInput | string
+    finalLink?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CreativeTaskUncheckedUpdateManyWithoutAssignedByUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToId?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -74377,6 +74841,7 @@ export namespace Prisma {
     code: string
     title: string
     assignedToId: string
+    assignedById?: string | null
     type: string
     priority?: string
     status?: string
@@ -75071,6 +75536,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedTo?: UserUpdateOneRequiredWithoutCreativeTasksNestedInput
+    assignedByUser?: UserUpdateOneWithoutCreativeAssignedNestedInput
   }
 
   export type CreativeTaskUncheckedUpdateWithoutClientInput = {
@@ -75079,6 +75545,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     assignedToId?: StringFieldUpdateOperationsInput | string
+    assignedById?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -75101,6 +75568,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     assignedToId?: StringFieldUpdateOperationsInput | string
+    assignedById?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string

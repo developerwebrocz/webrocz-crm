@@ -22,15 +22,16 @@ model User {
   active       Boolean  @default(true)
   createdAt    DateTime @default(now())
 
-  managedClients Client[]       @relation("AccountManager")
-  assignments    Assignment[]
-  updates        WorkUpdate[]
-  devProjects    DevProject[]   @relation("DevAssignee")
-  timeSessions   TimeSession[]
-  tasksAssigned  Task[]         @relation("TaskAssigner")
-  tasksReceived  Task[]         @relation("TaskAssignee")
-  creativeTasks  CreativeTask[] @relation("CreativeAssignee")
-  salesLeads     Lead[]         @relation("LeadOwner")
+  managedClients   Client[]       @relation("AccountManager")
+  assignments      Assignment[]
+  updates          WorkUpdate[]
+  devProjects      DevProject[]   @relation("DevAssignee")
+  timeSessions     TimeSession[]
+  tasksAssigned    Task[]         @relation("TaskAssigner")
+  tasksReceived    Task[]         @relation("TaskAssignee")
+  creativeTasks    CreativeTask[] @relation("CreativeAssignee")
+  creativeAssigned CreativeTask[] @relation("CreativeAssigner")
+  salesLeads       Lead[]         @relation("LeadOwner")
 }
 
 model Task {
@@ -567,28 +568,30 @@ model SeoReport {
 
 // Creative task board — one row per design / video assigned to a designer or editor.
 model CreativeTask {
-  id           String   @id @default(cuid())
-  kind         String // DESIGN | VIDEO
-  code         String // DSG-001 / VID-001
-  title        String
-  clientId     String?
-  client       Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
-  assignedToId String
-  assignedTo   User     @relation("CreativeAssignee", fields: [assignedToId], references: [id], onDelete: Cascade)
-  type         String // Logo|Social Creative|... (design) or Testimonial|Reel|YouTube|Intro|Ad Video (video)
-  priority     String   @default("MEDIUM") // HIGH | MEDIUM | LOW
-  status       String   @default("PENDING") // PENDING | IN_PROGRESS | REVIEW | COMPLETED
-  source       String   @default("ONBOARDING") // ONBOARDING | ADDITIONAL
-  assignedDate String   @default("") // "2026-08-24"
-  dueDate      String   @default("") // "2026-08-27"
-  dimensions   String   @default("") // "1080×1080 px" / duration
-  brief        String   @default("")
-  notes        String   @default("")
-  refLink      String   @default("")
-  rawLink      String   @default("")
-  finalLink    String   @default("")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             String   @id @default(cuid())
+  kind           String // DESIGN | VIDEO
+  code           String // DSG-001 / VID-001
+  title          String
+  clientId       String?
+  client         Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  assignedToId   String
+  assignedTo     User     @relation("CreativeAssignee", fields: [assignedToId], references: [id], onDelete: Cascade)
+  assignedById   String?
+  assignedByUser User?    @relation("CreativeAssigner", fields: [assignedById], references: [id], onDelete: SetNull)
+  type           String // Logo|Social Creative|... (design) or Testimonial|Reel|YouTube|Intro|Ad Video (video)
+  priority       String   @default("MEDIUM") // HIGH | MEDIUM | LOW
+  status         String   @default("PENDING") // PENDING | IN_PROGRESS | REVIEW | COMPLETED
+  source         String   @default("ONBOARDING") // ONBOARDING | ADDITIONAL
+  assignedDate   String   @default("") // "2026-08-24"
+  dueDate        String   @default("") // "2026-08-27"
+  dimensions     String   @default("") // "1080×1080 px" / duration
+  brief          String   @default("")
+  notes          String   @default("")
+  refLink        String   @default("")
+  rawLink        String   @default("")
+  finalLink      String   @default("")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@index([assignedToId])
   @@index([kind])

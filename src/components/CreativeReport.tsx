@@ -9,6 +9,7 @@ import { Search, ChevronDown, Download, Palette, Clapperboard, ExternalLink, Tra
 type Row = {
   id: string; kind: string; code: string; title: string;
   member: string; memberId: string; role: string;
+  assignedBy: string; assignedById: string;
   client: string; type: string; priority: string; status: string; source: string;
   assignedDate: string; dueDate: string; finalLink: string; updatedAt: string; overdue: boolean;
 };
@@ -22,13 +23,14 @@ function shortDate(d: string) {
 }
 
 export default function CreativeReport({
-  rows, clients, types, days, members, clientOptions,
+  rows, clients, types, days, members, assigners = [], clientOptions, currentUserId,
 }: {
-  rows: Row[]; clients: string[]; types: string[]; days: string[]; members: Member[]; clientOptions: { id: string; name: string }[]; today: string;
+  rows: Row[]; clients: string[]; types: string[]; days: string[]; members: Member[]; assigners?: { id: string; name: string }[]; clientOptions: { id: string; name: string }[]; today: string; currentUserId?: string;
 }) {
   const [q, setQ] = useState("");
   const [role, setRole] = useState("ALL");
   const [member, setMember] = useState("ALL");
+  const [assignedBy, setAssignedBy] = useState("ALL");
   const [client, setClient] = useState("ALL");
   const [type, setType] = useState("ALL");
   const [status, setStatus] = useState("ALL");
@@ -41,6 +43,7 @@ export default function CreativeReport({
     return rows.filter((r) => {
       if (role !== "ALL" && r.role !== role) return false;
       if (member !== "ALL" && r.memberId !== member) return false;
+      if (assignedBy !== "ALL" && r.assignedById !== assignedBy) return false;
       if (client !== "ALL" && r.client !== client) return false;
       if (type !== "ALL" && r.type !== type) return false;
       if (status === "OVERDUE" ? !r.overdue : status !== "ALL" && r.status !== status) return false;
@@ -48,7 +51,7 @@ export default function CreativeReport({
       if (n && !(r.title.toLowerCase().includes(n) || r.client.toLowerCase().includes(n) || r.code.toLowerCase().includes(n) || r.member.toLowerCase().includes(n) || r.type.toLowerCase().includes(n))) return false;
       return true;
     });
-  }, [rows, q, role, member, client, type, status, day]);
+  }, [rows, q, role, member, assignedBy, client, type, status, day]);
 
   const kpi = useMemo(() => {
     const k = { total: filtered.length, done: 0, prog: 0, review: 0, pending: 0, overdue: 0 };
@@ -132,6 +135,7 @@ export default function CreativeReport({
           </div>
           <Sel value={role} onChange={resetMember} raw={[["ALL", "All Teams"], ["DESIGNER", "Designers"], ["EDITOR", "Video Editors"]]} />
           <Sel value={member} onChange={setMember} all="All Members" opts={memberChoices.map((m) => [m.id, m.name])} />
+          {assigners.length > 0 && <Sel value={assignedBy} onChange={setAssignedBy} all="Assigned by · anyone" opts={assigners.map((a) => [a.id, a.id === currentUserId ? `${a.name} (me)` : a.name])} />}
           <Sel value={client} onChange={setClient} all="All Clients" opts={clients.map((c) => [c, c])} />
           <Sel value={type} onChange={setType} all="All Types" opts={types.map((t) => [t, t])} />
           <Sel value={status} onChange={setStatus} raw={[["ALL", "All Status"], ["PENDING", "Pending"], ["IN_PROGRESS", "In Progress"], ["REVIEW", "Review Pending"], ["COMPLETED", "Completed"], ["OVERDUE", "Overdue"]]} />
@@ -215,7 +219,7 @@ export default function CreativeReport({
         </div>
         <div className="overflow-x-auto scroll-thin">
           <table className="w-full min-w-[900px] text-left">
-            <thead><tr className="border-b border-[var(--line)]">{["Assigned", "Member", "Item", "Client", "Type", "Priority", "Status", "Due", ""].map((h, i) => <th key={i} className="th px-5 py-2.5">{h}</th>)}</tr></thead>
+            <thead><tr className="border-b border-[var(--line)]">{["Assigned", "Member", "Item", "Client", "By", "Type", "Priority", "Status", "Due", ""].map((h, i) => <th key={i} className="th px-5 py-2.5">{h}</th>)}</tr></thead>
             <tbody>
               {filtered.map((r) => {
                 const st = CREATIVE_STATUS[r.status as keyof typeof CREATIVE_STATUS];
@@ -228,6 +232,7 @@ export default function CreativeReport({
                     </td>
                     <td className="px-5 py-3"><div className="text-[13px] font-medium">{r.title}</div><div className="text-[11px] text-[var(--faint)] tnum">{r.code} · {r.source === "ADDITIONAL" ? "Additional" : "Onboarding"}</div></td>
                     <td className="px-5 py-3 text-[12.5px]">{r.client}</td>
+                    <td className="px-5 py-3 text-[12px] text-[var(--muted)] whitespace-nowrap">{r.assignedBy === "—" ? <span className="text-[var(--faint)]">—</span> : r.assignedById === currentUserId ? <span className="font-semibold text-[var(--violet)]">{r.assignedBy} (me)</span> : r.assignedBy}</td>
                     <td className="px-5 py-3 text-[12px] text-[var(--muted)]">{r.type}</td>
                     <td className="px-5 py-3"><span className="text-[11.5px] font-bold" style={{ color: PRIORITY_TONE[r.priority] }}>{r.priority}</span></td>
                     <td className="px-5 py-3"><span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-semibold" style={{ background: `color-mix(in srgb, ${r.overdue ? "var(--rose)" : STATUS_TONE[r.status]} 12%, white)`, color: r.overdue ? "var(--rose)" : STATUS_TONE[r.status] }}><span className="h-1.5 w-1.5 rounded-full" style={{ background: r.overdue ? "var(--rose)" : STATUS_TONE[r.status] }} />{r.overdue ? "Overdue" : st?.label ?? r.status}</span></td>
@@ -245,7 +250,7 @@ export default function CreativeReport({
                   </tr>
                 );
               })}
-              {filtered.length === 0 && <tr><td colSpan={9} className="px-5 py-12 text-center text-sm text-[var(--muted)]">No work matches these filters.</td></tr>}
+              {filtered.length === 0 && <tr><td colSpan={10} className="px-5 py-12 text-center text-sm text-[var(--muted)]">No work matches these filters.</td></tr>}
             </tbody>
           </table>
         </div>

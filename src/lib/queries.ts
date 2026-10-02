@@ -805,10 +805,28 @@ export async function getCreativeBoard(userId: string, role: string, kind: "DESI
 // ---- Super Admin: Designer + Video Editor daily work report ----
 // One filterable dataset across BOTH creative kinds so the Super Admin can review
 // exactly what every designer / editor worked on, by member / client / day / status.
+// Creative tasks this user has briefed/assigned — for the AM dashboard "Work I assigned".
+export async function getAssignedByMe(userId: string, take = 8) {
+  const today = creativeToday();
+  const tasks = await prisma.creativeTask.findMany({
+    where: { assignedById: userId, assignedToId: { not: userId } },
+    include: { client: true, assignedTo: true },
+    orderBy: [{ createdAt: "desc" }],
+  });
+  const rows = tasks.map((t) => ({
+    id: t.id, kind: t.kind, code: t.code, title: t.title,
+    member: t.assignedTo?.name ?? "—", memberRole: t.assignedTo?.role ?? "",
+    client: t.client?.name ?? "—", type: t.type, priority: t.priority, status: t.status,
+    dueDate: t.dueDate, overdue: !!t.dueDate && t.dueDate < today && t.status !== "COMPLETED",
+  }));
+  const open = rows.filter((r) => r.status !== "COMPLETED").length;
+  return { rows: rows.slice(0, take), total: rows.length, open };
+}
+
 export async function getCreativeReport() {
   const [members, tasks] = await Promise.all([
     prisma.user.findMany({ where: { role: { in: ["DESIGNER", "EDITOR"] } }, orderBy: [{ role: "asc" }, { name: "asc" }] }),
-    prisma.creativeTask.findMany({ include: { client: true, assignedTo: true }, orderBy: [{ assignedDate: "desc" }, { code: "asc" }] }),
+    prisma.creativeTask.findMany({ include: { client: true, assignedTo: true, assignedByUser: true }, orderBy: [{ assignedDate: "desc" }, { code: "asc" }] }),
   ]);
   const today = creativeToday();
   const rows = tasks.map((t) => {
@@ -816,6 +834,7 @@ export async function getCreativeReport() {
     return {
       id: t.id, kind: t.kind, code: t.code, title: t.title,
       member: t.assignedTo?.name ?? "—", memberId: t.assignedToId, role: t.assignedTo?.role ?? "",
+      assignedBy: t.assignedByUser?.name ?? "—", assignedById: t.assignedById ?? "",
       client: t.client?.name ?? "—", type: t.type, priority: t.priority, status: t.status, source: t.source,
       assignedDate: t.assignedDate, dueDate: t.dueDate, finalLink: t.finalLink,
       updatedAt: t.updatedAt.toISOString().slice(0, 10), overdue,
@@ -825,8 +844,12 @@ export async function getCreativeReport() {
   const types = [...new Set(rows.map((r) => r.type))].sort();
   const days = [...new Set(rows.map((r) => r.assignedDate).filter(Boolean))].sort().reverse();
   const memberOpts = members.map((m) => ({ id: m.id, name: m.name, role: m.role }));
+  // distinct assigners present on tasks (AMs/heads who briefed work)
+  const assignerMap = new Map<string, string>();
+  for (const t of tasks) if (t.assignedById && t.assignedByUser) assignerMap.set(t.assignedById, t.assignedByUser.name);
+  const assigners = [...assignerMap.entries()].map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name));
   const clientOptions = await prisma.client.findMany({ where: { status: { not: "UPCOMING" } }, select: { id: true, name: true }, orderBy: { name: "asc" } });
-  return { rows, clients, types, days, members: memberOpts, clientOptions, today };
+  return { rows, clients, types, days, members: memberOpts, assigners, clientOptions, today };
 }
 
 // ---- Google Ads (Account Manager daily-entry console) ----

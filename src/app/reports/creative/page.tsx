@@ -13,5 +13,5 @@ export default async function CreativeReportPage() {
   const ALLOWED = ["SUPER_ADMIN", "SUB_ADMIN", "AM_HEAD", "ACCOUNT_MANAGER", "DM_HEAD", "DM_EXEC"];
   if (!ALLOWED.includes(user.role)) redirect("/");
   const d = await getCreativeReport();
-  return <CreativeReport rows={d.rows} clients={d.clients} types={d.types} days={d.days} members={d.members} clientOptions={d.clientOptions} today={d.today} />;
+  return <CreativeReport rows={d.rows} clients={d.clients} types={d.types} days={d.days} members={d.members} assigners={d.assigners} clientOptions={d.clientOptions} today={d.today} currentUserId={user.id} />;
 }

@@ -1,16 +1,22 @@
-import { getAmDashboard, getCreativeTeam, getClientOptions } from "@/lib/queries";
+import { getAmDashboard, getCreativeTeam, getClientOptions, getAssignedByMe } from "@/lib/queries";
 import { inrShort, inr } from "@/lib/domain";
 import AssignCreativeForm from "@/components/AssignCreativeForm";
 import {
   Users, Megaphone, Target, Images, IndianRupee, TrendingUp, AlertTriangle,
-  ArrowRight, Wallet, Zap,
+  ArrowRight, Wallet, Zap, Palette, Clapperboard,
 } from "lucide-react";
 
+const CREATIVE_STATUS_TONE: Record<string, { label: string; tone: string }> = {
+  PENDING: { label: "Pending", tone: "muted" }, IN_PROGRESS: { label: "In Progress", tone: "sky" },
+  REVIEW: { label: "Review", tone: "violet" }, COMPLETED: { label: "Completed", tone: "emerald" },
+};
+
 export default async function AmOverview({ user }: { user: { id: string; name: string; role: string } }) {
-  const [d, creativeTeam, clientOpts] = await Promise.all([
+  const [d, creativeTeam, clientOpts, assigned] = await Promise.all([
     getAmDashboard(user.id, user.role),
     getCreativeTeam(),
     getClientOptions(),
+    getAssignedByMe(user.id),
   ]);
   const first = user.name.split(" ")[0] || "there";
   const hour = new Date().getHours();
@@ -101,6 +107,38 @@ export default async function AmOverview({ user }: { user: { id: string; name: s
                 </tr>
               ))}
               {d.rows.length === 0 && <tr><td colSpan={7} className="px-5 py-12 text-center text-sm text-[var(--muted)]">No active clients assigned to you yet.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* creative work this AM has assigned to the design / video team */}
+      <div className="card !p-0 overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--line)] px-5 py-4">
+          <div>
+            <h2 className="text-[15px] font-bold">Work I assigned</h2>
+            <p className="text-[12px] text-[var(--muted)]">{assigned.open} open · {assigned.total} total briefed to the design / video team</p>
+          </div>
+          <a href="/reports/creative" className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--violet)]">Creative Report <ArrowRight size={13} /></a>
+        </div>
+        <div className="overflow-x-auto scroll-thin">
+          <table className="w-full min-w-[720px] text-left">
+            <thead><tr className="border-b border-[var(--line)]">{["Task", "Assigned to", "Client", "Type", "Due", "Status"].map((h) => <th key={h} className="th px-5 py-2.5">{h}</th>)}</tr></thead>
+            <tbody>
+              {assigned.rows.map((t) => {
+                const st = CREATIVE_STATUS_TONE[t.status] ?? CREATIVE_STATUS_TONE.PENDING;
+                return (
+                  <tr key={t.id} className="border-b border-[var(--line)] hover:bg-[var(--surface-2)]">
+                    <td className="px-5 py-3"><div className="text-[13.5px] font-semibold">{t.title}</div><div className="text-[11px] text-[var(--faint)]">{t.code}</div></td>
+                    <td className="px-5 py-3 text-[12.5px]"><span className="inline-flex items-center gap-1.5">{t.memberRole === "EDITOR" ? <Clapperboard size={13} className="text-[var(--rose)]" /> : <Palette size={13} className="text-[var(--amber)]" />} {t.member}</span></td>
+                    <td className="px-5 py-3 text-[12.5px] text-[var(--ink-2)]">{t.client}</td>
+                    <td className="px-5 py-3 text-[12.5px] text-[var(--muted)]">{t.type}</td>
+                    <td className="px-5 py-3 text-[12px] tnum">{t.dueDate ? <span className={t.overdue ? "font-semibold text-[var(--rose)]" : "text-[var(--muted)]"}>{new Date(t.dueDate + "T00:00:00").toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}{t.overdue ? " · overdue" : ""}</span> : <span className="text-[var(--faint)]">—</span>}</td>
+                    <td className="px-5 py-3"><span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ background: `color-mix(in srgb, var(--${st.tone}) 14%, white)`, color: `var(--${st.tone})` }}>{st.label}</span></td>
+                  </tr>
+                );
+              })}
+              {assigned.rows.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-sm text-[var(--muted)]">You haven&apos;t assigned any creative work yet. Use <b className="text-[var(--ink-2)]">Assign to Design / Video team</b> above.</td></tr>}
             </tbody>
           </table>
         </div>

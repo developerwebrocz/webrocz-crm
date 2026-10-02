@@ -30,6 +30,7 @@ model User {
   tasksAssigned  Task[]       @relation("TaskAssigner")
   tasksReceived  Task[]       @relation("TaskAssignee")
   creativeTasks  CreativeTask[] @relation("CreativeAssignee")
+  creativeAssigned CreativeTask[] @relation("CreativeAssigner")
   salesLeads     Lead[]       @relation("LeadOwner")
 }
 
@@ -575,6 +576,8 @@ model CreativeTask {
   client       Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
   assignedToId String
   assignedTo   User     @relation("CreativeAssignee", fields: [assignedToId], references: [id], onDelete: Cascade)
+  assignedById String?
+  assignedByUser User?  @relation("CreativeAssigner", fields: [assignedById], references: [id], onDelete: SetNull)
   type         String // Logo|Social Creative|... (design) or Testimonial|Reel|YouTube|Intro|Ad Video (video)
   priority     String   @default("MEDIUM") // HIGH | MEDIUM | LOW
   status       String   @default("PENDING") // PENDING | IN_PROGRESS | REVIEW | COMPLETED
