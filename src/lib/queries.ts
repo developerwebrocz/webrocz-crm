@@ -812,6 +812,7 @@ function ymd(d: Date) { return `${d.getFullYear()}-${String(d.getMonth() + 1).pa
 
 export async function getShootBoard(userId: string, role: string) {
   const canManage = STUDIO_MANAGERS.includes(role);
+  const canAdd = canManage || role === "VIDEOGRAPHER";
   const shoots = await prisma.shoot.findMany({
     where: canManage ? {} : { assignedToId: userId },
     include: { client: true, assignedTo: { select: { name: true } } },
@@ -844,14 +845,14 @@ export async function getShootBoard(userId: string, role: string) {
     completed: rows.filter((r) => r.status === "COMPLETED").length,
   };
 
-  const clientOptions = canManage
+  const clientOptions = canAdd
     ? await prisma.client.findMany({ where: { status: { not: "UPCOMING" } }, select: { id: true, name: true }, orderBy: { name: "asc" } })
     : [];
-  const shooters = canManage
+  const shooters = canAdd
     ? await prisma.user.findMany({ where: { active: true, role: { in: ["VIDEOGRAPHER", "EDITOR"] } }, select: { id: true, name: true, role: true }, orderBy: { name: "asc" } })
     : [];
 
-  return { rows, kpis, clientOptions, shooters, canManage, today };
+  return { rows, kpis, clientOptions, shooters, canManage, canAdd, selfId: userId, today };
 }
 
 // Next SHT- code (numeric max over existing codes).

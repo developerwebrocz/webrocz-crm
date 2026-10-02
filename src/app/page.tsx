@@ -81,7 +81,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/">) {
   // Studio X Head & Videographer land on the Shooting / Studio X board.
   if (user.role === "STUDIO_HEAD" || user.role === "VIDEOGRAPHER") {
     const d = await getShootBoard(user.id, user.role);
-    return <ShootBoard rows={d.rows} kpis={d.kpis} clientOptions={d.clientOptions} shooters={d.shooters} canManage={d.canManage} today={d.today} userName={user.name} />;
+    return <ShootBoard rows={d.rows} kpis={d.kpis} clientOptions={d.clientOptions} shooters={d.shooters} canManage={d.canManage} canAdd={d.canAdd} selfId={d.selfId} today={d.today} userName={user.name} />;
   }
   return <RoleDashboard user={{ id: user.id, name: user.name, role: user.role }} />;
 }

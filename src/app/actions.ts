@@ -1586,15 +1586,21 @@ async function nextShootCodeLocal() {
 }
 
 // Raj (Studio X Head) / admins create & edit shoots and assign the shooter.
+// Videographers (Mallesh) may also ADD a shoot (it defaults to themselves), but
+// editing an existing shoot stays with the managers.
 export async function saveShoot(fd: FormData) {
   const me = await getCurrentUser();
-  if (!me || !STUDIO_MANAGERS.includes(me.role)) redirect("/");
+  const isManager = me ? STUDIO_MANAGERS.includes(me.role) : false;
+  const isShooter = me?.role === "VIDEOGRAPHER";
+  if (!me || (!isManager && !isShooter)) redirect("/");
 
   const id = s(fd, "id");
+  if (id && !isManager) redirect("/shoots"); // only managers edit existing shoots
   const category = s(fd, "category") === "STUDIO_RENT" ? "STUDIO_RENT" : "WEBROCZ";
   const title = s(fd, "title") || (category === "STUDIO_RENT" ? "Studio X rental" : "WebRocz shoot");
   const clientId = category === "WEBROCZ" ? (s(fd, "clientId") || null) : null;
-  const assignedToId = s(fd, "assignedToId") || null;
+  // a shooter who adds their own shoot defaults the assignment to themselves
+  const assignedToId = s(fd, "assignedToId") || (isShooter ? me.id : null);
   const data = {
     category, title, clientId, assignedToId,
     renterName: s(fd, "renterName"),

@@ -15,7 +15,7 @@ export default async function ShootsPage() {
   return (
     <ShootBoard
       rows={d.rows} kpis={d.kpis} clientOptions={d.clientOptions} shooters={d.shooters}
-      canManage={d.canManage} today={d.today} userName={user.name}
+      canManage={d.canManage} canAdd={d.canAdd} selfId={d.selfId} today={d.today} userName={user.name}
     />
   );
 }

@@ -4,8 +4,8 @@ import { useMemo, useState } from "react";
 import { saveShoot, setShootStatus, toggleShootPaid, deleteShoot } from "@/app/actions";
 import { SHOOT_CATEGORIES, SHOOT_STATUS, SHOOT_STATUS_KEYS, inr, inrShort } from "@/lib/domain";
 import {
-  Camera, Video, CalendarClock, IndianRupee, Clock, Plus, X, Pencil, Trash2,
-  MapPin, Phone, CheckCircle2, CircleAlert,
+  Camera, Video, CalendarClock, IndianRupee, Plus, X, Pencil, Trash2,
+  MapPin, Phone, CheckCircle2, CircleAlert, List, CalendarDays, ChevronLeft, ChevronRight,
 } from "lucide-react";
 
 type Row = {
@@ -23,25 +23,22 @@ const TONE: Record<string, string> = { violet: "var(--violet)", amber: "var(--am
 function fmtDate(d: string) { return d ? new Date(d + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short" }) : "—"; }
 
 export default function ShootBoard({
-  rows, kpis, clientOptions, shooters, canManage, today, userName,
+  rows, kpis, clientOptions, shooters, canManage, canAdd = false, selfId, today, userName,
 }: {
-  rows: Row[]; kpis: Kpis; clientOptions: Opt[]; shooters: Shooter[]; canManage: boolean; today: string; userName?: string;
+  rows: Row[]; kpis: Kpis; clientOptions: Opt[]; shooters: Shooter[]; canManage: boolean; canAdd?: boolean; selfId?: string; today: string; userName?: string;
 }) {
   const [cat, setCat] = useState<"ALL" | "WEBROCZ" | "STUDIO_RENT">("ALL");
   const [status, setStatus] = useState("ALL");
+  const [view, setView] = useState<"list" | "calendar">("list");
   const [edit, setEdit] = useState<Row | null>(null);
   const [adding, setAdding] = useState(false);
 
-  const visible = useMemo(() => rows.filter((r) => {
-    if (cat !== "ALL" && r.category !== cat) return false;
-    if (status !== "ALL" && r.status !== status) return false;
-    return true;
-  }), [rows, cat, status]);
-
-  const catPill = (c: string) => {
-    const cfg = SHOOT_CATEGORIES[c as keyof typeof SHOOT_CATEGORIES];
-    return <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ background: `color-mix(in srgb, ${TONE[cfg?.tone ?? "muted"]} 13%, white)`, color: TONE[cfg?.tone ?? "muted"] }}>{c === "STUDIO_RENT" ? <Video size={11} /> : <Camera size={11} />}{cfg?.label ?? c}</span>;
-  };
+  const statusRows = useMemo(() => rows.filter((r) => (status === "ALL" || r.status === status) && (cat === "ALL" || r.category === cat)), [rows, status, cat]);
+  const webroczRows = statusRows.filter((r) => r.category === "WEBROCZ");
+  const rentRows = statusRows.filter((r) => r.category === "STUDIO_RENT");
+  const showWebrocz = cat === "ALL" || cat === "WEBROCZ";
+  const showRent = cat === "ALL" || cat === "STUDIO_RENT";
+  const onEdit = (r: Row) => { setAdding(false); setEdit(r); };
 
   return (
     <div className="space-y-5">
@@ -52,7 +49,7 @@ export default function ShootBoard({
           <h1 className="mt-1.5 text-[26px] font-extrabold tracking-tight">Shooting &amp; Studio X</h1>
           <p className="mt-1 text-sm text-[var(--muted)]">{canManage ? "Schedule WebRocz client shoots and Studio X rentals, assign the shooter and track rent." : `Your assigned shoots, ${userName ?? ""}.`}</p>
         </div>
-        {canManage && <button onClick={() => { setEdit(null); setAdding(true); }} className="btn btn-violet"><Plus size={15} /> Add shoot / booking</button>}
+        {canAdd && <button onClick={() => { setEdit(null); setAdding(true); }} className="btn btn-violet"><Plus size={15} /> Add shoot / booking</button>}
       </div>
 
       {/* KPIs */}
@@ -74,81 +71,41 @@ export default function ShootBoard({
           <option value="ALL">All status</option>
           {SHOOT_STATUS_KEYS.map((k) => <option key={k} value={k}>{SHOOT_STATUS[k].label}</option>)}
         </select>
-        <span className="ml-auto text-[12px] font-semibold text-[var(--muted)] tnum">{visible.length} shoot{visible.length !== 1 ? "s" : ""}</span>
-      </div>
-
-      {/* table */}
-      <div className="card !p-0 overflow-hidden">
-        <div className="overflow-x-auto scroll-thin">
-          <table className="w-full min-w-[920px] text-left">
-            <thead><tr className="border-b border-[var(--line)]">{["Date & time", "Shoot", "Category", "Client / Renter", "Location", "Shooter", "Rent", "Status", ...(canManage ? [""] : [])].map((h, i) => <th key={i} className="th px-4 py-2.5">{h}</th>)}</tr></thead>
-            <tbody>
-              {visible.map((r) => {
-                const st = SHOOT_STATUS[r.status as keyof typeof SHOOT_STATUS];
-                const isToday = r.date === today;
-                return (
-                  <tr key={r.id} className="border-b border-[var(--line)] hover:bg-[var(--surface-2)]">
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="text-[13px] font-semibold">{fmtDate(r.date)} {isToday && <span className="ml-1 rounded bg-[color-mix(in_srgb,var(--violet)_14%,white)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--violet)]">Today</span>}</div>
-                      <div className="text-[11.5px] text-[var(--muted)] tnum">{r.startTime || "—"}{r.endTime ? ` – ${r.endTime}` : ""}</div>
-                    </td>
-                    <td className="px-4 py-3"><div className="text-[13px] font-semibold">{r.title}</div><div className="text-[11px] text-[var(--faint)] tnum">{r.code}</div></td>
-                    <td className="px-4 py-3">{catPill(r.category)}</td>
-                    <td className="px-4 py-3 text-[12.5px]">
-                      <div>{r.category === "WEBROCZ" ? (r.client ?? "—") : (r.renterName || "—")}</div>
-                      {r.phone && <div className="inline-flex items-center gap-1 text-[11px] text-[var(--muted)] tnum"><Phone size={10} /> {r.phone}</div>}
-                    </td>
-                    <td className="px-4 py-3 text-[12px] text-[var(--muted)]">{r.location ? <span className="inline-flex items-center gap-1"><MapPin size={11} /> {r.location}</span> : "—"}</td>
-                    <td className="px-4 py-3 text-[12.5px]">{r.assignee ?? <span className="text-[var(--faint)]">Unassigned</span>}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      {r.category === "STUDIO_RENT" ? (
-                        <div className="flex items-center gap-2">
-                          <span className="text-[13px] font-semibold tnum">{r.rentAmount ? inr(r.rentAmount) : "—"}</span>
-                          {canManage ? (
-                            <form action={toggleShootPaid}><input type="hidden" name="id" value={r.id} />
-                              <button className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10.5px] font-bold ${r.paid ? "bg-[color-mix(in_srgb,var(--emerald)_14%,white)] text-[var(--emerald)]" : "bg-[color-mix(in_srgb,var(--rose)_12%,white)] text-[var(--rose)]"}`}>{r.paid ? <CheckCircle2 size={11} /> : <CircleAlert size={11} />}{r.paid ? "Paid" : "Unpaid"}</button>
-                            </form>
-                          ) : <span className={`rounded-full px-2 py-0.5 text-[10.5px] font-bold ${r.paid ? "text-[var(--emerald)]" : "text-[var(--rose)]"}`}>{r.paid ? "Paid" : "Unpaid"}</span>}
-                        </div>
-                      ) : <span className="text-[var(--faint)]">—</span>}
-                    </td>
-                    <td className="px-4 py-3">
-                      <form action={setShootStatus}>
-                        <input type="hidden" name="id" value={r.id} />
-                        <select name="status" defaultValue={r.status} onChange={(e) => e.currentTarget.form?.requestSubmit()}
-                          className="rounded-full px-2.5 py-1 text-[11.5px] font-semibold outline-none" style={{ background: `color-mix(in srgb, ${TONE[st?.tone ?? "muted"]} 13%, white)`, color: TONE[st?.tone ?? "muted"] }}>
-                          {SHOOT_STATUS_KEYS.map((k) => <option key={k} value={k}>{SHOOT_STATUS[k].label}</option>)}
-                        </select>
-                      </form>
-                    </td>
-                    {canManage && (
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button onClick={() => { setAdding(false); setEdit(r); }} className="grid h-7 w-7 place-items-center rounded-md border border-[var(--line-2)] text-[var(--muted)] hover:border-[var(--ink)]"><Pencil size={13} /></button>
-                          <form action={deleteShoot} onSubmit={(e) => { if (!confirm(`Delete "${r.title}" (${r.code})?`)) e.preventDefault(); }}>
-                            <input type="hidden" name="id" value={r.id} />
-                            <button className="grid h-7 w-7 place-items-center rounded-md border border-[var(--line-2)] text-[var(--rose)] hover:border-[var(--rose)]"><Trash2 size={13} /></button>
-                          </form>
-                        </div>
-                      </td>
-                    )}
-                  </tr>
-                );
-              })}
-              {visible.length === 0 && <tr><td colSpan={canManage ? 9 : 8} className="px-4 py-12 text-center text-sm text-[var(--muted)]">{canManage ? "No shoots yet — click Add shoot / booking to schedule one." : "No shoots assigned to you."}</td></tr>}
-            </tbody>
-          </table>
+        <div className="ml-auto flex items-center gap-1 rounded-xl border border-[var(--line-2)] bg-[var(--surface-2)] p-1">
+          {([["list", List, "List"], ["calendar", CalendarDays, "Calendar"]] as const).map(([v, Icon, l]) => (
+            <button key={v} onClick={() => setView(v)} className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12.5px] font-semibold transition ${view === v ? "bg-[var(--violet)] text-white shadow-sm" : "text-[var(--ink-2)] hover:bg-white"}`}><Icon size={14} /> {l}</button>
+          ))}
         </div>
       </div>
 
-      {(adding || edit) && canManage && (
-        <ShootModal row={edit} clientOptions={clientOptions} shooters={shooters} today={today} onClose={() => { setAdding(false); setEdit(null); }} />
+      {view === "calendar" ? (
+        <ShootCalendar rows={statusRows} today={today} canManage={canManage} onEdit={onEdit} />
+      ) : (
+        <>
+          {/* two clearly-separated categories */}
+          {showWebrocz && (
+            <ShootSection
+              title="WebRocz Client Shoots" desc="WebRocz clients who need a shoot — Mallesh travels to the client's location."
+              icon={Camera} tone="violet" rows={webroczRows} canManage={canManage} today={today} onEdit={onEdit}
+              empty={canAdd ? "No WebRocz client shoots yet — add one above." : "No WebRocz shoots assigned to you."} />
+          )}
+          {showRent && (
+            <ShootSection
+              title="Studio X Rentals" desc="People who book Studio X for rent — Mallesh shoots their content at the studio."
+              icon={Video} tone="amber" rows={rentRows} canManage={canManage} today={today} onEdit={onEdit}
+              empty={canAdd ? "No studio rentals yet — add one above." : "No studio rentals assigned to you."} />
+          )}
+        </>
+      )}
+
+      {(adding || edit) && canAdd && (
+        <ShootModal row={edit} clientOptions={clientOptions} shooters={shooters} today={today} defaultAssignee={!canManage && selfId ? selfId : ""} onClose={() => { setAdding(false); setEdit(null); }} />
       )}
     </div>
   );
 }
 
-function ShootModal({ row, clientOptions, shooters, today, onClose }: { row: Row | null; clientOptions: Opt[]; shooters: Shooter[]; today: string; onClose: () => void }) {
+function ShootModal({ row, clientOptions, shooters, today, defaultAssignee = "", onClose }: { row: Row | null; clientOptions: Opt[]; shooters: Shooter[]; today: string; defaultAssignee?: string; onClose: () => void }) {
   const [category, setCategory] = useState<"WEBROCZ" | "STUDIO_RENT">((row?.category as "WEBROCZ" | "STUDIO_RENT") ?? "WEBROCZ");
   const isRent = category === "STUDIO_RENT";
   return (
@@ -199,7 +156,7 @@ function ShootModal({ row, clientOptions, shooters, today, onClose }: { row: Row
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block"><span className="eyebrow">Location</span><input name="location" defaultValue={row?.location} placeholder={isRent ? "Studio X" : "On location / Studio X"} className="input mt-1.5" /></label>
             <label className="block"><span className="eyebrow">Assign shooter</span>
-              <select name="assignedToId" defaultValue={row?.assignedToId ?? ""} className="select mt-1.5"><option value="">— Unassigned —</option>{shooters.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}</select>
+              <select name="assignedToId" defaultValue={row?.assignedToId ?? defaultAssignee} className="select mt-1.5"><option value="">— Unassigned —</option>{shooters.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}</select>
             </label>
           </div>
 
@@ -223,6 +180,147 @@ function ShootModal({ row, clientOptions, shooters, today, onClose }: { row: Row
             <button type="submit" className="btn btn-violet">{row ? "Save shoot" : "Add shoot"}</button>
           </div>
         </form>
+      </div>
+    </div>
+  );
+}
+
+function ShootCalendar({ rows, today, canManage, onEdit }: { rows: Row[]; today: string; canManage: boolean; onEdit: (r: Row) => void }) {
+  const [ym, setYm] = useState(() => today.slice(0, 7));
+  const [y, m] = ym.split("-").map(Number);
+  const first = new Date(y, m - 1, 1);
+  const startDow = first.getDay();
+  const daysInMonth = new Date(y, m, 0).getDate();
+  const byDate = useMemo(() => { const map: Record<string, Row[]> = {}; for (const r of rows) (map[r.date] ??= []).push(r); return map; }, [rows]);
+  const monthLabel = first.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+  const shift = (delta: number) => { const d = new Date(y, m - 1 + delta, 1); setYm(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`); };
+  const cells: (number | null)[] = [...Array(startDow).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)];
+  while (cells.length % 7 !== 0) cells.push(null);
+  const key = (day: number) => `${y}-${String(m).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+  return (
+    <div className="card !p-0 overflow-hidden">
+      <div className="flex items-center justify-between border-b border-[var(--line)] px-5 py-3.5">
+        <h2 className="text-[15px] font-bold">{monthLabel}</h2>
+        <div className="flex items-center gap-1">
+          <button onClick={() => shift(-1)} className="grid h-8 w-8 place-items-center rounded-md border border-[var(--line-2)] text-[var(--muted)] hover:border-[var(--ink)]"><ChevronLeft size={16} /></button>
+          <button onClick={() => setYm(today.slice(0, 7))} className="rounded-md border border-[var(--line-2)] px-3 py-1.5 text-[12.5px] font-semibold text-[var(--ink-2)] hover:border-[var(--ink)]">Today</button>
+          <button onClick={() => shift(1)} className="grid h-8 w-8 place-items-center rounded-md border border-[var(--line-2)] text-[var(--muted)] hover:border-[var(--ink)]"><ChevronRight size={16} /></button>
+        </div>
+      </div>
+      <div className="grid grid-cols-7 border-b border-[var(--line)] bg-[var(--surface-2)] text-center text-[10.5px] font-bold uppercase tracking-wide text-[var(--muted)]">
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => <div key={d} className="py-2">{d}</div>)}
+      </div>
+      <div className="grid grid-cols-7">
+        {cells.map((day, i) => {
+          if (day === null) return <div key={i} className="min-h-[104px] border-b border-r border-[var(--line)] bg-[color-mix(in_srgb,var(--surface-2)_50%,white)]" />;
+          const k = key(day);
+          const items = byDate[k] ?? [];
+          const isToday = k === today;
+          return (
+            <div key={i} className="min-h-[104px] border-b border-r border-[var(--line)] p-1.5 last:border-r-0">
+              <div className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-bold ${isToday ? "bg-[var(--violet)] text-white" : "text-[var(--ink-2)]"}`}>{day}</div>
+              <div className="mt-1 space-y-1">
+                {items.slice(0, 3).map((r) => {
+                  const cfg = SHOOT_CATEGORIES[r.category as keyof typeof SHOOT_CATEGORIES];
+                  const tone = TONE[cfg?.tone ?? "muted"];
+                  return (
+                    <button key={r.id} onClick={() => canManage && onEdit(r)} title={`${r.title}${r.startTime ? ` · ${r.startTime}` : ""}`}
+                      className={`flex w-full items-center gap-1 truncate rounded px-1.5 py-0.5 text-left text-[10.5px] font-semibold ${canManage ? "cursor-pointer" : "cursor-default"}`}
+                      style={{ background: `color-mix(in srgb, ${tone} 15%, white)`, color: tone }}>
+                      {r.category === "STUDIO_RENT" ? <Video size={9} className="flex-none" /> : <Camera size={9} className="flex-none" />}
+                      <span className="truncate">{r.startTime ? `${r.startTime} ` : ""}{r.title}</span>
+                    </button>
+                  );
+                })}
+                {items.length > 3 && <div className="px-1 text-[10px] font-semibold text-[var(--muted)]">+{items.length - 3} more</div>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="flex items-center gap-4 border-t border-[var(--line)] px-5 py-2.5 text-[11.5px] font-semibold text-[var(--muted)]">
+        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: TONE.violet }} /> WebRocz shoot</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: TONE.amber }} /> Studio X rent</span>
+      </div>
+    </div>
+  );
+}
+
+function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, onEdit, empty }: {
+  title: string; desc: string; icon: typeof Camera; tone: string; rows: Row[]; canManage: boolean; today: string; onEdit: (r: Row) => void; empty: string;
+}) {
+  const isRentSection = title.toLowerCase().includes("rental");
+  return (
+    <div className="card !p-0 overflow-hidden">
+      <div className="flex items-center justify-between gap-3 border-b border-[var(--line)] px-5 py-3.5">
+        <div className="flex items-center gap-2.5">
+          <span className="grid h-8 w-8 place-items-center rounded-[9px]" style={{ background: `color-mix(in srgb, ${TONE[tone]} 13%, white)`, color: TONE[tone] }}><Icon size={16} /></span>
+          <div>
+            <div className="text-[14px] font-bold">{title}</div>
+            <div className="text-[11.5px] text-[var(--muted)]">{desc}</div>
+          </div>
+        </div>
+        <span className="rounded-full bg-[var(--surface-2)] px-2.5 py-1 text-[11.5px] font-bold tnum text-[var(--ink-2)]">{rows.length}</span>
+      </div>
+      <div className="overflow-x-auto scroll-thin">
+        <table className="w-full min-w-[880px] text-left">
+          <thead><tr className="border-b border-[var(--line)]">{["Date & time", "Shoot", isRentSection ? "Renter" : "Client", "Location", "Shooter", ...(isRentSection ? ["Rent"] : []), "Status", ...(canManage ? [""] : [])].map((h, i) => <th key={i} className="th px-4 py-2.5">{h}</th>)}</tr></thead>
+          <tbody>
+            {rows.map((r) => {
+              const st = SHOOT_STATUS[r.status as keyof typeof SHOOT_STATUS];
+              const isToday = r.date === today;
+              return (
+                <tr key={r.id} className="border-b border-[var(--line)] hover:bg-[var(--surface-2)]">
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <div className="text-[13px] font-semibold">{fmtDate(r.date)} {isToday && <span className="ml-1 rounded bg-[color-mix(in_srgb,var(--violet)_14%,white)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--violet)]">Today</span>}</div>
+                    <div className="text-[11.5px] text-[var(--muted)] tnum">{r.startTime || "—"}{r.endTime ? ` – ${r.endTime}` : ""}</div>
+                  </td>
+                  <td className="px-4 py-3"><div className="text-[13px] font-semibold">{r.title}</div><div className="text-[11px] text-[var(--faint)] tnum">{r.code}</div></td>
+                  <td className="px-4 py-3 text-[12.5px]">
+                    <div>{isRentSection ? (r.renterName || "—") : (r.client ?? "—")}</div>
+                    {r.phone && <div className="inline-flex items-center gap-1 text-[11px] text-[var(--muted)] tnum"><Phone size={10} /> {r.phone}</div>}
+                  </td>
+                  <td className="px-4 py-3 text-[12px] text-[var(--muted)]">{r.location ? <span className="inline-flex items-center gap-1"><MapPin size={11} /> {r.location}</span> : <span className="text-[var(--faint)]">{isRentSection ? "Studio X" : "Client location"}</span>}</td>
+                  <td className="px-4 py-3 text-[12.5px]">{r.assignee ?? <span className="text-[var(--faint)]">Unassigned</span>}</td>
+                  {isRentSection && (
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[13px] font-semibold tnum">{r.rentAmount ? inr(r.rentAmount) : "—"}</span>
+                        {canManage ? (
+                          <form action={toggleShootPaid}><input type="hidden" name="id" value={r.id} />
+                            <button className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10.5px] font-bold ${r.paid ? "bg-[color-mix(in_srgb,var(--emerald)_14%,white)] text-[var(--emerald)]" : "bg-[color-mix(in_srgb,var(--rose)_12%,white)] text-[var(--rose)]"}`}>{r.paid ? <CheckCircle2 size={11} /> : <CircleAlert size={11} />}{r.paid ? "Paid" : "Unpaid"}</button>
+                          </form>
+                        ) : <span className={`rounded-full px-2 py-0.5 text-[10.5px] font-bold ${r.paid ? "text-[var(--emerald)]" : "text-[var(--rose)]"}`}>{r.paid ? "Paid" : "Unpaid"}</span>}
+                      </div>
+                    </td>
+                  )}
+                  <td className="px-4 py-3">
+                    <form action={setShootStatus}>
+                      <input type="hidden" name="id" value={r.id} />
+                      <select name="status" defaultValue={r.status} onChange={(e) => e.currentTarget.form?.requestSubmit()}
+                        className="rounded-full px-2.5 py-1 text-[11.5px] font-semibold outline-none" style={{ background: `color-mix(in srgb, ${TONE[st?.tone ?? "muted"]} 13%, white)`, color: TONE[st?.tone ?? "muted"] }}>
+                        {SHOOT_STATUS_KEYS.map((k) => <option key={k} value={k}>{SHOOT_STATUS[k].label}</option>)}
+                      </select>
+                    </form>
+                  </td>
+                  {canManage && (
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button onClick={() => onEdit(r)} className="grid h-7 w-7 place-items-center rounded-md border border-[var(--line-2)] text-[var(--muted)] hover:border-[var(--ink)]"><Pencil size={13} /></button>
+                        <form action={deleteShoot} onSubmit={(e) => { if (!confirm(`Delete "${r.title}" (${r.code})?`)) e.preventDefault(); }}>
+                          <input type="hidden" name="id" value={r.id} />
+                          <button className="grid h-7 w-7 place-items-center rounded-md border border-[var(--line-2)] text-[var(--rose)] hover:border-[var(--rose)]"><Trash2 size={13} /></button>
+                        </form>
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              );
+            })}
+            {rows.length === 0 && <tr><td colSpan={10} className="px-4 py-10 text-center text-sm text-[var(--muted)]">{empty}</td></tr>}
+          </tbody>
+        </table>
       </div>
     </div>
   );
