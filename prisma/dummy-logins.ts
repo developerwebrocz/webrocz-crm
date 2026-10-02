@@ -18,6 +18,8 @@ async function main() {
   await up("Keerthana Dev", "dev@webrocz.com", "WEB_DEV");
   await up("Marketing Head", "dmhead@webrocz.com", "DM_HEAD");
   await up("DM Executive", "dm@webrocz.com", "DM_EXEC");
+  await up("Raj", "raj@webrocz.com", "STUDIO_HEAD");
+  await up("Mallesh", "mallesh@webrocz.com", "VIDEOGRAPHER");
   console.log("all dummy logins ready · password: webrocz123 · portal: /staff");
 }
 main().finally(() => process.exit(0));

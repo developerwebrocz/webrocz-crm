@@ -144,6 +144,11 @@ export type SeoReport = $Result.DefaultSelection<Prisma.$SeoReportPayload>
  */
 export type CreativeTask = $Result.DefaultSelection<Prisma.$CreativeTaskPayload>
 /**
+ * Model Shoot
+ * 
+ */
+export type Shoot = $Result.DefaultSelection<Prisma.$ShootPayload>
+/**
  * Model GoogleAdsCampaign
  * 
  */
@@ -579,6 +584,16 @@ export class PrismaClient<
     * ```
     */
   get creativeTask(): Prisma.CreativeTaskDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.shoot`: Exposes CRUD operations for the **Shoot** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Shoots
+    * const shoots = await prisma.shoot.findMany()
+    * ```
+    */
+  get shoot(): Prisma.ShootDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.googleAdsCampaign`: Exposes CRUD operations for the **GoogleAdsCampaign** model.
@@ -1162,6 +1177,7 @@ export namespace Prisma {
     GmbClient: 'GmbClient',
     SeoReport: 'SeoReport',
     CreativeTask: 'CreativeTask',
+    Shoot: 'Shoot',
     GoogleAdsCampaign: 'GoogleAdsCampaign',
     AdsPerformance: 'AdsPerformance',
     Notification: 'Notification',
@@ -1188,7 +1204,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "task" | "timeSession" | "client" | "clientContact" | "clientService" | "deliverable" | "assignment" | "workUpdate" | "invoice" | "salesInvoice" | "payment" | "sla" | "candidate" | "campaignEntry" | "devProject" | "devTask" | "devActivity" | "socialPost" | "seoAnalytics" | "seoBlogSlot" | "seoKeyword" | "seoBacklink" | "gmbClient" | "seoReport" | "creativeTask" | "googleAdsCampaign" | "adsPerformance" | "notification" | "lead" | "leadActivity" | "followup" | "quotation" | "proposal" | "reminder" | "meeting" | "expense"
+      modelProps: "user" | "task" | "timeSession" | "client" | "clientContact" | "clientService" | "deliverable" | "assignment" | "workUpdate" | "invoice" | "salesInvoice" | "payment" | "sla" | "candidate" | "campaignEntry" | "devProject" | "devTask" | "devActivity" | "socialPost" | "seoAnalytics" | "seoBlogSlot" | "seoKeyword" | "seoBacklink" | "gmbClient" | "seoReport" | "creativeTask" | "shoot" | "googleAdsCampaign" | "adsPerformance" | "notification" | "lead" | "leadActivity" | "followup" | "quotation" | "proposal" | "reminder" | "meeting" | "expense"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3116,6 +3132,80 @@ export namespace Prisma {
           }
         }
       }
+      Shoot: {
+        payload: Prisma.$ShootPayload<ExtArgs>
+        fields: Prisma.ShootFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ShootFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShootPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ShootFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShootPayload>
+          }
+          findFirst: {
+            args: Prisma.ShootFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShootPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ShootFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShootPayload>
+          }
+          findMany: {
+            args: Prisma.ShootFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShootPayload>[]
+          }
+          create: {
+            args: Prisma.ShootCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShootPayload>
+          }
+          createMany: {
+            args: Prisma.ShootCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ShootCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShootPayload>[]
+          }
+          delete: {
+            args: Prisma.ShootDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShootPayload>
+          }
+          update: {
+            args: Prisma.ShootUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShootPayload>
+          }
+          deleteMany: {
+            args: Prisma.ShootDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ShootUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ShootUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShootPayload>[]
+          }
+          upsert: {
+            args: Prisma.ShootUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShootPayload>
+          }
+          aggregate: {
+            args: Prisma.ShootAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateShoot>
+          }
+          groupBy: {
+            args: Prisma.ShootGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ShootGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ShootCountArgs<ExtArgs>
+            result: $Utils.Optional<ShootCountAggregateOutputType> | number
+          }
+        }
+      }
       GoogleAdsCampaign: {
         payload: Prisma.$GoogleAdsCampaignPayload<ExtArgs>
         fields: Prisma.GoogleAdsCampaignFieldRefs
@@ -4079,6 +4169,7 @@ export namespace Prisma {
     gmbClient?: GmbClientOmit
     seoReport?: SeoReportOmit
     creativeTask?: CreativeTaskOmit
+    shoot?: ShootOmit
     googleAdsCampaign?: GoogleAdsCampaignOmit
     adsPerformance?: AdsPerformanceOmit
     notification?: NotificationOmit
@@ -4180,6 +4271,7 @@ export namespace Prisma {
     creativeTasks: number
     creativeAssigned: number
     salesLeads: number
+    shoots: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4193,6 +4285,7 @@ export namespace Prisma {
     creativeTasks?: boolean | UserCountOutputTypeCountCreativeTasksArgs
     creativeAssigned?: boolean | UserCountOutputTypeCountCreativeAssignedArgs
     salesLeads?: boolean | UserCountOutputTypeCountSalesLeadsArgs
+    shoots?: boolean | UserCountOutputTypeCountShootsArgs
   }
 
   // Custom InputTypes
@@ -4276,6 +4369,13 @@ export namespace Prisma {
     where?: LeadWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountShootsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ShootWhereInput
+  }
+
 
   /**
    * Count Type ClientCountOutputType
@@ -4303,6 +4403,7 @@ export namespace Prisma {
     seoBacklinks: number
     gmbLocations: number
     seoReports: number
+    shoots: number
   }
 
   export type ClientCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4327,6 +4428,7 @@ export namespace Prisma {
     seoBacklinks?: boolean | ClientCountOutputTypeCountSeoBacklinksArgs
     gmbLocations?: boolean | ClientCountOutputTypeCountGmbLocationsArgs
     seoReports?: boolean | ClientCountOutputTypeCountSeoReportsArgs
+    shoots?: boolean | ClientCountOutputTypeCountShootsArgs
   }
 
   // Custom InputTypes
@@ -4485,6 +4587,13 @@ export namespace Prisma {
    */
   export type ClientCountOutputTypeCountSeoReportsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SeoReportWhereInput
+  }
+
+  /**
+   * ClientCountOutputType without action
+   */
+  export type ClientCountOutputTypeCountShootsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ShootWhereInput
   }
 
 
@@ -4837,6 +4946,7 @@ export namespace Prisma {
     creativeTasks?: boolean | User$creativeTasksArgs<ExtArgs>
     creativeAssigned?: boolean | User$creativeAssignedArgs<ExtArgs>
     salesLeads?: boolean | User$salesLeadsArgs<ExtArgs>
+    shoots?: boolean | User$shootsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4885,6 +4995,7 @@ export namespace Prisma {
     creativeTasks?: boolean | User$creativeTasksArgs<ExtArgs>
     creativeAssigned?: boolean | User$creativeAssignedArgs<ExtArgs>
     salesLeads?: boolean | User$salesLeadsArgs<ExtArgs>
+    shoots?: boolean | User$shootsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4903,6 +5014,7 @@ export namespace Prisma {
       creativeTasks: Prisma.$CreativeTaskPayload<ExtArgs>[]
       creativeAssigned: Prisma.$CreativeTaskPayload<ExtArgs>[]
       salesLeads: Prisma.$LeadPayload<ExtArgs>[]
+      shoots: Prisma.$ShootPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5317,6 +5429,7 @@ export namespace Prisma {
     creativeTasks<T extends User$creativeTasksArgs<ExtArgs> = {}>(args?: Subset<T, User$creativeTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CreativeTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     creativeAssigned<T extends User$creativeAssignedArgs<ExtArgs> = {}>(args?: Subset<T, User$creativeAssignedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CreativeTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     salesLeads<T extends User$salesLeadsArgs<ExtArgs> = {}>(args?: Subset<T, User$salesLeadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    shoots<T extends User$shootsArgs<ExtArgs> = {}>(args?: Subset<T, User$shootsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5982,6 +6095,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
+  }
+
+  /**
+   * User.shoots
+   */
+  export type User$shootsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shoot
+     */
+    select?: ShootSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shoot
+     */
+    omit?: ShootOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShootInclude<ExtArgs> | null
+    where?: ShootWhereInput
+    orderBy?: ShootOrderByWithRelationInput | ShootOrderByWithRelationInput[]
+    cursor?: ShootWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ShootScalarFieldEnum | ShootScalarFieldEnum[]
   }
 
   /**
@@ -8847,6 +8984,7 @@ export namespace Prisma {
     seoBacklinks?: boolean | Client$seoBacklinksArgs<ExtArgs>
     gmbLocations?: boolean | Client$gmbLocationsArgs<ExtArgs>
     seoReports?: boolean | Client$seoReportsArgs<ExtArgs>
+    shoots?: boolean | Client$shootsArgs<ExtArgs>
     _count?: boolean | ClientCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["client"]>
 
@@ -9005,6 +9143,7 @@ export namespace Prisma {
     seoBacklinks?: boolean | Client$seoBacklinksArgs<ExtArgs>
     gmbLocations?: boolean | Client$gmbLocationsArgs<ExtArgs>
     seoReports?: boolean | Client$seoReportsArgs<ExtArgs>
+    shoots?: boolean | Client$shootsArgs<ExtArgs>
     _count?: boolean | ClientCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ClientIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9039,6 +9178,7 @@ export namespace Prisma {
       seoBacklinks: Prisma.$SeoBacklinkPayload<ExtArgs>[]
       gmbLocations: Prisma.$GmbClientPayload<ExtArgs>[]
       seoReports: Prisma.$SeoReportPayload<ExtArgs>[]
+      shoots: Prisma.$ShootPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -9497,6 +9637,7 @@ export namespace Prisma {
     seoBacklinks<T extends Client$seoBacklinksArgs<ExtArgs> = {}>(args?: Subset<T, Client$seoBacklinksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeoBacklinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     gmbLocations<T extends Client$gmbLocationsArgs<ExtArgs> = {}>(args?: Subset<T, Client$gmbLocationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GmbClientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     seoReports<T extends Client$seoReportsArgs<ExtArgs> = {}>(args?: Subset<T, Client$seoReportsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeoReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    shoots<T extends Client$shootsArgs<ExtArgs> = {}>(args?: Subset<T, Client$shootsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10485,6 +10626,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SeoReportScalarFieldEnum | SeoReportScalarFieldEnum[]
+  }
+
+  /**
+   * Client.shoots
+   */
+  export type Client$shootsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shoot
+     */
+    select?: ShootSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shoot
+     */
+    omit?: ShootOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShootInclude<ExtArgs> | null
+    where?: ShootWhereInput
+    orderBy?: ShootOrderByWithRelationInput | ShootOrderByWithRelationInput[]
+    cursor?: ShootWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ShootScalarFieldEnum | ShootScalarFieldEnum[]
   }
 
   /**
@@ -36593,6 +36758,1316 @@ export namespace Prisma {
 
 
   /**
+   * Model Shoot
+   */
+
+  export type AggregateShoot = {
+    _count: ShootCountAggregateOutputType | null
+    _avg: ShootAvgAggregateOutputType | null
+    _sum: ShootSumAggregateOutputType | null
+    _min: ShootMinAggregateOutputType | null
+    _max: ShootMaxAggregateOutputType | null
+  }
+
+  export type ShootAvgAggregateOutputType = {
+    rentAmount: number | null
+  }
+
+  export type ShootSumAggregateOutputType = {
+    rentAmount: number | null
+  }
+
+  export type ShootMinAggregateOutputType = {
+    id: string | null
+    code: string | null
+    category: string | null
+    title: string | null
+    clientId: string | null
+    renterName: string | null
+    phone: string | null
+    date: string | null
+    startTime: string | null
+    endTime: string | null
+    location: string | null
+    assignedToId: string | null
+    status: string | null
+    rentAmount: number | null
+    paid: boolean | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ShootMaxAggregateOutputType = {
+    id: string | null
+    code: string | null
+    category: string | null
+    title: string | null
+    clientId: string | null
+    renterName: string | null
+    phone: string | null
+    date: string | null
+    startTime: string | null
+    endTime: string | null
+    location: string | null
+    assignedToId: string | null
+    status: string | null
+    rentAmount: number | null
+    paid: boolean | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ShootCountAggregateOutputType = {
+    id: number
+    code: number
+    category: number
+    title: number
+    clientId: number
+    renterName: number
+    phone: number
+    date: number
+    startTime: number
+    endTime: number
+    location: number
+    assignedToId: number
+    status: number
+    rentAmount: number
+    paid: number
+    notes: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ShootAvgAggregateInputType = {
+    rentAmount?: true
+  }
+
+  export type ShootSumAggregateInputType = {
+    rentAmount?: true
+  }
+
+  export type ShootMinAggregateInputType = {
+    id?: true
+    code?: true
+    category?: true
+    title?: true
+    clientId?: true
+    renterName?: true
+    phone?: true
+    date?: true
+    startTime?: true
+    endTime?: true
+    location?: true
+    assignedToId?: true
+    status?: true
+    rentAmount?: true
+    paid?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ShootMaxAggregateInputType = {
+    id?: true
+    code?: true
+    category?: true
+    title?: true
+    clientId?: true
+    renterName?: true
+    phone?: true
+    date?: true
+    startTime?: true
+    endTime?: true
+    location?: true
+    assignedToId?: true
+    status?: true
+    rentAmount?: true
+    paid?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ShootCountAggregateInputType = {
+    id?: true
+    code?: true
+    category?: true
+    title?: true
+    clientId?: true
+    renterName?: true
+    phone?: true
+    date?: true
+    startTime?: true
+    endTime?: true
+    location?: true
+    assignedToId?: true
+    status?: true
+    rentAmount?: true
+    paid?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ShootAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Shoot to aggregate.
+     */
+    where?: ShootWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Shoots to fetch.
+     */
+    orderBy?: ShootOrderByWithRelationInput | ShootOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ShootWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Shoots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Shoots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Shoots
+    **/
+    _count?: true | ShootCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ShootAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ShootSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ShootMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ShootMaxAggregateInputType
+  }
+
+  export type GetShootAggregateType<T extends ShootAggregateArgs> = {
+        [P in keyof T & keyof AggregateShoot]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateShoot[P]>
+      : GetScalarType<T[P], AggregateShoot[P]>
+  }
+
+
+
+
+  export type ShootGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ShootWhereInput
+    orderBy?: ShootOrderByWithAggregationInput | ShootOrderByWithAggregationInput[]
+    by: ShootScalarFieldEnum[] | ShootScalarFieldEnum
+    having?: ShootScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ShootCountAggregateInputType | true
+    _avg?: ShootAvgAggregateInputType
+    _sum?: ShootSumAggregateInputType
+    _min?: ShootMinAggregateInputType
+    _max?: ShootMaxAggregateInputType
+  }
+
+  export type ShootGroupByOutputType = {
+    id: string
+    code: string
+    category: string
+    title: string
+    clientId: string | null
+    renterName: string
+    phone: string
+    date: string
+    startTime: string
+    endTime: string
+    location: string
+    assignedToId: string | null
+    status: string
+    rentAmount: number
+    paid: boolean
+    notes: string
+    createdAt: Date
+    updatedAt: Date
+    _count: ShootCountAggregateOutputType | null
+    _avg: ShootAvgAggregateOutputType | null
+    _sum: ShootSumAggregateOutputType | null
+    _min: ShootMinAggregateOutputType | null
+    _max: ShootMaxAggregateOutputType | null
+  }
+
+  type GetShootGroupByPayload<T extends ShootGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ShootGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ShootGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ShootGroupByOutputType[P]>
+            : GetScalarType<T[P], ShootGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ShootSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    category?: boolean
+    title?: boolean
+    clientId?: boolean
+    renterName?: boolean
+    phone?: boolean
+    date?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    location?: boolean
+    assignedToId?: boolean
+    status?: boolean
+    rentAmount?: boolean
+    paid?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    client?: boolean | Shoot$clientArgs<ExtArgs>
+    assignedTo?: boolean | Shoot$assignedToArgs<ExtArgs>
+  }, ExtArgs["result"]["shoot"]>
+
+  export type ShootSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    category?: boolean
+    title?: boolean
+    clientId?: boolean
+    renterName?: boolean
+    phone?: boolean
+    date?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    location?: boolean
+    assignedToId?: boolean
+    status?: boolean
+    rentAmount?: boolean
+    paid?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    client?: boolean | Shoot$clientArgs<ExtArgs>
+    assignedTo?: boolean | Shoot$assignedToArgs<ExtArgs>
+  }, ExtArgs["result"]["shoot"]>
+
+  export type ShootSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    category?: boolean
+    title?: boolean
+    clientId?: boolean
+    renterName?: boolean
+    phone?: boolean
+    date?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    location?: boolean
+    assignedToId?: boolean
+    status?: boolean
+    rentAmount?: boolean
+    paid?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    client?: boolean | Shoot$clientArgs<ExtArgs>
+    assignedTo?: boolean | Shoot$assignedToArgs<ExtArgs>
+  }, ExtArgs["result"]["shoot"]>
+
+  export type ShootSelectScalar = {
+    id?: boolean
+    code?: boolean
+    category?: boolean
+    title?: boolean
+    clientId?: boolean
+    renterName?: boolean
+    phone?: boolean
+    date?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    location?: boolean
+    assignedToId?: boolean
+    status?: boolean
+    rentAmount?: boolean
+    paid?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ShootOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "category" | "title" | "clientId" | "renterName" | "phone" | "date" | "startTime" | "endTime" | "location" | "assignedToId" | "status" | "rentAmount" | "paid" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["shoot"]>
+  export type ShootInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    client?: boolean | Shoot$clientArgs<ExtArgs>
+    assignedTo?: boolean | Shoot$assignedToArgs<ExtArgs>
+  }
+  export type ShootIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    client?: boolean | Shoot$clientArgs<ExtArgs>
+    assignedTo?: boolean | Shoot$assignedToArgs<ExtArgs>
+  }
+  export type ShootIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    client?: boolean | Shoot$clientArgs<ExtArgs>
+    assignedTo?: boolean | Shoot$assignedToArgs<ExtArgs>
+  }
+
+  export type $ShootPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Shoot"
+    objects: {
+      client: Prisma.$ClientPayload<ExtArgs> | null
+      assignedTo: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      code: string
+      category: string
+      title: string
+      clientId: string | null
+      renterName: string
+      phone: string
+      date: string
+      startTime: string
+      endTime: string
+      location: string
+      assignedToId: string | null
+      status: string
+      rentAmount: number
+      paid: boolean
+      notes: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["shoot"]>
+    composites: {}
+  }
+
+  type ShootGetPayload<S extends boolean | null | undefined | ShootDefaultArgs> = $Result.GetResult<Prisma.$ShootPayload, S>
+
+  type ShootCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ShootFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ShootCountAggregateInputType | true
+    }
+
+  export interface ShootDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Shoot'], meta: { name: 'Shoot' } }
+    /**
+     * Find zero or one Shoot that matches the filter.
+     * @param {ShootFindUniqueArgs} args - Arguments to find a Shoot
+     * @example
+     * // Get one Shoot
+     * const shoot = await prisma.shoot.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ShootFindUniqueArgs>(args: SelectSubset<T, ShootFindUniqueArgs<ExtArgs>>): Prisma__ShootClient<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Shoot that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ShootFindUniqueOrThrowArgs} args - Arguments to find a Shoot
+     * @example
+     * // Get one Shoot
+     * const shoot = await prisma.shoot.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ShootFindUniqueOrThrowArgs>(args: SelectSubset<T, ShootFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ShootClient<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Shoot that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShootFindFirstArgs} args - Arguments to find a Shoot
+     * @example
+     * // Get one Shoot
+     * const shoot = await prisma.shoot.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ShootFindFirstArgs>(args?: SelectSubset<T, ShootFindFirstArgs<ExtArgs>>): Prisma__ShootClient<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Shoot that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShootFindFirstOrThrowArgs} args - Arguments to find a Shoot
+     * @example
+     * // Get one Shoot
+     * const shoot = await prisma.shoot.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ShootFindFirstOrThrowArgs>(args?: SelectSubset<T, ShootFindFirstOrThrowArgs<ExtArgs>>): Prisma__ShootClient<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Shoots that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShootFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Shoots
+     * const shoots = await prisma.shoot.findMany()
+     * 
+     * // Get first 10 Shoots
+     * const shoots = await prisma.shoot.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const shootWithIdOnly = await prisma.shoot.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ShootFindManyArgs>(args?: SelectSubset<T, ShootFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Shoot.
+     * @param {ShootCreateArgs} args - Arguments to create a Shoot.
+     * @example
+     * // Create one Shoot
+     * const Shoot = await prisma.shoot.create({
+     *   data: {
+     *     // ... data to create a Shoot
+     *   }
+     * })
+     * 
+     */
+    create<T extends ShootCreateArgs>(args: SelectSubset<T, ShootCreateArgs<ExtArgs>>): Prisma__ShootClient<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Shoots.
+     * @param {ShootCreateManyArgs} args - Arguments to create many Shoots.
+     * @example
+     * // Create many Shoots
+     * const shoot = await prisma.shoot.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ShootCreateManyArgs>(args?: SelectSubset<T, ShootCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Shoots and returns the data saved in the database.
+     * @param {ShootCreateManyAndReturnArgs} args - Arguments to create many Shoots.
+     * @example
+     * // Create many Shoots
+     * const shoot = await prisma.shoot.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Shoots and only return the `id`
+     * const shootWithIdOnly = await prisma.shoot.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ShootCreateManyAndReturnArgs>(args?: SelectSubset<T, ShootCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Shoot.
+     * @param {ShootDeleteArgs} args - Arguments to delete one Shoot.
+     * @example
+     * // Delete one Shoot
+     * const Shoot = await prisma.shoot.delete({
+     *   where: {
+     *     // ... filter to delete one Shoot
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ShootDeleteArgs>(args: SelectSubset<T, ShootDeleteArgs<ExtArgs>>): Prisma__ShootClient<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Shoot.
+     * @param {ShootUpdateArgs} args - Arguments to update one Shoot.
+     * @example
+     * // Update one Shoot
+     * const shoot = await prisma.shoot.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ShootUpdateArgs>(args: SelectSubset<T, ShootUpdateArgs<ExtArgs>>): Prisma__ShootClient<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Shoots.
+     * @param {ShootDeleteManyArgs} args - Arguments to filter Shoots to delete.
+     * @example
+     * // Delete a few Shoots
+     * const { count } = await prisma.shoot.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ShootDeleteManyArgs>(args?: SelectSubset<T, ShootDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Shoots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShootUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Shoots
+     * const shoot = await prisma.shoot.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ShootUpdateManyArgs>(args: SelectSubset<T, ShootUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Shoots and returns the data updated in the database.
+     * @param {ShootUpdateManyAndReturnArgs} args - Arguments to update many Shoots.
+     * @example
+     * // Update many Shoots
+     * const shoot = await prisma.shoot.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Shoots and only return the `id`
+     * const shootWithIdOnly = await prisma.shoot.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ShootUpdateManyAndReturnArgs>(args: SelectSubset<T, ShootUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Shoot.
+     * @param {ShootUpsertArgs} args - Arguments to update or create a Shoot.
+     * @example
+     * // Update or create a Shoot
+     * const shoot = await prisma.shoot.upsert({
+     *   create: {
+     *     // ... data to create a Shoot
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Shoot we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ShootUpsertArgs>(args: SelectSubset<T, ShootUpsertArgs<ExtArgs>>): Prisma__ShootClient<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Shoots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShootCountArgs} args - Arguments to filter Shoots to count.
+     * @example
+     * // Count the number of Shoots
+     * const count = await prisma.shoot.count({
+     *   where: {
+     *     // ... the filter for the Shoots we want to count
+     *   }
+     * })
+    **/
+    count<T extends ShootCountArgs>(
+      args?: Subset<T, ShootCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ShootCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Shoot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShootAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ShootAggregateArgs>(args: Subset<T, ShootAggregateArgs>): Prisma.PrismaPromise<GetShootAggregateType<T>>
+
+    /**
+     * Group by Shoot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShootGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ShootGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ShootGroupByArgs['orderBy'] }
+        : { orderBy?: ShootGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ShootGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetShootGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Shoot model
+   */
+  readonly fields: ShootFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Shoot.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ShootClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    client<T extends Shoot$clientArgs<ExtArgs> = {}>(args?: Subset<T, Shoot$clientArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    assignedTo<T extends Shoot$assignedToArgs<ExtArgs> = {}>(args?: Subset<T, Shoot$assignedToArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Shoot model
+   */
+  interface ShootFieldRefs {
+    readonly id: FieldRef<"Shoot", 'String'>
+    readonly code: FieldRef<"Shoot", 'String'>
+    readonly category: FieldRef<"Shoot", 'String'>
+    readonly title: FieldRef<"Shoot", 'String'>
+    readonly clientId: FieldRef<"Shoot", 'String'>
+    readonly renterName: FieldRef<"Shoot", 'String'>
+    readonly phone: FieldRef<"Shoot", 'String'>
+    readonly date: FieldRef<"Shoot", 'String'>
+    readonly startTime: FieldRef<"Shoot", 'String'>
+    readonly endTime: FieldRef<"Shoot", 'String'>
+    readonly location: FieldRef<"Shoot", 'String'>
+    readonly assignedToId: FieldRef<"Shoot", 'String'>
+    readonly status: FieldRef<"Shoot", 'String'>
+    readonly rentAmount: FieldRef<"Shoot", 'Int'>
+    readonly paid: FieldRef<"Shoot", 'Boolean'>
+    readonly notes: FieldRef<"Shoot", 'String'>
+    readonly createdAt: FieldRef<"Shoot", 'DateTime'>
+    readonly updatedAt: FieldRef<"Shoot", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Shoot findUnique
+   */
+  export type ShootFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shoot
+     */
+    select?: ShootSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shoot
+     */
+    omit?: ShootOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShootInclude<ExtArgs> | null
+    /**
+     * Filter, which Shoot to fetch.
+     */
+    where: ShootWhereUniqueInput
+  }
+
+  /**
+   * Shoot findUniqueOrThrow
+   */
+  export type ShootFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shoot
+     */
+    select?: ShootSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shoot
+     */
+    omit?: ShootOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShootInclude<ExtArgs> | null
+    /**
+     * Filter, which Shoot to fetch.
+     */
+    where: ShootWhereUniqueInput
+  }
+
+  /**
+   * Shoot findFirst
+   */
+  export type ShootFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shoot
+     */
+    select?: ShootSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shoot
+     */
+    omit?: ShootOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShootInclude<ExtArgs> | null
+    /**
+     * Filter, which Shoot to fetch.
+     */
+    where?: ShootWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Shoots to fetch.
+     */
+    orderBy?: ShootOrderByWithRelationInput | ShootOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Shoots.
+     */
+    cursor?: ShootWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Shoots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Shoots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Shoots.
+     */
+    distinct?: ShootScalarFieldEnum | ShootScalarFieldEnum[]
+  }
+
+  /**
+   * Shoot findFirstOrThrow
+   */
+  export type ShootFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shoot
+     */
+    select?: ShootSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shoot
+     */
+    omit?: ShootOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShootInclude<ExtArgs> | null
+    /**
+     * Filter, which Shoot to fetch.
+     */
+    where?: ShootWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Shoots to fetch.
+     */
+    orderBy?: ShootOrderByWithRelationInput | ShootOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Shoots.
+     */
+    cursor?: ShootWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Shoots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Shoots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Shoots.
+     */
+    distinct?: ShootScalarFieldEnum | ShootScalarFieldEnum[]
+  }
+
+  /**
+   * Shoot findMany
+   */
+  export type ShootFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shoot
+     */
+    select?: ShootSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shoot
+     */
+    omit?: ShootOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShootInclude<ExtArgs> | null
+    /**
+     * Filter, which Shoots to fetch.
+     */
+    where?: ShootWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Shoots to fetch.
+     */
+    orderBy?: ShootOrderByWithRelationInput | ShootOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Shoots.
+     */
+    cursor?: ShootWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Shoots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Shoots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Shoots.
+     */
+    distinct?: ShootScalarFieldEnum | ShootScalarFieldEnum[]
+  }
+
+  /**
+   * Shoot create
+   */
+  export type ShootCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shoot
+     */
+    select?: ShootSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shoot
+     */
+    omit?: ShootOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShootInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Shoot.
+     */
+    data: XOR<ShootCreateInput, ShootUncheckedCreateInput>
+  }
+
+  /**
+   * Shoot createMany
+   */
+  export type ShootCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Shoots.
+     */
+    data: ShootCreateManyInput | ShootCreateManyInput[]
+  }
+
+  /**
+   * Shoot createManyAndReturn
+   */
+  export type ShootCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shoot
+     */
+    select?: ShootSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shoot
+     */
+    omit?: ShootOmit<ExtArgs> | null
+    /**
+     * The data used to create many Shoots.
+     */
+    data: ShootCreateManyInput | ShootCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShootIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Shoot update
+   */
+  export type ShootUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shoot
+     */
+    select?: ShootSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shoot
+     */
+    omit?: ShootOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShootInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Shoot.
+     */
+    data: XOR<ShootUpdateInput, ShootUncheckedUpdateInput>
+    /**
+     * Choose, which Shoot to update.
+     */
+    where: ShootWhereUniqueInput
+  }
+
+  /**
+   * Shoot updateMany
+   */
+  export type ShootUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Shoots.
+     */
+    data: XOR<ShootUpdateManyMutationInput, ShootUncheckedUpdateManyInput>
+    /**
+     * Filter which Shoots to update
+     */
+    where?: ShootWhereInput
+    /**
+     * Limit how many Shoots to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Shoot updateManyAndReturn
+   */
+  export type ShootUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shoot
+     */
+    select?: ShootSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shoot
+     */
+    omit?: ShootOmit<ExtArgs> | null
+    /**
+     * The data used to update Shoots.
+     */
+    data: XOR<ShootUpdateManyMutationInput, ShootUncheckedUpdateManyInput>
+    /**
+     * Filter which Shoots to update
+     */
+    where?: ShootWhereInput
+    /**
+     * Limit how many Shoots to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShootIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Shoot upsert
+   */
+  export type ShootUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shoot
+     */
+    select?: ShootSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shoot
+     */
+    omit?: ShootOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShootInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Shoot to update in case it exists.
+     */
+    where: ShootWhereUniqueInput
+    /**
+     * In case the Shoot found by the `where` argument doesn't exist, create a new Shoot with this data.
+     */
+    create: XOR<ShootCreateInput, ShootUncheckedCreateInput>
+    /**
+     * In case the Shoot was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ShootUpdateInput, ShootUncheckedUpdateInput>
+  }
+
+  /**
+   * Shoot delete
+   */
+  export type ShootDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shoot
+     */
+    select?: ShootSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shoot
+     */
+    omit?: ShootOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShootInclude<ExtArgs> | null
+    /**
+     * Filter which Shoot to delete.
+     */
+    where: ShootWhereUniqueInput
+  }
+
+  /**
+   * Shoot deleteMany
+   */
+  export type ShootDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Shoots to delete
+     */
+    where?: ShootWhereInput
+    /**
+     * Limit how many Shoots to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Shoot.client
+   */
+  export type Shoot$clientArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Client
+     */
+    select?: ClientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Client
+     */
+    omit?: ClientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientInclude<ExtArgs> | null
+    where?: ClientWhereInput
+  }
+
+  /**
+   * Shoot.assignedTo
+   */
+  export type Shoot$assignedToArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * Shoot without action
+   */
+  export type ShootDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shoot
+     */
+    select?: ShootSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shoot
+     */
+    omit?: ShootOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShootInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model GoogleAdsCampaign
    */
 
@@ -50017,6 +51492,30 @@ export namespace Prisma {
   export type CreativeTaskScalarFieldEnum = (typeof CreativeTaskScalarFieldEnum)[keyof typeof CreativeTaskScalarFieldEnum]
 
 
+  export const ShootScalarFieldEnum: {
+    id: 'id',
+    code: 'code',
+    category: 'category',
+    title: 'title',
+    clientId: 'clientId',
+    renterName: 'renterName',
+    phone: 'phone',
+    date: 'date',
+    startTime: 'startTime',
+    endTime: 'endTime',
+    location: 'location',
+    assignedToId: 'assignedToId',
+    status: 'status',
+    rentAmount: 'rentAmount',
+    paid: 'paid',
+    notes: 'notes',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ShootScalarFieldEnum = (typeof ShootScalarFieldEnum)[keyof typeof ShootScalarFieldEnum]
+
+
   export const GoogleAdsCampaignScalarFieldEnum: {
     id: 'id',
     clientId: 'clientId',
@@ -50292,6 +51791,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskListRelationFilter
     creativeAssigned?: CreativeTaskListRelationFilter
     salesLeads?: LeadListRelationFilter
+    shoots?: ShootListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -50313,6 +51813,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskOrderByRelationAggregateInput
     creativeAssigned?: CreativeTaskOrderByRelationAggregateInput
     salesLeads?: LeadOrderByRelationAggregateInput
+    shoots?: ShootOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -50337,6 +51838,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskListRelationFilter
     creativeAssigned?: CreativeTaskListRelationFilter
     salesLeads?: LeadListRelationFilter
+    shoots?: ShootListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -50596,6 +52098,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkListRelationFilter
     gmbLocations?: GmbClientListRelationFilter
     seoReports?: SeoReportListRelationFilter
+    shoots?: ShootListRelationFilter
   }
 
   export type ClientOrderByWithRelationInput = {
@@ -50661,6 +52164,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkOrderByRelationAggregateInput
     gmbLocations?: GmbClientOrderByRelationAggregateInput
     seoReports?: SeoReportOrderByRelationAggregateInput
+    shoots?: ShootOrderByRelationAggregateInput
   }
 
   export type ClientWhereUniqueInput = Prisma.AtLeast<{
@@ -50729,6 +52233,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkListRelationFilter
     gmbLocations?: GmbClientListRelationFilter
     seoReports?: SeoReportListRelationFilter
+    shoots?: ShootListRelationFilter
   }, "id" | "code">
 
   export type ClientOrderByWithAggregationInput = {
@@ -52826,6 +54331,131 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"CreativeTask"> | Date | string
   }
 
+  export type ShootWhereInput = {
+    AND?: ShootWhereInput | ShootWhereInput[]
+    OR?: ShootWhereInput[]
+    NOT?: ShootWhereInput | ShootWhereInput[]
+    id?: StringFilter<"Shoot"> | string
+    code?: StringFilter<"Shoot"> | string
+    category?: StringFilter<"Shoot"> | string
+    title?: StringFilter<"Shoot"> | string
+    clientId?: StringNullableFilter<"Shoot"> | string | null
+    renterName?: StringFilter<"Shoot"> | string
+    phone?: StringFilter<"Shoot"> | string
+    date?: StringFilter<"Shoot"> | string
+    startTime?: StringFilter<"Shoot"> | string
+    endTime?: StringFilter<"Shoot"> | string
+    location?: StringFilter<"Shoot"> | string
+    assignedToId?: StringNullableFilter<"Shoot"> | string | null
+    status?: StringFilter<"Shoot"> | string
+    rentAmount?: IntFilter<"Shoot"> | number
+    paid?: BoolFilter<"Shoot"> | boolean
+    notes?: StringFilter<"Shoot"> | string
+    createdAt?: DateTimeFilter<"Shoot"> | Date | string
+    updatedAt?: DateTimeFilter<"Shoot"> | Date | string
+    client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
+    assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }
+
+  export type ShootOrderByWithRelationInput = {
+    id?: SortOrder
+    code?: SortOrder
+    category?: SortOrder
+    title?: SortOrder
+    clientId?: SortOrderInput | SortOrder
+    renterName?: SortOrder
+    phone?: SortOrder
+    date?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    location?: SortOrder
+    assignedToId?: SortOrderInput | SortOrder
+    status?: SortOrder
+    rentAmount?: SortOrder
+    paid?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    client?: ClientOrderByWithRelationInput
+    assignedTo?: UserOrderByWithRelationInput
+  }
+
+  export type ShootWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ShootWhereInput | ShootWhereInput[]
+    OR?: ShootWhereInput[]
+    NOT?: ShootWhereInput | ShootWhereInput[]
+    code?: StringFilter<"Shoot"> | string
+    category?: StringFilter<"Shoot"> | string
+    title?: StringFilter<"Shoot"> | string
+    clientId?: StringNullableFilter<"Shoot"> | string | null
+    renterName?: StringFilter<"Shoot"> | string
+    phone?: StringFilter<"Shoot"> | string
+    date?: StringFilter<"Shoot"> | string
+    startTime?: StringFilter<"Shoot"> | string
+    endTime?: StringFilter<"Shoot"> | string
+    location?: StringFilter<"Shoot"> | string
+    assignedToId?: StringNullableFilter<"Shoot"> | string | null
+    status?: StringFilter<"Shoot"> | string
+    rentAmount?: IntFilter<"Shoot"> | number
+    paid?: BoolFilter<"Shoot"> | boolean
+    notes?: StringFilter<"Shoot"> | string
+    createdAt?: DateTimeFilter<"Shoot"> | Date | string
+    updatedAt?: DateTimeFilter<"Shoot"> | Date | string
+    client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
+    assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }, "id">
+
+  export type ShootOrderByWithAggregationInput = {
+    id?: SortOrder
+    code?: SortOrder
+    category?: SortOrder
+    title?: SortOrder
+    clientId?: SortOrderInput | SortOrder
+    renterName?: SortOrder
+    phone?: SortOrder
+    date?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    location?: SortOrder
+    assignedToId?: SortOrderInput | SortOrder
+    status?: SortOrder
+    rentAmount?: SortOrder
+    paid?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ShootCountOrderByAggregateInput
+    _avg?: ShootAvgOrderByAggregateInput
+    _max?: ShootMaxOrderByAggregateInput
+    _min?: ShootMinOrderByAggregateInput
+    _sum?: ShootSumOrderByAggregateInput
+  }
+
+  export type ShootScalarWhereWithAggregatesInput = {
+    AND?: ShootScalarWhereWithAggregatesInput | ShootScalarWhereWithAggregatesInput[]
+    OR?: ShootScalarWhereWithAggregatesInput[]
+    NOT?: ShootScalarWhereWithAggregatesInput | ShootScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Shoot"> | string
+    code?: StringWithAggregatesFilter<"Shoot"> | string
+    category?: StringWithAggregatesFilter<"Shoot"> | string
+    title?: StringWithAggregatesFilter<"Shoot"> | string
+    clientId?: StringNullableWithAggregatesFilter<"Shoot"> | string | null
+    renterName?: StringWithAggregatesFilter<"Shoot"> | string
+    phone?: StringWithAggregatesFilter<"Shoot"> | string
+    date?: StringWithAggregatesFilter<"Shoot"> | string
+    startTime?: StringWithAggregatesFilter<"Shoot"> | string
+    endTime?: StringWithAggregatesFilter<"Shoot"> | string
+    location?: StringWithAggregatesFilter<"Shoot"> | string
+    assignedToId?: StringNullableWithAggregatesFilter<"Shoot"> | string | null
+    status?: StringWithAggregatesFilter<"Shoot"> | string
+    rentAmount?: IntWithAggregatesFilter<"Shoot"> | number
+    paid?: BoolWithAggregatesFilter<"Shoot"> | boolean
+    notes?: StringWithAggregatesFilter<"Shoot"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Shoot"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Shoot"> | Date | string
+  }
+
   export type GoogleAdsCampaignWhereInput = {
     AND?: GoogleAdsCampaignWhereInput | GoogleAdsCampaignWhereInput[]
     OR?: GoogleAdsCampaignWhereInput[]
@@ -53840,6 +55470,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -53861,6 +55492,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUpdateInput = {
@@ -53882,6 +55514,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -53903,6 +55536,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -54171,6 +55805,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateInput = {
@@ -54235,6 +55870,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientUpdateInput = {
@@ -54299,6 +55935,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateInput = {
@@ -54363,6 +56000,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateManyInput = {
@@ -56733,6 +58371,151 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ShootCreateInput = {
+    id?: string
+    code: string
+    category: string
+    title: string
+    renterName?: string
+    phone?: string
+    date: string
+    startTime?: string
+    endTime?: string
+    location?: string
+    status?: string
+    rentAmount?: number
+    paid?: boolean
+    notes?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    client?: ClientCreateNestedOneWithoutShootsInput
+    assignedTo?: UserCreateNestedOneWithoutShootsInput
+  }
+
+  export type ShootUncheckedCreateInput = {
+    id?: string
+    code: string
+    category: string
+    title: string
+    clientId?: string | null
+    renterName?: string
+    phone?: string
+    date: string
+    startTime?: string
+    endTime?: string
+    location?: string
+    assignedToId?: string | null
+    status?: string
+    rentAmount?: number
+    paid?: boolean
+    notes?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ShootUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    renterName?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    rentAmount?: IntFieldUpdateOperationsInput | number
+    paid?: BoolFieldUpdateOperationsInput | boolean
+    notes?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    client?: ClientUpdateOneWithoutShootsNestedInput
+    assignedTo?: UserUpdateOneWithoutShootsNestedInput
+  }
+
+  export type ShootUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    renterName?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    rentAmount?: IntFieldUpdateOperationsInput | number
+    paid?: BoolFieldUpdateOperationsInput | boolean
+    notes?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShootCreateManyInput = {
+    id?: string
+    code: string
+    category: string
+    title: string
+    clientId?: string | null
+    renterName?: string
+    phone?: string
+    date: string
+    startTime?: string
+    endTime?: string
+    location?: string
+    assignedToId?: string | null
+    status?: string
+    rentAmount?: number
+    paid?: boolean
+    notes?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ShootUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    renterName?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    rentAmount?: IntFieldUpdateOperationsInput | number
+    paid?: BoolFieldUpdateOperationsInput | boolean
+    notes?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShootUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    renterName?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    rentAmount?: IntFieldUpdateOperationsInput | number
+    paid?: BoolFieldUpdateOperationsInput | boolean
+    notes?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type GoogleAdsCampaignCreateInput = {
     id?: string
     date: string
@@ -57967,6 +59750,12 @@ export namespace Prisma {
     none?: LeadWhereInput
   }
 
+  export type ShootListRelationFilter = {
+    every?: ShootWhereInput
+    some?: ShootWhereInput
+    none?: ShootWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -58001,6 +59790,10 @@ export namespace Prisma {
   }
 
   export type LeadOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ShootOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -59847,6 +61640,77 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type ShootCountOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    category?: SortOrder
+    title?: SortOrder
+    clientId?: SortOrder
+    renterName?: SortOrder
+    phone?: SortOrder
+    date?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    location?: SortOrder
+    assignedToId?: SortOrder
+    status?: SortOrder
+    rentAmount?: SortOrder
+    paid?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ShootAvgOrderByAggregateInput = {
+    rentAmount?: SortOrder
+  }
+
+  export type ShootMaxOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    category?: SortOrder
+    title?: SortOrder
+    clientId?: SortOrder
+    renterName?: SortOrder
+    phone?: SortOrder
+    date?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    location?: SortOrder
+    assignedToId?: SortOrder
+    status?: SortOrder
+    rentAmount?: SortOrder
+    paid?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ShootMinOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    category?: SortOrder
+    title?: SortOrder
+    clientId?: SortOrder
+    renterName?: SortOrder
+    phone?: SortOrder
+    date?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    location?: SortOrder
+    assignedToId?: SortOrder
+    status?: SortOrder
+    rentAmount?: SortOrder
+    paid?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ShootSumOrderByAggregateInput = {
+    rentAmount?: SortOrder
+  }
+
   export type GoogleAdsCampaignCountOrderByAggregateInput = {
     id?: SortOrder
     clientId?: SortOrder
@@ -60543,6 +62407,13 @@ export namespace Prisma {
     connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
   }
 
+  export type ShootCreateNestedManyWithoutAssignedToInput = {
+    create?: XOR<ShootCreateWithoutAssignedToInput, ShootUncheckedCreateWithoutAssignedToInput> | ShootCreateWithoutAssignedToInput[] | ShootUncheckedCreateWithoutAssignedToInput[]
+    connectOrCreate?: ShootCreateOrConnectWithoutAssignedToInput | ShootCreateOrConnectWithoutAssignedToInput[]
+    createMany?: ShootCreateManyAssignedToInputEnvelope
+    connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+  }
+
   export type ClientUncheckedCreateNestedManyWithoutAccountManagerInput = {
     create?: XOR<ClientCreateWithoutAccountManagerInput, ClientUncheckedCreateWithoutAccountManagerInput> | ClientCreateWithoutAccountManagerInput[] | ClientUncheckedCreateWithoutAccountManagerInput[]
     connectOrCreate?: ClientCreateOrConnectWithoutAccountManagerInput | ClientCreateOrConnectWithoutAccountManagerInput[]
@@ -60611,6 +62482,13 @@ export namespace Prisma {
     connectOrCreate?: LeadCreateOrConnectWithoutAssignedToInput | LeadCreateOrConnectWithoutAssignedToInput[]
     createMany?: LeadCreateManyAssignedToInputEnvelope
     connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+  }
+
+  export type ShootUncheckedCreateNestedManyWithoutAssignedToInput = {
+    create?: XOR<ShootCreateWithoutAssignedToInput, ShootUncheckedCreateWithoutAssignedToInput> | ShootCreateWithoutAssignedToInput[] | ShootUncheckedCreateWithoutAssignedToInput[]
+    connectOrCreate?: ShootCreateOrConnectWithoutAssignedToInput | ShootCreateOrConnectWithoutAssignedToInput[]
+    createMany?: ShootCreateManyAssignedToInputEnvelope
+    connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -60769,6 +62647,20 @@ export namespace Prisma {
     deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
   }
 
+  export type ShootUpdateManyWithoutAssignedToNestedInput = {
+    create?: XOR<ShootCreateWithoutAssignedToInput, ShootUncheckedCreateWithoutAssignedToInput> | ShootCreateWithoutAssignedToInput[] | ShootUncheckedCreateWithoutAssignedToInput[]
+    connectOrCreate?: ShootCreateOrConnectWithoutAssignedToInput | ShootCreateOrConnectWithoutAssignedToInput[]
+    upsert?: ShootUpsertWithWhereUniqueWithoutAssignedToInput | ShootUpsertWithWhereUniqueWithoutAssignedToInput[]
+    createMany?: ShootCreateManyAssignedToInputEnvelope
+    set?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    disconnect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    delete?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    update?: ShootUpdateWithWhereUniqueWithoutAssignedToInput | ShootUpdateWithWhereUniqueWithoutAssignedToInput[]
+    updateMany?: ShootUpdateManyWithWhereWithoutAssignedToInput | ShootUpdateManyWithWhereWithoutAssignedToInput[]
+    deleteMany?: ShootScalarWhereInput | ShootScalarWhereInput[]
+  }
+
   export type ClientUncheckedUpdateManyWithoutAccountManagerNestedInput = {
     create?: XOR<ClientCreateWithoutAccountManagerInput, ClientUncheckedCreateWithoutAccountManagerInput> | ClientCreateWithoutAccountManagerInput[] | ClientUncheckedCreateWithoutAccountManagerInput[]
     connectOrCreate?: ClientCreateOrConnectWithoutAccountManagerInput | ClientCreateOrConnectWithoutAccountManagerInput[]
@@ -60907,6 +62799,20 @@ export namespace Prisma {
     update?: LeadUpdateWithWhereUniqueWithoutAssignedToInput | LeadUpdateWithWhereUniqueWithoutAssignedToInput[]
     updateMany?: LeadUpdateManyWithWhereWithoutAssignedToInput | LeadUpdateManyWithWhereWithoutAssignedToInput[]
     deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
+  }
+
+  export type ShootUncheckedUpdateManyWithoutAssignedToNestedInput = {
+    create?: XOR<ShootCreateWithoutAssignedToInput, ShootUncheckedCreateWithoutAssignedToInput> | ShootCreateWithoutAssignedToInput[] | ShootUncheckedCreateWithoutAssignedToInput[]
+    connectOrCreate?: ShootCreateOrConnectWithoutAssignedToInput | ShootCreateOrConnectWithoutAssignedToInput[]
+    upsert?: ShootUpsertWithWhereUniqueWithoutAssignedToInput | ShootUpsertWithWhereUniqueWithoutAssignedToInput[]
+    createMany?: ShootCreateManyAssignedToInputEnvelope
+    set?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    disconnect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    delete?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    update?: ShootUpdateWithWhereUniqueWithoutAssignedToInput | ShootUpdateWithWhereUniqueWithoutAssignedToInput[]
+    updateMany?: ShootUpdateManyWithWhereWithoutAssignedToInput | ShootUpdateManyWithWhereWithoutAssignedToInput[]
+    deleteMany?: ShootScalarWhereInput | ShootScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutTasksAssignedInput = {
@@ -61132,6 +63038,13 @@ export namespace Prisma {
     connect?: SeoReportWhereUniqueInput | SeoReportWhereUniqueInput[]
   }
 
+  export type ShootCreateNestedManyWithoutClientInput = {
+    create?: XOR<ShootCreateWithoutClientInput, ShootUncheckedCreateWithoutClientInput> | ShootCreateWithoutClientInput[] | ShootUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: ShootCreateOrConnectWithoutClientInput | ShootCreateOrConnectWithoutClientInput[]
+    createMany?: ShootCreateManyClientInputEnvelope
+    connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+  }
+
   export type ClientServiceUncheckedCreateNestedManyWithoutClientInput = {
     create?: XOR<ClientServiceCreateWithoutClientInput, ClientServiceUncheckedCreateWithoutClientInput> | ClientServiceCreateWithoutClientInput[] | ClientServiceUncheckedCreateWithoutClientInput[]
     connectOrCreate?: ClientServiceCreateOrConnectWithoutClientInput | ClientServiceCreateOrConnectWithoutClientInput[]
@@ -61277,6 +63190,13 @@ export namespace Prisma {
     connectOrCreate?: SeoReportCreateOrConnectWithoutClientInput | SeoReportCreateOrConnectWithoutClientInput[]
     createMany?: SeoReportCreateManyClientInputEnvelope
     connect?: SeoReportWhereUniqueInput | SeoReportWhereUniqueInput[]
+  }
+
+  export type ShootUncheckedCreateNestedManyWithoutClientInput = {
+    create?: XOR<ShootCreateWithoutClientInput, ShootUncheckedCreateWithoutClientInput> | ShootCreateWithoutClientInput[] | ShootUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: ShootCreateOrConnectWithoutClientInput | ShootCreateOrConnectWithoutClientInput[]
+    createMany?: ShootCreateManyClientInputEnvelope
+    connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
   }
 
   export type UserUpdateOneWithoutManagedClientsNestedInput = {
@@ -61583,6 +63503,20 @@ export namespace Prisma {
     deleteMany?: SeoReportScalarWhereInput | SeoReportScalarWhereInput[]
   }
 
+  export type ShootUpdateManyWithoutClientNestedInput = {
+    create?: XOR<ShootCreateWithoutClientInput, ShootUncheckedCreateWithoutClientInput> | ShootCreateWithoutClientInput[] | ShootUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: ShootCreateOrConnectWithoutClientInput | ShootCreateOrConnectWithoutClientInput[]
+    upsert?: ShootUpsertWithWhereUniqueWithoutClientInput | ShootUpsertWithWhereUniqueWithoutClientInput[]
+    createMany?: ShootCreateManyClientInputEnvelope
+    set?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    disconnect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    delete?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    update?: ShootUpdateWithWhereUniqueWithoutClientInput | ShootUpdateWithWhereUniqueWithoutClientInput[]
+    updateMany?: ShootUpdateManyWithWhereWithoutClientInput | ShootUpdateManyWithWhereWithoutClientInput[]
+    deleteMany?: ShootScalarWhereInput | ShootScalarWhereInput[]
+  }
+
   export type ClientServiceUncheckedUpdateManyWithoutClientNestedInput = {
     create?: XOR<ClientServiceCreateWithoutClientInput, ClientServiceUncheckedCreateWithoutClientInput> | ClientServiceCreateWithoutClientInput[] | ClientServiceUncheckedCreateWithoutClientInput[]
     connectOrCreate?: ClientServiceCreateOrConnectWithoutClientInput | ClientServiceCreateOrConnectWithoutClientInput[]
@@ -61875,6 +63809,20 @@ export namespace Prisma {
     update?: SeoReportUpdateWithWhereUniqueWithoutClientInput | SeoReportUpdateWithWhereUniqueWithoutClientInput[]
     updateMany?: SeoReportUpdateManyWithWhereWithoutClientInput | SeoReportUpdateManyWithWhereWithoutClientInput[]
     deleteMany?: SeoReportScalarWhereInput | SeoReportScalarWhereInput[]
+  }
+
+  export type ShootUncheckedUpdateManyWithoutClientNestedInput = {
+    create?: XOR<ShootCreateWithoutClientInput, ShootUncheckedCreateWithoutClientInput> | ShootCreateWithoutClientInput[] | ShootUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: ShootCreateOrConnectWithoutClientInput | ShootCreateOrConnectWithoutClientInput[]
+    upsert?: ShootUpsertWithWhereUniqueWithoutClientInput | ShootUpsertWithWhereUniqueWithoutClientInput[]
+    createMany?: ShootCreateManyClientInputEnvelope
+    set?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    disconnect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    delete?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+    update?: ShootUpdateWithWhereUniqueWithoutClientInput | ShootUpdateWithWhereUniqueWithoutClientInput[]
+    updateMany?: ShootUpdateManyWithWhereWithoutClientInput | ShootUpdateManyWithWhereWithoutClientInput[]
+    deleteMany?: ShootScalarWhereInput | ShootScalarWhereInput[]
   }
 
   export type ClientCreateNestedOneWithoutContactsInput = {
@@ -62395,6 +64343,38 @@ export namespace Prisma {
     delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCreativeAssignedInput, UserUpdateWithoutCreativeAssignedInput>, UserUncheckedUpdateWithoutCreativeAssignedInput>
+  }
+
+  export type ClientCreateNestedOneWithoutShootsInput = {
+    create?: XOR<ClientCreateWithoutShootsInput, ClientUncheckedCreateWithoutShootsInput>
+    connectOrCreate?: ClientCreateOrConnectWithoutShootsInput
+    connect?: ClientWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutShootsInput = {
+    create?: XOR<UserCreateWithoutShootsInput, UserUncheckedCreateWithoutShootsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutShootsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type ClientUpdateOneWithoutShootsNestedInput = {
+    create?: XOR<ClientCreateWithoutShootsInput, ClientUncheckedCreateWithoutShootsInput>
+    connectOrCreate?: ClientCreateOrConnectWithoutShootsInput
+    upsert?: ClientUpsertWithoutShootsInput
+    disconnect?: ClientWhereInput | boolean
+    delete?: ClientWhereInput | boolean
+    connect?: ClientWhereUniqueInput
+    update?: XOR<XOR<ClientUpdateToOneWithWhereWithoutShootsInput, ClientUpdateWithoutShootsInput>, ClientUncheckedUpdateWithoutShootsInput>
+  }
+
+  export type UserUpdateOneWithoutShootsNestedInput = {
+    create?: XOR<UserCreateWithoutShootsInput, UserUncheckedCreateWithoutShootsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutShootsInput
+    upsert?: UserUpsertWithoutShootsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutShootsInput, UserUpdateWithoutShootsInput>, UserUncheckedUpdateWithoutShootsInput>
   }
 
   export type ClientCreateNestedOneWithoutGoogleCampaignsInput = {
@@ -63055,6 +65035,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutAccountManagerInput = {
@@ -63118,6 +65099,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutAccountManagerInput = {
@@ -63540,6 +65522,55 @@ export namespace Prisma {
     data: LeadCreateManyAssignedToInput | LeadCreateManyAssignedToInput[]
   }
 
+  export type ShootCreateWithoutAssignedToInput = {
+    id?: string
+    code: string
+    category: string
+    title: string
+    renterName?: string
+    phone?: string
+    date: string
+    startTime?: string
+    endTime?: string
+    location?: string
+    status?: string
+    rentAmount?: number
+    paid?: boolean
+    notes?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    client?: ClientCreateNestedOneWithoutShootsInput
+  }
+
+  export type ShootUncheckedCreateWithoutAssignedToInput = {
+    id?: string
+    code: string
+    category: string
+    title: string
+    clientId?: string | null
+    renterName?: string
+    phone?: string
+    date: string
+    startTime?: string
+    endTime?: string
+    location?: string
+    status?: string
+    rentAmount?: number
+    paid?: boolean
+    notes?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ShootCreateOrConnectWithoutAssignedToInput = {
+    where: ShootWhereUniqueInput
+    create: XOR<ShootCreateWithoutAssignedToInput, ShootUncheckedCreateWithoutAssignedToInput>
+  }
+
+  export type ShootCreateManyAssignedToInputEnvelope = {
+    data: ShootCreateManyAssignedToInput | ShootCreateManyAssignedToInput[]
+  }
+
   export type ClientUpsertWithWhereUniqueWithoutAccountManagerInput = {
     where: ClientWhereUniqueInput
     update: XOR<ClientUpdateWithoutAccountManagerInput, ClientUncheckedUpdateWithoutAccountManagerInput>
@@ -63894,6 +65925,46 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
   }
 
+  export type ShootUpsertWithWhereUniqueWithoutAssignedToInput = {
+    where: ShootWhereUniqueInput
+    update: XOR<ShootUpdateWithoutAssignedToInput, ShootUncheckedUpdateWithoutAssignedToInput>
+    create: XOR<ShootCreateWithoutAssignedToInput, ShootUncheckedCreateWithoutAssignedToInput>
+  }
+
+  export type ShootUpdateWithWhereUniqueWithoutAssignedToInput = {
+    where: ShootWhereUniqueInput
+    data: XOR<ShootUpdateWithoutAssignedToInput, ShootUncheckedUpdateWithoutAssignedToInput>
+  }
+
+  export type ShootUpdateManyWithWhereWithoutAssignedToInput = {
+    where: ShootScalarWhereInput
+    data: XOR<ShootUpdateManyMutationInput, ShootUncheckedUpdateManyWithoutAssignedToInput>
+  }
+
+  export type ShootScalarWhereInput = {
+    AND?: ShootScalarWhereInput | ShootScalarWhereInput[]
+    OR?: ShootScalarWhereInput[]
+    NOT?: ShootScalarWhereInput | ShootScalarWhereInput[]
+    id?: StringFilter<"Shoot"> | string
+    code?: StringFilter<"Shoot"> | string
+    category?: StringFilter<"Shoot"> | string
+    title?: StringFilter<"Shoot"> | string
+    clientId?: StringNullableFilter<"Shoot"> | string | null
+    renterName?: StringFilter<"Shoot"> | string
+    phone?: StringFilter<"Shoot"> | string
+    date?: StringFilter<"Shoot"> | string
+    startTime?: StringFilter<"Shoot"> | string
+    endTime?: StringFilter<"Shoot"> | string
+    location?: StringFilter<"Shoot"> | string
+    assignedToId?: StringNullableFilter<"Shoot"> | string | null
+    status?: StringFilter<"Shoot"> | string
+    rentAmount?: IntFilter<"Shoot"> | number
+    paid?: BoolFilter<"Shoot"> | boolean
+    notes?: StringFilter<"Shoot"> | string
+    createdAt?: DateTimeFilter<"Shoot"> | Date | string
+    updatedAt?: DateTimeFilter<"Shoot"> | Date | string
+  }
+
   export type UserCreateWithoutTasksAssignedInput = {
     id?: string
     name: string
@@ -63912,6 +65983,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutTasksAssignedInput = {
@@ -63932,6 +66004,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutTasksAssignedInput = {
@@ -63957,6 +66030,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutTasksReceivedInput = {
@@ -63977,6 +66051,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutTasksReceivedInput = {
@@ -64045,6 +66120,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutTasksInput = {
@@ -64108,6 +66184,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutTasksInput = {
@@ -64144,6 +66221,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTasksAssignedInput = {
@@ -64164,6 +66242,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUpsertWithoutTasksReceivedInput = {
@@ -64195,6 +66274,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTasksReceivedInput = {
@@ -64215,6 +66295,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type ClientUpsertWithoutTasksInput = {
@@ -64289,6 +66370,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutTasksInput = {
@@ -64352,6 +66434,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserCreateWithoutTimeSessionsInput = {
@@ -64372,6 +66455,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutTimeSessionsInput = {
@@ -64392,6 +66476,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutTimeSessionsInput = {
@@ -64428,6 +66513,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTimeSessionsInput = {
@@ -64448,6 +66534,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserCreateWithoutManagedClientsInput = {
@@ -64468,6 +66555,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutManagedClientsInput = {
@@ -64488,6 +66576,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutManagedClientsInput = {
@@ -65280,6 +67369,55 @@ export namespace Prisma {
     data: SeoReportCreateManyClientInput | SeoReportCreateManyClientInput[]
   }
 
+  export type ShootCreateWithoutClientInput = {
+    id?: string
+    code: string
+    category: string
+    title: string
+    renterName?: string
+    phone?: string
+    date: string
+    startTime?: string
+    endTime?: string
+    location?: string
+    status?: string
+    rentAmount?: number
+    paid?: boolean
+    notes?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assignedTo?: UserCreateNestedOneWithoutShootsInput
+  }
+
+  export type ShootUncheckedCreateWithoutClientInput = {
+    id?: string
+    code: string
+    category: string
+    title: string
+    renterName?: string
+    phone?: string
+    date: string
+    startTime?: string
+    endTime?: string
+    location?: string
+    assignedToId?: string | null
+    status?: string
+    rentAmount?: number
+    paid?: boolean
+    notes?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ShootCreateOrConnectWithoutClientInput = {
+    where: ShootWhereUniqueInput
+    create: XOR<ShootCreateWithoutClientInput, ShootUncheckedCreateWithoutClientInput>
+  }
+
+  export type ShootCreateManyClientInputEnvelope = {
+    data: ShootCreateManyClientInput | ShootCreateManyClientInput[]
+  }
+
   export type UserUpsertWithoutManagedClientsInput = {
     update: XOR<UserUpdateWithoutManagedClientsInput, UserUncheckedUpdateWithoutManagedClientsInput>
     create: XOR<UserCreateWithoutManagedClientsInput, UserUncheckedCreateWithoutManagedClientsInput>
@@ -65309,6 +67447,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutManagedClientsInput = {
@@ -65329,6 +67468,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type ClientServiceUpsertWithWhereUniqueWithoutClientInput = {
@@ -65947,6 +68087,22 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"SeoReport"> | Date | string
   }
 
+  export type ShootUpsertWithWhereUniqueWithoutClientInput = {
+    where: ShootWhereUniqueInput
+    update: XOR<ShootUpdateWithoutClientInput, ShootUncheckedUpdateWithoutClientInput>
+    create: XOR<ShootCreateWithoutClientInput, ShootUncheckedCreateWithoutClientInput>
+  }
+
+  export type ShootUpdateWithWhereUniqueWithoutClientInput = {
+    where: ShootWhereUniqueInput
+    data: XOR<ShootUpdateWithoutClientInput, ShootUncheckedUpdateWithoutClientInput>
+  }
+
+  export type ShootUpdateManyWithWhereWithoutClientInput = {
+    where: ShootScalarWhereInput
+    data: XOR<ShootUpdateManyMutationInput, ShootUncheckedUpdateManyWithoutClientInput>
+  }
+
   export type ClientCreateWithoutContactsInput = {
     id?: string
     code: string
@@ -66008,6 +68164,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutContactsInput = {
@@ -66071,6 +68228,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutContactsInput = {
@@ -66150,6 +68308,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutContactsInput = {
@@ -66213,6 +68372,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutServicesInput = {
@@ -66276,6 +68436,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutServicesInput = {
@@ -66339,6 +68500,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutServicesInput = {
@@ -66418,6 +68580,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutServicesInput = {
@@ -66481,6 +68644,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutDeliverablesInput = {
@@ -66544,6 +68708,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutDeliverablesInput = {
@@ -66607,6 +68772,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutDeliverablesInput = {
@@ -66686,6 +68852,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutDeliverablesInput = {
@@ -66749,6 +68916,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutAssignmentsInput = {
@@ -66812,6 +68980,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutAssignmentsInput = {
@@ -66875,6 +69044,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutAssignmentsInput = {
@@ -66900,6 +69070,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutAssignmentsInput = {
@@ -66920,6 +69091,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutAssignmentsInput = {
@@ -66999,6 +69171,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutAssignmentsInput = {
@@ -67062,6 +69235,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserUpsertWithoutAssignmentsInput = {
@@ -67093,6 +69267,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignmentsInput = {
@@ -67113,6 +69288,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type ClientCreateWithoutUpdatesInput = {
@@ -67176,6 +69352,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutUpdatesInput = {
@@ -67239,6 +69416,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutUpdatesInput = {
@@ -67264,6 +69442,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutUpdatesInput = {
@@ -67284,6 +69463,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutUpdatesInput = {
@@ -67363,6 +69543,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutUpdatesInput = {
@@ -67426,6 +69607,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserUpsertWithoutUpdatesInput = {
@@ -67457,6 +69639,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUpdatesInput = {
@@ -67477,6 +69660,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type ClientCreateWithoutInvoicesInput = {
@@ -67540,6 +69724,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutInvoicesInput = {
@@ -67603,6 +69788,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutInvoicesInput = {
@@ -67682,6 +69868,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutInvoicesInput = {
@@ -67745,6 +69932,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type PaymentCreateWithoutInvoiceInput = {
@@ -67839,6 +70027,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSalesInvoicesInput = {
@@ -67902,6 +70091,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSalesInvoicesInput = {
@@ -68012,6 +70202,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSalesInvoicesInput = {
@@ -68075,6 +70266,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type SalesInvoiceCreateWithoutPaymentsInput = {
@@ -68294,6 +70486,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSlasInput = {
@@ -68357,6 +70550,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSlasInput = {
@@ -68436,6 +70630,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSlasInput = {
@@ -68499,6 +70694,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutCampaignsInput = {
@@ -68562,6 +70758,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutCampaignsInput = {
@@ -68625,6 +70822,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutCampaignsInput = {
@@ -68704,6 +70902,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutCampaignsInput = {
@@ -68767,6 +70966,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutDevProjectsInput = {
@@ -68830,6 +71030,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutDevProjectsInput = {
@@ -68893,6 +71094,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutDevProjectsInput = {
@@ -68918,6 +71120,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutDevProjectsInput = {
@@ -68938,6 +71141,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutDevProjectsInput = {
@@ -69065,6 +71269,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutDevProjectsInput = {
@@ -69128,6 +71333,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserUpsertWithoutDevProjectsInput = {
@@ -69159,6 +71365,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDevProjectsInput = {
@@ -69179,6 +71386,7 @@ export namespace Prisma {
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type DevTaskUpsertWithWhereUniqueWithoutProjectInput = {
@@ -69489,6 +71697,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSocialPostsInput = {
@@ -69552,6 +71761,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSocialPostsInput = {
@@ -69631,6 +71841,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSocialPostsInput = {
@@ -69694,6 +71905,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutSeoAnalyticsInput = {
@@ -69757,6 +71969,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSeoAnalyticsInput = {
@@ -69820,6 +72033,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSeoAnalyticsInput = {
@@ -69899,6 +72113,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSeoAnalyticsInput = {
@@ -69962,6 +72177,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutSeoBlogSlotsInput = {
@@ -70025,6 +72241,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSeoBlogSlotsInput = {
@@ -70088,6 +72305,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSeoBlogSlotsInput = {
@@ -70167,6 +72385,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSeoBlogSlotsInput = {
@@ -70230,6 +72449,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutSeoKeywordsInput = {
@@ -70293,6 +72513,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSeoKeywordsInput = {
@@ -70356,6 +72577,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSeoKeywordsInput = {
@@ -70435,6 +72657,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSeoKeywordsInput = {
@@ -70498,6 +72721,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutSeoBacklinksInput = {
@@ -70561,6 +72785,7 @@ export namespace Prisma {
     seoKeywords?: SeoKeywordCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSeoBacklinksInput = {
@@ -70624,6 +72849,7 @@ export namespace Prisma {
     seoKeywords?: SeoKeywordUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSeoBacklinksInput = {
@@ -70703,6 +72929,7 @@ export namespace Prisma {
     seoKeywords?: SeoKeywordUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSeoBacklinksInput = {
@@ -70766,6 +72993,7 @@ export namespace Prisma {
     seoKeywords?: SeoKeywordUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutGmbLocationsInput = {
@@ -70829,6 +73057,7 @@ export namespace Prisma {
     seoKeywords?: SeoKeywordCreateNestedManyWithoutClientInput
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutGmbLocationsInput = {
@@ -70892,6 +73121,7 @@ export namespace Prisma {
     seoKeywords?: SeoKeywordUncheckedCreateNestedManyWithoutClientInput
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutGmbLocationsInput = {
@@ -70971,6 +73201,7 @@ export namespace Prisma {
     seoKeywords?: SeoKeywordUpdateManyWithoutClientNestedInput
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutGmbLocationsInput = {
@@ -71034,6 +73265,7 @@ export namespace Prisma {
     seoKeywords?: SeoKeywordUncheckedUpdateManyWithoutClientNestedInput
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutSeoReportsInput = {
@@ -71097,6 +73329,7 @@ export namespace Prisma {
     seoKeywords?: SeoKeywordCreateNestedManyWithoutClientInput
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSeoReportsInput = {
@@ -71160,6 +73393,7 @@ export namespace Prisma {
     seoKeywords?: SeoKeywordUncheckedCreateNestedManyWithoutClientInput
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSeoReportsInput = {
@@ -71239,6 +73473,7 @@ export namespace Prisma {
     seoKeywords?: SeoKeywordUpdateManyWithoutClientNestedInput
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSeoReportsInput = {
@@ -71302,6 +73537,7 @@ export namespace Prisma {
     seoKeywords?: SeoKeywordUncheckedUpdateManyWithoutClientNestedInput
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutCreativeTasksInput = {
@@ -71365,6 +73601,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutCreativeTasksInput = {
@@ -71428,6 +73665,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutCreativeTasksInput = {
@@ -71453,6 +73691,7 @@ export namespace Prisma {
     tasksReceived?: TaskCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutCreativeTasksInput = {
@@ -71473,6 +73712,7 @@ export namespace Prisma {
     tasksReceived?: TaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutCreativeTasksInput = {
@@ -71498,6 +73738,7 @@ export namespace Prisma {
     tasksReceived?: TaskCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutCreativeAssignedInput = {
@@ -71518,6 +73759,7 @@ export namespace Prisma {
     tasksReceived?: TaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutCreativeAssignedInput = {
@@ -71597,6 +73839,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutCreativeTasksInput = {
@@ -71660,6 +73903,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserUpsertWithoutCreativeTasksInput = {
@@ -71691,6 +73935,7 @@ export namespace Prisma {
     tasksReceived?: TaskUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreativeTasksInput = {
@@ -71711,6 +73956,7 @@ export namespace Prisma {
     tasksReceived?: TaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUpsertWithoutCreativeAssignedInput = {
@@ -71742,6 +73988,7 @@ export namespace Prisma {
     tasksReceived?: TaskUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreativeAssignedInput = {
@@ -71761,6 +74008,379 @@ export namespace Prisma {
     tasksAssigned?: TaskUncheckedUpdateManyWithoutAssignedByNestedInput
     tasksReceived?: TaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
+  }
+
+  export type ClientCreateWithoutShootsInput = {
+    id?: string
+    code: string
+    name: string
+    website?: string | null
+    industry?: string | null
+    monthlyRetainer?: number
+    googleBudget?: number
+    seoPriority?: string
+    seoScheduleDays?: string
+    blogTarget?: number
+    backlinkTarget?: number
+    keywordTarget?: number
+    gscLink?: string
+    gaLink?: string
+    domainAuthority?: number
+    pocName?: string | null
+    pocMobile?: string | null
+    pocEmail?: string | null
+    onboardDate?: Date | string
+    renewalDate?: string
+    status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    websiteServices?: string
+    domainTaken?: boolean
+    domainAmount?: number
+    hostingTaken?: boolean
+    hostingAmount?: number
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accountManager?: UserCreateNestedOneWithoutManagedClientsInput
+    services?: ClientServiceCreateNestedManyWithoutClientInput
+    deliverables?: DeliverableCreateNestedManyWithoutClientInput
+    assignments?: AssignmentCreateNestedManyWithoutClientInput
+    updates?: WorkUpdateCreateNestedManyWithoutClientInput
+    adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
+    invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
+    campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
+    socialPosts?: SocialPostCreateNestedManyWithoutClientInput
+    devProjects?: DevProjectCreateNestedManyWithoutClientInput
+    contacts?: ClientContactCreateNestedManyWithoutClientInput
+    tasks?: TaskCreateNestedManyWithoutClientInput
+    googleCampaigns?: GoogleAdsCampaignCreateNestedManyWithoutClientInput
+    creativeTasks?: CreativeTaskCreateNestedManyWithoutClientInput
+    seoAnalytics?: SeoAnalyticsCreateNestedManyWithoutClientInput
+    seoBlogSlots?: SeoBlogSlotCreateNestedManyWithoutClientInput
+    seoKeywords?: SeoKeywordCreateNestedManyWithoutClientInput
+    seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
+    gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
+    seoReports?: SeoReportCreateNestedManyWithoutClientInput
+  }
+
+  export type ClientUncheckedCreateWithoutShootsInput = {
+    id?: string
+    code: string
+    name: string
+    website?: string | null
+    industry?: string | null
+    monthlyRetainer?: number
+    googleBudget?: number
+    seoPriority?: string
+    seoScheduleDays?: string
+    blogTarget?: number
+    backlinkTarget?: number
+    keywordTarget?: number
+    gscLink?: string
+    gaLink?: string
+    domainAuthority?: number
+    pocName?: string | null
+    pocMobile?: string | null
+    pocEmail?: string | null
+    onboardDate?: Date | string
+    renewalDate?: string
+    status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
+    websiteName?: string
+    websiteDomain?: string
+    websiteServices?: string
+    domainTaken?: boolean
+    domainAmount?: number
+    hostingTaken?: boolean
+    hostingAmount?: number
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accountManagerId?: string | null
+    services?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
+    deliverables?: DeliverableUncheckedCreateNestedManyWithoutClientInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutClientInput
+    updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
+    adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
+    campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
+    socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
+    devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
+    contacts?: ClientContactUncheckedCreateNestedManyWithoutClientInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutClientInput
+    googleCampaigns?: GoogleAdsCampaignUncheckedCreateNestedManyWithoutClientInput
+    creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutClientInput
+    seoAnalytics?: SeoAnalyticsUncheckedCreateNestedManyWithoutClientInput
+    seoBlogSlots?: SeoBlogSlotUncheckedCreateNestedManyWithoutClientInput
+    seoKeywords?: SeoKeywordUncheckedCreateNestedManyWithoutClientInput
+    seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
+    gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
+    seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+  }
+
+  export type ClientCreateOrConnectWithoutShootsInput = {
+    where: ClientWhereUniqueInput
+    create: XOR<ClientCreateWithoutShootsInput, ClientUncheckedCreateWithoutShootsInput>
+  }
+
+  export type UserCreateWithoutShootsInput = {
+    id?: string
+    name: string
+    role: string
+    email?: string | null
+    phone?: string | null
+    passwordHash?: string | null
+    active?: boolean
+    createdAt?: Date | string
+    managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    assignments?: AssignmentCreateNestedManyWithoutUserInput
+    updates?: WorkUpdateCreateNestedManyWithoutUserInput
+    devProjects?: DevProjectCreateNestedManyWithoutAssignedToInput
+    timeSessions?: TimeSessionCreateNestedManyWithoutUserInput
+    tasksAssigned?: TaskCreateNestedManyWithoutAssignedByInput
+    tasksReceived?: TaskCreateNestedManyWithoutAssignedToInput
+    creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
+    salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
+  }
+
+  export type UserUncheckedCreateWithoutShootsInput = {
+    id?: string
+    name: string
+    role: string
+    email?: string | null
+    phone?: string | null
+    passwordHash?: string | null
+    active?: boolean
+    createdAt?: Date | string
+    managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
+    updates?: WorkUpdateUncheckedCreateNestedManyWithoutUserInput
+    devProjects?: DevProjectUncheckedCreateNestedManyWithoutAssignedToInput
+    timeSessions?: TimeSessionUncheckedCreateNestedManyWithoutUserInput
+    tasksAssigned?: TaskUncheckedCreateNestedManyWithoutAssignedByInput
+    tasksReceived?: TaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
+    salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
+  }
+
+  export type UserCreateOrConnectWithoutShootsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutShootsInput, UserUncheckedCreateWithoutShootsInput>
+  }
+
+  export type ClientUpsertWithoutShootsInput = {
+    update: XOR<ClientUpdateWithoutShootsInput, ClientUncheckedUpdateWithoutShootsInput>
+    create: XOR<ClientCreateWithoutShootsInput, ClientUncheckedCreateWithoutShootsInput>
+    where?: ClientWhereInput
+  }
+
+  export type ClientUpdateToOneWithWhereWithoutShootsInput = {
+    where?: ClientWhereInput
+    data: XOR<ClientUpdateWithoutShootsInput, ClientUncheckedUpdateWithoutShootsInput>
+  }
+
+  export type ClientUpdateWithoutShootsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    googleBudget?: IntFieldUpdateOperationsInput | number
+    seoPriority?: StringFieldUpdateOperationsInput | string
+    seoScheduleDays?: StringFieldUpdateOperationsInput | string
+    blogTarget?: IntFieldUpdateOperationsInput | number
+    backlinkTarget?: IntFieldUpdateOperationsInput | number
+    keywordTarget?: IntFieldUpdateOperationsInput | number
+    gscLink?: StringFieldUpdateOperationsInput | string
+    gaLink?: StringFieldUpdateOperationsInput | string
+    domainAuthority?: IntFieldUpdateOperationsInput | number
+    pocName?: NullableStringFieldUpdateOperationsInput | string | null
+    pocMobile?: NullableStringFieldUpdateOperationsInput | string | null
+    pocEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    renewalDate?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    websiteServices?: StringFieldUpdateOperationsInput | string
+    domainTaken?: BoolFieldUpdateOperationsInput | boolean
+    domainAmount?: IntFieldUpdateOperationsInput | number
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accountManager?: UserUpdateOneWithoutManagedClientsNestedInput
+    services?: ClientServiceUpdateManyWithoutClientNestedInput
+    deliverables?: DeliverableUpdateManyWithoutClientNestedInput
+    assignments?: AssignmentUpdateManyWithoutClientNestedInput
+    updates?: WorkUpdateUpdateManyWithoutClientNestedInput
+    adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
+    invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
+    campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
+    socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
+    devProjects?: DevProjectUpdateManyWithoutClientNestedInput
+    contacts?: ClientContactUpdateManyWithoutClientNestedInput
+    tasks?: TaskUpdateManyWithoutClientNestedInput
+    googleCampaigns?: GoogleAdsCampaignUpdateManyWithoutClientNestedInput
+    creativeTasks?: CreativeTaskUpdateManyWithoutClientNestedInput
+    seoAnalytics?: SeoAnalyticsUpdateManyWithoutClientNestedInput
+    seoBlogSlots?: SeoBlogSlotUpdateManyWithoutClientNestedInput
+    seoKeywords?: SeoKeywordUpdateManyWithoutClientNestedInput
+    seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
+    gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
+    seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+  }
+
+  export type ClientUncheckedUpdateWithoutShootsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    googleBudget?: IntFieldUpdateOperationsInput | number
+    seoPriority?: StringFieldUpdateOperationsInput | string
+    seoScheduleDays?: StringFieldUpdateOperationsInput | string
+    blogTarget?: IntFieldUpdateOperationsInput | number
+    backlinkTarget?: IntFieldUpdateOperationsInput | number
+    keywordTarget?: IntFieldUpdateOperationsInput | number
+    gscLink?: StringFieldUpdateOperationsInput | string
+    gaLink?: StringFieldUpdateOperationsInput | string
+    domainAuthority?: IntFieldUpdateOperationsInput | number
+    pocName?: NullableStringFieldUpdateOperationsInput | string | null
+    pocMobile?: NullableStringFieldUpdateOperationsInput | string | null
+    pocEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    renewalDate?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    websiteServices?: StringFieldUpdateOperationsInput | string
+    domainTaken?: BoolFieldUpdateOperationsInput | boolean
+    domainAmount?: IntFieldUpdateOperationsInput | number
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    services?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
+    deliverables?: DeliverableUncheckedUpdateManyWithoutClientNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutClientNestedInput
+    updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
+    adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
+    campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
+    socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
+    devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
+    contacts?: ClientContactUncheckedUpdateManyWithoutClientNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutClientNestedInput
+    googleCampaigns?: GoogleAdsCampaignUncheckedUpdateManyWithoutClientNestedInput
+    creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutClientNestedInput
+    seoAnalytics?: SeoAnalyticsUncheckedUpdateManyWithoutClientNestedInput
+    seoBlogSlots?: SeoBlogSlotUncheckedUpdateManyWithoutClientNestedInput
+    seoKeywords?: SeoKeywordUncheckedUpdateManyWithoutClientNestedInput
+    seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
+    gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
+    seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+  }
+
+  export type UserUpsertWithoutShootsInput = {
+    update: XOR<UserUpdateWithoutShootsInput, UserUncheckedUpdateWithoutShootsInput>
+    create: XOR<UserCreateWithoutShootsInput, UserUncheckedCreateWithoutShootsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutShootsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutShootsInput, UserUncheckedUpdateWithoutShootsInput>
+  }
+
+  export type UserUpdateWithoutShootsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    assignments?: AssignmentUpdateManyWithoutUserNestedInput
+    updates?: WorkUpdateUpdateManyWithoutUserNestedInput
+    devProjects?: DevProjectUpdateManyWithoutAssignedToNestedInput
+    timeSessions?: TimeSessionUpdateManyWithoutUserNestedInput
+    tasksAssigned?: TaskUpdateManyWithoutAssignedByNestedInput
+    tasksReceived?: TaskUpdateManyWithoutAssignedToNestedInput
+    creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
+    salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutShootsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
+    updates?: WorkUpdateUncheckedUpdateManyWithoutUserNestedInput
+    devProjects?: DevProjectUncheckedUpdateManyWithoutAssignedToNestedInput
+    timeSessions?: TimeSessionUncheckedUpdateManyWithoutUserNestedInput
+    tasksAssigned?: TaskUncheckedUpdateManyWithoutAssignedByNestedInput
+    tasksReceived?: TaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
@@ -71825,6 +74445,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutGoogleCampaignsInput = {
@@ -71888,6 +74509,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutGoogleCampaignsInput = {
@@ -71967,6 +74589,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutGoogleCampaignsInput = {
@@ -72030,6 +74653,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutAdsMetricsInput = {
@@ -72093,6 +74717,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutAdsMetricsInput = {
@@ -72156,6 +74781,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutAdsMetricsInput = {
@@ -72235,6 +74861,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutAdsMetricsInput = {
@@ -72298,6 +74925,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserCreateWithoutSalesLeadsInput = {
@@ -72318,6 +74946,7 @@ export namespace Prisma {
     tasksReceived?: TaskCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
+    shoots?: ShootCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutSalesLeadsInput = {
@@ -72338,6 +74967,7 @@ export namespace Prisma {
     tasksReceived?: TaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutSalesLeadsInput = {
@@ -72570,6 +75200,7 @@ export namespace Prisma {
     tasksReceived?: TaskUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
+    shoots?: ShootUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSalesLeadsInput = {
@@ -72590,6 +75221,7 @@ export namespace Prisma {
     tasksReceived?: TaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type FollowupUpsertWithWhereUniqueWithoutLeadInput = {
@@ -73990,6 +76622,26 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type ShootCreateManyAssignedToInput = {
+    id?: string
+    code: string
+    category: string
+    title: string
+    clientId?: string | null
+    renterName?: string
+    phone?: string
+    date: string
+    startTime?: string
+    endTime?: string
+    location?: string
+    status?: string
+    rentAmount?: number
+    paid?: boolean
+    notes?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type ClientUpdateWithoutAccountManagerInput = {
     id?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
@@ -74051,6 +76703,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutAccountManagerInput = {
@@ -74114,6 +76767,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateManyWithoutAccountManagerInput = {
@@ -74645,6 +77299,66 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ShootUpdateWithoutAssignedToInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    renterName?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    rentAmount?: IntFieldUpdateOperationsInput | number
+    paid?: BoolFieldUpdateOperationsInput | boolean
+    notes?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    client?: ClientUpdateOneWithoutShootsNestedInput
+  }
+
+  export type ShootUncheckedUpdateWithoutAssignedToInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    renterName?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    rentAmount?: IntFieldUpdateOperationsInput | number
+    paid?: BoolFieldUpdateOperationsInput | boolean
+    notes?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShootUncheckedUpdateManyWithoutAssignedToInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    renterName?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    rentAmount?: IntFieldUpdateOperationsInput | number
+    paid?: BoolFieldUpdateOperationsInput | boolean
+    notes?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ClientServiceCreateManyClientInput = {
     id?: string
     service: string
@@ -74937,6 +77651,26 @@ export namespace Prisma {
     assigned?: string
     keywordStatus?: string
     note?: string
+    updatedAt?: Date | string
+  }
+
+  export type ShootCreateManyClientInput = {
+    id?: string
+    code: string
+    category: string
+    title: string
+    renterName?: string
+    phone?: string
+    date: string
+    startTime?: string
+    endTime?: string
+    location?: string
+    assignedToId?: string | null
+    status?: string
+    rentAmount?: number
+    paid?: boolean
+    notes?: string
+    createdAt?: Date | string
     updatedAt?: Date | string
   }
 
@@ -75828,6 +78562,66 @@ export namespace Prisma {
     assigned?: StringFieldUpdateOperationsInput | string
     keywordStatus?: StringFieldUpdateOperationsInput | string
     note?: StringFieldUpdateOperationsInput | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShootUpdateWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    renterName?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    rentAmount?: IntFieldUpdateOperationsInput | number
+    paid?: BoolFieldUpdateOperationsInput | boolean
+    notes?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedTo?: UserUpdateOneWithoutShootsNestedInput
+  }
+
+  export type ShootUncheckedUpdateWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    renterName?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    rentAmount?: IntFieldUpdateOperationsInput | number
+    paid?: BoolFieldUpdateOperationsInput | boolean
+    notes?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShootUncheckedUpdateManyWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    renterName?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    rentAmount?: IntFieldUpdateOperationsInput | number
+    paid?: BoolFieldUpdateOperationsInput | boolean
+    notes?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

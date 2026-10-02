@@ -32,6 +32,7 @@ model User {
   creativeTasks    CreativeTask[] @relation("CreativeAssignee")
   creativeAssigned CreativeTask[] @relation("CreativeAssigner")
   salesLeads       Lead[]         @relation("LeadOwner")
+  shoots           Shoot[]        @relation("ShootAssignee")
 }
 
 model Task {
@@ -139,6 +140,7 @@ model Client {
   seoBacklinks    SeoBacklink[]
   gmbLocations    GmbClient[]
   seoReports      SeoReport[]
+  shoots          Shoot[]
 
   @@index([status])
   @@index([accountManagerId])
@@ -596,6 +598,35 @@ model CreativeTask {
   @@index([assignedToId])
   @@index([kind])
   @@index([status])
+}
+
+// Shooting & Studio X: in-house WebRocz client shoots + paid Studio X rentals.
+// Raj (Studio X Head) / admins schedule and assign; Mallesh (Videographer) shoots.
+model Shoot {
+  id           String   @id @default(cuid())
+  code         String // SHT-001
+  category     String // WEBROCZ | STUDIO_RENT
+  title        String
+  clientId     String? // set for WebRocz client shoots
+  client       Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  renterName   String   @default("") // renter / contact name (esp. Studio X rent)
+  phone        String   @default("")
+  date         String // "2026-10-05"
+  startTime    String   @default("") // "10:00"
+  endTime      String   @default("") // "13:00"
+  location     String   @default("")
+  assignedToId String? // the shooter (Mallesh)
+  assignedTo   User?    @relation("ShootAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  status       String   @default("SCHEDULED") // SCHEDULED | IN_PROGRESS | COMPLETED | CANCELLED
+  rentAmount   Int      @default(0) // ₹ for Studio X rentals
+  paid         Boolean  @default(false)
+  notes        String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([date])
+  @@index([assignedToId])
+  @@index([category])
 }
 
 // Google Ads — one row per campaign per client per day (daily-entry AM workflow)

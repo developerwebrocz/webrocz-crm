@@ -806,6 +806,63 @@ export async function getCreativeBoard(userId: string, role: string, kind: "DESI
 // ---- Super Admin: Designer + Video Editor daily work report ----
 // One filterable dataset across BOTH creative kinds so the Super Admin can review
 // exactly what every designer / editor worked on, by member / client / day / status.
+// ---- Shooting & Studio X ----
+const STUDIO_MANAGERS = ["STUDIO_HEAD", "SUPER_ADMIN", "SUB_ADMIN"];
+function ymd(d: Date) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
+
+export async function getShootBoard(userId: string, role: string) {
+  const canManage = STUDIO_MANAGERS.includes(role);
+  const shoots = await prisma.shoot.findMany({
+    where: canManage ? {} : { assignedToId: userId },
+    include: { client: true, assignedTo: { select: { name: true } } },
+    orderBy: [{ date: "asc" }, { startTime: "asc" }],
+  });
+  const today = ymd(new Date());
+  const monthPrefix = today.slice(0, 7);
+  const weekEnd = ymd(new Date(Date.now() + 7 * 86400000));
+
+  const rows = shoots.map((s) => ({
+    id: s.id, code: s.code, category: s.category, title: s.title,
+    client: s.client?.name ?? null, clientId: s.clientId,
+    renterName: s.renterName, phone: s.phone,
+    date: s.date, startTime: s.startTime, endTime: s.endTime, location: s.location,
+    assignee: s.assignedTo?.name ?? null, assignedToId: s.assignedToId,
+    status: s.status, rentAmount: s.rentAmount, paid: s.paid, notes: s.notes,
+  }));
+
+  const active = rows.filter((r) => r.status !== "CANCELLED");
+  const rentals = active.filter((r) => r.category === "STUDIO_RENT");
+  const rentalsThisMonth = rentals.filter((r) => r.date.startsWith(monthPrefix));
+  const kpis = {
+    todayShoots: active.filter((r) => r.date === today).length,
+    upcoming: active.filter((r) => r.date > today && r.date <= weekEnd).length,
+    rentalsThisMonth: rentalsThisMonth.length,
+    rentalRevenue: rentalsThisMonth.filter((r) => r.paid).reduce((s, r) => s + r.rentAmount, 0),
+    rentalUnpaid: rentalsThisMonth.filter((r) => !r.paid).reduce((s, r) => s + r.rentAmount, 0),
+    webroczCount: active.filter((r) => r.category === "WEBROCZ").length,
+    rentCount: rentals.length,
+    completed: rows.filter((r) => r.status === "COMPLETED").length,
+  };
+
+  const clientOptions = canManage
+    ? await prisma.client.findMany({ where: { status: { not: "UPCOMING" } }, select: { id: true, name: true }, orderBy: { name: "asc" } })
+    : [];
+  const shooters = canManage
+    ? await prisma.user.findMany({ where: { active: true, role: { in: ["VIDEOGRAPHER", "EDITOR"] } }, select: { id: true, name: true, role: true }, orderBy: { name: "asc" } })
+    : [];
+
+  return { rows, kpis, clientOptions, shooters, canManage, today };
+}
+
+// Next SHT- code (numeric max over existing codes).
+async function nextShootCode() {
+  const last = await prisma.shoot.findMany({ select: { code: true } });
+  let max = 0;
+  for (const s of last) { const m = /SHT-(\d+)/.exec(s.code); if (m) max = Math.max(max, parseInt(m[1], 10)); }
+  return `SHT-${String(max + 1).padStart(3, "0")}`;
+}
+export { nextShootCode };
+
 // Creative tasks this user has briefed/assigned — for the AM dashboard "Work I assigned".
 export async function getAssignedByMe(userId: string, take = 8) {
   const today = creativeToday();

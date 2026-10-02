@@ -940,7 +940,7 @@ export async function createUpdate(fd: FormData) {
 // Management portal = Super Admin only. Everyone else uses the Team portal.
 const MANAGEMENT_ROLES = ["SUPER_ADMIN", "SUB_ADMIN"];
 // Sub Admin is included in staff too, so the emailed set-password invite (/staff) works for them.
-const STAFF_ROLES = ["SUB_ADMIN", "SALES_HEAD", "SALES_EXEC", "AM_HEAD", "ACCOUNT_MANAGER", "DM_HEAD", "DM_EXEC", "SEO_HEAD", "SEO", "DESIGNER", "EDITOR", "DEV_HEAD", "WEB_DEV", "ACCOUNTANT"];
+const STAFF_ROLES = ["SUB_ADMIN", "SALES_HEAD", "SALES_EXEC", "AM_HEAD", "ACCOUNT_MANAGER", "DM_HEAD", "DM_EXEC", "SEO_HEAD", "SEO", "DESIGNER", "EDITOR", "DEV_HEAD", "WEB_DEV", "ACCOUNTANT", "STUDIO_HEAD", "VIDEOGRAPHER"];
 
 export async function login(fd: FormData) {
   const email = s(fd, "email").toLowerCase();
@@ -1573,4 +1573,89 @@ export async function upsertAds(fd: FormData) {
 
   revalidatePath("/ads");
   revalidatePath(`/clients/${clientId}`);
+}
+
+// ---- Shooting & Studio X ----
+const STUDIO_MANAGERS = ["STUDIO_HEAD", "SUPER_ADMIN", "SUB_ADMIN"];
+
+async function nextShootCodeLocal() {
+  const rows = await prisma.shoot.findMany({ select: { code: true } });
+  let max = 0;
+  for (const r of rows) { const m = /SHT-(\d+)/.exec(r.code); if (m) max = Math.max(max, parseInt(m[1], 10)); }
+  return `SHT-${String(max + 1).padStart(3, "0")}`;
+}
+
+// Raj (Studio X Head) / admins create & edit shoots and assign the shooter.
+export async function saveShoot(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me || !STUDIO_MANAGERS.includes(me.role)) redirect("/");
+
+  const id = s(fd, "id");
+  const category = s(fd, "category") === "STUDIO_RENT" ? "STUDIO_RENT" : "WEBROCZ";
+  const title = s(fd, "title") || (category === "STUDIO_RENT" ? "Studio X rental" : "WebRocz shoot");
+  const clientId = category === "WEBROCZ" ? (s(fd, "clientId") || null) : null;
+  const assignedToId = s(fd, "assignedToId") || null;
+  const data = {
+    category, title, clientId, assignedToId,
+    renterName: s(fd, "renterName"),
+    phone: s(fd, "phone"),
+    date: s(fd, "date"),
+    startTime: s(fd, "startTime"),
+    endTime: s(fd, "endTime"),
+    location: s(fd, "location"),
+    rentAmount: category === "STUDIO_RENT" ? n(fd, "rentAmount") : 0,
+    paid: category === "STUDIO_RENT" ? fd.get("paid") === "on" : false,
+    notes: s(fd, "notes"),
+    status: SHOOT_STATUS_OK.includes(s(fd, "status")) ? s(fd, "status") : "SCHEDULED",
+  };
+  if (!data.date) redirect("/shoots");
+
+  if (id) {
+    await prisma.shoot.update({ where: { id }, data });
+  } else {
+    const created = await prisma.shoot.create({ data: { ...data, code: await nextShootCodeLocal() } });
+    if (assignedToId) {
+      await notify(assignedToId, `New shoot assigned: ${title}`,
+        `${category === "STUDIO_RENT" ? "Studio X rental" : "WebRocz shoot"} · ${data.date}${data.startTime ? ` ${data.startTime}` : ""}`, "/shoots", "violet");
+    }
+    void created;
+  }
+  revalidatePath("/shoots");
+  redirect("/shoots");
+}
+
+const SHOOT_STATUS_OK = ["SCHEDULED", "IN_PROGRESS", "COMPLETED", "CANCELLED"];
+
+// Shooter (Mallesh) or managers update a shoot's status from the board.
+export async function setShootStatus(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me) redirect("/login");
+  const id = s(fd, "id");
+  const status = SHOOT_STATUS_OK.includes(s(fd, "status")) ? s(fd, "status") : "SCHEDULED";
+  const shoot = await prisma.shoot.findUnique({ where: { id } });
+  if (!shoot) redirect("/shoots");
+  // the assigned shooter or a studio manager may change status
+  if (!STUDIO_MANAGERS.includes(me.role) && shoot.assignedToId !== me.id) redirect("/shoots");
+  await prisma.shoot.update({ where: { id }, data: { status } });
+  revalidatePath("/shoots");
+  redirect("/shoots");
+}
+
+export async function toggleShootPaid(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me || !STUDIO_MANAGERS.includes(me.role)) redirect("/");
+  const id = s(fd, "id");
+  const shoot = await prisma.shoot.findUnique({ where: { id } });
+  if (shoot) await prisma.shoot.update({ where: { id }, data: { paid: !shoot.paid } });
+  revalidatePath("/shoots");
+  redirect("/shoots");
+}
+
+export async function deleteShoot(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me || !STUDIO_MANAGERS.includes(me.role)) redirect("/");
+  const id = s(fd, "id");
+  await prisma.shoot.delete({ where: { id } }).catch(() => {});
+  revalidatePath("/shoots");
+  redirect("/shoots");
 }

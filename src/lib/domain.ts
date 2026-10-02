@@ -17,7 +17,27 @@ export const ROLES = {
   DEV_HEAD: "Dev Head",
   WEB_DEV: "Web Developer",
   ACCOUNTANT: "Accountant",
+  STUDIO_HEAD: "Studio X Head",
+  VIDEOGRAPHER: "Videographer",
 } as const;
+
+// ---- Shooting & Studio X ----
+// Two categories of shoot: in-house WebRocz client shoots, and paid Studio X rentals.
+export const SHOOT_CATEGORIES = {
+  WEBROCZ: { label: "WebRocz Shoot", tone: "violet" },
+  STUDIO_RENT: { label: "Studio X Rent", tone: "amber" },
+} as const;
+export type ShootCategory = keyof typeof SHOOT_CATEGORIES;
+export const SHOOT_CATEGORY_KEYS = Object.keys(SHOOT_CATEGORIES) as ShootCategory[];
+
+export const SHOOT_STATUS = {
+  SCHEDULED: { label: "Scheduled", tone: "sky" },
+  IN_PROGRESS: { label: "In Progress", tone: "violet" },
+  COMPLETED: { label: "Completed", tone: "emerald" },
+  CANCELLED: { label: "Cancelled", tone: "rose" },
+} as const;
+export type ShootStatus = keyof typeof SHOOT_STATUS;
+export const SHOOT_STATUS_KEYS = Object.keys(SHOOT_STATUS) as ShootStatus[];
 
 // ---- Invoice: fixed seller (WebRocz) details for the GST tax-invoice format ----
 export const SELLER = {

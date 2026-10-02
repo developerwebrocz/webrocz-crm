@@ -9,7 +9,7 @@ import {
   FileBarChart, Search, UsersRound, Wallet, Images, Code2,
   CalendarDays, ClipboardCheck, ListChecks, Target, Palette, Clapperboard,
   Contact, CalendarClock, ReceiptText, FileText, CheckCircle2, XCircle, UserPlus, Repeat, Landmark, Building2, Globe, FileSignature, ChevronDown, PieChart,
-  Loader, Eye, AlertTriangle, LayoutGrid,
+  Loader, Eye, AlertTriangle, LayoutGrid, Camera,
 } from "lucide-react";
 
 type Item = { href: string; label: string; icon: React.ElementType; badge?: number; badgeTone?: "red"; forceActive?: boolean; subItems?: Item[]; iconColor?: string; badgeBg?: string; badgeFg?: string; showZero?: boolean };
@@ -49,6 +49,8 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
   const isSales = user.role === "SALES_HEAD" || user.role === "SALES_EXEC";
   const isDmHead = user.role === "DM_HEAD";
   const isAccountant = user.role === "ACCOUNTANT";
+  const isStudioHead = user.role === "STUDIO_HEAD";
+  const isShooter = user.role === "VIDEOGRAPHER";
   const isHead = user.role.endsWith("_HEAD");
 
   const groups: Group[] = [];
@@ -130,6 +132,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     groups.push({ label: "Delivery", items: [
       { href: "/designs", label: "Design Studio", icon: Palette },
       { href: "/videos", label: "Video Studio", icon: Clapperboard },
+      { href: "/shoots", label: "Studio X", icon: Camera },
       { href: "/reports/creative", label: "Creative Report", icon: FileBarChart },
       { href: "/projects", label: "Developer Team", icon: Code2 },
     ] });
@@ -157,6 +160,8 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     if (isSeo) work.push({ href: "/seo", label: "SEO Performance", icon: Search });
     if (isDesigner) work.push({ href: "/designs", label: "My Designs", icon: Palette });
     if (isEditor) work.push({ href: "/videos", label: "My Videos", icon: Clapperboard });
+    if (isStudioHead) work.push({ href: "/shoots", label: "Studio X", icon: Camera });
+    if (isShooter) work.push({ href: "/shoots", label: "My Shoots", icon: Camera });
     if (isDev) work.push({ href: "/projects", label: "Developer Team", icon: Code2 });
     work.push({ href: "/tasks", label: "My Tasks", icon: ListChecks, badge: taskCount || undefined });
     // SEO team log their work inside SEO Performance, so no separate "Update Work"/"Approvals" clutter.

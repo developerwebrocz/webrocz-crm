@@ -518,6 +518,27 @@ exports.Prisma.CreativeTaskScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ShootScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  category: 'category',
+  title: 'title',
+  clientId: 'clientId',
+  renterName: 'renterName',
+  phone: 'phone',
+  date: 'date',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  location: 'location',
+  assignedToId: 'assignedToId',
+  status: 'status',
+  rentAmount: 'rentAmount',
+  paid: 'paid',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.GoogleAdsCampaignScalarFieldEnum = {
   id: 'id',
   clientId: 'clientId',
@@ -717,6 +738,7 @@ exports.Prisma.ModelName = {
   GmbClient: 'GmbClient',
   SeoReport: 'SeoReport',
   CreativeTask: 'CreativeTask',
+  Shoot: 'Shoot',
   GoogleAdsCampaign: 'GoogleAdsCampaign',
   AdsPerformance: 'AdsPerformance',
   Notification: 'Notification',

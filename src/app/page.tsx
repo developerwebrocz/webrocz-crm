@@ -6,7 +6,8 @@ import RoleDashboard from "@/components/RoleDashboard";
 import SeoEmployeeOverview from "@/components/SeoEmployeeOverview";
 import AmOverview from "@/components/AmOverview";
 import CreativeBoard from "@/components/CreativeBoard";
-import { getSeoEmployeeBoard, getCreativeBoard, getSalesBoard, getAccountantDashboard } from "@/lib/queries";
+import ShootBoard from "@/components/ShootBoard";
+import { getSeoEmployeeBoard, getCreativeBoard, getSalesBoard, getAccountantDashboard, getShootBoard } from "@/lib/queries";
 import SalesDashboard from "@/components/SalesDashboard";
 import AccountantDashboard from "@/components/AccountantDashboard";
 
@@ -76,6 +77,11 @@ export default async function DashboardPage({ searchParams }: PageProps<"/">) {
   if (VIDEO_ROLES.includes(user.role)) {
     const d = await getCreativeBoard(user.id, user.role, "VIDEO");
     return <CreativeBoard kind="VIDEO" chrome="embedded" rows={d.rows} counts={d.counts} clients={d.clients} types={d.types} progress={d.progress} today={d.today} clientOptions={d.clientOptions} userName={user.name} />;
+  }
+  // Studio X Head & Videographer land on the Shooting / Studio X board.
+  if (user.role === "STUDIO_HEAD" || user.role === "VIDEOGRAPHER") {
+    const d = await getShootBoard(user.id, user.role);
+    return <ShootBoard rows={d.rows} kpis={d.kpis} clientOptions={d.clientOptions} shooters={d.shooters} canManage={d.canManage} today={d.today} userName={user.name} />;
   }
   return <RoleDashboard user={{ id: user.id, name: user.name, role: user.role }} />;
 }
