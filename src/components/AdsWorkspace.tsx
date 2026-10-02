@@ -1,4 +1,4 @@
-import { getAdsEntry, getSmoEntry } from "@/lib/queries";
+import { getAdsEntry, getSmoEntry, getCreativeTeam, getClientOptions } from "@/lib/queries";
 import { saveClientCampaigns, saveClientPosts, copyAdsYesterday, copySmoYesterday } from "@/app/actions";
 import { CopyPlus } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
@@ -7,7 +7,10 @@ import { Eyebrow } from "@/components/ui";
 import AdsDayHeader from "@/components/AdsDayHeader";
 import AdsBoard from "@/components/AdsBoard";
 import SmoBoard from "@/components/SmoBoard";
+import AssignCreativeForm from "@/components/AssignCreativeForm";
 import { now } from "@/lib/period";
+
+const CREATIVE_ASSIGNER = ["SUPER_ADMIN", "SUB_ADMIN", "AM_HEAD", "ACCOUNT_MANAGER", "DM_EXEC"];
 
 const keyOf = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 function todayKey() { return keyOf(now()); }
@@ -37,6 +40,12 @@ export default async function AdsWorkspace({
   const basePath = smo ? "/smo" : "/ads";
   const data = smo ? await getSmoEntry(date, amId) : await getAdsEntry(date, amId);
   const { ams, activeAm } = data;
+
+  // "Assign to Design / Video team" on the SM Posts board (assigners only).
+  const canAssign = smo && CREATIVE_ASSIGNER.includes(user.role);
+  const [creativeTeam, clientOpts] = canAssign
+    ? await Promise.all([getCreativeTeam(), getClientOptions()])
+    : [[], []];
   const amName = isAM ? user.name : ams.find((a) => a.id === activeAm)?.name ?? "—";
   const dateLabel = new Date(date + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short" });
   const rel = date === todayKey() ? "Today" : date === yesterdayKey() ? "Yesterday" : null;
@@ -57,6 +66,7 @@ export default async function AdsWorkspace({
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {canAssign && <AssignCreativeForm members={creativeTeam} clients={clientOpts.map((c) => ({ id: c.id, name: c.name }))} />}
           <form action={smo ? copySmoYesterday : copyAdsYesterday}>
             <input type="hidden" name="date" value={date} />
             <input type="hidden" name="amId" value={activeAm ?? ""} />
