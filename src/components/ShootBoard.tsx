@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { saveShoot, setShootStatus, toggleShootPaid, deleteShoot } from "@/app/actions";
-import { SHOOT_CATEGORIES, SHOOT_STATUS, SHOOT_STATUS_KEYS, inr, inrShort } from "@/lib/domain";
+import { SHOOT_CATEGORIES, SHOOT_STATUS, SHOOT_STATUS_KEYS, inr, inrShort, initials } from "@/lib/domain";
 import {
   Camera, Video, CalendarClock, IndianRupee, Plus, X, Pencil, Trash2,
   MapPin, Phone, CheckCircle2, CircleAlert, List, CalendarDays, ChevronLeft, ChevronRight,
@@ -40,6 +40,11 @@ export default function ShootBoard({
   const showRent = cat === "ALL" || cat === "STUDIO_RENT";
   const onEdit = (r: Row) => { setAdding(false); setEdit(r); };
 
+  // status overview (within the current category)
+  const statusBase = useMemo(() => rows.filter((r) => cat === "ALL" || r.category === cat), [rows, cat]);
+  const statusCounts: Record<string, number> = { ALL: statusBase.length };
+  for (const k of SHOOT_STATUS_KEYS) statusCounts[k] = statusBase.filter((r) => r.status === k).length;
+
   return (
     <div className="space-y-5">
       {/* header */}
@@ -57,25 +62,36 @@ export default function ShootBoard({
         <Kpi icon={Camera} tone="violet" label="Today's shoots" value={String(kpis.todayShoots)} sub={`${kpis.upcoming} upcoming (7d)`} />
         <Kpi icon={CalendarClock} tone="sky" label="WebRocz shoots" value={String(kpis.webroczCount)} sub="active (client shoots)" />
         <Kpi icon={Video} tone="amber" label="Studio X rentals" value={String(kpis.rentalsThisMonth)} sub="this month" />
-        <Kpi icon={IndianRupee} tone="emerald" label="Rental revenue" value={inrShort(kpis.rentalRevenue)} sub={kpis.rentalUnpaid ? `${inrShort(kpis.rentalUnpaid)} unpaid` : "all collected"} />
+        <Kpi icon={IndianRupee} tone="emerald" label="Rental revenue" value={inrShort(kpis.rentalRevenue)} sub={kpis.rentalUnpaid ? <span className="inline-flex items-center gap-1 rounded-full bg-[color-mix(in_srgb,var(--rose)_12%,white)] px-1.5 py-0.5 text-[11px] font-bold text-[var(--rose)]"><CircleAlert size={10} /> {inrShort(kpis.rentalUnpaid)} unpaid</span> : <span className="inline-flex items-center gap-1 text-[var(--emerald)]"><CheckCircle2 size={11} /> all collected</span>} />
       </div>
 
-      {/* filters */}
+      {/* category + view toggle */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex items-center gap-1 rounded-xl border border-[var(--line-2)] bg-[var(--surface-2)] p-1">
           {([["ALL", "All"], ["WEBROCZ", "WebRocz"], ["STUDIO_RENT", "Studio X Rent"]] as const).map(([k, l]) => (
             <button key={k} onClick={() => setCat(k)} className={`rounded-lg px-3 py-1.5 text-[12.5px] font-semibold transition ${cat === k ? "bg-[var(--violet)] text-white shadow-sm" : "text-[var(--ink-2)] hover:bg-white"}`}>{l}</button>
           ))}
         </div>
-        <select value={status} onChange={(e) => setStatus(e.target.value)} className="select !w-auto">
-          <option value="ALL">All status</option>
-          {SHOOT_STATUS_KEYS.map((k) => <option key={k} value={k}>{SHOOT_STATUS[k].label}</option>)}
-        </select>
         <div className="ml-auto flex items-center gap-1 rounded-xl border border-[var(--line-2)] bg-[var(--surface-2)] p-1">
           {([["list", List, "List"], ["calendar", CalendarDays, "Calendar"]] as const).map(([v, Icon, l]) => (
             <button key={v} onClick={() => setView(v)} className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12.5px] font-semibold transition ${view === v ? "bg-[var(--violet)] text-white shadow-sm" : "text-[var(--ink-2)] hover:bg-white"}`}><Icon size={14} /> {l}</button>
           ))}
         </div>
+      </div>
+
+      {/* status overview — clickable filters */}
+      <div className="flex flex-wrap items-center gap-2">
+        <button onClick={() => setStatus("ALL")} className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12px] font-semibold transition ${status === "ALL" ? "border-[var(--ink)] bg-[var(--ink)] text-white" : "border-[var(--line-2)] text-[var(--ink-2)] hover:border-[var(--ink)]"}`}>All <span className="tnum opacity-70">{statusCounts.ALL}</span></button>
+        {SHOOT_STATUS_KEYS.map((k) => {
+          const cfg = SHOOT_STATUS[k]; const on = status === k; const c = TONE[cfg.tone];
+          return (
+            <button key={k} onClick={() => setStatus(on ? "ALL" : k)}
+              className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12px] font-semibold transition"
+              style={on ? { background: c, color: "#fff", borderColor: c } : { borderColor: "var(--line-2)", color: "var(--ink-2)" }}>
+              <span className="h-1.5 w-1.5 rounded-full" style={{ background: on ? "#fff" : c }} /> {cfg.label} <span className="tnum opacity-70">{statusCounts[k]}</span>
+            </button>
+          );
+        })}
       </div>
 
       {view === "calendar" ? (
@@ -252,7 +268,7 @@ function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, o
 }) {
   const isRentSection = title.toLowerCase().includes("rental");
   return (
-    <div className="card !p-0 overflow-hidden">
+    <div className="card !p-0 overflow-hidden" style={{ borderTop: `3px solid ${TONE[tone]}` }}>
       <div className="flex items-center justify-between gap-3 border-b border-[var(--line)] px-5 py-3.5">
         <div className="flex items-center gap-2.5">
           <span className="grid h-8 w-8 place-items-center rounded-[9px]" style={{ background: `color-mix(in srgb, ${TONE[tone]} 13%, white)`, color: TONE[tone] }}><Icon size={16} /></span>
@@ -282,7 +298,9 @@ function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, o
                     {r.phone && <div className="inline-flex items-center gap-1 text-[11px] text-[var(--muted)] tnum"><Phone size={10} /> {r.phone}</div>}
                   </td>
                   <td className="px-4 py-3 text-[12px] text-[var(--muted)]">{r.location ? <span className="inline-flex items-center gap-1"><MapPin size={11} /> {r.location}</span> : <span className="text-[var(--faint)]">{isRentSection ? "Studio X" : "Client location"}</span>}</td>
-                  <td className="px-4 py-3 text-[12.5px]">{r.assignee ?? <span className="text-[var(--faint)]">Unassigned</span>}</td>
+                  <td className="px-4 py-3 text-[12.5px]">{r.assignee
+                    ? <span className="inline-flex items-center gap-1.5"><span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--surface-3)] text-[10px] font-bold text-[var(--ink-2)]">{initials(r.assignee)}</span> {r.assignee}</span>
+                    : <span className="text-[var(--faint)]">Unassigned</span>}</td>
                   {isRentSection && (
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="flex items-center gap-2">
@@ -326,14 +344,15 @@ function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, o
   );
 }
 
-function Kpi({ icon: Icon, tone, label, value, sub }: { icon: typeof Camera; tone: string; label: string; value: string; sub: string }) {
+function Kpi({ icon: Icon, tone, label, value, sub }: { icon: typeof Camera; tone: string; label: string; value: string; sub: React.ReactNode }) {
   return (
-    <div className="card card-pad">
+    <div className="card card-pad relative overflow-hidden">
+      <span className="absolute inset-x-0 top-0 h-[3px]" style={{ background: TONE[tone] }} />
       <div className="flex items-start justify-between">
         <span className="text-[11px] font-bold uppercase tracking-wide text-[var(--muted)]">{label}</span>
         <span className="grid h-8 w-8 place-items-center rounded-[9px]" style={{ background: `color-mix(in srgb, ${TONE[tone]} 12%, white)`, color: TONE[tone] }}><Icon size={15} /></span>
       </div>
-      <div className="mt-2 text-[28px] font-extrabold leading-none tracking-tight tnum">{value}</div>
+      <div className="mt-2.5 text-[28px] font-extrabold leading-none tracking-tight tnum" style={{ color: TONE[tone] }}>{value}</div>
       <div className="mt-1.5 text-[12px] text-[var(--muted)]">{sub}</div>
     </div>
   );
