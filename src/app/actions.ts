@@ -1725,8 +1725,8 @@ export async function handOffToEditor(fd: FormData) {
     data: {
       kind: "VIDEO", code: `VID-${String(count + 1).padStart(3, "0")}`,
       title: `Edit: ${shoot.title}`, clientId: shoot.clientId, assignedToId: editorId, assignedById: me.id,
-      type: "Reel", priority: "MEDIUM", status: "PENDING", source: "ADDITIONAL",
-      assignedDate: new Date().toISOString().slice(0, 10), dueDate: "",
+      type: "Reel", priority: ["HIGH", "MEDIUM", "LOW"].includes(s(fd, "priority")) ? s(fd, "priority") : "MEDIUM", status: "PENDING", source: "ADDITIONAL",
+      assignedDate: new Date().toISOString().slice(0, 10), dueDate: s(fd, "dueDate"),
       brief: `Footage from shoot ${shoot.code}${shoot.client ? ` · ${shoot.client.name}` : ""}.${s(fd, "note") ? ` ${s(fd, "note")}` : ""}`,
       rawLink: footage,
     },

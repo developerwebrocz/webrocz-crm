@@ -269,7 +269,13 @@ function FootageModal({ row, editors, onClose }: { row: Row; editors: Shooter[];
               <label className="block"><span className="eyebrow">Editor</span>
                 <select name="editorId" required className="select mt-1.5"><option value="">— Select editor —</option>{editors.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}</select>
               </label>
-              <label className="block"><span className="eyebrow">Note for the editor (optional)</span><textarea name="note" rows={2} placeholder="What to edit, deliverables, deadline…" className="textarea mt-1.5" /></label>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="block"><span className="eyebrow">Priority</span>
+                  <select name="priority" defaultValue="MEDIUM" className="select mt-1.5"><option value="HIGH">High</option><option value="MEDIUM">Medium</option><option value="LOW">Low</option></select>
+                </label>
+                <label className="block"><span className="eyebrow">Due date</span><input type="date" name="dueDate" className="input mt-1.5" /></label>
+              </div>
+              <label className="block"><span className="eyebrow">Note for the editor (optional)</span><textarea name="note" rows={2} placeholder="What to edit, deliverables…" className="textarea mt-1.5" /></label>
               <p className="text-[11.5px] text-[var(--muted)]">Creates a VIDEO task on the editor&apos;s board with this footage as the raw link, and notifies them.</p>
               <div className="flex justify-end gap-2">
                 <button type="button" onClick={onClose} className="btn btn-ghost btn-sm">Close</button>
