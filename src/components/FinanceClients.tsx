@@ -7,7 +7,7 @@ import { importFinanceCsv } from "@/app/sales-actions";
 import { downloadCsv } from "@/lib/csv";
 import AddInvoiceModal from "@/components/AddInvoiceModal";
 import { companyLabel, COMPANY_KEYS } from "@/lib/domain";
-import { Users, Search, ReceiptText, Wallet, CheckCircle2, ChevronRight, ChevronLeft, MessageSquarePlus, Pencil, Trash2, X, Download, UserPlus, CalendarClock, Upload } from "lucide-react";
+import { Users, Search, ReceiptText, Wallet, CheckCircle2, ChevronRight, ChevronLeft, MessageSquarePlus, Pencil, Trash2, X, Download, UserPlus, CalendarClock, Upload, Plus } from "lucide-react";
 
 const PAGE_SIZE = 10;
 
@@ -254,6 +254,17 @@ function AddClientModal({ lockedCompany, lockedCategory, close }: { lockedCompan
   const [gstSel, setGstSel] = useState("18");
   const gst = gstFixed ?? gstSel;
   const noGst = gst === "0";
+  // Website services — same checkbox + per-amount + custom "Add service" + total as the invoice form.
+  const WEBSITE_SERVICES = ["Domain", "Hosting + SSL", "Website Designing"];
+  const [svc, setSvc] = useState<Record<string, { on: boolean; amount: string }>>({});
+  const [customs, setCustoms] = useState<{ name: string; amount: string }[]>([]);
+  const setSvcOn = (k: string, on: boolean) => setSvc((p) => ({ ...p, [k]: { on, amount: p[k]?.amount ?? "" } }));
+  const setSvcAmt = (k: string, amount: string) => setSvc((p) => ({ ...p, [k]: { on: p[k]?.on ?? true, amount } }));
+  const webItems = [
+    ...WEBSITE_SERVICES.filter((k) => svc[k]?.on).map((k) => ({ name: k, amount: Number(svc[k].amount || 0) })),
+    ...customs.filter((c) => c.name.trim()).map((c) => ({ name: c.name.trim(), amount: Number(c.amount || 0) })),
+  ];
+  const webTotal = webItems.reduce((s, i) => s + i.amount, 0);
   const returnPath = locked && COMPANY_SLUG[locked] ? `/pipeline/${COMPANY_SLUG[locked]}` : lockedCategory === "DM" ? "/dm-clients" : "/accounts";
   const title = lockedCategory === "DM" ? "Add DM client" : lockedCategory === "WEBSITE" ? "Add website client" : locked ? `Add ${companyLabel(locked)} client` : "Add new client";
   const subtitle = lockedCategory === "DM" ? "Digital Marketing · pick GST or without GST"
@@ -299,16 +310,36 @@ function AddClientModal({ lockedCompany, lockedCategory, close }: { lockedCompan
               <p className="mt-2 text-[11px] text-[var(--faint)]">Pick the services this client has taken — shown on hover in the clients list.</p>
             </div>
           )}
-          <div className="rounded-[10px] border border-[var(--line)] p-3">
-            <div className="eyebrow mb-2">Amount to be paid{isPvt ? " — per service (before GST)" : " (before GST)"}</div>
-            <div className="grid grid-cols-2 gap-3">
-              {showWebsite && <label className="block"><span className="text-[12px] font-semibold text-[var(--indigo)]">Website Development (₹)</span><input name="webAmount" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>}
-              {showWebsite && <label className="block"><span className="text-[12px] font-semibold text-[var(--indigo)]">Domain (₹)</span><input name="domainAmount" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>}
-              {showWebsite && <label className="block"><span className="text-[12px] font-semibold text-[var(--indigo)]">Hosting (₹)</span><input name="hostingAmount" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>}
-              {showDM && <label className="block"><span className="text-[12px] font-semibold text-[var(--magenta)]">Digital Marketing (₹)</span><input name="dmAmount" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>}
+          {showWebsite && (
+            <div>
+              <span className="eyebrow">Services &amp; amounts{isPvt ? " (before GST)" : ""}</span>
+              <input type="hidden" name="websiteItems" value={JSON.stringify(webItems)} />
+              <div className="mt-1.5 space-y-2 rounded-[10px] border border-[var(--line)] p-3">
+                {WEBSITE_SERVICES.map((sv) => (
+                  <div key={sv} className="flex items-center gap-2">
+                    <label className="flex flex-1 items-center gap-2 text-[13px] font-medium"><input type="checkbox" checked={svc[sv]?.on || false} onChange={(e) => setSvcOn(sv, e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> {sv}</label>
+                    {svc[sv]?.on && <input type="number" min={0} value={svc[sv].amount} onChange={(e) => setSvcAmt(sv, e.target.value)} className="input !w-32 !py-1.5" placeholder="₹ amount" />}
+                  </div>
+                ))}
+                {customs.map((c, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <input value={c.name} onChange={(e) => setCustoms((cs) => cs.map((v, j) => (j === i ? { ...v, name: e.target.value } : v)))} className="input flex-1" placeholder="Custom service" />
+                    <input type="number" min={0} value={c.amount} onChange={(e) => setCustoms((cs) => cs.map((v, j) => (j === i ? { ...v, amount: e.target.value } : v)))} className="input !w-32 !py-1.5" placeholder="₹ amount" />
+                    <button type="button" onClick={() => setCustoms((cs) => cs.filter((_, j) => j !== i))} title="Remove" className="grid h-8 w-8 flex-none place-items-center rounded-[8px] border border-[var(--line-2)] text-[var(--rose)] hover:bg-[color-mix(in_srgb,var(--rose)_10%,white)]"><X size={14} /></button>
+                  </div>
+                ))}
+                <button type="button" onClick={() => setCustoms((cs) => [...cs, { name: "", amount: "" }])} className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--violet)] hover:underline"><Plus size={13} /> Add service</button>
+              </div>
+              <div className="mt-2 flex items-center justify-between rounded-[12px] border border-[var(--line-2)] px-4 py-3" style={{ background: "color-mix(in srgb, var(--violet) 6%, white)" }}>
+                <span className="text-[12px] font-bold uppercase tracking-wide text-[var(--muted)]">Total amount{isPvt ? " (before GST)" : ""}</span>
+                <span className="text-[22px] font-extrabold tnum text-[var(--violet)]">₹{webTotal.toLocaleString("en-IN")}</span>
+              </div>
             </div>
-            <label className="mt-3 block"><span className="eyebrow">Amount already paid (₹)</span><input name="paid" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>
-            <p className="mt-2 text-[11.5px] text-[var(--faint)]">{showWebsite && showDM ? "Each service creates its own invoice (so Website vs DM stays separate). " : ""}Leave the amount at 0 to just register the client.</p>
+          )}
+          <div className="rounded-[10px] border border-[var(--line)] p-3">
+            {showDM && <label className="block"><span className="text-[12px] font-semibold text-[var(--magenta)]">Digital Marketing (₹)</span><input name="dmAmount" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>}
+            <label className={`${showDM ? "mt-3 " : ""}block`}><span className="eyebrow">Amount already paid (₹)</span><input name="paid" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>
+            <p className="mt-2 text-[11.5px] text-[var(--faint)]">Each ticked service creates its own invoice. Leave amounts at 0 to just register the client.</p>
           </div>
           <div className="flex justify-end gap-2 pt-1">
             <button type="button" onClick={close} className="btn btn-ghost">Cancel</button>

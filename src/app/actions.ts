@@ -627,26 +627,35 @@ export async function addClientFromFinance(fd: FormData) {
   // A client who takes both services gets a SEPARATE invoice per service, so the
   // Website-vs-DM split stays exact (no lumped "Both" invoice). Amounts are entered
   // per service (before GST); "amount paid" is distributed across them, Website first.
-  const webAmt = Math.max(0, n(fd, "webAmount"));
-  const domainAmt = Math.max(0, n(fd, "domainAmount"));
-  const hostingAmt = Math.max(0, n(fd, "hostingAmount"));
   const dmAmt = Math.max(0, n(fd, "dmAmount"));
   // Specific Digital Marketing services picked in the Add-Client form (SEO / Meta Ads / …).
   const dmServices = fd.getAll("dmServices").map((v) => String(v).trim()).filter(Boolean);
-  // Website clients may also pay for Domain and Hosting — each becomes its own WEBSITE invoice.
+  // Website services come from the itemized "Services & amounts" block (websiteItems JSON):
+  // Domain / Hosting + SSL / Website Designing / any custom service, each with its own amount.
+  let webItems: { name: string; amount: number }[] = [];
+  try {
+    const parsed = JSON.parse(s(fd, "websiteItems") || "[]");
+    if (Array.isArray(parsed)) webItems = parsed.map((it) => ({ name: String(it?.name ?? "").trim(), amount: Math.max(0, Math.round(Number(it?.amount) || 0)) })).filter((it) => it.name);
+  } catch { /* ignore malformed */ }
+  // Legacy fallback for the older plain-amount add-client form.
+  if (webItems.length === 0) {
+    const webAmt = Math.max(0, n(fd, "webAmount"));
+    const domainAmt = Math.max(0, n(fd, "domainAmount"));
+    const hostingAmt = Math.max(0, n(fd, "hostingAmount"));
+    if (webAmt > 0) webItems.push({ name: "Website Designing", amount: webAmt });
+    if (domainAmt > 0) webItems.push({ name: "Domain", amount: domainAmt });
+    if (hostingAmt > 0) webItems.push({ name: "Hosting + SSL", amount: hostingAmt });
+  }
+  // Each ticked website service with an amount becomes its own WEBSITE invoice.
   const specs = [
-    ...(webAmt > 0 ? [{ label: "Website Development", amount: webAmt }] : []),
-    ...(domainAmt > 0 ? [{ label: "Domain", amount: domainAmt }] : []),
-    ...(hostingAmt > 0 ? [{ label: "Hosting", amount: hostingAmt }] : []),
+    ...webItems.filter((it) => it.amount > 0).map((it) => ({ label: it.name, amount: it.amount })),
     ...(dmAmt > 0 ? [{ label: "Digital Marketing", amount: dmAmt }] : []),
   ];
 
   // Tag the client's services (drives Website vs DM + shown on hover in the clients list).
-  // The specific DM services are saved even when no amount is entered yet.
+  // Ticked website services + specific DM services are saved even when no amount is entered yet.
   const svcTags = [...new Set([
-    ...(webAmt > 0 ? ["Website Development"] : []),
-    ...(domainAmt > 0 ? ["Domain"] : []),
-    ...(hostingAmt > 0 ? ["Hosting"] : []),
+    ...webItems.map((it) => it.name),
     ...dmServices,
     ...(dmAmt > 0 && dmServices.length === 0 ? ["Digital Marketing"] : []),
   ])];
