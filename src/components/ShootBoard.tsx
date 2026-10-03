@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { saveShoot, setShootStatus, toggleShootPaid, deleteShoot, saveShootFootage, handOffToEditor } from "@/app/actions";
-import { SHOOT_CATEGORIES, SHOOT_STATUS, SHOOT_STATUS_KEYS, SHOOT_LOCATIONS, inr, inrShort, initials } from "@/lib/domain";
+import { SHOOT_CATEGORIES, SHOOT_STATUS, SHOOT_STATUS_KEYS, SHOOT_LOCATIONS, VIDEO_TYPES, inr, inrShort, initials } from "@/lib/domain";
 import {
   Camera, Video, CalendarClock, IndianRupee, Plus, X, Pencil, Trash2,
   MapPin, Phone, CheckCircle2, CircleAlert, List, CalendarDays, ChevronLeft, ChevronRight,
@@ -266,9 +266,14 @@ function FootageModal({ row, editors, onClose }: { row: Row; editors: Shooter[];
             <form action={handOffToEditor} className="space-y-3">
               <input type="hidden" name="id" value={row.id} />
               <input type="hidden" name="footageLink" value={link} />
-              <label className="block"><span className="eyebrow">Editor</span>
-                <select name="editorId" required className="select mt-1.5"><option value="">— Select editor —</option>{editors.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}</select>
-              </label>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="block"><span className="eyebrow">Editor</span>
+                  <select name="editorId" required className="select mt-1.5"><option value="">— Select editor —</option>{editors.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}</select>
+                </label>
+                <label className="block"><span className="eyebrow">Video type</span>
+                  <select name="videoType" defaultValue="Reel" className="select mt-1.5">{VIDEO_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}</select>
+                </label>
+              </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="block"><span className="eyebrow">Priority</span>
                   <select name="priority" defaultValue="MEDIUM" className="select mt-1.5"><option value="HIGH">High</option><option value="MEDIUM">Medium</option><option value="LOW">Low</option></select>

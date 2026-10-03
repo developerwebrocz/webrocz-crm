@@ -329,7 +329,7 @@ export type CreativeStatus = keyof typeof CREATIVE_STATUS;
 export const CREATIVE_STATUS_KEYS = Object.keys(CREATIVE_STATUS) as CreativeStatus[];
 
 export const DESIGN_TYPES = ["Logo", "Social Creative", "Banner", "Poster", "Brochure", "Ad Creative", "Thumbnail", "Flyer"] as const;
-export const VIDEO_TYPES = ["Testimonial", "Reel", "YouTube", "Intro", "Ad Video", "Other"] as const;
+export const VIDEO_TYPES = ["Reel", "Intro", "Walkthrough", "Testimonial", "YouTube", "Ad Video", "Other"] as const;
 
 // Google Ads — campaign types shown in the AM's Google Ads console.
 export const GADS_TYPES = {
