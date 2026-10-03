@@ -78,9 +78,10 @@ export default function ShootBoard({
             </div>
           )}
           {kpis.requests > 0 && (
-            <div className="flex items-center gap-2 rounded-[var(--r-md)] border border-[color-mix(in_srgb,var(--violet)_30%,white)] bg-[color-mix(in_srgb,var(--violet)_7%,white)] px-3.5 py-2 text-[12.5px] font-semibold text-[var(--violet)]">
-              <Users size={15} /> {kpis.requests} shoot request{kpis.requests > 1 ? "s" : ""} from AMs — assign a shooter.
-            </div>
+            <button type="button" onClick={() => { setCat("WEBROCZ"); setStatus("ALL"); setView("list"); }}
+              className="flex items-center gap-2 rounded-[var(--r-md)] border border-[color-mix(in_srgb,var(--violet)_30%,white)] bg-[color-mix(in_srgb,var(--violet)_7%,white)] px-3.5 py-2 text-[12.5px] font-semibold text-[var(--violet)] hover:bg-[color-mix(in_srgb,var(--violet)_12%,white)]">
+              <Users size={15} /> {kpis.requests} shoot request{kpis.requests > 1 ? "s" : ""} from AMs — click to assign a shooter.
+            </button>
           )}
         </div>
       )}
