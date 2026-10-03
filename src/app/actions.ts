@@ -1008,10 +1008,13 @@ export async function resetUserPassword(fd: FormData) {
 }
 
 export async function logout() {
+  // Send team members back to the Team Portal (/staff); only admins use /login.
+  const me = await getCurrentUser().catch(() => null);
+  const isAdmin = !!me && (me.role === "SUPER_ADMIN" || me.role === "SUB_ADMIN");
   const store = await cookies();
   store.delete(SESSION_COOKIE);
   store.delete(IMPERSONATE_COOKIE);
-  redirect("/login");
+  redirect(isAdmin ? "/login" : "/staff");
 }
 
 // ---- Super Admin "View as employee" (impersonation) — stays signed in as admin underneath ----

@@ -292,8 +292,9 @@ async function main() {
     // Mallesh = Video Editor (Video Studio); Studiox Raj = Studio X Head (Shoot board) —
     // two SEPARATE dashboards, not the same video-editor board.
     const extraTeam: { name: string; role: string }[] = [
-      { name: "Mallesh", role: "EDITOR" },
-      { name: "Studiox Raj", role: "STUDIO_HEAD" },
+      { name: "Mallesh", role: "EDITOR" },        // Video Editor → Video Studio
+      { name: "Studiox Raj", role: "STUDIO_HEAD" }, // Studio X Head → manages all shoots
+      { name: "Teja", role: "VIDEOGRAPHER" },      // Videographer → Studio X "My Shoots"
     ];
     for (const m of extraTeam) {
       const email = m.name.toLowerCase().replace(/\s+/g, ".") + "@webrocz.com";
@@ -412,32 +413,33 @@ async function main() {
     for (const d of designers) await seedBoard(d, "DESIGN", DESIGN_TASKS);
     for (const e of editors) await seedBoard(e, "VIDEO", VIDEO_TASKS);
 
-    // ---- Studio X (shoot) board demo data for the STUDIO_HEAD (Studiox Raj) ----
+    // ---- Studio X (shoot) board demo data — for STUDIO_HEAD (Raj) + VIDEOGRAPHER (Teja) ----
+    const teja = await prisma.user.findFirst({ where: { email: "teja@webrocz.com" }, select: { id: true } });
     const mallesh = await prisma.user.findFirst({ where: { email: "mallesh@webrocz.com" }, select: { id: true } });
-    const shooterId = mallesh?.id ?? editors[0]?.id ?? null;
+    const tejaId = teja?.id ?? null;        // videographer (shoots assigned here show on his board)
+    const malleshId = mallesh?.id ?? null;
     const amId = ams[0]?.id ?? null;
     const cl = (i: number) => (activeClients.length ? activeClients[i % activeClients.length].id : null);
+    // The shoot board uses the real calendar date, so anchor demo shoots to today (not DEMO_DATE).
+    const realDay = (off: number) => { const d = new Date(); d.setDate(d.getDate() + off); return d.toISOString().slice(0, 10); };
     async function nextShootCode() {
       const all = await prisma.shoot.findMany({ select: { code: true } });
       let max = 0; for (const x of all) { const m = /SHT-(\d+)/.exec(x.code); if (m) max = Math.max(max, parseInt(m[1], 10)); }
       return `SHT-${String(max + 1).padStart(3, "0")}`;
     }
     const demoShoots: Record<string, unknown>[] = [
-      { category: "WEBROCZ", title: "Product shoot — new launch", clientId: cl(0), date: boardDay(1), startTime: "10:00", endTime: "13:00", locationType: "IN_HOUSE", location: "Studio X", assignedToId: shooterId, status: "SCHEDULED", notes: "Bring product samples + white backdrop." },
-      { category: "WEBROCZ", title: "Clinic testimonial shoot", clientId: cl(1), date: boardDay(0), startTime: "15:00", endTime: "17:00", locationType: "ON_LOCATION", location: "Client clinic, Jubilee Hills", assignedToId: shooterId, status: "IN_PROGRESS" },
-      { category: "STUDIO_RENT", title: "Studio rental — podcast recording", renterName: "Kiran Media", phone: "9700112233", date: boardDay(2), startTime: "11:00", endTime: "14:00", locationType: "IN_HOUSE", location: "Studio X", rentAmount: 8000, paid: false, status: "SCHEDULED" },
-      { category: "WEBROCZ", title: "Reel shoot — festive offer", clientId: cl(2), date: boardDay(-2), startTime: "10:00", endTime: "12:00", locationType: "IN_HOUSE", location: "Studio X", assignedToId: shooterId, status: "COMPLETED", handedOff: true, notes: "Footage handed to editor." },
-      { category: "WEBROCZ", title: "Showroom walkthrough shoot", clientId: cl(3), date: boardDay(3), locationType: "ON_LOCATION", location: "Showroom, Banjara Hills", status: "SCHEDULED", requestedById: amId },
-      { category: "STUDIO_RENT", title: "Studio rental — fashion lookbook", renterName: "Vogue Aura", phone: "9700445566", date: boardDay(-5), startTime: "09:00", endTime: "18:00", locationType: "IN_HOUSE", location: "Studio X", rentAmount: 15000, paid: true, status: "COMPLETED" },
+      { category: "WEBROCZ", title: "Product shoot — new launch", clientId: cl(0), date: realDay(1), startTime: "10:00", endTime: "13:00", locationType: "IN_HOUSE", location: "Studio X", assignedToId: tejaId, status: "SCHEDULED", notes: "Bring product samples + white backdrop." },
+      { category: "WEBROCZ", title: "Clinic testimonial shoot", clientId: cl(1), date: realDay(0), startTime: "15:00", endTime: "17:00", locationType: "ON_LOCATION", location: "Client clinic, Jubilee Hills", assignedToId: tejaId, status: "IN_PROGRESS" },
+      { category: "WEBROCZ", title: "Reel shoot — festive offer", clientId: cl(2), date: realDay(-2), startTime: "10:00", endTime: "12:00", locationType: "IN_HOUSE", location: "Studio X", assignedToId: tejaId, status: "COMPLETED", handedOff: true, notes: "Footage handed to editor." },
+      { category: "WEBROCZ", title: "Corporate profile shoot", clientId: cl(4), date: realDay(2), startTime: "11:00", endTime: "14:00", locationType: "IN_HOUSE", location: "Studio X", assignedToId: malleshId, status: "SCHEDULED" },
+      { category: "STUDIO_RENT", title: "Studio rental — podcast recording", renterName: "Kiran Media", phone: "9700112233", date: realDay(3), startTime: "11:00", endTime: "14:00", locationType: "IN_HOUSE", location: "Studio X", rentAmount: 8000, paid: false, status: "SCHEDULED" },
+      { category: "WEBROCZ", title: "Showroom walkthrough shoot", clientId: cl(3), date: realDay(4), locationType: "ON_LOCATION", location: "Showroom, Banjara Hills", status: "SCHEDULED", requestedById: amId },
+      { category: "STUDIO_RENT", title: "Studio rental — fashion lookbook", renterName: "Vogue Aura", phone: "9700445566", date: realDay(-5), startTime: "09:00", endTime: "18:00", locationType: "IN_HOUSE", location: "Studio X", rentAmount: 15000, paid: true, status: "COMPLETED" },
     ];
-    let shootsMade = 0;
-    for (const s of demoShoots) {
-      const found = await prisma.shoot.findFirst({ where: { title: s.title as string, date: s.date as string } });
-      if (found) continue;
-      await prisma.shoot.create({ data: { code: await nextShootCode(), ...s } as never });
-      shootsMade++;
-    }
-    if (shootsMade) console.log(`  Studio X: seeded ${shootsMade} shoots`);
+    // Re-seed cleanly: remove any earlier copies of these demo shoots (dates/assignees changed).
+    await prisma.shoot.deleteMany({ where: { title: { in: demoShoots.map((s) => s.title as string) } } });
+    for (const s of demoShoots) await prisma.shoot.create({ data: { code: await nextShootCode(), ...s } as never });
+    console.log(`  Studio X: seeded ${demoShoots.length} shoots (Teja = videographer)`);
   }
 
   const leads = await prisma.lead.count();
