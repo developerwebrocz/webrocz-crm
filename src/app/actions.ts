@@ -968,6 +968,9 @@ export async function login(fd: FormData) {
     httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production",
     path: "/", maxAge: 60 * 60 * 24 * 7,
   });
+  // A fresh login must never inherit a prior "View as" session — otherwise the home
+  // page resolves to the impersonated employee's board instead of the real user's.
+  store.delete(IMPERSONATE_COOKIE);
   redirect(next.startsWith("/") ? next : "/");
 }
 
@@ -992,6 +995,7 @@ export async function activateAccount(fd: FormData) {
   const token = await signSession({ uid: user!.id, name: user!.name, role: user!.role });
   const store = await cookies();
   store.set(SESSION_COOKIE, token, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: 60 * 60 * 24 * 7 });
+  store.delete(IMPERSONATE_COOKIE);
   redirect("/");
 }
 
