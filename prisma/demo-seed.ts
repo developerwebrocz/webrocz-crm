@@ -289,9 +289,11 @@ async function main() {
   console.log("--- Creative boards (designer / video-editor demo work + AM assignment alerts) ---");
   {
     // Extra dummy team logins (idempotent by email). Password = webrocz123, login at /staff.
+    // Mallesh = Video Editor (Video Studio); Studiox Raj = Studio X Head (Shoot board) —
+    // two SEPARATE dashboards, not the same video-editor board.
     const extraTeam: { name: string; role: string }[] = [
       { name: "Mallesh", role: "EDITOR" },
-      { name: "Studiox Raj", role: "EDITOR" },
+      { name: "Studiox Raj", role: "STUDIO_HEAD" },
     ];
     for (const m of extraTeam) {
       const email = m.name.toLowerCase().replace(/\s+/g, ".") + "@webrocz.com";
@@ -299,8 +301,13 @@ async function main() {
       if (!exists) {
         await prisma.user.create({ data: { name: m.name, role: m.role, email, phone: "", passwordHash: hashPassword(DEMO_PASSWORD), active: true } });
         console.log(`  login created: ${email} (${m.role})`);
+      } else if (exists.role !== m.role) {
+        await prisma.user.update({ where: { id: exists.id }, data: { role: m.role } });
+        // Role changed away from editor → drop any video tasks seeded earlier (they won't show).
+        if (m.role !== "EDITOR") await prisma.creativeTask.deleteMany({ where: { assignedToId: exists.id } });
+        console.log(`  login role fixed: ${email} -> ${m.role}`);
       } else {
-        console.log(`  login exists: ${email}`);
+        console.log(`  login exists: ${email} (${m.role})`);
       }
     }
 
@@ -404,6 +411,33 @@ async function main() {
 
     for (const d of designers) await seedBoard(d, "DESIGN", DESIGN_TASKS);
     for (const e of editors) await seedBoard(e, "VIDEO", VIDEO_TASKS);
+
+    // ---- Studio X (shoot) board demo data for the STUDIO_HEAD (Studiox Raj) ----
+    const mallesh = await prisma.user.findFirst({ where: { email: "mallesh@webrocz.com" }, select: { id: true } });
+    const shooterId = mallesh?.id ?? editors[0]?.id ?? null;
+    const amId = ams[0]?.id ?? null;
+    const cl = (i: number) => (activeClients.length ? activeClients[i % activeClients.length].id : null);
+    async function nextShootCode() {
+      const all = await prisma.shoot.findMany({ select: { code: true } });
+      let max = 0; for (const x of all) { const m = /SHT-(\d+)/.exec(x.code); if (m) max = Math.max(max, parseInt(m[1], 10)); }
+      return `SHT-${String(max + 1).padStart(3, "0")}`;
+    }
+    const demoShoots: Record<string, unknown>[] = [
+      { category: "WEBROCZ", title: "Product shoot — new launch", clientId: cl(0), date: boardDay(1), startTime: "10:00", endTime: "13:00", locationType: "IN_HOUSE", location: "Studio X", assignedToId: shooterId, status: "SCHEDULED", notes: "Bring product samples + white backdrop." },
+      { category: "WEBROCZ", title: "Clinic testimonial shoot", clientId: cl(1), date: boardDay(0), startTime: "15:00", endTime: "17:00", locationType: "ON_LOCATION", location: "Client clinic, Jubilee Hills", assignedToId: shooterId, status: "IN_PROGRESS" },
+      { category: "STUDIO_RENT", title: "Studio rental — podcast recording", renterName: "Kiran Media", phone: "9700112233", date: boardDay(2), startTime: "11:00", endTime: "14:00", locationType: "IN_HOUSE", location: "Studio X", rentAmount: 8000, paid: false, status: "SCHEDULED" },
+      { category: "WEBROCZ", title: "Reel shoot — festive offer", clientId: cl(2), date: boardDay(-2), startTime: "10:00", endTime: "12:00", locationType: "IN_HOUSE", location: "Studio X", assignedToId: shooterId, status: "COMPLETED", handedOff: true, notes: "Footage handed to editor." },
+      { category: "WEBROCZ", title: "Showroom walkthrough shoot", clientId: cl(3), date: boardDay(3), locationType: "ON_LOCATION", location: "Showroom, Banjara Hills", status: "SCHEDULED", requestedById: amId },
+      { category: "STUDIO_RENT", title: "Studio rental — fashion lookbook", renterName: "Vogue Aura", phone: "9700445566", date: boardDay(-5), startTime: "09:00", endTime: "18:00", locationType: "IN_HOUSE", location: "Studio X", rentAmount: 15000, paid: true, status: "COMPLETED" },
+    ];
+    let shootsMade = 0;
+    for (const s of demoShoots) {
+      const found = await prisma.shoot.findFirst({ where: { title: s.title as string, date: s.date as string } });
+      if (found) continue;
+      await prisma.shoot.create({ data: { code: await nextShootCode(), ...s } as never });
+      shootsMade++;
+    }
+    if (shootsMade) console.log(`  Studio X: seeded ${shootsMade} shoots`);
   }
 
   const leads = await prisma.lead.count();
