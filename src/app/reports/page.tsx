@@ -5,6 +5,7 @@ import { Card, Eyebrow } from "@/components/ui";
 import PeriodTabs from "@/components/PeriodTabs";
 import ReportExport from "@/components/ReportExport";
 import ReportFilters from "@/components/ReportFilters";
+import CustomRange from "@/components/CustomRange";
 import { WORK_STATUS, type WorkStatus } from "@/lib/domain";
 import { type PeriodKey } from "@/lib/period";
 
@@ -26,6 +27,8 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
     userId: scope.userId ?? (isAdmin ? str("member") : undefined),
     dept: scope.dept ?? (isAdmin ? str("dept") : undefined),
     clientId: str("client"),
+    from: period === "custom" ? str("from") : undefined,
+    to: period === "custom" ? str("to") : undefined,
   };
   const [{ rows, kpis, range }, users, clients] = await Promise.all([
     getReport(period, reportOpts),
@@ -55,6 +58,14 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
           <ReportExport rows={exportRows} filename={`webrocz-report-${period}`} />
         </div>
       </div>
+
+      {period === "custom" && (
+        <CustomRange
+          from={str("from") ?? ""}
+          to={str("to") ?? ""}
+          extra={{ member: str("member") ?? "", dept: str("dept") ?? "", client: str("client") ?? "" }}
+        />
+      )}
 
       {isAdmin && (
         <ReportFilters
