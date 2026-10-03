@@ -628,11 +628,16 @@ export async function addClientFromFinance(fd: FormData) {
   // Website-vs-DM split stays exact (no lumped "Both" invoice). Amounts are entered
   // per service (before GST); "amount paid" is distributed across them, Website first.
   const webAmt = Math.max(0, n(fd, "webAmount"));
+  const domainAmt = Math.max(0, n(fd, "domainAmount"));
+  const hostingAmt = Math.max(0, n(fd, "hostingAmount"));
   const dmAmt = Math.max(0, n(fd, "dmAmount"));
   // Specific Digital Marketing services picked in the Add-Client form (SEO / Meta Ads / …).
   const dmServices = fd.getAll("dmServices").map((v) => String(v).trim()).filter(Boolean);
+  // Website clients may also pay for Domain and Hosting — each becomes its own WEBSITE invoice.
   const specs = [
     ...(webAmt > 0 ? [{ label: "Website Development", amount: webAmt }] : []),
+    ...(domainAmt > 0 ? [{ label: "Domain", amount: domainAmt }] : []),
+    ...(hostingAmt > 0 ? [{ label: "Hosting", amount: hostingAmt }] : []),
     ...(dmAmt > 0 ? [{ label: "Digital Marketing", amount: dmAmt }] : []),
   ];
 
@@ -640,6 +645,8 @@ export async function addClientFromFinance(fd: FormData) {
   // The specific DM services are saved even when no amount is entered yet.
   const svcTags = [...new Set([
     ...(webAmt > 0 ? ["Website Development"] : []),
+    ...(domainAmt > 0 ? ["Domain"] : []),
+    ...(hostingAmt > 0 ? ["Hosting"] : []),
     ...dmServices,
     ...(dmAmt > 0 && dmServices.length === 0 ? ["Digital Marketing"] : []),
   ])];

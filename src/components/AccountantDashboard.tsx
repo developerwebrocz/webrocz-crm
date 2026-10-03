@@ -260,6 +260,8 @@ function AddClientModal({ close }: { close: () => void }) {
             <div className="eyebrow mb-2">Amount to be paid — per service (before GST)</div>
             <div className="grid grid-cols-2 gap-3">
               <label className="block"><span className="text-[12px] font-semibold text-[var(--indigo)]">Website Development (₹)</span><input name="webAmount" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>
+              <label className="block"><span className="text-[12px] font-semibold text-[var(--indigo)]">Domain (₹)</span><input name="domainAmount" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>
+              <label className="block"><span className="text-[12px] font-semibold text-[var(--indigo)]">Hosting (₹)</span><input name="hostingAmount" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>
               <label className="block"><span className="text-[12px] font-semibold text-[var(--magenta)]">Digital Marketing (₹)</span><input name="dmAmount" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>
             </div>
             <label className="mt-3 block"><span className="eyebrow">Amount already paid (₹)</span><input name="paid" type="number" min={0} defaultValue={0} className="input mt-1" placeholder="0" /></label>
