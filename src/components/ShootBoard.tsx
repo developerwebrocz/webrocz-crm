@@ -6,7 +6,7 @@ import { SHOOT_CATEGORIES, SHOOT_STATUS, SHOOT_STATUS_KEYS, SHOOT_LOCATIONS, VID
 import {
   Camera, Video, CalendarClock, IndianRupee, Plus, X, Pencil, Trash2,
   MapPin, Phone, CheckCircle2, CircleAlert, List, CalendarDays, ChevronLeft, ChevronRight,
-  Users, Film, Send, ExternalLink,
+  Users, Film, Send, ExternalLink, Download,
 } from "lucide-react";
 
 type Row = {
@@ -31,7 +31,7 @@ export default function ShootBoard({
 }) {
   const [cat, setCat] = useState<"ALL" | "WEBROCZ" | "STUDIO_RENT">("ALL");
   const [status, setStatus] = useState("ALL");
-  const [view, setView] = useState<"list" | "calendar">("list");
+  const [view, setView] = useState<"list" | "calendar" | "payments">("list");
   const [edit, setEdit] = useState<Row | null>(null);
   const [adding, setAdding] = useState(false);
   const [footageFor, setFootageFor] = useState<Row | null>(null);
@@ -94,7 +94,7 @@ export default function ShootBoard({
           ))}
         </div>
         <div className="ml-auto flex items-center gap-1 rounded-xl border border-[var(--line-2)] bg-[var(--surface-2)] p-1">
-          {([["list", List, "List"], ["calendar", CalendarDays, "Calendar"]] as const).map(([v, Icon, l]) => (
+          {([["list", List, "List"], ["calendar", CalendarDays, "Calendar"], ...(canManage ? [["payments", IndianRupee, "Payments"] as const] : [])] as const).map(([v, Icon, l]) => (
             <button key={v} onClick={() => setView(v)} className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12.5px] font-semibold transition ${view === v ? "bg-[var(--violet)] text-white shadow-sm" : "text-[var(--ink-2)] hover:bg-white"}`}><Icon size={14} /> {l}</button>
           ))}
         </div>
@@ -115,7 +115,9 @@ export default function ShootBoard({
         })}
       </div>
 
-      {view === "calendar" ? (
+      {view === "payments" && canManage ? (
+        <PaymentsView rows={rows} today={today} />
+      ) : view === "calendar" ? (
         <ShootCalendar rows={statusRows} today={today} canManage={canManage} onEdit={onEdit} />
       ) : (
         <>
@@ -288,6 +290,94 @@ function FootageModal({ row, editors, onClose }: { row: Row; editors: Shooter[];
               </div>
             </form>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PaymentsView({ rows, today }: { rows: Row[]; today: string }) {
+  const rentals = rows.filter((r) => r.category === "STUDIO_RENT" && r.status !== "CANCELLED");
+  const sorted = [...rentals].sort((a, b) => b.date.localeCompare(a.date));
+  const collected = rentals.filter((r) => r.paid).reduce((s, r) => s + r.rentAmount, 0);
+  const outstanding = rentals.filter((r) => !r.paid).reduce((s, r) => s + r.rentAmount, 0);
+  const monthPrefix = today.slice(0, 7);
+  const thisMonth = rentals.filter((r) => r.date.startsWith(monthPrefix) && r.paid).reduce((s, r) => s + r.rentAmount, 0);
+
+  const byMonth = new Map<string, { collected: number; outstanding: number; count: number }>();
+  for (const r of rentals) {
+    const m = r.date.slice(0, 7);
+    const cur = byMonth.get(m) ?? { collected: 0, outstanding: 0, count: 0 };
+    cur.count++; if (r.paid) cur.collected += r.rentAmount; else cur.outstanding += r.rentAmount;
+    byMonth.set(m, cur);
+  }
+  const months = [...byMonth.entries()].sort((a, b) => b[0].localeCompare(a[0]));
+  const monthLabel = (m: string) => new Date(m + "-01T00:00:00").toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+  const fmtDate = (d: string) => d ? new Date(d + "T00:00:00").toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "—";
+
+  const exportCsv = () => {
+    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const lines = [["Date", "Renter", "Shoot", "Code", "Amount", "Status"].join(",")];
+    for (const r of sorted) lines.push([r.date, r.renterName, r.title, r.code, r.rentAmount, r.paid ? "Paid" : "Unpaid"].map(esc).join(","));
+    const blob = new Blob([lines.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = "studio-x-payments.csv"; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Kpi icon={CheckCircle2} tone="emerald" label="Collected" value={inr(collected)} sub={`${inr(thisMonth)} this month`} />
+        <Kpi icon={CircleAlert} tone="rose" label="Outstanding" value={inr(outstanding)} sub={`${rentals.filter((r) => !r.paid).length} unpaid rental${rentals.filter((r) => !r.paid).length === 1 ? "" : "s"}`} />
+        <Kpi icon={Video} tone="amber" label="Total rentals" value={String(rentals.length)} sub={`${inr(collected + outstanding)} billed`} />
+      </div>
+
+      <div className="card !p-0 overflow-hidden">
+        <div className="border-b border-[var(--line)] px-5 py-3.5"><h2 className="text-[14px] font-bold">Revenue by month</h2></div>
+        <div className="overflow-x-auto scroll-thin">
+          <table className="w-full min-w-[520px] text-left">
+            <thead><tr className="border-b border-[var(--line)]">{["Month", "Rentals", "Collected", "Outstanding"].map((h, i) => <th key={i} className={`th px-5 py-2.5 ${i >= 2 ? "text-right" : ""}`}>{h}</th>)}</tr></thead>
+            <tbody>
+              {months.map(([m, v]) => (
+                <tr key={m} className="border-b border-[var(--line)] hover:bg-[var(--surface-2)]">
+                  <td className="px-5 py-3 text-[13px] font-semibold">{monthLabel(m)}</td>
+                  <td className="px-5 py-3 text-[12.5px] text-[var(--muted)] tnum">{v.count}</td>
+                  <td className="px-5 py-3 text-right text-[13px] font-semibold tnum text-[var(--emerald)]">{inr(v.collected)}</td>
+                  <td className="px-5 py-3 text-right text-[13px] tnum" style={{ color: v.outstanding ? "var(--rose)" : "var(--muted)" }}>{v.outstanding ? inr(v.outstanding) : "—"}</td>
+                </tr>
+              ))}
+              {months.length === 0 && <tr><td colSpan={4} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No rentals yet.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="card !p-0 overflow-hidden">
+        <div className="flex items-center justify-between gap-3 border-b border-[var(--line)] px-5 py-3.5">
+          <h2 className="text-[14px] font-bold">All rentals</h2>
+          <button onClick={exportCsv} className="inline-flex items-center gap-1.5 rounded-md border border-[var(--line-2)] px-3 py-1.5 text-[12px] font-semibold text-[var(--ink-2)] hover:border-[var(--ink)]"><Download size={13} /> Export CSV</button>
+        </div>
+        <div className="overflow-x-auto scroll-thin">
+          <table className="w-full min-w-[640px] text-left">
+            <thead><tr className="border-b border-[var(--line)]">{["Date", "Renter", "Shoot", "Amount", "Status"].map((h, i) => <th key={i} className={`th px-5 py-2.5 ${i === 3 ? "text-right" : ""}`}>{h}</th>)}</tr></thead>
+            <tbody>
+              {sorted.map((r) => (
+                <tr key={r.id} className="border-b border-[var(--line)] hover:bg-[var(--surface-2)]">
+                  <td className="px-5 py-3 text-[12.5px] tnum whitespace-nowrap">{fmtDate(r.date)}</td>
+                  <td className="px-5 py-3 text-[12.5px]">{r.renterName || "—"}</td>
+                  <td className="px-5 py-3"><div className="text-[13px] font-semibold">{r.title}</div><div className="text-[11px] text-[var(--faint)] tnum">{r.code}</div></td>
+                  <td className="px-5 py-3 text-right text-[13px] font-semibold tnum">{r.rentAmount ? inr(r.rentAmount) : "—"}</td>
+                  <td className="px-5 py-3">
+                    <form action={toggleShootPaid}><input type="hidden" name="id" value={r.id} />
+                      <button className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold ${r.paid ? "bg-[color-mix(in_srgb,var(--emerald)_14%,white)] text-[var(--emerald)]" : "bg-[color-mix(in_srgb,var(--rose)_12%,white)] text-[var(--rose)]"}`}>{r.paid ? <CheckCircle2 size={11} /> : <CircleAlert size={11} />}{r.paid ? "Paid" : "Mark paid"}</button>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+              {sorted.length === 0 && <tr><td colSpan={5} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No studio rentals yet.</td></tr>}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
