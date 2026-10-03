@@ -6,6 +6,14 @@
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaClient } from "../src/generated/prisma/client.js";
 import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
+import { scryptSync, randomBytes } from "node:crypto";
+
+// Same scrypt "salt:hash" format as src/lib/auth.ts, so seeded logins verify correctly.
+const DEMO_PASSWORD = "webrocz123";
+function hashPassword(pw: string) {
+  const salt = randomBytes(16).toString("hex");
+  return `${salt}:${scryptSync(pw, salt, 64).toString("hex")}`;
+}
 
 // Load .env manually (no dotenv dependency) so a standalone `tsx` run sees the SAME
 // DATABASE_URL + DEMO_DATE the running app uses — keeps seeded due dates aligned with
@@ -280,6 +288,22 @@ async function main() {
 
   console.log("--- Creative boards (designer / video-editor demo work + AM assignment alerts) ---");
   {
+    // Extra dummy team logins (idempotent by email). Password = webrocz123, login at /staff.
+    const extraTeam: { name: string; role: string }[] = [
+      { name: "Mallesh", role: "EDITOR" },
+      { name: "Studiox Raj", role: "EDITOR" },
+    ];
+    for (const m of extraTeam) {
+      const email = m.name.toLowerCase().replace(/\s+/g, ".") + "@webrocz.com";
+      const exists = await prisma.user.findFirst({ where: { email } });
+      if (!exists) {
+        await prisma.user.create({ data: { name: m.name, role: m.role, email, phone: "", passwordHash: hashPassword(DEMO_PASSWORD), active: true } });
+        console.log(`  login created: ${email} (${m.role})`);
+      } else {
+        console.log(`  login exists: ${email}`);
+      }
+    }
+
     const [designers, editors, ams, activeClients] = await Promise.all([
       prisma.user.findMany({ where: { active: true, role: "DESIGNER" }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
       prisma.user.findMany({ where: { active: true, role: "EDITOR" }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
