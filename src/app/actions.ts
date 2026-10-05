@@ -662,6 +662,24 @@ export async function addClientFromFinance(fd: FormData) {
     if (domainAmt > 0) webItems.push({ name: "Domain", amount: domainAmt });
     if (hostingAmt > 0) webItems.push({ name: "Hosting + SSL", amount: hostingAmt });
   }
+  // Mirror what was entered in Add-client onto the client's website fields, so the Edit
+  // modal shows the same services, amounts, domain name and renewal (not just the invoices).
+  const domainItem = webItems.find((it) => it.name === "Domain");
+  const hostingItem = webItems.find((it) => it.name === "Hosting + SSL");
+  if (webItems.length || scalars.website) {
+    await prisma.client.update({
+      where: { id: client.id },
+      data: {
+        websiteDomain: scalars.website || "",
+        websiteServices: JSON.stringify(webItems.map((it) => it.name)),
+        domainTaken: !!domainItem,
+        hostingTaken: !!hostingItem,
+        domainAmount: domainItem?.amount || 0,
+        hostingAmount: hostingItem?.amount || 0,
+        websiteRenewAmount: (domainItem?.amount || 0) + (hostingItem?.amount || 0),
+      },
+    });
+  }
   // Each ticked website service with an amount becomes its own WEBSITE invoice.
   const specs = [
     ...webItems.filter((it) => it.amount > 0).map((it) => ({ label: it.name, amount: it.amount })),
