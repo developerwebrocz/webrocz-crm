@@ -7,7 +7,7 @@ import { importFinanceCsv } from "@/app/sales-actions";
 import { downloadCsv } from "@/lib/csv";
 import AddInvoiceModal from "@/components/AddInvoiceModal";
 import { companyLabel, COMPANY_KEYS } from "@/lib/domain";
-import { Users, Search, ReceiptText, Wallet, CheckCircle2, ChevronRight, ChevronLeft, MessageSquarePlus, Pencil, Trash2, X, Download, UserPlus, CalendarClock, Upload, Plus } from "lucide-react";
+import { Users, Search, ReceiptText, Wallet, CheckCircle2, ChevronRight, ChevronLeft, MessageSquarePlus, Pencil, Trash2, X, Download, UserPlus, CalendarClock, Upload, Plus, Globe } from "lucide-react";
 
 const PAGE_SIZE = 10;
 
@@ -30,7 +30,7 @@ const addDaysISO = (iso: string, n: number) => { const d = new Date((iso || toda
 type MiniInv = { category: string; total: number; received: number; balance: number; overdue: boolean; issueDate: string; company: string };
 type Note = { invId: string; invNumber: string; date: string; by: string; note: string };
 type Followup = { date: string; by: string; note: string; next?: string };
-type Row = { id: string; code: string; name: string; contact: string; phone: string; email: string; accountManager: string; slaUrl: string; slaTitle: string; slaBy: string; services: string[]; status: string; retainer: number; category: string; invs: MiniInv[]; lastInvoiceDate: string; billed: number; received: number; pending: number; companies: string[]; clientFollowups: Followup[]; nextFollowup: string; notes: Note[]; noteTarget: { id: string; number: string } | null };
+type Row = { id: string; code: string; name: string; domain: string; contact: string; phone: string; email: string; accountManager: string; slaUrl: string; slaTitle: string; slaBy: string; services: string[]; status: string; retainer: number; category: string; invs: MiniInv[]; lastInvoiceDate: string; billed: number; received: number; pending: number; companies: string[]; clientFollowups: Followup[]; nextFollowup: string; notes: Note[]; noteTarget: { id: string; number: string } | null };
 
 export default function FinanceClients({ rows, lockedCompany, lockedCategory, embedded, canDelete }: { rows: Row[]; lockedCompany?: string; lockedCategory?: string; embedded?: boolean; canDelete?: boolean }) {
   const [q, setQ] = useState("");
@@ -201,7 +201,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
                 <tr key={r.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
                   <td className="px-5 py-3 text-[12px] font-semibold tnum text-[var(--ink-2)]">{r.code || "—"}</td>
                   <td className="px-5 py-3 text-[12.5px] tnum">{fmtDate(r.lastInvoiceDate)}</td>
-                  <td className="px-5 py-3"><Link href={companySel !== "ALL" ? `/accounts/${r.id}?company=${companySel}` : `/accounts/${r.id}`} prefetch className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.name}</Link>{r.companies.length > 0 && <div className="text-[11px] text-[var(--faint)]">{r.companies.map(companyLabel).join(", ")}</div>}</td>
+                  <td className="px-5 py-3"><Link href={companySel !== "ALL" ? `/accounts/${r.id}?company=${companySel}` : `/accounts/${r.id}`} prefetch className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.name}</Link>{r.domain && <div className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--indigo)]"><Globe size={10} /> {r.domain}</div>}{r.companies.length > 0 && <div className="text-[11px] text-[var(--faint)]">{r.companies.map(companyLabel).join(", ")}</div>}</td>
                   <td className="px-5 py-3 text-[12.5px] tnum">{r.phone || "—"}</td>
                   <td className="px-5 py-3 text-[12.5px]">{r.email ? <a href={`mailto:${r.email}`} className="text-[var(--indigo)] hover:underline">{r.email}</a> : "—"}</td>
                   <td className="px-5 py-3">{r.slaUrl
