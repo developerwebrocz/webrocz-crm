@@ -24,6 +24,10 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
     : ["Domain", "Hosting + SSL", "Website Designing"];
   const [svc, setSvc] = useState<Record<string, { on: boolean; amount: string }>>({});
   const [customs, setCustoms] = useState<{ name: string; amount: string }[]>([]);
+  // Invoice date drives the website renewal/expiry date, which auto-fills to +1 year (editable).
+  const addYear = (iso: string) => { if (!iso) return ""; const d = new Date(iso + "T00:00:00Z"); if (isNaN(d.getTime())) return ""; d.setUTCFullYear(d.getUTCFullYear() + 1); return d.toISOString().slice(0, 10); };
+  const [issueDate, setIssueDate] = useState(today);
+  const [renewalDate, setRenewalDate] = useState(addYear(today));
   const setSvcOn = (k: string, on: boolean) => setSvc((p) => ({ ...p, [k]: { on, amount: p[k]?.amount ?? "" } }));
   const setSvcAmt = (k: string, amount: string) => setSvc((p) => ({ ...p, [k]: { on: p[k]?.on ?? true, amount } }));
   const lineItems = [
@@ -52,7 +56,7 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
               <input type="hidden" name="amount" value={String(total)} />
               <input type="hidden" name="items" value={JSON.stringify(lineItems)} />
               {lineItems.map((li, i) => <input key={i} type="hidden" name="services" value={li.name} />)}
-              <label className="block"><span className="eyebrow">Invoice date</span><input name="issueDate" type="date" defaultValue={today} className="input mt-1" /></label>
+              <label className="block"><span className="eyebrow">Invoice date</span><input name="issueDate" type="date" value={issueDate} onChange={(e) => { setIssueDate(e.target.value); setRenewalDate(addYear(e.target.value)); }} className="input mt-1" /></label>
               <div className="grid grid-cols-2 gap-3">
                 <label className="block"><span className="eyebrow">Company name</span>{lockClientName ? <input name="clientName" defaultValue={lockClientName} readOnly className="input mt-1 bg-[var(--surface-2)]" /> : <input name="clientName" required list="inv-client-names" className="input mt-1" placeholder="Company / client" />}</label>
                 <label className="block"><span className="eyebrow">Domain name</span><input name="domain" defaultValue={defaultDomain ?? ""} className="input mt-1" placeholder="e.g. acme.com" /></label>
@@ -105,7 +109,7 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
 
               <div className="rounded-[12px] border border-[var(--line)] p-3.5">
                 <span className="eyebrow">Website renewal</span>
-                <label className="mt-2 block"><span className="text-[11.5px] font-medium text-[var(--muted)]">Renewal / expiry date</span><input name="renewalDate" type="date" className="input mt-1" /></label>
+                <label className="mt-2 block"><span className="text-[11.5px] font-medium text-[var(--muted)]">Renewal / expiry date <span className="font-normal text-[var(--faint)]">(auto · +1 yr)</span></span><input name="renewalDate" type="date" value={renewalDate} onChange={(e) => setRenewalDate(e.target.value)} className="input mt-1" /></label>
                 <span className="mt-1.5 block text-[11px] text-[var(--faint)]">Saved to the client for website-renewal tracking.</span>
               </div>
 
@@ -143,7 +147,7 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
                 <label className="block"><span className="eyebrow">Amount received (optional)</span><input name="received" type="number" min={0} className="input mt-1" placeholder="0" /></label>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <label className="block"><span className="eyebrow">Invoice date</span><input name="issueDate" type="date" defaultValue={today} className="input mt-1" /></label>
+                <label className="block"><span className="eyebrow">Invoice date</span><input name="issueDate" type="date" value={issueDate} onChange={(e) => { setIssueDate(e.target.value); setRenewalDate(addYear(e.target.value)); }} className="input mt-1" /></label>
                 <label className="block"><span className="eyebrow">Due date (optional)</span><input name="dueDate" type="date" className="input mt-1" /></label>
               </div>
               <p className="rounded-[10px] bg-[var(--surface-2)] px-3 py-2 text-[11.5px] text-[var(--muted)]">→ <b>{target}</b> · {gst ? "GST" : "Non-GST"} serial series</p>
