@@ -285,7 +285,14 @@ function AddClientModal({ lockedCompany, lockedCategory, close }: { lockedCompan
         <form action={addClientFromFinance} className="space-y-3 overflow-y-auto scroll-thin px-6 py-5">
           <input type="hidden" name="return" value={returnPath} />
           {gstFixed !== null && <input type="hidden" name="gst" value={gstFixed} />}
-          <label className="block"><span className="eyebrow">Company name *</span><input name="name" required className="input mt-1" placeholder="Acme Pvt Ltd" /></label>
+          {showWebsite ? (
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block"><span className="eyebrow">Company name *</span><input name="name" required className="input mt-1" placeholder="Acme Pvt Ltd" /></label>
+              <label className="block"><span className="eyebrow">Domain name</span><input name="website" className="input mt-1" placeholder="e.g. acme.com" /></label>
+            </div>
+          ) : (
+            <label className="block"><span className="eyebrow">Company name *</span><input name="name" required className="input mt-1" placeholder="Acme Pvt Ltd" /></label>
+          )}
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Contact person</span><input name="pocName" className="input mt-1" /></label>
             <label className="block"><span className="eyebrow">Phone</span><input name="pocMobile" className="input mt-1" /></label>
@@ -310,7 +317,6 @@ function AddClientModal({ lockedCompany, lockedCategory, close }: { lockedCompan
               <p className="mt-2 text-[11px] text-[var(--faint)]">Pick the services this client has taken — shown on hover in the clients list.</p>
             </div>
           )}
-          {showWebsite && <label className="block"><span className="eyebrow">Domain name</span><input name="website" className="input mt-1" placeholder="e.g. acme.com" /></label>}
           {showWebsite && (
             <div>
               <span className="eyebrow">Services &amp; amounts{isPvt ? " (before GST)" : ""}</span>
