@@ -666,6 +666,11 @@ export async function addClientFromFinance(fd: FormData) {
   // modal shows the same services, amounts, domain name and renewal (not just the invoices).
   const domainItem = webItems.find((it) => it.name === "Domain");
   const hostingItem = webItems.find((it) => it.name === "Hosting + SSL");
+  // When domain/hosting is taken, auto-set register date = today and expiry = +1 year,
+  // so they show pre-filled in Edit info and the Registration & Renewal card.
+  const regDate = new Date().toISOString().slice(0, 10);
+  const expDate = (() => { const d = new Date(regDate + "T00:00:00Z"); d.setUTCFullYear(d.getUTCFullYear() + 1); return d.toISOString().slice(0, 10); })();
+  const hasRenewable = !!domainItem || !!hostingItem;
   if (webItems.length || scalars.website) {
     await prisma.client.update({
       where: { id: client.id },
@@ -677,6 +682,7 @@ export async function addClientFromFinance(fd: FormData) {
         domainAmount: domainItem?.amount || 0,
         hostingAmount: hostingItem?.amount || 0,
         websiteRenewAmount: (domainItem?.amount || 0) + (hostingItem?.amount || 0),
+        ...(hasRenewable ? { websiteTakenDate: regDate, websiteExpiryDate: expDate } : {}),
       },
     });
   }
