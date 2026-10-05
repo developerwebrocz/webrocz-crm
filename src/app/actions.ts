@@ -666,6 +666,7 @@ export async function addClientFromFinance(fd: FormData) {
   // modal shows the same services, amounts, domain name and renewal (not just the invoices).
   const domainItem = webItems.find((it) => it.name === "Domain");
   const hostingItem = webItems.find((it) => it.name === "Hosting + SSL");
+  const designItem = webItems.find((it) => it.name === "Website Designing");
   // When domain/hosting is taken, auto-set register date = today and expiry = +1 year,
   // so they show pre-filled in Edit info and the Registration & Renewal card.
   const regDate = new Date().toISOString().slice(0, 10);
@@ -681,16 +682,18 @@ export async function addClientFromFinance(fd: FormData) {
         hostingTaken: !!hostingItem,
         domainAmount: domainItem?.amount || 0,
         hostingAmount: hostingItem?.amount || 0,
+        designAmount: designItem?.amount || 0,
         websiteRenewAmount: (domainItem?.amount || 0) + (hostingItem?.amount || 0),
         ...(hasRenewable ? { websiteTakenDate: regDate, websiteExpiryDate: expDate } : {}),
       },
     });
   }
-  // Each ticked website service with an amount becomes its own WEBSITE invoice.
-  const specs = [
-    ...webItems.filter((it) => it.amount > 0).map((it) => ({ label: it.name, amount: it.amount })),
-    ...(dmAmt > 0 ? [{ label: "Digital Marketing", amount: dmAmt }] : []),
-  ];
+  // ONE combined WEBSITE invoice (all ticked website services as line items) + ONE DM invoice
+  // if any — so a client with Domain + Hosting + Designing gets a single invoice, not three.
+  const webBillable = webItems.filter((it) => it.amount > 0);
+  const groups: { category: string; items: { name: string; amount: number }[] }[] = [];
+  if (webBillable.length) groups.push({ category: "WEBSITE", items: webBillable });
+  if (dmAmt > 0) groups.push({ category: "DM", items: [{ name: "Digital Marketing", amount: dmAmt }] });
 
   // Tag the client's services (drives Website vs DM + shown on hover in the clients list).
   // Ticked website services + specific DM services are saved even when no amount is entered yet.
@@ -701,31 +704,30 @@ export async function addClientFromFinance(fd: FormData) {
   ])];
   if (svcTags.length) await prisma.clientService.createMany({ data: svcTags.map((s) => ({ clientId: client.id, service: s })) });
 
-  if (specs.length) {
-
+  if (groups.length) {
     let paidLeft = Math.max(0, n(fd, "paid"));
     const issueDate = new Date().toISOString().slice(0, 10);
     const dd = new Date(issueDate + "T00:00:00Z"); dd.setUTCDate(dd.getUTCDate() + 15);
     const dueDate = dd.toISOString().slice(0, 10);
     const fy = financialYear();
-    // Serial series follows the client's GST flag (GST vs non-GST); all specs share it here.
     const hasGst = gst > 0;
     const prefix = `${hasGst ? "GST" : "NG"}/${fy}/`;
     const clientState = stateFromGstin(gstin);
     const lastInv = await prisma.salesInvoice.findFirst({ where: { number: { startsWith: prefix } }, orderBy: { createdAt: "desc" }, select: { number: true } });
     let seq = lastInv ? parseInt(lastInv.number.split("/").pop() || "0", 10) + 1 : 1;
-    for (const sp of specs) {
-      const taxAmount = Math.round((sp.amount * gst) / 100);
-      const total = sp.amount + taxAmount;
+    for (const g of groups) {
+      const base = g.items.reduce((s, it) => s + it.amount, 0);
+      const taxAmount = Math.round((base * gst) / 100);
+      const total = base + taxAmount;
       const received = Math.min(paidLeft, total); paidLeft -= received;
-      const company = companyFor(hasGst, sp.label === "Digital Marketing" ? "DM" : "WEBSITE");
+      const company = companyFor(hasGst, g.category);
       const inv = await prisma.salesInvoice.create({
         data: {
           number: `${prefix}${String(seq++).padStart(3, "0")}`, clientId: client.id, pipeline: "WEBROCZ", company,
           billTo: client.name, contact: scalars.pocName ?? "", phone: scalars.pocMobile ?? "", email: scalars.pocEmail ?? "", clientGstin: gstin,
           clientState, placeOfSupply: clientState,
-          items: JSON.stringify([{ name: sp.label, qty: 1, rate: sp.amount, amount: sp.amount }]),
-          subtotal: sp.amount, taxPct: gst, taxAmount, total,
+          items: JSON.stringify(g.items.map((it) => ({ name: it.name, qty: 1, rate: it.amount, amount: it.amount }))),
+          subtotal: base, taxPct: gst, taxAmount, total,
           received,
           paymentStatus: received >= total ? "Fully Received" : received > 0 ? "Partially Received" : "Pending",
           issueDate, dueDate,
@@ -743,10 +745,10 @@ export async function addClientFromFinance(fd: FormData) {
         clientName: client.name, clientId: client.id,
         title: s(fd, "slaTitle") || "Service agreement",
         service: dmAmt > 0 && webItems.length === 0 ? "DM" : "WEBSITE",
-        amount: specs.reduce((t, sp) => t + sp.amount, 0),
+        amount: groups.reduce((t, g) => t + g.items.reduce((s, it) => s + it.amount, 0), 0),
         gst: gst > 0,
         pocName: scalars.pocName ?? "", pocMobile: scalars.pocMobile ?? "", pocEmail: scalars.pocEmail ?? "", gstin,
-        fileUrl: slaFileUrl, uploadedBy: u.name, status: specs.length ? "INVOICED" : "UPLOADED",
+        fileUrl: slaFileUrl, uploadedBy: u.name, status: groups.length ? "INVOICED" : "UPLOADED",
       },
     });
   }
@@ -774,8 +776,10 @@ export async function updateClientFinance(fd: FormData) {
   const svc = fd.getAll("svc").map((v) => String(v).trim()).filter(Boolean);
   const domainTaken = svc.includes("Domain");
   const hostingTaken = svc.includes("Hosting + SSL");
+  const designTaken = svc.includes("Website Designing");
   const domainAmount = domainTaken ? Math.max(0, n(fd, "domainAmount")) : 0;
   const hostingAmount = hostingTaken ? Math.max(0, n(fd, "hostingAmount")) : 0;
+  const designAmount = designTaken ? Math.max(0, n(fd, "designAmount")) : 0;
   const takenDate = s(fd, "websiteTakenDate");
   // Expiry = register date + 1 year (computed, not entered).
   const expiryDate = (() => { if (!takenDate) return ""; const d = new Date(takenDate + "T00:00:00Z"); if (isNaN(d.getTime())) return ""; d.setUTCFullYear(d.getUTCFullYear() + 1); return d.toISOString().slice(0, 10); })();
@@ -792,7 +796,7 @@ export async function updateClientFinance(fd: FormData) {
       websiteDomain: s(fd, "websiteDomain"),
       websiteServices: JSON.stringify(svc),
       domainTaken, domainAmount,
-      hostingTaken, hostingAmount,
+      hostingTaken, hostingAmount, designAmount,
       websiteTakenDate: takenDate,
       websiteExpiryDate: expiryDate,
       websiteRenewAmount: domainAmount + hostingAmount, // auto: domain + hosting
@@ -872,8 +876,10 @@ export async function addClientWebsite(fd: FormData) {
   const svc = fd.getAll("svc").map((v) => String(v).trim()).filter(Boolean);
   const domainTaken = svc.includes("Domain");
   const hostingTaken = svc.includes("Hosting + SSL");
+  const designTaken = svc.includes("Website Designing");
   const domainAmount = domainTaken ? Math.max(0, n(fd, "domainAmount")) : 0;
   const hostingAmount = hostingTaken ? Math.max(0, n(fd, "hostingAmount")) : 0;
+  const designAmount = designTaken ? Math.max(0, n(fd, "designAmount")) : 0;
   const takenDate = s(fd, "websiteTakenDate");
   const expiryDate = (() => { if (!takenDate) return ""; const d = new Date(takenDate + "T00:00:00Z"); if (isNaN(d.getTime())) return ""; d.setUTCFullYear(d.getUTCFullYear() + 1); return d.toISOString().slice(0, 10); })();
   await prisma.client.update({
@@ -882,7 +888,7 @@ export async function addClientWebsite(fd: FormData) {
       websiteDomain: s(fd, "websiteDomain"),
       websiteServices: JSON.stringify(svc),
       domainTaken, domainAmount,
-      hostingTaken, hostingAmount,
+      hostingTaken, hostingAmount, designAmount,
       websiteTakenDate: takenDate,
       websiteExpiryDate: expiryDate,
       websiteRenewAmount: domainAmount + hostingAmount,

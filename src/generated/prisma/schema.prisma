@@ -107,6 +107,7 @@ model Client {
   domainAmount       Int      @default(0) // INR — domain cost
   hostingTaken       Boolean  @default(false) // hosting + SSL taken with us?
   hostingAmount      Int      @default(0) // INR — hosting cost
+  designAmount       Int      @default(0) // INR — website designing (one-time) cost
   websiteTakenDate   String   @default("") // "2026-01-15" — when the website/hosting started
   websiteExpiryDate  String   @default("") // "2027-01-15" — renewal/expiry date
   websiteRenewAmount Int      @default(0) // INR to renew the website/hosting

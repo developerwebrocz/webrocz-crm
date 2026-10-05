@@ -12,7 +12,7 @@ const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
-type Client = { id: string; code: string; name: string; website: string | null; industry: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; monthlyRetainer: number; status: string; renewalDate: string; gstApplicable: boolean; gstRate: number; gstin: string; onboardDate: string; notes: string | null; websiteName: string; websiteDomain: string; websiteServices: string; domainTaken: boolean; domainAmount: number; hostingTaken: boolean; hostingAmount: number; websiteTakenDate: string; websiteExpiryDate: string; websiteRenewAmount: number; nextFollowup: string; accountManagerId: string | null };
+type Client = { id: string; code: string; name: string; website: string | null; industry: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; monthlyRetainer: number; status: string; renewalDate: string; gstApplicable: boolean; gstRate: number; gstin: string; onboardDate: string; notes: string | null; websiteName: string; websiteDomain: string; websiteServices: string; domainTaken: boolean; domainAmount: number; hostingTaken: boolean; hostingAmount: number; designAmount: number; websiteTakenDate: string; websiteExpiryDate: string; websiteRenewAmount: number; nextFollowup: string; accountManagerId: string | null };
 type Inv = { id: string; number: string; total: number; received: number; balance: number; approved: boolean; paymentStatus: string; issueDate: string; dueDate: string; leadId: string | null; category: string; overdue: boolean; company: string; followups: { date: string; by: string; note: string }[]; invoiceDoc?: string };
 type Pay = { id: string; invoiceId: string; invoiceNumber: string; amount: number; date: string; mode: string; ref: string; note: string; by: string };
 type Followup = { date: string; by: string; note: string; next?: string };
@@ -153,6 +153,7 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
               <DRow label="Expiry date" value={fmtDate(client.websiteExpiryDate)} />
               <DRow label="Domain amount" value={inr(client.domainAmount)} />
               <DRow label="Hosting amount" value={inr(client.hostingAmount)} />
+              {client.designAmount > 0 && <DRow label="Website designing" value={inr(client.designAmount)} />}
               <div className="mt-1.5 flex items-center justify-between gap-3 rounded-[8px] px-2.5 py-2" style={{ background: "color-mix(in srgb, var(--violet) 6%, white)" }}>
                 <span className="text-[12px] font-semibold text-[var(--muted)]">Renewal amount</span>
                 <span className="text-[15px] font-extrabold tnum text-[var(--violet)]">{inr(client.websiteRenewAmount)}</span>
@@ -330,6 +331,7 @@ function EditModal({ client, close }: { client: Client; close: () => void }) {
   const [customs, setCustoms] = useState<string[]>(initServices.filter((s) => !FIXED_SERVICES.includes(s)));
   const [domainAmt, setDomainAmt] = useState(client.domainAmount || 0);
   const [hostingAmt, setHostingAmt] = useState(client.hostingAmount || 0);
+  const [designAmt, setDesignAmt] = useState(client.designAmount || 0);
   const [registerDate, setRegisterDate] = useState(client.websiteTakenDate || "");
   // Renewal = the amounts of the ticked services; expiry = register date + 1 year. Both auto.
   const renewal = (domainOn ? domainAmt || 0 : 0) + (hostingOn ? hostingAmt || 0 : 0);
@@ -370,7 +372,10 @@ function EditModal({ client, close }: { client: Client; close: () => void }) {
                 <label className="flex flex-1 items-center gap-2"><input type="checkbox" name="svc" value="Hosting + SSL" checked={hostingOn} onChange={(e) => setHostingOn(e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> Hosting + SSL</label>
                 {hostingOn && <input name="hostingAmount" type="number" min={0} value={hostingAmt} onChange={(e) => setHostingAmt(parseInt(e.target.value, 10) || 0)} className="input !w-32 !py-1.5 font-normal" placeholder="₹ amount" />}
               </div>
-              <label className="flex items-center gap-2"><input type="checkbox" name="svc" value="Website Designing" checked={designOn} onChange={(e) => setDesignOn(e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> Website Designing</label>
+              <div className="flex items-center gap-2">
+                <label className="flex flex-1 items-center gap-2"><input type="checkbox" name="svc" value="Website Designing" checked={designOn} onChange={(e) => setDesignOn(e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> Website Designing</label>
+                {designOn && <input name="designAmount" type="number" min={0} value={designAmt} onChange={(e) => setDesignAmt(parseInt(e.target.value, 10) || 0)} className="input !w-32 !py-1.5 font-normal" placeholder="₹ amount" />}
+              </div>
               {customs.map((c, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <input name="svc" value={c} onChange={(e) => setCustoms((cs) => cs.map((v, j) => (j === i ? e.target.value : v)))} className="input flex-1 font-normal" placeholder="Custom service" />
