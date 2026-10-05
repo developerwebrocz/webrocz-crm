@@ -6,7 +6,7 @@ import { recordPayment, createClientInvoice, generateInvoiceFromSla } from "@/ap
 import { updateClientFinance, logClientFollowup } from "@/app/actions";
 import { companyLabel } from "@/lib/domain";
 import AddInvoiceModal from "@/components/AddInvoiceModal";
-import { ReceiptText, Wallet, CheckCircle2, Clock, Phone, Mail, IndianRupee, X, ArrowLeft, Building2, Plus, Pencil, MessageSquarePlus, CalendarClock, Globe, FileSignature, FileText } from "lucide-react";
+import { ReceiptText, Wallet, CheckCircle2, Clock, Phone, Mail, IndianRupee, X, ArrowLeft, Building2, Plus, Pencil, MessageSquarePlus, CalendarClock, Globe, FileSignature, FileText, Download } from "lucide-react";
 
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
@@ -28,6 +28,8 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
   // payment screenshot). Detected from the URL company context OR any Web Solutions invoice.
   const isWebSolClient = company === "WEB_SOLUTIONS" || invoices.some((i) => i.company === "WEB_SOLUTIONS");
   // Website services this client has taken (for the details card).
+  // Latest SLA with an uploaded file (slas arrive newest-first) → Download button in the card.
+  const slaDoc = slas.find((x) => x.fileUrl) ?? null;
   const webServices = (() => { try { const a = JSON.parse(client.websiteServices || "[]"); return Array.isArray(a) ? a.map(String) : []; } catch { return []; } })();
 
   // Date filters over this client's invoices: a month picker + a From–To calendar range.
@@ -137,11 +139,17 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
               <DRow label="Contact person" value={client.pocName || "—"} />
               <DRow label="Phone" value={client.pocMobile || "—"} />
               <DRow label="Email" value={client.pocEmail || "—"} />
-              <div className="flex items-start justify-between gap-3 py-1.5">
+              <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] py-1.5">
                 <span className="text-[12px] text-[var(--muted)]">Services</span>
                 <span className="flex flex-wrap justify-end gap-1">
                   {webServices.length ? webServices.map((s) => <span key={s} className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[11px] font-semibold text-[var(--ink-2)]">{s}</span>) : <span className="font-semibold">—</span>}
                 </span>
+              </div>
+              <div className="flex items-center justify-between gap-3 py-1.5">
+                <span className="text-[12px] text-[var(--muted)]">SLA</span>
+                {slaDoc
+                  ? <a href={slaDoc.fileUrl} download className="btn btn-violet btn-sm"><Download size={13} /> Download SLA</a>
+                  : <span className="font-semibold">—</span>}
               </div>
             </div>
           </div>
