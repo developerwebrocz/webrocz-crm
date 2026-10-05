@@ -27,6 +27,8 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
   // A Web Solutions client → its "New invoice" uses the website form (services + amounts +
   // payment screenshot). Detected from the URL company context OR any Web Solutions invoice.
   const isWebSolClient = company === "WEB_SOLUTIONS" || invoices.some((i) => i.company === "WEB_SOLUTIONS");
+  // Website services this client has taken (for the details card).
+  const webServices = (() => { try { const a = JSON.parse(client.websiteServices || "[]"); return Array.isArray(a) ? a.map(String) : []; } catch { return []; } })();
 
   // Date filters over this client's invoices: a month picker + a From–To calendar range.
   const [month, setMonth] = useState("ALL"); // ALL | YYYY-MM
@@ -123,6 +125,41 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
         <Kpi label="Pending" value={inr(view.pending)} tone="var(--amber)" icon={<Wallet size={15} />} />
         <Kpi label="Overdue" value={inr(view.overdue)} tone="var(--rose)" icon={<Clock size={15} />} />
       </div>
+
+      {isWebSolClient && (
+        <div className="grid gap-3 lg:grid-cols-2">
+          {/* Left — client & domain details */}
+          <div className="card card-pad">
+            <h3 className="eyebrow mb-2.5 flex items-center gap-1.5"><Globe size={13} className="text-[var(--violet)]" /> Client &amp; domain</h3>
+            <div className="text-[12.5px]">
+              <DRow label="Domain name" value={client.websiteDomain || "—"} />
+              <DRow label="Contact person" value={client.pocName || "—"} />
+              <DRow label="Phone" value={client.pocMobile || "—"} />
+              <DRow label="Email" value={client.pocEmail || "—"} />
+              <div className="flex items-start justify-between gap-3 py-1.5">
+                <span className="text-[12px] text-[var(--muted)]">Services</span>
+                <span className="flex flex-wrap justify-end gap-1">
+                  {webServices.length ? webServices.map((s) => <span key={s} className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[11px] font-semibold text-[var(--ink-2)]">{s}</span>) : <span className="font-semibold">—</span>}
+                </span>
+              </div>
+            </div>
+          </div>
+          {/* Right — registration & renewal */}
+          <div className="card card-pad">
+            <h3 className="eyebrow mb-2.5 flex items-center gap-1.5"><CalendarClock size={13} className="text-[var(--violet)]" /> Registration &amp; renewal</h3>
+            <div className="text-[12.5px]">
+              <DRow label="Register date" value={fmtDate(client.websiteTakenDate)} />
+              <DRow label="Expiry date" value={fmtDate(client.websiteExpiryDate)} />
+              <DRow label="Domain amount" value={inr(client.domainAmount)} />
+              <DRow label="Hosting amount" value={inr(client.hostingAmount)} />
+              <div className="mt-1.5 flex items-center justify-between gap-3 rounded-[8px] px-2.5 py-2" style={{ background: "color-mix(in srgb, var(--violet) 6%, white)" }}>
+                <span className="text-[12px] font-semibold text-[var(--muted)]">Renewal amount</span>
+                <span className="text-[15px] font-extrabold tnum text-[var(--violet)]">{inr(client.websiteRenewAmount)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {pendingMonths.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 rounded-[10px] border border-[var(--line)] px-3 py-2" style={{ background: "color-mix(in srgb, var(--amber) 6%, white)" }}>
@@ -435,6 +472,14 @@ function PaymentModal({ inv, clientName, back, close }: { inv: Inv; clientName: 
   );
 }
 
+function DRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3 border-b border-[var(--line)] py-1.5 last:border-0">
+      <span className="text-[12px] text-[var(--muted)]">{label}</span>
+      <span className="text-right font-semibold text-[var(--ink)]">{value}</span>
+    </div>
+  );
+}
 function CatChip({ c }: { c: string }) {
   const map: Record<string, string> = { Website: "var(--indigo)", "Digital Marketing": "var(--magenta)", Both: "var(--violet)", Other: "var(--muted)" };
   const color = map[c] ?? "var(--muted)";
