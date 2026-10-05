@@ -309,7 +309,7 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
 
       {payInv && <PaymentModal inv={payInv} clientName={client.name} back={backUrl} close={() => setPayInv(null)} />}
       {newInv && (isWebSolClient
-        ? <AddInvoiceModal clientNames={[]} lockClientName={client.name} lockCompany="WEB_SOLUTIONS" returnTo={backUrl} close={() => setNewInv(false)} />
+        ? <AddInvoiceModal clientNames={[]} lockClientName={client.name} lockCompany="WEB_SOLUTIONS" defaultDomain={client.websiteDomain} returnTo={backUrl} close={() => setNewInv(false)} />
         : <NewInvoiceModal clientId={client.id} clientName={client.name} defaultTaxPct={client.gstApplicable ? client.gstRate : 0} defaultGstin={client.gstin} close={() => setNewInv(false)} />)}
       {editOpen && <EditModal client={client} close={() => setEditOpen(false)} />}
     </div>

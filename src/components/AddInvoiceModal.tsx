@@ -7,7 +7,7 @@ import { addInvoice } from "@/app/sales-actions";
 // Create a brand-new invoice. Client is typed (matches an existing client or creates one).
 // Web Solutions gets a website-specific layout (domain + service checkboxes + renewal that
 // saves onto the client). Every other context uses the standard GST + service form.
-export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoices", lockCompany, lockClientName }: { clientNames: string[]; close: () => void; returnTo?: string; lockCompany?: string; lockClientName?: string }) {
+export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoices", lockCompany, lockClientName, defaultDomain }: { clientNames: string[]; close: () => void; returnTo?: string; lockCompany?: string; lockClientName?: string; defaultDomain?: string }) {
   const [category, setCategory] = useState(lockCompany === "WEB_ROCZ" ? "DM" : "WEBSITE");
   const [gst, setGst] = useState(lockCompany === "WEB_ROCZ_PVT");
   const lockGst = !!lockCompany;                    // every company fixes its GST flag
@@ -55,7 +55,7 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
               <label className="block"><span className="eyebrow">Invoice date</span><input name="issueDate" type="date" defaultValue={today} className="input mt-1" /></label>
               <div className="grid grid-cols-2 gap-3">
                 <label className="block"><span className="eyebrow">Company name</span>{lockClientName ? <input name="clientName" defaultValue={lockClientName} readOnly className="input mt-1 bg-[var(--surface-2)]" /> : <input name="clientName" required list="inv-client-names" className="input mt-1" placeholder="Company / client" />}</label>
-                <label className="block"><span className="eyebrow">Domain name</span><input name="domain" className="input mt-1" placeholder="e.g. acme.com" /></label>
+                <label className="block"><span className="eyebrow">Domain name</span><input name="domain" defaultValue={defaultDomain ?? ""} className="input mt-1" placeholder="e.g. acme.com" /></label>
               </div>
               {isPvt && <label className="block"><span className="eyebrow">Client GSTIN</span><input name="gstin" className="input mt-1" placeholder="e.g. 36AABCU9603R1ZM" /><span className="mt-1 block text-[11px] text-[var(--faint)]">Sets the place of supply (CGST/SGST vs IGST) on the tax invoice.</span></label>}
               <div>
