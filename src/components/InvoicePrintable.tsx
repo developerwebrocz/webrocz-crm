@@ -120,17 +120,8 @@ export default function InvoicePrintable({ invoice }: { invoice: any }) {
       </table>
       )}
 
-      {/* bank + terms + signatory */}
-      <div className="grid grid-cols-3 border-t border-[var(--line)]">
-        <div className="border-r border-[var(--line)]">
-          <Bar>Bank Details</Bar>
-          <div className="px-4 py-3 text-[11.5px] leading-relaxed">
-            <div>Name : {seller.bankName}</div>
-            <div>Account No. : {seller.bankAccount}</div>
-            <div>IFSC code : {seller.bankIfsc}</div>
-            <div>Account holder&apos;s name : {seller.bankHolder}</div>
-          </div>
-        </div>
+      {/* terms + signatory */}
+      <div className="grid grid-cols-2 border-t border-[var(--line)]">
         <div className="border-r border-[var(--line)]">
           <Bar>Terms and Conditions</Bar>
           <div className="px-4 py-3 text-[11.5px] leading-relaxed">{invoice.notes || seller.terms}</div>
