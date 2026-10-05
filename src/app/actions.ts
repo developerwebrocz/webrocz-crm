@@ -612,6 +612,22 @@ export async function createClient(fd: FormData) {
 
 // Accountant (or admin) adds a client directly from the finance dashboard.
 // Lightweight: captures billing-relevant fields only, then returns to the dashboard.
+// Save an uploaded file (e.g. a signed SLA) under /public/uploads/<subdir>; returns its URL.
+async function saveClientUpload(file: unknown, subdir: string): Promise<string> {
+  if (!file || typeof file === "string") return "";
+  const f = file as File;
+  if (!f.size || !f.arrayBuffer) return "";
+  const { writeFile, mkdir } = await import("node:fs/promises");
+  const path = await import("node:path");
+  const buf = Buffer.from(await f.arrayBuffer());
+  const safe = (f.name || "file").replace(/[^a-zA-Z0-9._-]/g, "_").slice(-60);
+  const fname = `${Date.now()}-${safe}`;
+  const dir = path.join(process.cwd(), "public", "uploads", subdir);
+  await mkdir(dir, { recursive: true });
+  await writeFile(path.join(dir, fname), buf);
+  return `/uploads/${subdir}/${fname}`;
+}
+
 export async function addClientFromFinance(fd: FormData) {
   const u = await getCurrentUser();
   if (!u || !["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"].includes(u.role)) redirect("/");
@@ -695,9 +711,26 @@ export async function addClientFromFinance(fd: FormData) {
     }
   }
 
+  // Optional signed SLA document uploaded with the client → shows in the company hub.
+  const slaFileUrl = await saveClientUpload(fd.get("slaFile"), "slas");
+  if (slaFileUrl) {
+    await prisma.sla.create({
+      data: {
+        clientName: client.name, clientId: client.id,
+        title: s(fd, "slaTitle") || "Service agreement",
+        service: dmAmt > 0 && webItems.length === 0 ? "DM" : "WEBSITE",
+        amount: specs.reduce((t, sp) => t + sp.amount, 0),
+        gst: gst > 0,
+        pocName: scalars.pocName ?? "", pocMobile: scalars.pocMobile ?? "", pocEmail: scalars.pocEmail ?? "", gstin,
+        fileUrl: slaFileUrl, uploadedBy: u.name, status: specs.length ? "INVOICED" : "UPLOADED",
+      },
+    });
+  }
+
   revalidatePath("/");
   revalidatePath("/clients");
   revalidatePath("/accounts");
+  revalidatePath("/sla");
   const ret = s(fd, "return");
   redirect(ret ? `${ret}${ret.includes("?") ? "&" : "?"}client=added` : "/?client=added");
 }
