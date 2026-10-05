@@ -84,10 +84,11 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
   // Which months still have an unpaid balance (shown as short chips: Sep '26, Oct '26).
   const pendingMonths = useMemo(() => {
     const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const set = new Set<string>();
-    for (const i of fInvoices) if (i.balance > 0 && i.issueDate) set.add(i.issueDate.slice(0, 7));
-    return [...set].sort().map((ym) => { const [y, m] = ym.split("-"); return `${MON[parseInt(m, 10) - 1] ?? m} '${y.slice(2)}`; });
+    const map = new Map<string, number>();
+    for (const i of fInvoices) if (i.balance > 0 && i.issueDate) { const k = i.issueDate.slice(0, 7); map.set(k, (map.get(k) ?? 0) + i.balance); }
+    return [...map.entries()].sort(([a], [b]) => (a < b ? -1 : 1)).map(([ym, amount]) => { const [y, m] = ym.split("-"); return { label: `${MON[parseInt(m, 10) - 1] ?? m} '${y.slice(2)}`, amount }; });
   }, [fInvoices]);
+  const pendingTotal = pendingMonths.reduce((s, m) => s + m.amount, 0);
   const monthLabel = (m: string) => { const [y, mo] = m.split("-"); return `${["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][parseInt(mo, 10) - 1] ?? mo} ${y}`; };
 
   return (
@@ -162,10 +163,14 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
       )}
 
       {pendingMonths.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 rounded-[10px] border border-[var(--line)] px-3 py-2" style={{ background: "color-mix(in srgb, var(--amber) 6%, white)" }}>
+        <div className="flex flex-wrap items-center gap-2 rounded-[10px] border border-[var(--line)] px-3 py-2.5" style={{ background: "color-mix(in srgb, var(--amber) 6%, white)" }}>
           <span className="text-[11px] font-bold uppercase tracking-wide text-[var(--muted)]">Payment pending for</span>
-          {pendingMonths.map((m) => <span key={m} className="rounded-full border border-[var(--line-2)] bg-white px-2.5 py-0.5 text-[11.5px] font-bold text-[var(--amber)]">{m}</span>)}
-          <span className="text-[11px] font-semibold text-[var(--muted)]">· {pendingMonths.length} month{pendingMonths.length === 1 ? "" : "s"}</span>
+          {pendingMonths.map((m) => (
+            <span key={m.label} className="inline-flex items-center gap-1.5 rounded-full border border-[var(--line-2)] bg-white px-2.5 py-0.5 text-[11.5px] font-bold text-[var(--amber)]">
+              {m.label}<span className="tnum text-[var(--ink-2)]">{inr(m.amount)}</span>
+            </span>
+          ))}
+          <span className="text-[11px] font-semibold text-[var(--muted)]">· {pendingMonths.length} month{pendingMonths.length === 1 ? "" : "s"} · total {inr(pendingTotal)}</span>
         </div>
       )}
 
