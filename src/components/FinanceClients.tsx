@@ -310,6 +310,7 @@ function AddClientModal({ lockedCompany, lockedCategory, close }: { lockedCompan
               <p className="mt-2 text-[11px] text-[var(--faint)]">Pick the services this client has taken — shown on hover in the clients list.</p>
             </div>
           )}
+          {showWebsite && <label className="block"><span className="eyebrow">Domain name</span><input name="website" className="input mt-1" placeholder="e.g. acme.com" /></label>}
           {showWebsite && (
             <div>
               <span className="eyebrow">Services &amp; amounts{isPvt ? " (before GST)" : ""}</span>
