@@ -97,7 +97,9 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
       if (payStatus === "unbilled" && r.billed > 0) return false;
       return true;
     });
-    list.sort((a, b) => (b.pending - a.pending) || (b.billed - a.billed) || a.name.localeCompare(b.name));
+    // Newest clients first (CLI-#### code increments with each new client).
+    const codeNum = (c: string) => parseInt((c || "").replace(/\D/g, ""), 10) || 0;
+    list.sort((a, b) => codeNum(b.code) - codeNum(a.code) || a.name.localeCompare(b.name));
     return list;
   }, [computed, nq, payStatus, clientSel, companySel]);
 
