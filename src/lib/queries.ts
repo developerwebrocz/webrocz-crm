@@ -2182,14 +2182,17 @@ export async function getFinanceClients() {
     prisma.salesInvoice.findMany({ orderBy: { createdAt: "desc" }, select: { id: true, number: true, clientId: true, billTo: true, total: true, received: true, issueDate: true, dueDate: true, leadId: true, items: true, notesLog: true, company: true, taxPct: true } }),
     prisma.lead.findMany({ select: { id: true, services: true } }),
     prisma.user.findMany({ where: { active: true, role: { in: ["ACCOUNT_MANAGER", "AM_HEAD", "DM_EXEC"] } }, orderBy: { name: "asc" }, select: { id: true, name: true } }),
-    prisma.sla.findMany({ where: { fileUrl: { not: "" } }, orderBy: { createdAt: "desc" }, select: { clientId: true, clientName: true, fileUrl: true, title: true, uploadedBy: true } }),
+    prisma.sla.findMany({ where: { fileUrl: { not: "" } }, orderBy: { createdAt: "desc" }, select: { clientId: true, clientName: true, fileUrl: true, title: true, uploadedBy: true, status: true } }),
   ]);
   const leadSvc = new Map(leads.map((l) => [l.id, parseServices(l.services)]));
   const nameToId = new Map(clients.map((c) => [c.name.trim().toLowerCase(), c.id]));
-  // Latest SLA document per client (matched by id, else by typed name) → shown as a download link.
+  // Latest SLA document per client → shown as a download link. Matched by client id; the
+  // typed-name fallback is only for SLAs still awaiting an invoice (sales uploaded before the
+  // client record existed). An invoiced SLA with no client id was left behind by a deleted
+  // client, and must not attach itself to a new client that happens to share the name.
   const slaByClient = new Map<string, { url: string; title: string; by: string }>();
   for (const d of slaDocs) {
-    const cid = d.clientId || nameToId.get((d.clientName || "").trim().toLowerCase());
+    const cid = d.clientId || (d.status === "UPLOADED" ? nameToId.get((d.clientName || "").trim().toLowerCase()) : undefined);
     if (cid && !slaByClient.has(cid)) slaByClient.set(cid, { url: d.fileUrl, title: d.title, by: d.uploadedBy || "" });
   }
   const dueOf = (i: { dueDate: string; issueDate: string }) => i.dueDate || addDays(i.issueDate, 15);
