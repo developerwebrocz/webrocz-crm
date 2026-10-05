@@ -319,8 +319,14 @@ function EditModal({ client, close }: { client: Client; close: () => void }) {
           <div className="rounded-[10px] border border-[var(--line)] p-3">
             <div className="eyebrow mb-2 flex items-center gap-1.5"><Globe size={13} /> Services</div>
             <div className="space-y-2 text-[13px] font-semibold">
-              <label className="flex items-center gap-2"><input type="checkbox" name="svc" value="Domain" checked={domainOn} onChange={(e) => setDomainOn(e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> Domain</label>
-              <label className="flex items-center gap-2"><input type="checkbox" name="svc" value="Hosting + SSL" checked={hostingOn} onChange={(e) => setHostingOn(e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> Hosting + SSL</label>
+              <div className="flex items-center gap-2">
+                <label className="flex flex-1 items-center gap-2"><input type="checkbox" name="svc" value="Domain" checked={domainOn} onChange={(e) => setDomainOn(e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> Domain</label>
+                {domainOn && <input name="domainAmount" type="number" min={0} value={domainAmt} onChange={(e) => setDomainAmt(parseInt(e.target.value, 10) || 0)} className="input !w-32 !py-1.5 font-normal" placeholder="₹ amount" />}
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="flex flex-1 items-center gap-2"><input type="checkbox" name="svc" value="Hosting + SSL" checked={hostingOn} onChange={(e) => setHostingOn(e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> Hosting + SSL</label>
+                {hostingOn && <input name="hostingAmount" type="number" min={0} value={hostingAmt} onChange={(e) => setHostingAmt(parseInt(e.target.value, 10) || 0)} className="input !w-32 !py-1.5 font-normal" placeholder="₹ amount" />}
+              </div>
               <label className="flex items-center gap-2"><input type="checkbox" name="svc" value="Website Designing" checked={designOn} onChange={(e) => setDesignOn(e.target.checked)} className="h-4 w-4 accent-[var(--violet)]" /> Website Designing</label>
               {customs.map((c, i) => (
                 <div key={i} className="flex items-center gap-2">
@@ -330,12 +336,6 @@ function EditModal({ client, close }: { client: Client; close: () => void }) {
               ))}
               <button type="button" onClick={() => setCustoms((cs) => [...cs, ""])} className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--violet)] hover:underline"><Plus size={13} /> Add</button>
             </div>
-            {(domainOn || hostingOn) && (
-              <div className="mt-3 grid grid-cols-2 gap-3">
-                {domainOn && <label className="block"><span className="text-[12px] font-semibold">Domain amount (₹)</span><input name="domainAmount" type="number" min={0} value={domainAmt} onChange={(e) => setDomainAmt(parseInt(e.target.value, 10) || 0)} className="input mt-1" placeholder="0" /></label>}
-                {hostingOn && <label className="block"><span className="text-[12px] font-semibold">Hosting amount (₹)</span><input name="hostingAmount" type="number" min={0} value={hostingAmt} onChange={(e) => setHostingAmt(parseInt(e.target.value, 10) || 0)} className="input mt-1" placeholder="0" /></label>}
-              </div>
-            )}
             <div className="mt-3 grid grid-cols-2 gap-3">
               <label className="block"><span className="text-[12px] font-semibold">Register date</span><input name="websiteTakenDate" type="date" value={registerDate} onChange={(e) => setRegisterDate(e.target.value)} className="input mt-1" /></label>
               <div><span className="text-[12px] font-semibold">Expiry date <span className="font-normal text-[var(--faint)]">(auto · +1 yr)</span></span>
