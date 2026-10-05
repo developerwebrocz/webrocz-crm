@@ -2536,7 +2536,7 @@ export async function getFinanceClientDetail(clientId: string) {
       id: i.id, number: i.number, total: i.total, received: i.received, balance, approved: i.approved,
       paymentStatus: i.paymentStatus, issueDate: i.issueDate, dueDate: due, leadId: i.leadId,
       category: cat, overdue: balance > 0 && !!due && due < today,
-      company, followups,
+      company, followups, invoiceDoc: i.invoiceDoc,
     };
   });
   const invIds = invoices.map((i) => i.id);

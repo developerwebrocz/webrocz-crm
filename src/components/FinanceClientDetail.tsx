@@ -13,7 +13,7 @@ const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 type Client = { id: string; code: string; name: string; website: string | null; industry: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; monthlyRetainer: number; status: string; renewalDate: string; gstApplicable: boolean; gstRate: number; gstin: string; onboardDate: string; notes: string | null; websiteName: string; websiteDomain: string; websiteServices: string; domainTaken: boolean; domainAmount: number; hostingTaken: boolean; hostingAmount: number; websiteTakenDate: string; websiteExpiryDate: string; websiteRenewAmount: number; nextFollowup: string; accountManagerId: string | null };
-type Inv = { id: string; number: string; total: number; received: number; balance: number; approved: boolean; paymentStatus: string; issueDate: string; dueDate: string; leadId: string | null; category: string; overdue: boolean; company: string; followups: { date: string; by: string; note: string }[] };
+type Inv = { id: string; number: string; total: number; received: number; balance: number; approved: boolean; paymentStatus: string; issueDate: string; dueDate: string; leadId: string | null; category: string; overdue: boolean; company: string; followups: { date: string; by: string; note: string }[]; invoiceDoc?: string };
 type Pay = { id: string; invoiceId: string; invoiceNumber: string; amount: number; date: string; mode: string; ref: string; note: string; by: string };
 type Followup = { date: string; by: string; note: string; next?: string };
 type Sla = { id: string; title: string; service: string; amount: number; gst: boolean; fileUrl: string; notes: string; status: string; uploadedBy: string; createdAt: string };
@@ -207,6 +207,7 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
                   <td className="px-5 py-3 text-right">
                     <div className="flex justify-end gap-1.5">
                       {r.balance > 0 && <button onClick={() => setPayInv(r)} className="btn btn-sm btn-emerald"><IndianRupee size={13} /> Pay</button>}
+                      {r.invoiceDoc && <a href={r.invoiceDoc} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm" title="View uploaded invoice document"><FileText size={13} /> Doc</a>}
                       <Link href={`/invoices/${r.id}`} prefetch className="btn btn-ghost btn-sm">Open</Link>
                     </div>
                   </td>

@@ -98,6 +98,12 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
               </div>
 
               <div className="rounded-[12px] border border-[var(--line)] p-3.5">
+                <span className="eyebrow">Invoice document (optional)</span>
+                <input name="invoiceDoc" type="file" accept="image/*,.pdf" className="input mt-2 !py-1.5 text-[12px]" />
+                <span className="mt-1.5 block text-[11px] text-[var(--faint)]">Attach the signed / printed invoice (PDF / image) — shows a View link in the invoices list.</span>
+              </div>
+
+              <div className="rounded-[12px] border border-[var(--line)] p-3.5">
                 <span className="eyebrow">Website renewal</span>
                 <label className="mt-2 block"><span className="text-[11.5px] font-medium text-[var(--muted)]">Renewal / expiry date</span><input name="renewalDate" type="date" className="input mt-1" /></label>
                 <span className="mt-1.5 block text-[11px] text-[var(--faint)]">Saved to the client for website-renewal tracking.</span>

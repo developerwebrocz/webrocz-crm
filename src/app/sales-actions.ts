@@ -554,6 +554,8 @@ export async function addInvoice(fd: FormData) {
   } catch { /* ignore */ }
   // Uploaded payment screenshot (proof), if any.
   const proofUrl = await saveUpload(fd.get("paymentProof"), "payments");
+  // Uploaded signed/printed invoice document, if any.
+  const invoiceDocUrl = await saveUpload(fd.get("invoiceDoc"), "invoices");
 
   // Match an existing client by name, else create a fresh one (CLI-#### like the finance flow).
   const all = await prisma.client.findMany({ select: { id: true, name: true, gstin: true, gstRate: true, pocName: true, pocMobile: true, pocEmail: true } });
@@ -593,7 +595,7 @@ export async function addInvoice(fd: FormData) {
       billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "", clientGstin: gstin,
       clientState, placeOfSupply: clientState,
       items: JSON.stringify(invoiceItems.length ? invoiceItems : [{ name: desc, qty: 1, rate: base, amount: base }]),
-      subtotal: base, taxPct, taxAmount, total, received, paymentProof: proofUrl,
+      subtotal: base, taxPct, taxAmount, total, received, paymentProof: proofUrl, invoiceDoc: invoiceDocUrl,
       paymentStatus: received >= total ? "Fully Received" : received > 0 ? "Partially Received" : "Pending",
       issueDate, dueDate,
       ...(services.length && description ? { notes: description } : {}),
