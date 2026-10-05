@@ -298,14 +298,11 @@ function AddClientModal({ lockedCompany, lockedCategory, close }: { lockedCompan
             <label className="block"><span className="eyebrow">Phone</span><input name="pocMobile" className="input mt-1" /></label>
           </div>
           <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" className="input mt-1" /></label>
-          <div className="rounded-[10px] border border-[var(--line)] p-3">
-            <span className="eyebrow">SLA document (optional)</span>
-            <div className="mt-1.5 grid grid-cols-2 gap-3">
-              <label className="block"><span className="text-[11.5px] font-medium text-[var(--muted)]">Agreement title</span><input name="slaTitle" className="input mt-1" placeholder="e.g. Website annual SLA" /></label>
-              <label className="block"><span className="text-[11.5px] font-medium text-[var(--muted)]">Upload signed SLA</span><input name="slaFile" type="file" accept="image/*,.pdf,.doc,.docx" className="input mt-1 !py-1.5 text-[12px]" /></label>
-            </div>
+          <label className="block">
+            <span className="eyebrow">Upload SLA (optional)</span>
+            <input name="slaFile" type="file" accept="image/*,.pdf,.doc,.docx" className="input mt-1 !py-1.5 text-[12px]" />
             <span className="mt-1.5 block text-[11px] text-[var(--faint)]">PDF / image — shows in the company hub with a Download link.</span>
-          </div>
+          </label>
           {gstFixed === null ? (
             <div className="grid grid-cols-2 gap-3">
               <label className="block"><span className="eyebrow">GST</span><select name="gst" value={gstSel} onChange={(e) => setGstSel(e.target.value)} className="select mt-1"><option value="0">Without GST</option><option value="18">With GST 18%</option></select></label>
