@@ -7,6 +7,7 @@ import { companyLabel, COMPANY_KEYS } from "@/lib/domain";
 import { addInvoiceNote, deleteSalesInvoice } from "@/app/sales-actions";
 import AddInvoiceModal from "@/components/AddInvoiceModal";
 import AddWebRoczInvoiceModal from "@/components/AddWebRoczInvoiceModal";
+import AddWebRoczPvtInvoiceModal from "@/components/AddWebRoczPvtInvoiceModal";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
@@ -130,7 +131,8 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
       {fuInv && <InvoiceFollowupModal inv={fuInv} close={() => setFuInv(null)} />}
       {delInv && <DeleteInvoiceModal inv={delInv} back={keepHub ? hubHref : "/invoices"} close={() => setDelInv(null)} />}
       {addOpen && company === "WEB_ROCZ" && <AddWebRoczInvoiceModal clientNames={clientNames} clientDomains={clientDomains} close={() => setAddOpen(false)} returnTo={`/invoices?company=WEB_ROCZ${embedded ? "&hub=1" : ""}`} />}
-      {addOpen && company !== "WEB_ROCZ" && <AddInvoiceModal clientNames={clientNames} close={() => setAddOpen(false)} lockCompany={company || undefined} returnTo={company ? `/invoices?company=${company}${embedded ? "&hub=1" : ""}` : "/invoices"} />}
+      {addOpen && company === "WEB_ROCZ_PVT" && <AddWebRoczPvtInvoiceModal clientNames={clientNames} close={() => setAddOpen(false)} returnTo={`/invoices?company=WEB_ROCZ_PVT${embedded ? "&hub=1" : ""}`} />}
+      {addOpen && company !== "WEB_ROCZ" && company !== "WEB_ROCZ_PVT" && <AddInvoiceModal clientNames={clientNames} close={() => setAddOpen(false)} lockCompany={company || undefined} returnTo={company ? `/invoices?company=${company}${embedded ? "&hub=1" : ""}` : "/invoices"} />}
     </div>
   );
 }
