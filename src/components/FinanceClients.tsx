@@ -49,6 +49,8 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
   const [addInvOpen, setAddInvOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const clientNames = useMemo(() => rows.map((r) => r.name).sort((a, b) => a.localeCompare(b)), [rows]);
+  // Web Rocz invoice form: the domain auto-fills from the picked client.
+  const clientDomains = useMemo(() => Object.fromEntries(rows.filter((r) => r.domain).map((r) => [r.name.trim().toLowerCase(), r.domain])), [rows]);
   const nq = q.trim().toLowerCase();
 
   // Category filter is only useful where a scope carries both services: the general
@@ -242,7 +244,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
       {addOpen && lockedCompany === "WEB_ROCZ" && <AddWebRoczClientModal close={() => setAddOpen(false)} />}
       {addOpen && lockedCompany !== "WEB_ROCZ" && <AddClientModal lockedCompany={lockedCompany} lockedCategory={lockedCategory} close={() => setAddOpen(false)} />}
       {importOpen && <ImportModal company={lockedCompany ?? ""} close={() => setImportOpen(false)} />}
-      {addInvOpen && lockedCompany === "WEB_ROCZ" && <AddWebRoczInvoiceModal clientNames={clientNames} close={() => setAddInvOpen(false)} returnTo="/pipeline/web-rocz" />}
+      {addInvOpen && lockedCompany === "WEB_ROCZ" && <AddWebRoczInvoiceModal clientNames={clientNames} clientDomains={clientDomains} close={() => setAddInvOpen(false)} returnTo="/pipeline/web-rocz" />}
       {addInvOpen && lockedCompany !== "WEB_ROCZ" && <AddInvoiceModal clientNames={clientNames} close={() => setAddInvOpen(false)} lockCompany={lockedCompany} returnTo={lockedCompany ? `/pipeline/${{ WEB_SOLUTIONS: "web-solutions", WEB_ROCZ: "web-rocz", WEB_ROCZ_PVT: "web-rocz-pvt" }[lockedCompany] ?? "web-solutions"}` : "/invoices"} />}
     </div>
   );

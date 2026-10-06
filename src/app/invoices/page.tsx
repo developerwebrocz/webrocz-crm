@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import InvoicesDashboard from "@/components/InvoicesDashboard";
 import CompanyNav from "@/components/CompanyNav";
 import { COMPANY_KEYS } from "@/lib/domain";
+import { getClientDomains } from "@/lib/webrocz-queries";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +24,9 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
   // the invoices scoped to it (no cross-company tabs). Otherwise the normal tabbed dashboard,
   // where the company tabs filter in place.
   const inHub = sp.hub === "1" && (COMPANY_KEYS as readonly string[]).includes(company);
-  const dash = <InvoicesDashboard rows={d.rows} totals={d.totals} companyCounts={d.companyCounts} clientNames={d.clientNames} q={q} status={status} company={company} hideApproval={hideApproval} embedded={inHub} canDelete={["SUPER_ADMIN", "SUB_ADMIN"].includes(user.role)} />;
+  // Web Rocz only: client → domain map so its invoice form fills the domain automatically.
+  const clientDomains = company === "WEB_ROCZ" ? await getClientDomains() : undefined;
+  const dash = <InvoicesDashboard rows={d.rows} totals={d.totals} companyCounts={d.companyCounts} clientNames={d.clientNames} clientDomains={clientDomains} q={q} status={status} company={company} hideApproval={hideApproval} embedded={inHub} canDelete={["SUPER_ADMIN", "SUB_ADMIN"].includes(user.role)} />;
   if (!inHub) return dash;
   return (
     <div className="space-y-5">

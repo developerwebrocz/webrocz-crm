@@ -12,6 +12,15 @@ export async function getWebRoczClientServices(clientId: string) {
   return rows.filter((r) => !reserved.has(r.service));
 }
 
+// Lower-cased client name → domain, so the Web Rocz invoice form can fill the domain as soon
+// as a known company is picked.
+export async function getClientDomains(): Promise<Record<string, string>> {
+  const clients = await prisma.client.findMany({ select: { name: true, websiteDomain: true, website: true } });
+  const out: Record<string, string> = {};
+  for (const c of clients) { const d = c.websiteDomain || c.website || ""; if (d) out[c.name.trim().toLowerCase()] = d; }
+  return out;
+}
+
 export function websiteServiceNames(websiteServicesJson: string | null | undefined): string[] {
   let own: string[] = [];
   try { const a = JSON.parse(websiteServicesJson || "[]"); if (Array.isArray(a)) own = a.map(String); } catch { /* ignore */ }

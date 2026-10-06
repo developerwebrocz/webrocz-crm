@@ -24,7 +24,7 @@ const STATUS = [
 
 const COMPANY_TABS = [{ k: "", label: "All companies" }, ...COMPANY_KEYS.map((k) => ({ k, label: companyLabel(k) }))];
 
-export default function InvoicesDashboard({ rows, totals, companyCounts, clientNames = [], q, status, company, hideApproval, embedded, canDelete }: { rows: any[]; totals: any; companyCounts: Record<string, { count: number; billed: number }>; clientNames?: string[]; q: string; status: string; company: string; hideApproval?: boolean; embedded?: boolean; canDelete?: boolean }) {
+export default function InvoicesDashboard({ rows, totals, companyCounts, clientNames = [], clientDomains, q, status, company, hideApproval, embedded, canDelete }: { clientDomains?: Record<string, string>; rows: any[]; totals: any; companyCounts: Record<string, { count: number; billed: number }>; clientNames?: string[]; q: string; status: string; company: string; hideApproval?: boolean; embedded?: boolean; canDelete?: boolean }) {
   const statusOptions = hideApproval ? STATUS.filter((s) => s.k !== "pending_approval" && s.k !== "approved") : STATUS;
   const [fuInv, setFuInv] = useState<any>(null); // invoice whose follow-ups modal is open
   const [delInv, setDelInv] = useState<any>(null); // invoice pending delete confirmation
@@ -129,7 +129,7 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
 
       {fuInv && <InvoiceFollowupModal inv={fuInv} close={() => setFuInv(null)} />}
       {delInv && <DeleteInvoiceModal inv={delInv} back={keepHub ? hubHref : "/invoices"} close={() => setDelInv(null)} />}
-      {addOpen && company === "WEB_ROCZ" && <AddWebRoczInvoiceModal clientNames={clientNames} close={() => setAddOpen(false)} returnTo={`/invoices?company=WEB_ROCZ${embedded ? "&hub=1" : ""}`} />}
+      {addOpen && company === "WEB_ROCZ" && <AddWebRoczInvoiceModal clientNames={clientNames} clientDomains={clientDomains} close={() => setAddOpen(false)} returnTo={`/invoices?company=WEB_ROCZ${embedded ? "&hub=1" : ""}`} />}
       {addOpen && company !== "WEB_ROCZ" && <AddInvoiceModal clientNames={clientNames} close={() => setAddOpen(false)} lockCompany={company || undefined} returnTo={company ? `/invoices?company=${company}${embedded ? "&hub=1" : ""}` : "/invoices"} />}
     </div>
   );

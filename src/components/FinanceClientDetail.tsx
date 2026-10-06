@@ -7,6 +7,7 @@ import { updateClientFinance, logClientFollowup } from "@/app/actions";
 import { companyLabel } from "@/lib/domain";
 import AddInvoiceModal from "@/components/AddInvoiceModal";
 import EditWebRoczClientModal from "@/components/EditWebRoczClientModal";
+import AddWebRoczInvoiceModal from "@/components/AddWebRoczInvoiceModal";
 import { ReceiptText, Wallet, CheckCircle2, Clock, Phone, Mail, IndianRupee, X, ArrowLeft, Building2, Plus, Pencil, MessageSquarePlus, CalendarClock, Globe, FileSignature, FileText, Download } from "lucide-react";
 
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
@@ -328,6 +329,8 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
       {payInv && <PaymentModal inv={payInv} clientName={client.name} back={backUrl} close={() => setPayInv(null)} />}
       {newInv && (isWebSolClient
         ? <AddInvoiceModal clientNames={[]} lockClientName={client.name} lockCompany="WEB_SOLUTIONS" defaultDomain={client.websiteDomain} returnTo={backUrl} close={() => setNewInv(false)} />
+        : isWebRoczClient
+        ? <AddWebRoczInvoiceModal clientNames={[]} lockClientName={client.name} defaultDomain={client.websiteDomain || client.website || ""} returnTo={`${backUrl}?company=WEB_ROCZ`} close={() => setNewInv(false)} />
         : <NewInvoiceModal clientId={client.id} clientName={client.name} defaultTaxPct={client.gstApplicable ? client.gstRate : 0} defaultGstin={client.gstin} close={() => setNewInv(false)} />)}
       {editOpen && (isWebRoczClient
         ? <EditWebRoczClientModal client={client} services={dmServices} close={() => setEditOpen(false)} />

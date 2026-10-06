@@ -9,7 +9,14 @@ import { addInvoice } from "@/app/sales-actions";
 // Web Solutions invoice form (AddInvoiceModal) is never affected by changes here.
 const WEB_ROCZ_SERVICES = ["Meta Ads", "Google Ads", "SEO", "SMO Posts", "AI Reels", "Video Editing", "CRM"];
 
-export default function AddWebRoczInvoiceModal({ clientNames, close, returnTo = "/invoices" }: { clientNames: string[]; close: () => void; returnTo?: string }) {
+// `clientDomains` (lower-cased client name → domain) fills the domain as soon as a known
+// company is picked; `lockClientName` + `defaultDomain` are used from a client's own page.
+export default function AddWebRoczInvoiceModal({ clientNames, close, returnTo = "/invoices", clientDomains = {}, lockClientName, defaultDomain = "" }: { clientNames: string[]; close: () => void; returnTo?: string; clientDomains?: Record<string, string>; lockClientName?: string; defaultDomain?: string }) {
+  const [name, setName] = useState(lockClientName ?? "");
+  const [domain, setDomain] = useState(defaultDomain);
+  // Once the accountant types a domain by hand it is never overwritten by the auto-fill.
+  const [domainEdited, setDomainEdited] = useState(false);
+  const pickName = (v: string) => { setName(v); if (!domainEdited) setDomain(clientDomains[v.trim().toLowerCase()] ?? ""); };
   const today = new Date().toISOString().slice(0, 10);
   const [svc, setSvc] = useState<Record<string, { on: boolean; amount: string }>>({});
   const [customs, setCustoms] = useState<{ name: string; amount: string }[]>([]);
@@ -46,8 +53,8 @@ export default function AddWebRoczInvoiceModal({ clientNames, close, returnTo = 
 
           <label className="block"><span className="eyebrow">Invoice date</span><input name="issueDate" type="date" defaultValue={today} className="input mt-1" /></label>
           <div className="grid grid-cols-2 gap-3">
-            <label className="block"><span className="eyebrow">Company name</span><input name="clientName" required list="webrocz-inv-client-names" className="input mt-1" placeholder="Company / client" /></label>
-            <label className="block"><span className="eyebrow">Domain name</span><input name="domain" className="input mt-1" placeholder="e.g. acme.com" /></label>
+            <label className="block"><span className="eyebrow">Company name</span><input name="clientName" required list="webrocz-inv-client-names" value={name} onChange={(e) => pickName(e.target.value)} readOnly={!!lockClientName} className={"input mt-1" + (lockClientName ? " bg-[var(--surface-2)]" : "")} placeholder="Company / client" /></label>
+            <label className="block"><span className="eyebrow">Domain name</span><input name="domain" value={domain} onChange={(e) => { setDomain(e.target.value); setDomainEdited(true); }} className="input mt-1" placeholder="e.g. acme.com" /></label>
           </div>
 
           <div>
