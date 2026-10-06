@@ -8,6 +8,7 @@ import { companyLabel } from "@/lib/domain";
 import AddInvoiceModal from "@/components/AddInvoiceModal";
 import EditWebRoczClientModal from "@/components/EditWebRoczClientModal";
 import AddWebRoczInvoiceModal from "@/components/AddWebRoczInvoiceModal";
+import WebRoczClientCard from "@/components/WebRoczClientCard";
 import { ReceiptText, Wallet, CheckCircle2, Clock, Phone, Mail, IndianRupee, X, ArrowLeft, Building2, Plus, Pencil, MessageSquarePlus, CalendarClock, Globe, FileSignature, FileText, Download } from "lucide-react";
 
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
@@ -175,6 +176,8 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
           </div>
         </div>
       )}
+
+      {isWebRoczClient && <WebRoczClientCard client={client} services={dmServices} slaUrl={slaDoc?.fileUrl ?? ""} invoices={invoices} />}
 
       {pendingMonths.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 rounded-[10px] border border-[var(--line)] px-3 py-2.5" style={{ background: "color-mix(in srgb, var(--amber) 6%, white)" }}>
