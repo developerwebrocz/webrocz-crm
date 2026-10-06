@@ -704,6 +704,16 @@ export async function addClientFromFinance(fd: FormData) {
   ])];
   if (svcTags.length) await prisma.clientService.createMany({ data: svcTags.map((s) => ({ clientId: client.id, service: s })) });
 
+  // Web Rocz add-client form only: SEO targets (blogs / month, keywords) entered beside the
+  // SEO tick. Other add-client forms never send these fields, so this is a no-op for them.
+  const seoBlogs = Math.max(0, n(fd, "seoBlogs"));
+  const seoKeywords = Math.max(0, n(fd, "seoKeywords"));
+  if (dmServices.includes("SEO") && (seoBlogs > 0 || seoKeywords > 0)) {
+    const detail = [seoBlogs > 0 ? `${seoBlogs} blogs/month` : "", seoKeywords > 0 ? `${seoKeywords} keywords` : ""].filter(Boolean).join(" · ");
+    await prisma.clientService.updateMany({ where: { clientId: client.id, service: "SEO" }, data: { detail } });
+    await prisma.client.update({ where: { id: client.id }, data: { ...(seoBlogs > 0 ? { blogTarget: seoBlogs } : {}), ...(seoKeywords > 0 ? { keywordTarget: seoKeywords } : {}) } });
+  }
+
   if (groups.length) {
     let paidLeft = Math.max(0, n(fd, "paid"));
     const issueDate = new Date().toISOString().slice(0, 10);
