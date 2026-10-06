@@ -6,16 +6,16 @@ import { addClientFromFinance } from "@/app/actions";
 
 // Web Rocz (digital marketing, non-GST) "Add client" form. Kept in its own file so the
 // Web Solutions add-client form (AddClientModal in FinanceClients) is never affected.
-// `count` is the monthly quantity asked beside the tick (saved on the client's service).
-const WEB_ROCZ_CLIENT_SERVICES: { name: string; count?: { field: string; label: string } }[] = [
+// `counts` are the monthly quantities asked beside the tick (saved on the client's service).
+const WEB_ROCZ_CLIENT_SERVICES: { name: string; counts?: { field: string; label: string }[] }[] = [
   { name: "Meta Ads" },
   { name: "Google Ads" },
-  { name: "SEO", count: { field: "seoKeywords", label: "Keywords" } },
-  { name: "SMO", count: { field: "smoPosts", label: "Posts / month" } },
+  { name: "SEO", counts: [{ field: "seoBlogs", label: "Blogs / month" }, { field: "seoKeywords", label: "Keywords" }] },
+  { name: "SMO", counts: [{ field: "smoPosts", label: "Posts / month" }] },
   { name: "GMB" },
   { name: "CRM" },
-  { name: "Videoshoot" },
-  { name: "AI Reels" },
+  { name: "Videoshoot", counts: [{ field: "videoShoots", label: "Shoots / month" }] },
+  { name: "AI Reels", counts: [{ field: "aiReels", label: "Reels / month" }] },
 ];
 
 export default function AddWebRoczClientModal({ close }: { close: () => void }) {
@@ -57,11 +57,11 @@ export default function AddWebRoczClientModal({ close }: { close: () => void }) 
               {WEB_ROCZ_CLIENT_SERVICES.map((sv) => {
                 const active = on[sv.name] || false;
                 return (
-                  <div key={sv.name} className={`flex min-h-[44px] items-center gap-2 rounded-[10px] border px-3 py-1.5 transition-colors ${sv.count ? "col-span-2" : ""}`} style={active ? { borderColor: "var(--magenta)", background: "color-mix(in srgb, var(--magenta) 5%, white)" } : { borderColor: "var(--line-2)" }}>
+                  <div key={sv.name} className={`flex min-h-[44px] items-center gap-2 rounded-[10px] border px-3 py-1.5 transition-colors ${sv.counts ? "col-span-2" : ""}`} style={active ? { borderColor: "var(--magenta)", background: "color-mix(in srgb, var(--magenta) 5%, white)" } : { borderColor: "var(--line-2)" }}>
                     <label className="flex flex-1 cursor-pointer items-center gap-2 text-[13px] font-semibold"><input type="checkbox" name="dmServices" value={sv.name} checked={active} onChange={(e) => setOn((p) => ({ ...p, [sv.name]: e.target.checked }))} className="h-4 w-4 accent-[var(--magenta)]" /> {sv.name}</label>
-                    {sv.count && (active
-                      ? <label className="flex items-center gap-2 text-[11.5px] font-semibold text-[var(--muted)]">{sv.count.label}<input name={sv.count.field} type="number" min={0} autoFocus className="input !w-24 !py-1.5" placeholder="0" /></label>
-                      : <span className="text-[11.5px] text-[var(--faint)]">{sv.count.label}</span>)}
+                    {sv.counts && (active
+                      ? sv.counts.map((c, ci) => <label key={c.field} className="flex items-center gap-1.5 text-[11.5px] font-semibold text-[var(--muted)]">{c.label}<input name={c.field} type="number" min={0} autoFocus={ci === 0} className="input !w-[68px] !py-1.5" placeholder="0" /></label>)
+                      : <span className="text-[11.5px] text-[var(--faint)]">{sv.counts.map((c) => c.label).join(" · ")}</span>)}
                   </div>
                 );
               })}
