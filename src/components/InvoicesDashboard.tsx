@@ -28,9 +28,10 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
   const [fuInv, setFuInv] = useState<any>(null); // invoice whose follow-ups modal is open
   const [delInv, setDelInv] = useState<any>(null); // invoice pending delete confirmation
   const [addOpen, setAddOpen] = useState(false); // "add new invoice" modal
-  // Inside the Web Solutions hub, Apply / Clear / Delete must stay in the hub (hub=1). Without
-  // it the page drops to the all-companies view and shows the Web Rocz / Web Rocz Pvt Ltd tabs.
-  const keepHub = !!embedded && company === "WEB_SOLUTIONS";
+  // Inside the Web Solutions / Web Rocz hubs, Apply / Clear / Delete must stay in the hub
+  // (hub=1). Without it the page drops to the all-companies view and shows the other
+  // companies' tabs.
+  const keepHub = !!embedded && (company === "WEB_SOLUTIONS" || company === "WEB_ROCZ");
   const hubHref = `/invoices?company=${company}&hub=1`;
   const tabHref = (co: string) => {
     const p = new URLSearchParams();
