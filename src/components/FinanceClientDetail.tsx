@@ -10,6 +10,7 @@ import EditWebRoczClientModal from "@/components/EditWebRoczClientModal";
 import EditWebRoczPvtClientModal from "@/components/EditWebRoczPvtClientModal";
 import AddWebRoczInvoiceModal from "@/components/AddWebRoczInvoiceModal";
 import WebRoczClientCard from "@/components/WebRoczClientCard";
+import WebRoczPvtClientCard from "@/components/WebRoczPvtClientCard";
 import { ReceiptText, Wallet, CheckCircle2, Clock, Phone, Mail, IndianRupee, X, ArrowLeft, Building2, Plus, Pencil, MessageSquarePlus, CalendarClock, Globe, FileSignature, FileText, Download } from "lucide-react";
 
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
@@ -181,7 +182,8 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
         </div>
       )}
 
-      {isWebRoczClient && <WebRoczClientCard client={client} services={dmServices} slaUrl={slaDoc?.fileUrl ?? ""} invoices={invoices} />}
+      {isWebRoczClient && company !== "WEB_ROCZ_PVT" && <WebRoczClientCard client={client} services={dmServices} slaUrl={slaDoc?.fileUrl ?? ""} invoices={invoices} />}
+      {isWebRoczPvtClient && <WebRoczPvtClientCard client={client} services={dmServices} slaUrl={slaDoc?.fileUrl ?? ""} invoices={invoices} />}
 
       {pendingMonths.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 rounded-[10px] border border-[var(--line)] px-3 py-2.5" style={{ background: "color-mix(in srgb, var(--amber) 6%, white)" }}>
