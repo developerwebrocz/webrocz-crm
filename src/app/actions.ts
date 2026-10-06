@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { SERVICES, SERVICE_KEYS, type ServiceKey, financialYear, companyFor, stateFromGstin, GADS_TYPE_KEYS } from "@/lib/domain";
+import { WEB_ROCZ_CLIENT_SERVICES, detailFromCounts } from "@/lib/webrocz-services";
 import { hashPassword, verifyPassword, getCurrentUser, getRealUser } from "@/lib/auth";
 import { sendEmail, inviteEmailHtml } from "@/lib/email";
 import { SESSION_COOKIE, IMPERSONATE_COOKIE, signSession, signImpersonation } from "@/lib/session";
@@ -706,19 +707,20 @@ export async function addClientFromFinance(fd: FormData) {
   ])];
   if (svcTags.length) await prisma.clientService.createMany({ data: svcTags.map((s) => ({ clientId: client.id, service: s })) });
 
-  // Web Rocz add-client form only: SEO targets (blogs / month, keywords) entered beside the
-  // SEO tick. Other add-client forms never send these fields, so this is a no-op for them.
+  // Web Rocz / Web Rocz Pvt Ltd add-client forms only: the counts entered beside a ticked
+  // service (SEO blogs + keywords, SMO posts + AI reels, Videoshoot hours + reel edits) are
+  // saved as readable text on that service. Other add-client forms never send these fields,
+  // so this is a no-op for them.
+  for (const sv of WEB_ROCZ_CLIENT_SERVICES) {
+    if (!sv.counts || !dmServices.includes(sv.name)) continue;
+    const detail = detailFromCounts(sv.counts, (f) => Math.max(0, n(fd, f)));
+    if (detail) await prisma.clientService.updateMany({ where: { clientId: client.id, service: sv.name }, data: { detail } });
+  }
+  // SEO counts also become the client's SEO targets.
   const seoBlogs = Math.max(0, n(fd, "seoBlogs"));
   const seoKeywords = Math.max(0, n(fd, "seoKeywords"));
   if (dmServices.includes("SEO") && (seoBlogs > 0 || seoKeywords > 0)) {
-    const detail = [seoBlogs > 0 ? `${seoBlogs} blogs/month` : "", seoKeywords > 0 ? `${seoKeywords} keywords` : ""].filter(Boolean).join(" · ");
-    await prisma.clientService.updateMany({ where: { clientId: client.id, service: "SEO" }, data: { detail } });
     await prisma.client.update({ where: { id: client.id }, data: { ...(seoBlogs > 0 ? { blogTarget: seoBlogs } : {}), ...(seoKeywords > 0 ? { keywordTarget: seoKeywords } : {}) } });
-  }
-  // Same form: monthly counts entered beside the SMO / Videoshoot / AI Reels ticks.
-  for (const [service, field, unit] of [["SMO", "smoPosts", "posts"], ["Videoshoot", "videoShoots", "shoots"], ["AI Reels", "aiReels", "reels"]] as const) {
-    const qty = Math.max(0, n(fd, field));
-    if (dmServices.includes(service) && qty > 0) await prisma.clientService.updateMany({ where: { clientId: client.id, service }, data: { detail: `${qty} ${unit}/month` } });
   }
 
   if (groups.length) {

@@ -9,11 +9,10 @@ export const WEB_ROCZ_CLIENT_SERVICES: { name: string; counts?: WebRoczCount[] }
   { name: "Meta Ads" },
   { name: "Google Ads" },
   { name: "SEO", counts: [{ field: "seoBlogs", label: "Blogs / month", unit: "blogs/month" }, { field: "seoKeywords", label: "Keywords", unit: "keywords" }] },
-  { name: "SMO", counts: [{ field: "smoPosts", label: "Posts / month", unit: "posts/month" }] },
+  { name: "SMO", counts: [{ field: "smoPosts", label: "Posts / month", unit: "posts/month" }, { field: "smoAiReels", label: "AI Reels / month", unit: "AI reels/month" }] },
+  { name: "Videoshoot", counts: [{ field: "videoShootHours", label: "Shoot hours", unit: "shoot hours" }, { field: "videoReelEdits", label: "Reel edits", unit: "reel edits" }] },
   { name: "GMB" },
   { name: "CRM" },
-  { name: "Videoshoot", counts: [{ field: "videoShoots", label: "Shoots / month", unit: "shoots/month" }] },
-  { name: "AI Reels", counts: [{ field: "aiReels", label: "Reels / month", unit: "reels/month" }] },
 ];
 
 // Website services belong to Web Solutions — never listed or changed by the Web Rocz forms.
