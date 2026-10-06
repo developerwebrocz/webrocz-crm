@@ -6,7 +6,17 @@ import { addClientFromFinance } from "@/app/actions";
 
 // Web Rocz (digital marketing, non-GST) "Add client" form. Kept in its own file so the
 // Web Solutions add-client form (AddClientModal in FinanceClients) is never affected.
-const WEB_ROCZ_CLIENT_SERVICES = ["SEO", "SMO", "Video Editor", "Reels", "Meta Ads", "Google Ads", "CRM"];
+// `count` is the monthly quantity asked beside the tick (saved on the client's service).
+const WEB_ROCZ_CLIENT_SERVICES: { name: string; count?: { field: string; label: string } }[] = [
+  { name: "Meta Ads" },
+  { name: "Google Ads" },
+  { name: "SEO", count: { field: "seoKeywords", label: "Keywords" } },
+  { name: "SMO", count: { field: "smoPosts", label: "Posts / month" } },
+  { name: "GMB" },
+  { name: "CRM" },
+  { name: "Videoshoot" },
+  { name: "AI Reels" },
+];
 
 export default function AddWebRoczClientModal({ close }: { close: () => void }) {
   const [on, setOn] = useState<Record<string, boolean>>({});
@@ -43,27 +53,27 @@ export default function AddWebRoczClientModal({ close }: { close: () => void }) 
 
           <div>
             <span className="eyebrow">Digital Marketing services</span>
-            <div className="mt-1.5 space-y-2 rounded-[10px] border border-[var(--line)] p-3">
-              {WEB_ROCZ_CLIENT_SERVICES.map((sv) => (
-                <div key={sv} className="flex min-h-[34px] items-center gap-2">
-                  <label className="flex flex-1 items-center gap-2 text-[13px] font-medium"><input type="checkbox" name="dmServices" value={sv} checked={on[sv] || false} onChange={(e) => setOn((p) => ({ ...p, [sv]: e.target.checked }))} className="h-4 w-4 accent-[var(--magenta)]" /> {sv}</label>
-                  {sv === "SEO" && on.SEO && (
-                    <>
-                      <label className="flex items-center gap-1.5 text-[11.5px] font-semibold text-[var(--muted)]">Blogs<input name="seoBlogs" type="number" min={0} autoFocus className="input !w-[72px] !py-1.5" placeholder="0" title="Blogs per month" /></label>
-                      <label className="flex items-center gap-1.5 text-[11.5px] font-semibold text-[var(--muted)]">Keywords<input name="seoKeywords" type="number" min={0} className="input !w-[72px] !py-1.5" placeholder="0" title="Keywords agreed" /></label>
-                    </>
-                  )}
-                </div>
-              ))}
+            <div className="mt-1.5 grid grid-cols-2 gap-2">
+              {WEB_ROCZ_CLIENT_SERVICES.map((sv) => {
+                const active = on[sv.name] || false;
+                return (
+                  <div key={sv.name} className={`flex min-h-[44px] items-center gap-2 rounded-[10px] border px-3 py-1.5 transition-colors ${sv.count ? "col-span-2" : ""}`} style={active ? { borderColor: "var(--magenta)", background: "color-mix(in srgb, var(--magenta) 5%, white)" } : { borderColor: "var(--line-2)" }}>
+                    <label className="flex flex-1 cursor-pointer items-center gap-2 text-[13px] font-semibold"><input type="checkbox" name="dmServices" value={sv.name} checked={active} onChange={(e) => setOn((p) => ({ ...p, [sv.name]: e.target.checked }))} className="h-4 w-4 accent-[var(--magenta)]" /> {sv.name}</label>
+                    {sv.count && (active
+                      ? <label className="flex items-center gap-2 text-[11.5px] font-semibold text-[var(--muted)]">{sv.count.label}<input name={sv.count.field} type="number" min={0} autoFocus className="input !w-24 !py-1.5" placeholder="0" /></label>
+                      : <span className="text-[11.5px] text-[var(--faint)]">{sv.count.label}</span>)}
+                  </div>
+                );
+              })}
               {customs.map((c, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <input value={c} onChange={(e) => setCustoms((cs) => cs.map((v, j) => (j === i ? e.target.value : v)))} className="input flex-1" placeholder="Other service" />
-                  <button type="button" onClick={() => setCustoms((cs) => cs.filter((_, j) => j !== i))} title="Remove" className="grid h-8 w-8 flex-none place-items-center rounded-[8px] border border-[var(--line-2)] text-[var(--rose)] hover:bg-[color-mix(in_srgb,var(--rose)_10%,white)]"><X size={14} /></button>
+                <div key={i} className="col-span-2 flex items-center gap-2">
+                  <input value={c} onChange={(e) => setCustoms((cs) => cs.map((v, j) => (j === i ? e.target.value : v)))} autoFocus className="input flex-1" placeholder="Other service name" />
+                  <button type="button" onClick={() => setCustoms((cs) => cs.filter((_, j) => j !== i))} title="Remove" className="grid h-9 w-9 flex-none place-items-center rounded-[8px] border border-[var(--line-2)] text-[var(--rose)] hover:bg-[color-mix(in_srgb,var(--rose)_10%,white)]"><X size={14} /></button>
                 </div>
               ))}
-              <button type="button" onClick={() => setCustoms((cs) => [...cs, ""])} className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--magenta)] hover:underline"><Plus size={13} /> Add service</button>
+              <button type="button" onClick={() => setCustoms((cs) => [...cs, ""])} className="col-span-2 inline-flex min-h-[40px] items-center justify-center gap-1 rounded-[10px] border border-dashed text-[12.5px] font-semibold text-[var(--magenta)] hover:bg-[var(--surface-2)]" style={{ borderColor: "var(--line-2)" }}><Plus size={13} /> Add service</button>
             </div>
-            <p className="mt-1.5 text-[11px] text-[var(--faint)]">Pick the services this client has taken — shown on hover in the clients list.</p>
+            <p className="mt-1.5 text-[11px] text-[var(--faint)]">Tick the services this client has taken — shown on hover in the clients list.</p>
           </div>
 
           <div className="rounded-[10px] border border-[var(--line)] p-3">

@@ -713,6 +713,11 @@ export async function addClientFromFinance(fd: FormData) {
     await prisma.clientService.updateMany({ where: { clientId: client.id, service: "SEO" }, data: { detail } });
     await prisma.client.update({ where: { id: client.id }, data: { ...(seoBlogs > 0 ? { blogTarget: seoBlogs } : {}), ...(seoKeywords > 0 ? { keywordTarget: seoKeywords } : {}) } });
   }
+  // Same form: SMO posts per month entered beside the SMO tick.
+  const smoPosts = Math.max(0, n(fd, "smoPosts"));
+  if (dmServices.includes("SMO") && smoPosts > 0) {
+    await prisma.clientService.updateMany({ where: { clientId: client.id, service: "SMO" }, data: { detail: `${smoPosts} posts/month` } });
+  }
 
   if (groups.length) {
     let paidLeft = Math.max(0, n(fd, "paid"));

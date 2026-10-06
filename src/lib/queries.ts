@@ -2240,7 +2240,7 @@ export async function getFinanceClients() {
     return {
       id: c.id, code: c.code, name: c.name, domain: c.websiteDomain || c.website || "", contact: c.pocName ?? "", phone: c.pocMobile ?? "", email: c.pocEmail ?? "",
       accountManager: c.accountManager?.name ?? "",
-      slaUrl: sla?.url ?? "", slaTitle: sla?.title ?? "", slaBy: sla?.by ?? "", services: c.services.map((s) => (s.service === "SEO" && s.detail ? `SEO (${s.detail})` : s.service)),
+      slaUrl: sla?.url ?? "", slaTitle: sla?.title ?? "", slaBy: sla?.by ?? "", services: c.services.map((s) => ((s.service === "SEO" || s.service === "SMO") && s.detail ? `${s.service} (${s.detail})` : s.service)),
       status: c.status, retainer: c.monthlyRetainer || 0, category, invs,
       lastInvoiceDate: lastDateByClient.get(c.id) ?? "", billed, received, pending,
       companies: [...(companiesByClient.get(c.id) ?? [])],
