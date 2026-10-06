@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { WEB_ROCZ_CLIENT_SERVICES, detailFromCounts } from "@/lib/webrocz-services";
-import { websiteServiceNames } from "@/lib/webrocz-queries";
+import { websiteServiceNames, getClientInvoiceDefaults } from "@/lib/webrocz-queries";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -14,6 +14,16 @@ function s(fd: FormData, k: string) {
 function n(fd: FormData, k: string) {
   const v = parseInt(s(fd, k), 10);
   return Number.isFinite(v) ? v : 0;
+}
+
+export type WebRoczInvoiceDefaults = Record<string, { domain: string; services: { service: string; detail: string | null }[] }>;
+
+// Read-only: each client's saved domain + digital-marketing services, so the Web Rocz
+// invoice form can fill them in as soon as a company is picked.
+export async function getWebRoczInvoiceDefaults(): Promise<WebRoczInvoiceDefaults> {
+  const u = await getCurrentUser();
+  if (!u || !["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"].includes(u.role)) return {};
+  return getClientInvoiceDefaults();
 }
 
 // Accountant edits a Web Rocz (digital marketing) client: contact details, domain name and

@@ -21,6 +21,18 @@ export async function getClientDomains(): Promise<Record<string, string>> {
   return out;
 }
 
+// Per client (lower-cased name): its domain and the digital-marketing services ticked in
+// Add / Edit client — pre-fills the Web Rocz invoice form when that company is picked.
+export async function getClientInvoiceDefaults() {
+  const clients = await prisma.client.findMany({ select: { name: true, websiteDomain: true, website: true, websiteServices: true, services: { select: { service: true, detail: true } } } });
+  const out: Record<string, { domain: string; services: { service: string; detail: string | null }[] }> = {};
+  for (const c of clients) {
+    const reserved = new Set(websiteServiceNames(c.websiteServices));
+    out[c.name.trim().toLowerCase()] = { domain: c.websiteDomain || c.website || "", services: c.services.filter((s) => !reserved.has(s.service)) };
+  }
+  return out;
+}
+
 export function websiteServiceNames(websiteServicesJson: string | null | undefined): string[] {
   let own: string[] = [];
   try { const a = JSON.parse(websiteServicesJson || "[]"); if (Array.isArray(a)) own = a.map(String); } catch { /* ignore */ }
