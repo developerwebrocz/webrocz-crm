@@ -111,9 +111,9 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
             <L label="Contact person"><input name="contact" defaultValue={invoice.contact ?? ""} className="input" /></L>
             <L label="Phone"><input name="phone" defaultValue={invoice.phone ?? ""} className="input" /></L>
             <L label="Email"><input name="email" defaultValue={invoice.email ?? ""} className="input" /></L>
-            {/* Web Solutions is non-GST: address / GSTIN / state / place of supply are not asked.
-                The saved address + GSTIN ride along hidden so an edit never wipes them. */}
-            {invoice.company === "WEB_SOLUTIONS" ? (
+            {/* Web Solutions and Web Rocz are non-GST: address / GSTIN / state / place of supply
+                are not asked. The saved address + GSTIN ride along hidden so an edit never wipes them. */}
+            {invoice.company === "WEB_SOLUTIONS" || invoice.company === "WEB_ROCZ" ? (
               <><input type="hidden" name="clientAddress" value={invoice.clientAddress ?? ""} /><input type="hidden" name="clientGstin" value={invoice.clientGstin ?? ""} /></>
             ) : (
               <>
@@ -129,7 +129,7 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
               ? <input type="hidden" name="itemName" value={items[0]?.name ?? ""} />
               : <L label="Item / service description"><input name="itemName" defaultValue={items[0]?.name ?? ""} className="input" /></L>}
             <L label="Taxable amount (₹)"><input type="number" name="total" defaultValue={invoice.subtotal} className="input" /></L>
-            {invoice.company === "WEB_SOLUTIONS"
+            {invoice.company === "WEB_SOLUTIONS" || invoice.company === "WEB_ROCZ"
               ? <input type="hidden" name="taxPct" value={invoice.taxPct} />
               : <L label="GST %"><input type="number" name="taxPct" defaultValue={invoice.taxPct} className="input" /></L>}
             <L label="Received (₹)"><input type="number" name="received" defaultValue={invoice.received} className="input" /></L>
