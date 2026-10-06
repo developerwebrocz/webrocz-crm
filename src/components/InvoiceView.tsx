@@ -111,10 +111,18 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
             <L label="Contact person"><input name="contact" defaultValue={invoice.contact ?? ""} className="input" /></L>
             <L label="Phone"><input name="phone" defaultValue={invoice.phone ?? ""} className="input" /></L>
             <L label="Email"><input name="email" defaultValue={invoice.email ?? ""} className="input" /></L>
-            <div className="sm:col-span-2"><L label="Client address"><input name="clientAddress" defaultValue={invoice.clientAddress ?? ""} className="input" /></L></div>
-            <L label="Client GSTIN"><input name="clientGstin" defaultValue={invoice.clientGstin ?? ""} className="input" /></L>
-            <L label="Client State"><input name="clientState" defaultValue={invoice.clientState ?? SELLER.state} className="input" /></L>
-            <L label="Place of supply"><input name="placeOfSupply" defaultValue={invoice.placeOfSupply ?? SELLER.state} className="input" /></L>
+            {/* Web Solutions is non-GST: address / GSTIN / state / place of supply are not asked.
+                The saved address + GSTIN ride along hidden so an edit never wipes them. */}
+            {invoice.company === "WEB_SOLUTIONS" ? (
+              <><input type="hidden" name="clientAddress" value={invoice.clientAddress ?? ""} /><input type="hidden" name="clientGstin" value={invoice.clientGstin ?? ""} /></>
+            ) : (
+              <>
+                <div className="sm:col-span-2"><L label="Client address"><input name="clientAddress" defaultValue={invoice.clientAddress ?? ""} className="input" /></L></div>
+                <L label="Client GSTIN"><input name="clientGstin" defaultValue={invoice.clientGstin ?? ""} className="input" /></L>
+                <L label="Client State"><input name="clientState" defaultValue={invoice.clientState ?? SELLER.state} className="input" /></L>
+                <L label="Place of supply"><input name="placeOfSupply" defaultValue={invoice.placeOfSupply ?? SELLER.state} className="input" /></L>
+              </>
+            )}
             <L label="Item / service description"><input name="itemName" defaultValue={items[0]?.name ?? ""} className="input" /></L>
             <L label="Taxable amount (₹)"><input type="number" name="total" defaultValue={invoice.subtotal} className="input" /></L>
             <L label="GST %"><input type="number" name="taxPct" defaultValue={invoice.taxPct} className="input" /></L>
