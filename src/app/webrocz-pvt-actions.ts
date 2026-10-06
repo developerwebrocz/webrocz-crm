@@ -66,7 +66,11 @@ export async function updateWebRoczPvtClient(fd: FormData) {
   }
 
   const STATUS_OK = ["ACTIVE", "ON_HOLD", "UPCOMING"];
-  const domain = s(fd, "website");
+  // Account manager from the dropdown ("" = not assigned). Only applied when the form sent
+  // the field and the id is a real, active team member.
+  const amSent = fd.has("accountManagerId");
+  const amId = s(fd, "accountManagerId");
+  const amOk = !amId || !!(await prisma.user.findFirst({ where: { id: amId, active: true }, select: { id: true } }));
   const gstin = s(fd, "gstin").toUpperCase();
   const seoOn = picked.includes("SEO");
   const seoBlogs = Math.max(0, n(fd, "seoBlogs"));
@@ -75,8 +79,8 @@ export async function updateWebRoczPvtClient(fd: FormData) {
     where: { id },
     data: {
       name,
-      website: domain || null,
-      websiteDomain: domain,
+      // The domain name is no longer edited here, so the saved one is left as it is.
+      ...(amSent && amOk ? { accountManagerId: amId || null } : {}),
       pocName: s(fd, "pocName") || null,
       pocMobile: s(fd, "pocMobile") || null,
       pocEmail: s(fd, "pocEmail") || null,

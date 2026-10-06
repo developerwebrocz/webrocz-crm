@@ -3,12 +3,13 @@
 import { X, Pencil } from "lucide-react";
 import { updateWebRoczPvtClient } from "@/app/webrocz-pvt-actions";
 import WebRoczServicePicker from "@/components/WebRoczServicePicker";
+import WebRoczAccountManagerSelect from "@/components/WebRoczAccountManager";
 
 // Web Rocz Pvt Ltd (digital marketing, GST 18%) "Edit client" form — same fields as its
 // add-client form: details, client GSTIN and the digital-marketing services. Domain / hosting
 // amounts and renewal dates are not shown. Kept in its own file so the Web Rocz and Web
 // Solutions edit forms are never affected.
-type EditClient = { id: string; code: string; name: string; website: string | null; websiteDomain: string; pocName: string | null; pocMobile: string | null; pocEmail: string | null; status: string; notes: string | null; gstin: string };
+type EditClient = { id: string; code: string; name: string; accountManagerId: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; status: string; notes: string | null; gstin: string };
 
 export default function EditWebRoczPvtClientModal({ client, services, close }: { client: EditClient; services: { service: string; detail: string | null }[]; close: () => void }) {
   return (
@@ -25,7 +26,7 @@ export default function EditWebRoczPvtClientModal({ client, services, close }: {
           <input type="hidden" name="id" value={client.id} />
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Company name *</span><input name="name" required defaultValue={client.name} className="input mt-1" /></label>
-            <label className="block"><span className="eyebrow">Domain name</span><input name="website" defaultValue={client.websiteDomain || client.website || ""} className="input mt-1" placeholder="e.g. acme.com" /></label>
+            <label className="block"><span className="eyebrow">Account manager</span><WebRoczAccountManagerSelect defaultValue={client.accountManagerId ?? ""} /></label>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Contact person</span><input name="pocName" defaultValue={client.pocName ?? ""} className="input mt-1" /></label>
