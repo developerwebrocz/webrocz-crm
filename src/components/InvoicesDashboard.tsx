@@ -28,6 +28,10 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
   const [fuInv, setFuInv] = useState<any>(null); // invoice whose follow-ups modal is open
   const [delInv, setDelInv] = useState<any>(null); // invoice pending delete confirmation
   const [addOpen, setAddOpen] = useState(false); // "add new invoice" modal
+  // Inside the Web Solutions hub, Apply / Clear / Delete must stay in the hub (hub=1). Without
+  // it the page drops to the all-companies view and shows the Web Rocz / Web Rocz Pvt Ltd tabs.
+  const keepHub = !!embedded && company === "WEB_SOLUTIONS";
+  const hubHref = `/invoices?company=${company}&hub=1`;
   const tabHref = (co: string) => {
     const p = new URLSearchParams();
     if (q) p.set("q", q);
@@ -76,10 +80,11 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
       {/* filters */}
       <form method="get" className="flex flex-wrap items-center gap-2">
         <input type="hidden" name="company" value={company} />
+        {keepHub && <input type="hidden" name="hub" value="1" />}
         <input name="q" defaultValue={q} placeholder="Search invoice no. / client / phone…" className="input !w-auto min-w-[240px]" />
         <select name="status" defaultValue={status} className="select !w-auto">{statusOptions.map((s) => <option key={s.k} value={s.k}>{s.label}</option>)}</select>
         <button className="btn btn-ghost btn-sm">Apply</button>
-        {(q || status) && <Link href={company ? `/invoices?company=${company}` : "/invoices"} className="btn btn-ghost btn-sm">Clear</Link>}
+        {(q || status) && <Link href={keepHub ? hubHref : company ? `/invoices?company=${company}` : "/invoices"} className="btn btn-ghost btn-sm">Clear</Link>}
       </form>
 
       {/* table */}
@@ -121,14 +126,14 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
       </div>
 
       {fuInv && <InvoiceFollowupModal inv={fuInv} close={() => setFuInv(null)} />}
-      {delInv && <DeleteInvoiceModal inv={delInv} close={() => setDelInv(null)} />}
+      {delInv && <DeleteInvoiceModal inv={delInv} back={keepHub ? hubHref : "/invoices"} close={() => setDelInv(null)} />}
       {addOpen && <AddInvoiceModal clientNames={clientNames} close={() => setAddOpen(false)} lockCompany={company || undefined} returnTo={company ? `/invoices?company=${company}${embedded ? "&hub=1" : ""}` : "/invoices"} />}
     </div>
   );
 }
 
 // Confirm + delete an invoice (payments cascade; any linked SLA reverts to "to invoice").
-function DeleteInvoiceModal({ inv, close }: { inv: any; close: () => void }) {
+function DeleteInvoiceModal({ inv, back, close }: { inv: any; back: string; close: () => void }) {
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
       <div className="w-full max-w-[420px] overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
@@ -141,7 +146,7 @@ function DeleteInvoiceModal({ inv, close }: { inv: any; close: () => void }) {
         </div>
         <form action={deleteSalesInvoice} className="flex justify-end gap-2 border-t border-[var(--line)] px-6 py-3">
           <input type="hidden" name="invoiceId" value={inv.id} />
-          <input type="hidden" name="return" value="/invoices" />
+          <input type="hidden" name="return" value={back} />
           <button type="button" onClick={close} className="btn btn-ghost">Cancel</button>
           <button type="submit" className="btn btn-sm" style={{ background: "var(--rose)", color: "#fff" }}><Trash2 size={14} /> Delete invoice</button>
         </form>
