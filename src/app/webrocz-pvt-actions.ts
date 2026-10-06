@@ -19,6 +19,22 @@ function n(fd: FormData, k: string) {
   return Number.isFinite(v) ? v : 0;
 }
 
+export type WebRoczPvtInvoiceDefaults = Record<string, { gstin: string; services: { service: string; detail: string | null }[] }>;
+
+// Read-only: each client's saved GSTIN + digital-marketing services (lower-cased name), so
+// the Web Rocz Pvt Ltd invoice form can fill them in as soon as a company is picked.
+export async function getWebRoczPvtInvoiceDefaults(): Promise<WebRoczPvtInvoiceDefaults> {
+  const u = await getCurrentUser();
+  if (!u || !["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"].includes(u.role)) return {};
+  const clients = await prisma.client.findMany({ select: { name: true, gstin: true, websiteServices: true, services: { select: { service: true, detail: true } } } });
+  const out: WebRoczPvtInvoiceDefaults = {};
+  for (const c of clients) {
+    const reserved = new Set(websiteServiceNames(c.websiteServices));
+    out[c.name.trim().toLowerCase()] = { gstin: c.gstin || "", services: c.services.filter((x) => !reserved.has(x.service)) };
+  }
+  return out;
+}
+
 // Accountant edits a Web Rocz Pvt Ltd client: contact details, domain name, GSTIN and the
 // digital-marketing services with their monthly counts. Website fields (domain / hosting
 // amounts, register + renewal dates) are deliberately left untouched.
