@@ -123,7 +123,11 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
                 <L label="Place of supply"><input name="placeOfSupply" defaultValue={invoice.placeOfSupply ?? SELLER.state} className="input" /></L>
               </>
             )}
-            <L label="Item / service description"><input name="itemName" defaultValue={items[0]?.name ?? ""} className="input" /></L>
+            {/* Web Solutions lists its services as invoice lines, so the description is not
+                edited here — it rides along hidden and the lines are kept on save. */}
+            {invoice.company === "WEB_SOLUTIONS"
+              ? <input type="hidden" name="itemName" value={items[0]?.name ?? ""} />
+              : <L label="Item / service description"><input name="itemName" defaultValue={items[0]?.name ?? ""} className="input" /></L>}
             <L label="Taxable amount (₹)"><input type="number" name="total" defaultValue={invoice.subtotal} className="input" /></L>
             {invoice.company === "WEB_SOLUTIONS"
               ? <input type="hidden" name="taxPct" value={invoice.taxPct} />

@@ -430,19 +430,32 @@ export async function saveInvoice(fd: FormData) {
   const taxPct = n(fd, "taxPct");
   const taxAmount = Math.round((base * taxPct) / 100);
   const svcLine = s(fd, "itemName") || inv.billTo;
-  // An itemized invoice (several service lines) keeps its lines when neither the amount nor
-  // the description was edited — so fixing e.g. the phone or "received" does not collapse
-  // Domain + Hosting + Designing into a single line.
-  let prevItems: { name?: string }[] = [];
+  // An itemized invoice (several service lines) keeps its lines when the description was not
+  // edited — so fixing e.g. the phone or "received" does not collapse Domain + Hosting +
+  // Designing into a single line. If only the amount changed, the new amount is spread over
+  // the priced lines in the same proportion ("Included" lines stay as they are).
+  let prevItems: { name?: string; qty?: number; rate?: number; amount?: number }[] = [];
   try { const a = JSON.parse(inv.items || "[]"); if (Array.isArray(a)) prevItems = a; } catch { /* ignore */ }
-  const keepLines = prevItems.length > 1 && base === inv.subtotal && svcLine === String(prevItems[0]?.name ?? "");
+  const sameDesc = prevItems.length > 1 && svcLine === String(prevItems[0]?.name ?? "");
+  let itemsJson = JSON.stringify([{ name: svcLine, qty: 1, rate: base, amount: base }]);
+  if (sameDesc && base === inv.subtotal) itemsJson = inv.items;
+  else if (sameDesc && inv.subtotal > 0) {
+    const lastPriced = prevItems.map((it) => (it.amount ?? 0) > 0).lastIndexOf(true);
+    let left = base;
+    itemsJson = JSON.stringify(prevItems.map((it, i) => {
+      if (!((it.amount ?? 0) > 0)) return it;
+      const amt = i === lastPriced ? left : Math.round(((it.amount ?? 0) * base) / inv.subtotal);
+      left -= amt;
+      return { ...it, qty: 1, rate: amt, amount: amt };
+    }));
+  }
   await prisma.salesInvoice.update({
     where: { id: invId },
     data: {
       billTo: s(fd, "billTo") || inv.billTo, contact: s(fd, "contact"), phone: s(fd, "phone"), email: s(fd, "email"),
       clientGstin: s(fd, "clientGstin"), clientState: s(fd, "clientState") || inv.clientState, clientAddress: s(fd, "clientAddress"),
       placeOfSupply: s(fd, "placeOfSupply") || inv.placeOfSupply,
-      items: keepLines ? inv.items : JSON.stringify([{ name: svcLine, qty: 1, rate: base, amount: base }]),
+      items: itemsJson,
       subtotal: base, taxPct, taxAmount, total: base + taxAmount, received: n(fd, "received"),
       paymentStatus: s(fd, "paymentStatus") || inv.paymentStatus, notes: s(fd, "notes"), issueDate: s(fd, "issueDate") || inv.issueDate,
       dueDate: s(fd, "dueDate") || inv.dueDate || addDaysISO(s(fd, "issueDate") || inv.issueDate, 15),
