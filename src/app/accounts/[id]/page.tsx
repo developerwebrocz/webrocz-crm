@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getFinanceClientDetail } from "@/lib/queries";
 import FinanceClientDetail from "@/components/FinanceClientDetail";
+import { getWebRoczClientServices } from "@/lib/webrocz-queries";
 
 export const dynamic = "force-dynamic";
 
@@ -17,5 +18,7 @@ export default async function FinanceClientDetailPage({ params, searchParams }: 
   const company = typeof sp.company === "string" ? sp.company : "";
   const d = await getFinanceClientDetail(id);
   if (!d) redirect("/accounts");
-  return <FinanceClientDetail client={d.client} invoices={d.invoices} payments={d.payments} totals={d.totals} clientFollowups={d.clientFollowups} slas={d.slas} openPayId={openPayId} company={company} />;
+  // Digital-marketing services for the Web Rocz edit form (unused by Web Solutions clients).
+  const dmServices = await getWebRoczClientServices(id);
+  return <FinanceClientDetail client={d.client} invoices={d.invoices} payments={d.payments} totals={d.totals} clientFollowups={d.clientFollowups} slas={d.slas} openPayId={openPayId} company={company} dmServices={dmServices} />;
 }

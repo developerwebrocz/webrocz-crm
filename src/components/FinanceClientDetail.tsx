@@ -6,6 +6,7 @@ import { recordPayment, createClientInvoice, generateInvoiceFromSla } from "@/ap
 import { updateClientFinance, logClientFollowup } from "@/app/actions";
 import { companyLabel } from "@/lib/domain";
 import AddInvoiceModal from "@/components/AddInvoiceModal";
+import EditWebRoczClientModal from "@/components/EditWebRoczClientModal";
 import { ReceiptText, Wallet, CheckCircle2, Clock, Phone, Mail, IndianRupee, X, ArrowLeft, Building2, Plus, Pencil, MessageSquarePlus, CalendarClock, Globe, FileSignature, FileText, Download } from "lucide-react";
 
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
@@ -19,7 +20,7 @@ type Followup = { date: string; by: string; note: string; next?: string };
 type Sla = { id: string; title: string; service: string; amount: number; gst: boolean; fileUrl: string; notes: string; status: string; uploadedBy: string; createdAt: string };
 type Totals = { billed: number; received: number; pending: number; overdue: number; invoices: number };
 
-export default function FinanceClientDetail({ client, invoices, payments, totals, clientFollowups, slas, openPayId, company }: { client: Client; invoices: Inv[]; payments: Pay[]; totals: Totals; clientFollowups: Followup[]; slas: Sla[]; openPayId?: string; company?: string }) {
+export default function FinanceClientDetail({ client, invoices, payments, totals, clientFollowups, slas, openPayId, company, dmServices = [] }: { client: Client; invoices: Inv[]; payments: Pay[]; totals: Totals; clientFollowups: Followup[]; slas: Sla[]; openPayId?: string; company?: string; dmServices?: { service: string; detail: string | null }[] }) {
   const [payInv, setPayInv] = useState<Inv | null>(() => invoices.find((i) => i.id === openPayId && i.balance > 0) ?? null);
   const [newInv, setNewInv] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -27,6 +28,9 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
   // A Web Solutions client → its "New invoice" uses the website form (services + amounts +
   // payment screenshot). Detected from the URL company context OR any Web Solutions invoice.
   const isWebSolClient = company === "WEB_SOLUTIONS" || invoices.some((i) => i.company === "WEB_SOLUTIONS");
+  // A Web Rocz (digital marketing) client → "Edit info" opens the Web Rocz form (DM services,
+  // no domain / hosting / renewal). Web Solutions clients keep the website edit form.
+  const isWebRoczClient = company === "WEB_ROCZ" || (!isWebSolClient && invoices.some((i) => i.company === "WEB_ROCZ"));
   // Website services this client has taken (for the details card).
   // Latest SLA with an uploaded file (slas arrive newest-first) → Download button in the card.
   const slaDoc = slas.find((x) => x.fileUrl) ?? null;
@@ -325,7 +329,9 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
       {newInv && (isWebSolClient
         ? <AddInvoiceModal clientNames={[]} lockClientName={client.name} lockCompany="WEB_SOLUTIONS" defaultDomain={client.websiteDomain} returnTo={backUrl} close={() => setNewInv(false)} />
         : <NewInvoiceModal clientId={client.id} clientName={client.name} defaultTaxPct={client.gstApplicable ? client.gstRate : 0} defaultGstin={client.gstin} close={() => setNewInv(false)} />)}
-      {editOpen && <EditModal client={client} close={() => setEditOpen(false)} />}
+      {editOpen && (isWebRoczClient
+        ? <EditWebRoczClientModal client={client} services={dmServices} close={() => setEditOpen(false)} />
+        : <EditModal client={client} close={() => setEditOpen(false)} />)}
     </div>
   );
 }
