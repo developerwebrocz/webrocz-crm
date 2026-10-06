@@ -8,6 +8,7 @@ import { downloadCsv } from "@/lib/csv";
 import AddInvoiceModal from "@/components/AddInvoiceModal";
 import AddWebRoczInvoiceModal from "@/components/AddWebRoczInvoiceModal";
 import AddWebRoczClientModal from "@/components/AddWebRoczClientModal";
+import AddWebRoczPvtClientModal from "@/components/AddWebRoczPvtClientModal";
 import { companyLabel, COMPANY_KEYS } from "@/lib/domain";
 import { Users, Search, ReceiptText, Wallet, CheckCircle2, ChevronRight, ChevronLeft, MessageSquarePlus, Pencil, Trash2, X, Download, UserPlus, CalendarClock, Upload, Plus, Globe } from "lucide-react";
 
@@ -242,7 +243,8 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
       {fuRow && <FollowupModal r={fuRow} close={() => setFuRow(null)} />}
       {delRow && <DeleteModal r={delRow} close={() => setDelRow(null)} />}
       {addOpen && lockedCompany === "WEB_ROCZ" && <AddWebRoczClientModal close={() => setAddOpen(false)} />}
-      {addOpen && lockedCompany !== "WEB_ROCZ" && <AddClientModal lockedCompany={lockedCompany} lockedCategory={lockedCategory} close={() => setAddOpen(false)} />}
+      {addOpen && lockedCompany === "WEB_ROCZ_PVT" && <AddWebRoczPvtClientModal close={() => setAddOpen(false)} />}
+      {addOpen && lockedCompany !== "WEB_ROCZ" && lockedCompany !== "WEB_ROCZ_PVT" && <AddClientModal lockedCompany={lockedCompany} lockedCategory={lockedCategory} close={() => setAddOpen(false)} />}
       {importOpen && <ImportModal company={lockedCompany ?? ""} close={() => setImportOpen(false)} />}
       {addInvOpen && lockedCompany === "WEB_ROCZ" && <AddWebRoczInvoiceModal clientNames={clientNames} clientDomains={clientDomains} close={() => setAddInvOpen(false)} returnTo="/pipeline/web-rocz" />}
       {addInvOpen && lockedCompany !== "WEB_ROCZ" && <AddInvoiceModal clientNames={clientNames} close={() => setAddInvOpen(false)} lockCompany={lockedCompany} returnTo={lockedCompany ? `/pipeline/${{ WEB_SOLUTIONS: "web-solutions", WEB_ROCZ: "web-rocz", WEB_ROCZ_PVT: "web-rocz-pvt" }[lockedCompany] ?? "web-solutions"}` : "/invoices"} />}
