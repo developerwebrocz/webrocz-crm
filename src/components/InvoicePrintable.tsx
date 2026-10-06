@@ -68,13 +68,15 @@ export default function InvoicePrintable({ invoice }: { invoice: any }) {
         <tbody>
           {items.map((it: any, i: number) => {
             const gst = Math.round((it.amount * invoice.taxPct) / 100);
+            // A service listed without its own price (covered by another line) reads "Included".
+            const included = items.length > 1 && !it.amount && !it.rate;
             return (
               <tr key={i} className="border-b border-[var(--line)]">
                 <td className="px-3 py-2.5">{i + 1}</td>
                 <td className="px-3 py-2.5 font-medium">{it.name}</td>
-                <td className="px-3 py-2.5 text-right tnum">{inr(it.rate)}</td>
-                {hasGst && <td className="px-3 py-2.5 text-right tnum">{inr(gst)} ({invoice.taxPct}%)</td>}
-                <td className="px-3 py-2.5 text-right tnum">{inr(it.amount + gst)}</td>
+                <td className="px-3 py-2.5 text-right tnum">{included ? "—" : inr(it.rate)}</td>
+                {hasGst && <td className="px-3 py-2.5 text-right tnum">{included ? "—" : <>{inr(gst)} ({invoice.taxPct}%)</>}</td>}
+                <td className="px-3 py-2.5 text-right tnum">{included ? "Included" : inr(it.amount + gst)}</td>
               </tr>
             );
           })}

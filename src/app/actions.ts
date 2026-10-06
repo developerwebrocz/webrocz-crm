@@ -690,7 +690,9 @@ export async function addClientFromFinance(fd: FormData) {
   }
   // ONE combined WEBSITE invoice (all ticked website services as line items) + ONE DM invoice
   // if any — so a client with Domain + Hosting + Designing gets a single invoice, not three.
-  const webBillable = webItems.filter((it) => it.amount > 0);
+  // Every ticked service is listed on the invoice, even one left without its own amount
+  // (e.g. a package price entered against Domain with Hosting + Designing ticked beside it).
+  const webBillable = webItems.some((it) => it.amount > 0) ? webItems : [];
   const groups: { category: string; items: { name: string; amount: number }[] }[] = [];
   if (webBillable.length) groups.push({ category: "WEBSITE", items: webBillable });
   if (dmAmt > 0) groups.push({ category: "DM", items: [{ name: "Digital Marketing", amount: dmAmt }] });
