@@ -3,7 +3,8 @@
 import { Fragment, useMemo, useState } from "react";
 import { initials, ROLES } from "@/lib/domain";
 import { toggleUserActive, impersonate, resetUserPassword, updateUser, deleteUser, resendInvite } from "@/app/actions";
-import { Search, Eye, KeyRound, Pencil, Trash2, Mail } from "lucide-react";
+import { Search, Eye, KeyRound, Pencil, Trash2, Mail, ArrowRightLeft } from "lucide-react";
+import TransferWorkModal from "@/components/TransferWorkModal";
 
 type Member = {
   id: string; name: string; role: string; email: string | null; phone: string | null; active: boolean;
@@ -23,6 +24,9 @@ export default function TeamTable({ members }: { members: Member[] }) {
   const [q, setQ] = useState("");
   const [role, setRole] = useState("ALL");
   const [editId, setEditId] = useState<string | null>(null);
+  // Member whose open work is being handed to someone else (e.g. they have left).
+  const [transferId, setTransferId] = useState<string | null>(null);
+  const transferMember = members.find((m) => m.id === transferId) ?? null;
 
   const roles = useMemo(() => {
     const present = new Set(members.map((m) => m.role));
@@ -113,6 +117,7 @@ export default function TeamTable({ members }: { members: Member[] }) {
                         <button title="Resend invite email (set-password link)" className="grid h-8 w-8 place-items-center rounded-lg border border-[var(--violet)]/40 text-[var(--violet)] transition hover:bg-[color-mix(in_srgb,var(--violet)_8%,white)]"><Mail size={13} /></button>
                       </form>
                     )}
+                    <button title={`Transfer ${m.name}'s work to another member`} onClick={() => setTransferId(m.id)} className="grid h-8 w-8 place-items-center rounded-lg border border-[var(--line-2)] text-[var(--ink-2)] transition hover:border-[var(--violet)] hover:text-[var(--violet)]"><ArrowRightLeft size={13} /></button>
                     <button title="Edit details" onClick={() => setEditId(editId === m.id ? null : m.id)} className="grid h-8 w-8 place-items-center rounded-lg border border-[var(--line-2)] text-[var(--ink-2)] transition hover:border-[var(--ink)]"><Pencil size={13} /></button>
                     {m.hasPassword && m.role !== "SUPER_ADMIN" && (
                       <form action={resetUserPassword}>
@@ -151,6 +156,7 @@ export default function TeamTable({ members }: { members: Member[] }) {
           </tbody>
         </table>
       </div>
+      {transferMember && <TransferWorkModal key={transferMember.id} member={transferMember} members={members} close={() => setTransferId(null)} />}
     </div>
   );
 }
