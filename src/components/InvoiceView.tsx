@@ -125,7 +125,9 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
             )}
             <L label="Item / service description"><input name="itemName" defaultValue={items[0]?.name ?? ""} className="input" /></L>
             <L label="Taxable amount (₹)"><input type="number" name="total" defaultValue={invoice.subtotal} className="input" /></L>
-            <L label="GST %"><input type="number" name="taxPct" defaultValue={invoice.taxPct} className="input" /></L>
+            {invoice.company === "WEB_SOLUTIONS"
+              ? <input type="hidden" name="taxPct" value={invoice.taxPct} />
+              : <L label="GST %"><input type="number" name="taxPct" defaultValue={invoice.taxPct} className="input" /></L>}
             <L label="Received (₹)"><input type="number" name="received" defaultValue={invoice.received} className="input" /></L>
             <L label="Payment status"><select name="paymentStatus" defaultValue={invoice.paymentStatus} className="select"><option>Pending</option><option>Advance Paid</option><option>Fully Paid</option></select></L>
             <L label="Invoice date"><input type="date" name="issueDate" defaultValue={invoice.issueDate} className="input" /></L>
