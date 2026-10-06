@@ -7,6 +7,7 @@ import { updateClientFinance, logClientFollowup } from "@/app/actions";
 import { companyLabel } from "@/lib/domain";
 import AddInvoiceModal from "@/components/AddInvoiceModal";
 import EditWebRoczClientModal from "@/components/EditWebRoczClientModal";
+import EditWebRoczPvtClientModal from "@/components/EditWebRoczPvtClientModal";
 import AddWebRoczInvoiceModal from "@/components/AddWebRoczInvoiceModal";
 import WebRoczClientCard from "@/components/WebRoczClientCard";
 import { ReceiptText, Wallet, CheckCircle2, Clock, Phone, Mail, IndianRupee, X, ArrowLeft, Building2, Plus, Pencil, MessageSquarePlus, CalendarClock, Globe, FileSignature, FileText, Download } from "lucide-react";
@@ -33,6 +34,9 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
   // A Web Rocz (digital marketing) client → "Edit info" opens the Web Rocz form (DM services,
   // no domain / hosting / renewal). Web Solutions clients keep the website edit form.
   const isWebRoczClient = company === "WEB_ROCZ" || (!isWebSolClient && invoices.some((i) => i.company === "WEB_ROCZ"));
+  // A Web Rocz Pvt Ltd (GST) client → its own edit form (DM services + GSTIN). Opened from the
+  // Pvt Ltd hub this always applies; otherwise only for a client that is neither of the above.
+  const isWebRoczPvtClient = company === "WEB_ROCZ_PVT" || (!isWebSolClient && !isWebRoczClient && invoices.some((i) => i.company === "WEB_ROCZ_PVT"));
   // Website services this client has taken (for the details card).
   // Latest SLA with an uploaded file (slas arrive newest-first) → Download button in the card.
   const slaDoc = slas.find((x) => x.fileUrl) ?? null;
@@ -335,8 +339,12 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
         : isWebRoczClient
         ? <AddWebRoczInvoiceModal clientNames={[]} lockClientName={client.name} defaultDomain={client.websiteDomain || client.website || ""} returnTo={`${backUrl}?company=WEB_ROCZ`} close={() => setNewInv(false)} />
         : <NewInvoiceModal clientId={client.id} clientName={client.name} defaultTaxPct={client.gstApplicable ? client.gstRate : 0} defaultGstin={client.gstin} close={() => setNewInv(false)} />)}
-      {editOpen && (isWebRoczClient
+      {editOpen && (company === "WEB_ROCZ_PVT"
+        ? <EditWebRoczPvtClientModal client={client} services={dmServices} close={() => setEditOpen(false)} />
+        : isWebRoczClient
         ? <EditWebRoczClientModal client={client} services={dmServices} close={() => setEditOpen(false)} />
+        : isWebRoczPvtClient
+        ? <EditWebRoczPvtClientModal client={client} services={dmServices} close={() => setEditOpen(false)} />
         : <EditModal client={client} close={() => setEditOpen(false)} />)}
     </div>
   );
