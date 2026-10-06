@@ -1,6 +1,7 @@
 "use client";
 
 import { Megaphone, CalendarClock, Download } from "lucide-react";
+import { useAccountManagers } from "@/components/WebRoczAccountManager";
 
 // Two-column details box on a Web Rocz (digital marketing) client's page. Left: client data,
 // services taken and the SLA download. Right: registration + the monthly renewal cycle.
@@ -18,10 +19,13 @@ const addMonth = (iso: string) => {
 };
 const daysBetween = (fromIso: string, toIso: string) => Math.round((Date.parse(toIso + "T00:00:00Z") - Date.parse(fromIso + "T00:00:00Z")) / 86400000);
 
-type CardClient = { website: string | null; websiteDomain: string; pocName: string | null; pocMobile: string | null; pocEmail: string | null; onboardDate: string };
+type CardClient = { pocName: string | null; pocMobile: string | null; pocEmail: string | null; onboardDate: string; accountManagerId: string | null };
 type CardInvoice = { issueDate: string; total: number; company: string };
 
 export default function WebRoczClientCard({ client, services, slaUrl, invoices }: { client: CardClient; services: { service: string; detail: string | null }[]; slaUrl: string; invoices: CardInvoice[] }) {
+  // The manager's name is looked up from the same list the Account manager dropdown uses.
+  const managers = useAccountManagers();
+  const managerName = !client.accountManagerId ? "—" : managers === null ? "…" : managers.find((m) => m.id === client.accountManagerId)?.name ?? "—";
   // This client's Web Rocz invoices, oldest → newest.
   const dated = invoices.filter((i) => i.company === "WEB_ROCZ" && i.issueDate).sort((a, b) => (a.issueDate < b.issueDate ? -1 : 1));
   const first = dated[0];
@@ -40,7 +44,7 @@ export default function WebRoczClientCard({ client, services, slaUrl, invoices }
       <div className="card card-pad">
         <h3 className="eyebrow mb-2.5 flex items-center gap-1.5"><Megaphone size={13} className="text-[var(--magenta)]" /> Client &amp; services</h3>
         <div className="text-[12.5px]">
-          <Row label="Domain name" value={client.websiteDomain || client.website || "—"} />
+          <Row label="Account manager" value={managerName} />
           <Row label="Contact person" value={client.pocName || "—"} />
           <Row label="Phone" value={client.pocMobile || "—"} />
           <Row label="Email" value={client.pocEmail || "—"} />

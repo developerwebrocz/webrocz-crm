@@ -26,7 +26,15 @@ export async function getWebRoczInvoiceDefaults(): Promise<WebRoczInvoiceDefault
   return getClientInvoiceDefaults();
 }
 
-// Accountant edits a Web Rocz (digital marketing) client: contact details, domain name and
+// Read-only: the team members who can be a client's account manager (same roles the finance
+// screens already use), for the Account manager dropdown in the Web Rocz client forms.
+export async function getWebRoczAccountManagers(): Promise<{ id: string; name: string }[]> {
+  const u = await getCurrentUser();
+  if (!u || !["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"].includes(u.role)) return [];
+  return prisma.user.findMany({ where: { active: true, role: { in: ["ACCOUNT_MANAGER", "AM_HEAD", "DM_EXEC"] } }, orderBy: { name: "asc" }, select: { id: true, name: true } });
+}
+
+// Accountant edits a Web Rocz (digital marketing) client: contact details, account manager and
 // the DM services with their monthly counts. Website fields (domain / hosting amounts,
 // register + renewal dates) belong to Web Solutions and are deliberately left untouched.
 export async function updateWebRoczClient(fd: FormData) {
@@ -57,7 +65,11 @@ export async function updateWebRoczClient(fd: FormData) {
   }
 
   const STATUS_OK = ["ACTIVE", "ON_HOLD", "UPCOMING"];
-  const domain = s(fd, "website");
+  // Account manager from the dropdown ("" = not assigned). Only applied when the form sent
+  // the field and the id is a real, active team member.
+  const amSent = fd.has("accountManagerId");
+  const amId = s(fd, "accountManagerId");
+  const amOk = !amId || !!(await prisma.user.findFirst({ where: { id: amId, active: true }, select: { id: true } }));
   const seoOn = picked.includes("SEO");
   const seoBlogs = Math.max(0, n(fd, "seoBlogs"));
   const seoKeywords = Math.max(0, n(fd, "seoKeywords"));
@@ -65,8 +77,8 @@ export async function updateWebRoczClient(fd: FormData) {
     where: { id },
     data: {
       name,
-      website: domain || null,
-      websiteDomain: domain,
+      // The domain name is no longer edited here, so the saved one is left as it is.
+      ...(amSent && amOk ? { accountManagerId: amId || null } : {}),
       pocName: s(fd, "pocName") || null,
       pocMobile: s(fd, "pocMobile") || null,
       pocEmail: s(fd, "pocEmail") || null,

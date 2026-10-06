@@ -3,6 +3,7 @@
 import { X, UserPlus } from "lucide-react";
 import { addClientFromFinance } from "@/app/actions";
 import WebRoczServicePicker from "@/components/WebRoczServicePicker";
+import WebRoczAccountManagerSelect from "@/components/WebRoczAccountManager";
 
 // Web Rocz (digital marketing, non-GST) "Add client" form. Kept in its own file so the
 // Web Solutions add-client form (AddClientModal in FinanceClients) is never affected.
@@ -23,7 +24,7 @@ export default function AddWebRoczClientModal({ close }: { close: () => void }) 
 
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Company name *</span><input name="name" required className="input mt-1" placeholder="Acme Pvt Ltd" /></label>
-            <label className="block"><span className="eyebrow">Domain name</span><input name="website" className="input mt-1" placeholder="e.g. acme.com" /></label>
+            <label className="block"><span className="eyebrow">Account manager</span><WebRoczAccountManagerSelect /></label>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Contact person</span><input name="pocName" className="input mt-1" /></label>
