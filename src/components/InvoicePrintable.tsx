@@ -6,7 +6,12 @@ const inr = (v: number) => "₨ " + (v || 0).toLocaleString("en-IN", { minimumFr
 // The printable GST/Non-GST tax invoice — shared by the in-app invoice page and the
 // public share link so both render identically. Pure markup (no hooks), server-safe.
 export default function InvoicePrintable({ invoice }: { invoice: any }) {
-  const items = invoice.itemsArr ?? [];
+  // Web Rocz bills digital marketing as one service: its invoice always prints a single
+  // "Digital Marketing" line for the full amount, whatever services were ticked (SEO, SMO, …).
+  // Every other company prints its saved lines as they are.
+  const items = invoice.company === "WEB_ROCZ"
+    ? [{ name: "Digital Marketing", qty: 1, rate: invoice.subtotal, amount: invoice.subtotal }]
+    : (invoice.itemsArr ?? []);
   const balance = invoice.total - (invoice.received || 0);
   // The billing entity (company) that issued this invoice drives the seller block details.
   const seller = companySeller(invoice.company || "");

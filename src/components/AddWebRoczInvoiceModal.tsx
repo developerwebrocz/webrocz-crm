@@ -46,12 +46,13 @@ export default function AddWebRoczInvoiceModal({ clientNames, close, returnTo = 
   const tick = (sv: string, v: boolean) => { svcEdited.current = true; setOn((p) => ({ ...p, [sv]: v })); };
   const editCustoms = (fn: (cs: string[]) => string[]) => { svcEdited.current = true; setCustoms(fn); };
 
-  // The ticked services become the invoice's item line; the amount is one figure for all of them.
+  // The invoice itself always carries one "Digital Marketing" line for the full amount; the
+  // ticks only show which services this client takes.
   const picked = [...WEB_ROCZ_SERVICES.filter((k) => on[k]), ...customs.map((c) => c.trim()).filter(Boolean)];
   const total = Math.max(0, Number(amount) || 0);
   const [err, setErr] = useState("");
   // The button stays clickable; what is missing is explained instead of silently blocking.
-  const problem = picked.length === 0 ? "Tick at least one service." : total <= 0 ? "Enter the invoice amount." : "";
+  const problem = total <= 0 ? "Enter the invoice amount." : "";
   const check = (e: React.SyntheticEvent) => { if (problem) e.preventDefault(); setErr(problem); };
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
@@ -67,6 +68,7 @@ export default function AddWebRoczInvoiceModal({ clientNames, close, returnTo = 
           <input type="hidden" name="return" value={returnTo} />
           <input type="hidden" name="category" value="DM" />
           <input type="hidden" name="gst" value="0" />
+          <input type="hidden" name="items" value={JSON.stringify([{ name: "Digital Marketing", qty: 1, rate: total, amount: total }])} />
           {picked.map((sv, i) => <input key={i} type="hidden" name="services" value={sv} />)}
           <datalist id="webrocz-inv-client-names">{clientNames.map((nm) => <option key={nm} value={nm} />)}</datalist>
 
