@@ -103,12 +103,10 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
   });
   // Accountant finance suite — also shown to Super/Sub Admin (they oversee finance).
   const financeGroups: Group[] = [
-    { label: "Accountants", items: companyItems },
+    { label: "Accountants", items: [...companyItems, { href: "/payments", label: "Payments", icon: Wallet }] },
     { label: "Finance", items: [
       { href: "/dm-clients", label: "All DM Clients", icon: Megaphone },
       { href: "/sla", label: "SLAs", icon: FileSignature },
-      // Payments hidden for now — re-add when needed:
-      // { href: "/payments", label: "Payments", icon: Wallet },
       // Website renewals now live under each company in the Companies group above.
       { href: "/statements", label: "Reports", icon: FileBarChart },
       { href: "/expenses", label: "Expenses", icon: Wallet },
