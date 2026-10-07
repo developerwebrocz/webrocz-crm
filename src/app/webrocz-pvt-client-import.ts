@@ -40,6 +40,9 @@ function servicesFromText(text: string): string[] {
   if (/shoot|shots?\b|shout|video/.test(t)) out.push("Videoshoot");
   if (/gmb/.test(t)) out.push("GMB");
   if (/\bcrm\b/.test(t)) out.push("CRM");
+  // Wording that names none of the standard services ("All DM") is kept as its own service,
+  // so the client still shows what the sheet said.
+  if (!out.length && text.trim()) out.push(/^all\s*dm$/i.test(text.trim()) ? "All DM" : text.trim().replace(/\s+/g, " "));
   return out;
 }
 

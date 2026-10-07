@@ -95,6 +95,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
       if (lockedCompany === "WEB_ROCZ") category = "Digital Marketing";
       else if (lockedCompany === "WEB_SOLUTIONS") category = "Website";
     } else if (lockedCompany === "WEB_ROCZ") category = "Digital Marketing"; // Web Rocz client added before its first invoice
+    else if (lockedCompany === "WEB_ROCZ_PVT") category = "Digital Marketing"; // Web Rocz Pvt Ltd client added / imported before its first invoice
     return { ...r, category, billed, received, pending, overdueAmt, invoices: invs.length, lastInvoiceDate, scopedInvs: invs };
   }), [rows, cat, companySel, gstSel, pFrom, pTo]);
 
