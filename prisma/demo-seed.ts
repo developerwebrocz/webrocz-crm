@@ -448,4 +448,10 @@ async function main() {
   const notifs = await prisma.notification.count({ where: { read: false } });
   console.log(`\n✅ Demo ready — ${leads} leads, ${invs} invoices, ${slas} SLAs, ${notifs} unread alerts. Login /staff (sales@ / accountant@, pw webrocz123).`);
 }
-main().then(() => console.log("SEED_OK")).catch((e) => { console.error("SEED_ERROR:", e); process.exitCode = 1; }).finally(() => setTimeout(() => process.exit(process.exitCode ?? 0), 300));
+// The live CRM now holds real data, so this seed no longer runs by default — an older deploy
+// command that still calls it must not put demo records back. To seed a LOCAL demo database:
+//   ALLOW_DEMO_SEED=1 npx tsx prisma/demo-seed.ts
+const seed = process.env.ALLOW_DEMO_SEED === "1"
+  ? main()
+  : Promise.resolve(console.log("demo-seed skipped — demo data is switched off (no records created)."));
+seed.then(() => console.log("SEED_OK")).catch((e) => { console.error("SEED_ERROR:", e); process.exitCode = 1; }).finally(() => setTimeout(() => process.exit(process.exitCode ?? 0), 300));
