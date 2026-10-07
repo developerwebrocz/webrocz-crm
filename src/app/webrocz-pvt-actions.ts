@@ -104,6 +104,8 @@ export async function updateWebRoczPvtClient(fd: FormData) {
 // One invoice per CSV row, keeping the report's own invoice number, date, party, GSTIN,
 // total, received amount and payment type. Columns (case-insensitive, extras ignored):
 //   Date, Invoice No, Party Name, GSTIN, Phone, Total, Received, Payment Type
+// Optional, for a single party's statement: Address, Item (the service on the invoice),
+//   Payment Date (the day the money actually came in) and Payment Ref (receipt number).
 // The report's TOTAL already includes GST, so the taxable value is worked back at 18%.
 // Safe to upload twice: a row whose invoice number already exists is skipped.
 export type PvtImportResult = { ok: boolean; message: string; details?: string[] } | null;
@@ -170,6 +172,10 @@ export async function importWebRoczPvtSaleReport(_prev: PvtImportResult, fd: For
     const gstin = get(row, "gstin", "gst no", "gst number").toUpperCase();
     const phone = get(row, "phone", "party phone no.", "party phone no", "mobile");
     const received = Math.min(total, Math.max(0, amt(get(row, "received", "received / paid", "paid"))));
+    const item = get(row, "item", "item name", "service") || "Digital Marketing";
+    const address = get(row, "address", "party address");
+    const payDate = isoDate(get(row, "payment date", "received date")) || date;
+    const payRef = get(row, "payment ref", "payment no", "receipt no");
     const subtotal = Math.round((total * 100) / (100 + GST_PCT));
     const taxAmount = total - subtotal;
 
@@ -184,7 +190,8 @@ export async function importWebRoczPvtSaleReport(_prev: PvtImportResult, fd: For
       data: {
         number, clientId, pipeline: "WEBROCZ", company: "WEB_ROCZ_PVT",
         billTo: name, phone, clientGstin: gstin, ...(state ? { clientState: state, placeOfSupply: state } : {}),
-        items: JSON.stringify([{ name: "Digital Marketing", qty: 1, rate: subtotal, amount: subtotal }]),
+        ...(address ? { clientAddress: address } : {}),
+        items: JSON.stringify([{ name: item, qty: 1, rate: subtotal, amount: subtotal }]),
         subtotal, taxPct: GST_PCT, taxAmount, total, received,
         paymentStatus: received >= total ? "Fully Received" : received > 0 ? "Partially Received" : "Pending",
         issueDate: date, dueDate: due.toISOString().slice(0, 10),
@@ -196,7 +203,7 @@ export async function importWebRoczPvtSaleReport(_prev: PvtImportResult, fd: For
     });
     if (received > 0) {
       const type = get(row, "payment type", "payment").toLowerCase();
-      await prisma.payment.create({ data: { invoiceId: inv.id, amount: received, date, mode: type.includes("cash") ? "CASH" : type.includes("bank") ? "BANK" : "OTHER", note: "Imported from the sale report", by: me.name } });
+      await prisma.payment.create({ data: { invoiceId: inv.id, amount: received, date: payDate, mode: type.includes("cash") ? "CASH" : type.includes("bank") ? "BANK" : "OTHER", ref: payRef, note: "Imported from the sale report", by: me.name } });
     }
     taken.add(number); created++; totalAdded += total;
   }
