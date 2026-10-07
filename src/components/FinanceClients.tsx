@@ -53,8 +53,10 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
   const [addInvOpen, setAddInvOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [clientImportOpen, setClientImportOpen] = useState(false); // Web Rocz: client details from a sheet
-  // Web Rocz Pvt Ltd does not track a domain, so its clients list has no Domain column.
-  const showDomain = lockedCompany !== "WEB_ROCZ_PVT";
+  // Web Rocz Pvt Ltd does not track a domain, so its clients list has no Domain column;
+  const showDomain = lockedCompany !== "WEB_ROCZ_PVT" && lockedCompany !== "WEB_ROCZ";
+  // the Web Rocz clients list has neither a Domain nor an Email column.
+  const showEmail = lockedCompany !== "WEB_ROCZ";
   const clientNames = useMemo(() => rows.map((r) => r.name).sort((a, b) => a.localeCompare(b)), [rows]);
   // Web Rocz invoice form: the domain auto-fills from the picked client.
   const clientDomains = useMemo(() => Object.fromEntries(rows.filter((r) => r.domain).map((r) => [r.name.trim().toLowerCase(), r.domain])), [rows]);
@@ -210,9 +212,9 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
       <div className="card !p-0 overflow-hidden">
         <div className="overflow-x-auto scroll-thin">
           <table className="w-full min-w-[1120px] text-left">
-            <thead><tr className="border-b border-[var(--line)]">{["Client ID", "Invoice date", "Client Name", ...(showDomain ? ["Domain"] : []), "Phone / Mobile", "Email", "SLA", ...(showAM ? ["Account Manager"] : []), "Services", "Amount", "Actions"].map((h) => <th key={h} className="th px-5 py-2.5">{h}</th>)}</tr></thead>
+            <thead><tr className="border-b border-[var(--line)]">{["Client ID", "Invoice date", "Client Name", ...(showDomain ? ["Domain"] : []), "Phone / Mobile", ...(showEmail ? ["Email"] : []), "SLA", ...(showAM ? ["Account Manager"] : []), "Services", "Amount", "Actions"].map((h) => <th key={h} className="th px-5 py-2.5">{h}</th>)}</tr></thead>
             <tbody>
-              {filtered.length === 0 && <tr><td colSpan={(showAM ? 11 : 10) - (showDomain ? 0 : 1)} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No clients found.</td></tr>}
+              {filtered.length === 0 && <tr><td colSpan={(showAM ? 11 : 10) - (showDomain ? 0 : 1) - (showEmail ? 0 : 1)} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No clients found.</td></tr>}
               {paged.map((r, i) => (
                 <tr key={r.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
                   <td className="px-5 py-3 text-[12px] font-semibold tnum text-[var(--ink-2)]">{r.code || "—"}</td>
@@ -225,7 +227,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
                   <td className="px-5 py-3"><Link href={companySel !== "ALL" ? `/accounts/${r.id}?company=${companySel}` : `/accounts/${r.id}`} prefetch className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.name}</Link>{r.companies.length > 0 && lockedCompany !== "WEB_ROCZ" && <div className="text-[11px] text-[var(--faint)]">{r.companies.map(companyLabel).join(", ")}</div>}</td>
                   {showDomain && <td className="px-5 py-3 text-[12px]">{r.domain ? <span className="inline-flex items-center gap-1 font-semibold text-[var(--indigo)]"><Globe size={11} /> {r.domain}</span> : <span className="text-[var(--faint)]">—</span>}</td>}
                   <td className="px-5 py-3 text-[12.5px] tnum">{r.phone || "—"}</td>
-                  <td className="px-5 py-3 text-[12.5px]">{r.email ? <a href={`mailto:${r.email}`} className="text-[var(--indigo)] hover:underline">{r.email}</a> : "—"}</td>
+                  {showEmail && <td className="px-5 py-3 text-[12.5px]">{r.email ? <a href={`mailto:${r.email}`} className="text-[var(--indigo)] hover:underline">{r.email}</a> : "—"}</td>}
                   <td className="px-5 py-3">{r.slaUrl
                     ? <div><a href={r.slaUrl} target="_blank" rel="noreferrer" download title={r.slaTitle || "Download SLA"} className="inline-flex items-center gap-1.5 rounded-[8px] bg-[var(--violet)] px-3 py-1.5 text-[12px] font-semibold text-white transition hover:opacity-90"><Download size={13} className="flex-none" /> Download SLA</a>{r.slaBy && <div className="mt-1 text-[10px] text-[var(--faint)]">by {r.slaBy}</div>}</div>
                     : <span className="text-[var(--faint)]">—</span>}</td>
