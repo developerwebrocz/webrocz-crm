@@ -11,6 +11,7 @@ import AddWebRoczClientModal from "@/components/AddWebRoczClientModal";
 import AddWebRoczPvtClientModal from "@/components/AddWebRoczPvtClientModal";
 import AddWebRoczPvtInvoiceModal from "@/components/AddWebRoczPvtInvoiceModal";
 import ImportWebRoczPvtSaleReportModal from "@/components/ImportWebRoczPvtSaleReportModal";
+import ImportWebRoczClientsModal from "@/components/ImportWebRoczClientsModal";
 import { companyLabel, COMPANY_KEYS } from "@/lib/domain";
 import { Users, Search, ReceiptText, Wallet, CheckCircle2, ChevronRight, ChevronLeft, MessageSquarePlus, Pencil, Trash2, X, Download, UserPlus, CalendarClock, Upload, Plus, Globe } from "lucide-react";
 
@@ -51,6 +52,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
   const [addOpen, setAddOpen] = useState(false);
   const [addInvOpen, setAddInvOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [clientImportOpen, setClientImportOpen] = useState(false); // Web Rocz: client details from a sheet
   // Web Rocz Pvt Ltd does not track a domain, so its clients list has no Domain column.
   const showDomain = lockedCompany !== "WEB_ROCZ_PVT";
   const clientNames = useMemo(() => rows.map((r) => r.name).sort((a, b) => a.localeCompare(b)), [rows]);
@@ -89,7 +91,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
     if (invs.length) {
       if (lockedCompany === "WEB_ROCZ") category = "Digital Marketing";
       else if (lockedCompany === "WEB_SOLUTIONS") category = "Website";
-    }
+    } else if (lockedCompany === "WEB_ROCZ") category = "Digital Marketing"; // Web Rocz client added before its first invoice
     return { ...r, category, billed, received, pending, overdueAmt, invoices: invs.length, lastInvoiceDate, scopedInvs: invs };
   }), [rows, cat, companySel, gstSel, pFrom, pTo]);
 
@@ -146,6 +148,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
           <p className="mr-auto text-[12.5px] text-[var(--muted)]">{totals.clients} clients · Billed {inr(totals.billed)} · Pending <b style={{ color: "var(--amber)" }}>{inr(totals.pending)}</b></p>
           {lockedCompany && <button onClick={() => setAddInvOpen(true)} className="btn btn-ghost"><ReceiptText size={15} /> Add invoice</button>}
           {lockedCompany && <button onClick={() => setAddOpen(true)} className="btn btn-violet"><UserPlus size={15} /> Add Client</button>}
+          {lockedCompany === "WEB_ROCZ" && <button onClick={() => setClientImportOpen(true)} title="Add client details from a sheet — no invoices" className="btn btn-ghost"><Upload size={15} /> Import clients</button>}
           {lockedCompany && <button onClick={() => setImportOpen(true)} className="btn btn-ghost"><Upload size={15} /> Import</button>}
           <button onClick={exportCsv} className="btn btn-ghost"><Download size={15} /> Export CSV</button>
         </div>
@@ -166,7 +169,8 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
             {lockedCompany && <Link href={`/invoices?company=${lockedCompany}`} prefetch className="btn btn-ghost"><ReceiptText size={15} /> Invoices</Link>}
             {/* Add Client only on the company pipelines (company + GST fixed there); hidden on All Clients and DM Clients. */}
             {lockedCompany && <button onClick={() => setAddOpen(true)} className="btn btn-violet"><UserPlus size={15} /> Add Client</button>}
-            {lockedCompany && <button onClick={() => setImportOpen(true)} className="btn btn-ghost"><Upload size={15} /> Import</button>}
+            {lockedCompany === "WEB_ROCZ" && <button onClick={() => setClientImportOpen(true)} title="Add client details from a sheet — no invoices" className="btn btn-ghost"><Upload size={15} /> Import clients</button>}
+          {lockedCompany && <button onClick={() => setImportOpen(true)} className="btn btn-ghost"><Upload size={15} /> Import</button>}
             <button onClick={exportCsv} className="btn btn-ghost"><Download size={15} /> Export CSV</button>
             <Link href="/" prefetch className="btn btn-ghost">← Dashboard</Link>
           </div>
@@ -249,6 +253,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
       {addOpen && lockedCompany === "WEB_ROCZ" && <AddWebRoczClientModal close={() => setAddOpen(false)} />}
       {addOpen && lockedCompany === "WEB_ROCZ_PVT" && <AddWebRoczPvtClientModal close={() => setAddOpen(false)} />}
       {addOpen && lockedCompany !== "WEB_ROCZ" && lockedCompany !== "WEB_ROCZ_PVT" && <AddClientModal lockedCompany={lockedCompany} lockedCategory={lockedCategory} close={() => setAddOpen(false)} />}
+      {clientImportOpen && <ImportWebRoczClientsModal close={() => setClientImportOpen(false)} />}
       {importOpen && lockedCompany === "WEB_ROCZ_PVT" && <ImportWebRoczPvtSaleReportModal close={() => setImportOpen(false)} />}
       {importOpen && lockedCompany !== "WEB_ROCZ_PVT" && <ImportModal company={lockedCompany ?? ""} close={() => setImportOpen(false)} />}
       {addInvOpen && lockedCompany === "WEB_ROCZ" && <AddWebRoczInvoiceModal clientNames={clientNames} clientDomains={clientDomains} close={() => setAddInvOpen(false)} returnTo="/pipeline/web-rocz" />}

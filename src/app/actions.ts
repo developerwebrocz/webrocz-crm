@@ -639,7 +639,10 @@ export async function addClientFromFinance(fd: FormData) {
 
   const gst = Math.max(0, n(fd, "gst")); // 0 = no GST, else rate %
   const gstin = s(fd, "gstin");
-  const client = await prisma.client.create({ data: { code, ...scalars, gstApplicable: gst > 0, gstRate: gst > 0 ? gst : 18, gstin } });
+  // Web Rocz / Web Rocz Pvt Ltd forms send their company, so the client shows in that company's
+  // list even when no amount (and so no invoice) was entered. Other forms do not send it.
+  const billingCompany = ["WEB_ROCZ", "WEB_ROCZ_PVT"].includes(s(fd, "billingCompany")) ? s(fd, "billingCompany") : "";
+  const client = await prisma.client.create({ data: { code, ...scalars, gstApplicable: gst > 0, gstRate: gst > 0 ? gst : 18, gstin, ...(billingCompany ? { billingCompany } : {}) } });
 
   // A client who takes both services gets a SEPARATE invoice per service, so the
   // Website-vs-DM split stays exact (no lumped "Both" invoice). Amounts are entered

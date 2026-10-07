@@ -19,7 +19,7 @@ const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
-type Client = { id: string; code: string; name: string; website: string | null; industry: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; monthlyRetainer: number; status: string; renewalDate: string; gstApplicable: boolean; gstRate: number; gstin: string; onboardDate: string; notes: string | null; websiteName: string; websiteDomain: string; websiteServices: string; domainTaken: boolean; domainAmount: number; hostingTaken: boolean; hostingAmount: number; designAmount: number; websiteTakenDate: string; websiteExpiryDate: string; websiteRenewAmount: number; nextFollowup: string; accountManagerId: string | null };
+type Client = { id: string; code: string; name: string; website: string | null; industry: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; monthlyRetainer: number; status: string; renewalDate: string; gstApplicable: boolean; gstRate: number; gstin: string; onboardDate: string; notes: string | null; websiteName: string; websiteDomain: string; websiteServices: string; domainTaken: boolean; domainAmount: number; hostingTaken: boolean; hostingAmount: number; designAmount: number; websiteTakenDate: string; websiteExpiryDate: string; websiteRenewAmount: number; nextFollowup: string; accountManagerId: string | null; billingCompany?: string; billingDay?: number };
 type Inv = { id: string; number: string; total: number; received: number; balance: number; approved: boolean; paymentStatus: string; issueDate: string; dueDate: string; leadId: string | null; category: string; overdue: boolean; company: string; followups: { date: string; by: string; note: string }[]; invoiceDoc?: string; projectDate?: string; paymentTerm?: string };
 type Pay = { id: string; invoiceId: string; invoiceNumber: string; amount: number; date: string; mode: string; ref: string; note: string; by: string };
 type Followup = { date: string; by: string; note: string; next?: string };
@@ -37,10 +37,10 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
   const isWebSolClient = company === "WEB_SOLUTIONS" || invoices.some((i) => i.company === "WEB_SOLUTIONS");
   // A Web Rocz (digital marketing) client → "Edit info" opens the Web Rocz form (DM services,
   // no domain / hosting / renewal). Web Solutions clients keep the website edit form.
-  const isWebRoczClient = company === "WEB_ROCZ" || (!isWebSolClient && invoices.some((i) => i.company === "WEB_ROCZ"));
+  const isWebRoczClient = company === "WEB_ROCZ" || (!isWebSolClient && (invoices.some((i) => i.company === "WEB_ROCZ") || client.billingCompany === "WEB_ROCZ"));
   // A Web Rocz Pvt Ltd (GST) client → its own edit form (DM services + GSTIN). Opened from the
   // Pvt Ltd hub this always applies; otherwise only for a client that is neither of the above.
-  const isWebRoczPvtClient = company === "WEB_ROCZ_PVT" || (!isWebSolClient && !isWebRoczClient && invoices.some((i) => i.company === "WEB_ROCZ_PVT"));
+  const isWebRoczPvtClient = company === "WEB_ROCZ_PVT" || (!isWebSolClient && !isWebRoczClient && (invoices.some((i) => i.company === "WEB_ROCZ_PVT") || client.billingCompany === "WEB_ROCZ_PVT"));
   // Website services this client has taken (for the details card).
   // Latest SLA with an uploaded file (slas arrive newest-first) → Download button in the card.
   const slaDoc = slas.find((x) => x.fileUrl) ?? null;

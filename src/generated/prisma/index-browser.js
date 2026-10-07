@@ -178,6 +178,8 @@ exports.Prisma.ClientScalarFieldEnum = {
   gstApplicable: 'gstApplicable',
   gstRate: 'gstRate',
   gstin: 'gstin',
+  billingCompany: 'billingCompany',
+  billingDay: 'billingDay',
   websiteName: 'websiteName',
   websiteDomain: 'websiteDomain',
   websiteServices: 'websiteServices',

@@ -21,6 +21,7 @@ export default function AddWebRoczClientModal({ close }: { close: () => void }) 
         <form action={addClientFromFinance} className="space-y-3 overflow-y-auto scroll-thin px-6 py-5">
           <input type="hidden" name="return" value="/pipeline/web-rocz" />
           <input type="hidden" name="gst" value="0" />
+          <input type="hidden" name="billingCompany" value="WEB_ROCZ" />
 
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Company name *</span><input name="name" required className="input mt-1" placeholder="Acme Pvt Ltd" /></label>

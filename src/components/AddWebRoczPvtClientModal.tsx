@@ -29,6 +29,7 @@ export default function AddWebRoczPvtClientModal({ close }: { close: () => void 
         <form action={addClientFromFinance} className="space-y-3 overflow-y-auto scroll-thin px-6 py-5">
           <input type="hidden" name="return" value="/pipeline/web-rocz-pvt" />
           <input type="hidden" name="gst" value={GST_PCT} />
+          <input type="hidden" name="billingCompany" value="WEB_ROCZ_PVT" />
 
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Company name *</span><input name="name" required className="input mt-1" placeholder="Acme Pvt Ltd" /></label>

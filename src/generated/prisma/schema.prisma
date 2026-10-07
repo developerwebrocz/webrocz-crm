@@ -99,6 +99,10 @@ model Client {
   gstApplicable      Boolean  @default(true) // whether invoices for this client carry GST
   gstRate            Int      @default(18) // GST % applied when applicable
   gstin              String   @default("") // client's GSTIN (for the tax invoice)
+  // Billing entity the client belongs to (WEB_SOLUTIONS | WEB_ROCZ | WEB_ROCZ_PVT) — lets a
+  // client show in that company's list before its first invoice exists. "" = from invoices only.
+  billingCompany     String   @default("")
+  billingDay         Int      @default(0) // day of the month the invoice is raised (1..31); 0 = not set
   // --- Website renewal / hosting (one website per client) ---
   websiteName        String   @default("") // website URL
   websiteDomain      String   @default("") // e.g. example.com

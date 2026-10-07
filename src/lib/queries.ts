@@ -2178,7 +2178,7 @@ function catOfInvoice(inv: { leadId: string | null; items: string }, leadSvc: Ma
 export async function getFinanceClients() {
   const today = salesToday();
   const [clients, invoices, leads, amUsers, slaDocs] = await Promise.all([
-    prisma.client.findMany({ orderBy: { name: "asc" }, select: { id: true, code: true, name: true, websiteDomain: true, website: true, pocName: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true, followupLog: true, nextFollowup: true, accountManager: { select: { name: true } }, services: { select: { service: true, detail: true } } } }),
+    prisma.client.findMany({ orderBy: { name: "asc" }, select: { id: true, code: true, name: true, billingCompany: true, websiteDomain: true, website: true, pocName: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true, followupLog: true, nextFollowup: true, accountManager: { select: { name: true } }, services: { select: { service: true, detail: true } } } }),
     prisma.salesInvoice.findMany({ orderBy: { createdAt: "desc" }, select: { id: true, number: true, clientId: true, billTo: true, total: true, received: true, issueDate: true, dueDate: true, leadId: true, items: true, notesLog: true, company: true, taxPct: true } }),
     prisma.lead.findMany({ select: { id: true, services: true } }),
     prisma.user.findMany({ where: { active: true, role: { in: ["ACCOUNT_MANAGER", "AM_HEAD", "DM_EXEC"] } }, orderBy: { name: "asc" }, select: { id: true, name: true } }),
@@ -2243,7 +2243,9 @@ export async function getFinanceClients() {
       slaUrl: sla?.url ?? "", slaTitle: sla?.title ?? "", slaBy: sla?.by ?? "", services: c.services.map((s) => (["SEO", "SMO", "Videoshoot", "AI Reels"].includes(s.service) && s.detail ? `${s.service} (${s.detail})` : s.service)),
       status: c.status, retainer: c.monthlyRetainer || 0, category, invs,
       lastInvoiceDate: lastDateByClient.get(c.id) ?? "", billed, received, pending,
-      companies: [...(companiesByClient.get(c.id) ?? [])],
+      // companies billed so far, plus the company saved on the client (so a client with no
+      // invoice yet still shows in that company's list)
+      companies: [...new Set([...(companiesByClient.get(c.id) ?? []), ...(c.billingCompany ? [c.billingCompany] : [])])],
       clientFollowups: clientFollowups.sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 30),
       nextFollowup: c.nextFollowup ?? "",
       notes, noteTarget: outstandingByClient.get(c.id) ?? recentByClient.get(c.id) ?? null,
@@ -2511,7 +2513,7 @@ export async function getWebsiteRenewals() {
 export async function getFinanceClientDetail(clientId: string) {
   const client = await prisma.client.findUnique({
     where: { id: clientId },
-    select: { id: true, code: true, name: true, website: true, industry: true, pocName: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true, renewalDate: true, gstApplicable: true, gstRate: true, gstin: true, onboardDate: true, notes: true, websiteName: true, websiteDomain: true, websiteServices: true, domainTaken: true, domainAmount: true, hostingTaken: true, hostingAmount: true, designAmount: true, websiteTakenDate: true, websiteExpiryDate: true, websiteRenewAmount: true, followupLog: true, nextFollowup: true, accountManagerId: true },
+    select: { id: true, code: true, name: true, website: true, industry: true, pocName: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true, renewalDate: true, gstApplicable: true, gstRate: true, gstin: true, onboardDate: true, notes: true, websiteName: true, websiteDomain: true, websiteServices: true, domainTaken: true, domainAmount: true, hostingTaken: true, hostingAmount: true, designAmount: true, websiteTakenDate: true, websiteExpiryDate: true, websiteRenewAmount: true, followupLog: true, nextFollowup: true, accountManagerId: true, billingCompany: true, billingDay: true },
   });
   if (!client) return null;
   const [invoicesRaw, leads, amUsers, slasRaw] = await Promise.all([
