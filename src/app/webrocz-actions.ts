@@ -26,18 +26,6 @@ export async function getWebRoczInvoiceDefaults(): Promise<WebRoczInvoiceDefault
   return getClientInvoiceDefaults();
 }
 
-// Read-only: each client's payment type (PREPAID / POSTPAID), keyed by lower-cased client
-// name, so the Web Rocz invoice form can tick it: the one set in Add / Edit client, else the
-// one on the client's latest Web Rocz invoice.
-export async function getWebRoczPaymentTerms(): Promise<Record<string, string>> {
-  const u = await getCurrentUser();
-  if (!u || !["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"].includes(u.role)) return {};
-  const rows = await prisma.salesInvoice.findMany({ where: { company: "WEB_ROCZ", paymentTerm: { not: "" } }, orderBy: { issueDate: "asc" }, select: { paymentTerm: true, client: { select: { name: true } } } });
-  // oldest → newest, so the newest invoice's value wins; the client's own setting wins over both
-  const fromClients = await prisma.client.findMany({ where: { paymentTerm: { not: "" } }, select: { name: true, paymentTerm: true } });
-  return Object.fromEntries([...rows.filter((r) => r.client).map((r) => [r.client!.name.trim().toLowerCase(), r.paymentTerm]), ...fromClients.map((c) => [c.name.trim().toLowerCase(), c.paymentTerm])]);
-}
-
 // Read-only: the team members who can be a client's account manager (same roles the finance
 // screens already use), for the Account manager dropdown in the Web Rocz client forms.
 export async function getWebRoczAccountManagers(): Promise<{ id: string; name: string }[]> {

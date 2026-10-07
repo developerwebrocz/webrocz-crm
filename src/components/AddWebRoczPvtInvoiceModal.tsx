@@ -25,9 +25,8 @@ export default function AddWebRoczPvtInvoiceModal({ clientNames, close, returnTo
   // Invoice number: the next one in the Pvt Ltd series is suggested, and stays editable.
   const [number, setNumber] = useState("");
   const [issueDate, setIssueDate] = useState(today);
-  // Project date + payment type are remembered from the client's last invoice.
+  // Project date is remembered from the client's last invoice.
   const [projectDate, setProjectDate] = useState("");
-  const [paymentTerm, setPaymentTerm] = useState("");
   const [saved, save, saving] = useActionState<PvtInvoiceResult, FormData>(addWebRoczPvtInvoice, null);
   // Saved GSTIN + services per client (lower-cased name), loaded once when the form opens.
   const [defaults, setDefaults] = useState<WebRoczPvtInvoiceDefaults>({});
@@ -36,14 +35,12 @@ export default function AddWebRoczPvtInvoiceModal({ clientNames, close, returnTo
   const gstinEdited = useRef(false);
   const numberEdited = useRef(false);
   const projectEdited = useRef(false);
-  const termEdited = useRef(false);
   const nameRef = useRef(name);
 
   const applyClient = (clientName: string, from: WebRoczPvtInvoiceDefaults) => {
     const c = from[clientName.trim().toLowerCase()];
     if (!gstinEdited.current) setGstin(c?.gstin ?? "");
     if (!projectEdited.current) setProjectDate(c?.projectDate ?? "");
-    if (!termEdited.current) setPaymentTerm(c?.paymentTerm ?? "");
     if (svcEdited.current) return;
     const names = (c?.services ?? []).map((x) => x.service);
     setOn(Object.fromEntries(names.filter((n) => PVT_SERVICES.includes(n)).map((n) => [n, true])));
@@ -87,7 +84,6 @@ export default function AddWebRoczPvtInvoiceModal({ clientNames, close, returnTo
           <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
         </div>
         <form action={save} className="space-y-3 overflow-y-auto scroll-thin px-6 py-4">
-          <input type="hidden" name="paymentTerm" value={paymentTerm} />
           {picked.map((sv, i) => <input key={i} type="hidden" name="services" value={sv} />)}
           <datalist id="webrocz-pvt-inv-client-names">{clientNames.map((nm) => <option key={nm} value={nm} />)}</datalist>
 
@@ -100,21 +96,6 @@ export default function AddWebRoczPvtInvoiceModal({ clientNames, close, returnTo
             <label className="block"><span className="eyebrow">Project date</span><input name="projectDate" type="date" value={projectDate} onChange={(e) => { setProjectDate(e.target.value); projectEdited.current = true; }} className="input mt-1" /><span className="mt-1 block text-[11px] text-[var(--faint)]">The date the project started.</span></label>
           </div>
           <label className="block"><span className="eyebrow">Client GSTIN</span><input name="gstin" value={gstin} onChange={(e) => { setGstin(e.target.value); gstinEdited.current = true; }} className="input mt-1 uppercase" placeholder="e.g. 36AABCU9603R1ZM" /><span className="mt-1 block text-[11px] text-[var(--faint)]">Sets the place of supply (CGST/SGST vs IGST) on the tax invoice.</span></label>
-
-          <div>
-            <span className="eyebrow">Payment type</span>
-            <div className="mt-1.5 grid grid-cols-2 gap-2">
-              {[{ k: "PREPAID", label: "Prepayment", hint: "Paid before the work" }, { k: "POSTPAID", label: "Post payment", hint: "Paid after the work" }].map((t) => {
-                const active = paymentTerm === t.k;
-                return (
-                  <label key={t.k} className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-[10px] border px-3 py-1.5" style={active ? { borderColor: "var(--violet)", background: "color-mix(in srgb, var(--violet) 5%, white)" } : { borderColor: "var(--line-2)" }}>
-                    <input type="checkbox" checked={active} onChange={(e) => { setPaymentTerm(e.target.checked ? t.k : ""); termEdited.current = true; }} className="h-4 w-4 accent-[var(--violet)]" />
-                    <span><span className="block text-[13px] font-semibold">{t.label}</span><span className="block text-[11px] text-[var(--faint)]">{t.hint}</span></span>
-                  </label>
-                );
-              })}
-            </div>
-          </div>
 
           <div>
             <span className="eyebrow">Services</span>

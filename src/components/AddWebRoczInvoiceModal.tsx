@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { X, Plus } from "lucide-react";
 import { addInvoice } from "@/app/sales-actions";
-import { getWebRoczInvoiceDefaults, getWebRoczPaymentTerms, type WebRoczInvoiceDefaults } from "@/app/webrocz-actions";
+import { getWebRoczInvoiceDefaults, type WebRoczInvoiceDefaults } from "@/app/webrocz-actions";
 import { WEB_ROCZ_CLIENT_SERVICES } from "@/lib/webrocz-services";
 
 // Web Rocz (digital marketing, non-GST) invoice — billed monthly: tick the services and enter
@@ -27,11 +27,6 @@ export default function AddWebRoczInvoiceModal({ clientNames, close, returnTo = 
   // Once the accountant changes a tick by hand, auto-fill never overwrites it.
   const svcEdited = useRef(false);
   const nameRef = useRef(name);
-  // Payment type (Prepayment / Post payment): remembered from the client's last invoice.
-  const [paymentTerm, setPaymentTerm] = useState("");
-  const [terms, setTerms] = useState<Record<string, string>>({});
-  const termEdited = useRef(false);
-  const applyTerm = (clientName: string, from: Record<string, string>) => { if (!termEdited.current) setPaymentTerm(from[clientName.trim().toLowerCase()] ?? ""); };
 
   const applyClient = (clientName: string, from: WebRoczInvoiceDefaults) => {
     if (svcEdited.current) return;
@@ -42,11 +37,10 @@ export default function AddWebRoczInvoiceModal({ clientNames, close, returnTo = 
   useEffect(() => {
     let alive = true;
     getWebRoczInvoiceDefaults().then((d) => { if (!alive) return; setDefaults(d); applyClient(nameRef.current, d); }).catch(() => { /* form still works without auto-fill */ });
-    getWebRoczPaymentTerms().then((t) => { if (!alive) return; setTerms(t); applyTerm(nameRef.current, t); }).catch(() => { /* ticked by hand instead */ });
     return () => { alive = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const pickName = (v: string) => { setName(v); nameRef.current = v; applyClient(v, defaults); applyTerm(v, terms); };
+  const pickName = (v: string) => { setName(v); nameRef.current = v; applyClient(v, defaults); };
   // Monthly counts saved for the picked client (e.g. "8 blogs/month · 25 keywords"), shown beside the service.
   const detailOf = (sv: string) => defaults[name.trim().toLowerCase()]?.services.find((x) => x.service === sv)?.detail ?? "";
   const tick = (sv: string, v: boolean) => { svcEdited.current = true; setOn((p) => ({ ...p, [sv]: v })); };
@@ -74,7 +68,6 @@ export default function AddWebRoczInvoiceModal({ clientNames, close, returnTo = 
           <input type="hidden" name="return" value={returnTo} />
           <input type="hidden" name="category" value="DM" />
           <input type="hidden" name="gst" value="0" />
-          <input type="hidden" name="paymentTerm" value={paymentTerm} />
           <input type="hidden" name="items" value={JSON.stringify([{ name: "Digital Marketing", qty: 1, rate: total, amount: total }])} />
           {picked.map((sv, i) => <input key={i} type="hidden" name="services" value={sv} />)}
           <datalist id="webrocz-inv-client-names">{clientNames.map((nm) => <option key={nm} value={nm} />)}</datalist>
@@ -82,21 +75,6 @@ export default function AddWebRoczInvoiceModal({ clientNames, close, returnTo = 
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Invoice date</span><input name="issueDate" type="date" defaultValue={today} className="input mt-1" /></label>
             <label className="block"><span className="eyebrow">Company name</span><input name="clientName" required list="webrocz-inv-client-names" value={name} onChange={(e) => pickName(e.target.value)} readOnly={!!lockClientName} className={"input mt-1" + (lockClientName ? " bg-[var(--surface-2)]" : "")} placeholder="Company / client" /></label>
-          </div>
-
-          <div>
-            <span className="eyebrow">Payment type</span>
-            <div className="mt-1.5 grid grid-cols-2 gap-2">
-              {[{ k: "PREPAID", label: "Prepayment", hint: "Paid before the work" }, { k: "POSTPAID", label: "Post payment", hint: "Paid after the work" }].map((t) => {
-                const active = paymentTerm === t.k;
-                return (
-                  <label key={t.k} className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-[10px] border px-3 py-1.5" style={active ? { borderColor: "var(--violet)", background: "color-mix(in srgb, var(--violet) 5%, white)" } : { borderColor: "var(--line-2)" }}>
-                    <input type="checkbox" checked={active} onChange={(e) => { setPaymentTerm(e.target.checked ? t.k : ""); termEdited.current = true; }} className="h-4 w-4 accent-[var(--violet)]" />
-                    <span><span className="block text-[13px] font-semibold">{t.label}</span><span className="block text-[11px] text-[var(--faint)]">{t.hint}</span></span>
-                  </label>
-                );
-              })}
-            </div>
           </div>
 
           <div>

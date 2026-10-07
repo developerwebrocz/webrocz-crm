@@ -108,19 +108,13 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
           <h3 className="text-[14px] font-bold">Edit invoice</h3>
           <form action={saveInvoice} className="mt-3 grid gap-3 sm:grid-cols-2">
             <input type="hidden" name="invoiceId" value={invoice.id} /><input type="hidden" name="leadId" value={leadId} />
-            {/* Web Rocz Pvt Ltd only: its invoice number can be corrected, and the project date /
-                payment type entered on its invoice form can be changed. */}
+            {/* Web Rocz Pvt Ltd only: its invoice number can be corrected, and the project date
+                entered on its invoice form can be changed. */}
             {invoice.company === "WEB_ROCZ_PVT" && (
               <>
                 <L label="Invoice number"><input name="number" defaultValue={invoice.number} className="input" /></L>
                 <L label="Project date"><input type="date" name="projectDate" defaultValue={invoice.projectDate ?? ""} className="input" /></L>
-                <L label="Payment type"><select name="paymentTerm" defaultValue={invoice.paymentTerm ?? ""} className="select"><option value="">Not set</option><option value="PREPAID">Prepayment</option><option value="POSTPAID">Post payment</option></select></L>
-                <div />
               </>
-            )}
-            {/* Web Rocz only: the payment type ticked on its invoice form can be changed. */}
-            {invoice.company === "WEB_ROCZ" && (
-              <><L label="Payment type"><select name="paymentTerm" defaultValue={invoice.paymentTerm ?? ""} className="select"><option value="">Not set</option><option value="PREPAID">Prepayment</option><option value="POSTPAID">Post payment</option></select></L><div /></>
             )}
             <L label="Bill to (client)"><input name="billTo" defaultValue={invoice.billTo} className="input" /></L>
             <L label="Contact person"><input name="contact" defaultValue={invoice.contact ?? ""} className="input" /></L>
