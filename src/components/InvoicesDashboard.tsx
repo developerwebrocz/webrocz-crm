@@ -8,6 +8,7 @@ import { addInvoiceNote, deleteSalesInvoice } from "@/app/sales-actions";
 import AddInvoiceModal from "@/components/AddInvoiceModal";
 import AddWebRoczInvoiceModal from "@/components/AddWebRoczInvoiceModal";
 import AddWebRoczPvtInvoiceModal from "@/components/AddWebRoczPvtInvoiceModal";
+import WebRoczPvtInvoiceGroups from "@/components/WebRoczPvtInvoiceGroups";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
@@ -90,8 +91,12 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
         {(q || status) && <Link href={keepHub ? hubHref : company ? `/invoices?company=${company}` : "/invoices"} className="btn btn-ghost btn-sm">Clear</Link>}
       </form>
 
+      {/* Web Rocz Pvt Ltd lists one row per client (click to see that client's invoices);
+          every other company keeps the invoice-by-invoice table below. */}
+      {company === "WEB_ROCZ_PVT" && <WebRoczPvtInvoiceGroups rows={rows} hideApproval={hideApproval} canDelete={canDelete} openAll={!!q} onFollowup={setFuInv} onDelete={setDelInv} />}
+
       {/* table */}
-      <div className="card !p-0 overflow-hidden">
+      {company !== "WEB_ROCZ_PVT" && <div className="card !p-0 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-[13px]">
             <thead><tr className="border-b border-[var(--line)] text-left text-[var(--muted)]">
@@ -126,7 +131,7 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
             </tbody>
           </table>
         </div>
-      </div>
+      </div>}
 
       {fuInv && <InvoiceFollowupModal inv={fuInv} close={() => setFuInv(null)} />}
       {delInv && <DeleteInvoiceModal inv={delInv} back={keepHub ? hubHref : "/invoices"} close={() => setDelInv(null)} />}
