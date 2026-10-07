@@ -3,6 +3,7 @@
 import { X, UserPlus } from "lucide-react";
 import { addClientFromFinance } from "@/app/actions";
 import WebRoczServicePicker from "@/components/WebRoczServicePicker";
+import WebRoczPaymentType from "@/components/WebRoczPaymentType";
 import WebRoczAccountManagerSelect from "@/components/WebRoczAccountManager";
 
 // Web Rocz (digital marketing, non-GST) "Add client" form. Kept in its own file so the
@@ -40,6 +41,8 @@ export default function AddWebRoczClientModal({ close }: { close: () => void }) 
             <input name="slaFile" type="file" accept="image/*,.pdf,.doc,.docx" className="input mt-1 !py-1.5 text-[12px]" />
             <span className="mt-1.5 block text-[11px] text-[var(--faint)]">PDF / image — shows in the company hub with a Download link.</span>
           </label>
+
+          <WebRoczPaymentType />
 
           <WebRoczServicePicker />
 

@@ -44,14 +44,15 @@ async function nextPvtNumber(iso: string): Promise<string> {
 export async function getWebRoczPvtInvoiceDefaults(): Promise<WebRoczPvtInvoiceDefaults> {
   const u = await getCurrentUser();
   if (!u || !PVT_ROLES.includes(u.role)) return {};
-  const clients = await prisma.client.findMany({ select: { name: true, gstin: true, websiteServices: true, services: { select: { service: true, detail: true } }, salesInvoices: { where: { company: "WEB_ROCZ_PVT" }, orderBy: { issueDate: "desc" }, select: { projectDate: true, paymentTerm: true } } } });
+  const clients = await prisma.client.findMany({ select: { name: true, gstin: true, paymentTerm: true, websiteServices: true, services: { select: { service: true, detail: true } }, salesInvoices: { where: { company: "WEB_ROCZ_PVT" }, orderBy: { issueDate: "desc" }, select: { projectDate: true, paymentTerm: true } } } });
   const out: WebRoczPvtInvoiceDefaults = {};
   for (const c of clients) {
     const reserved = new Set(websiteServiceNames(c.websiteServices));
     out[c.name.trim().toLowerCase()] = {
       gstin: c.gstin || "",
       projectDate: c.salesInvoices.find((i) => i.projectDate)?.projectDate ?? "",
-      paymentTerm: c.salesInvoices.find((i) => i.paymentTerm)?.paymentTerm ?? "",
+      // set in Add / Edit client, else from the latest invoice that has one
+      paymentTerm: c.paymentTerm || (c.salesInvoices.find((i) => i.paymentTerm)?.paymentTerm ?? ""),
       services: c.services.filter((x) => !reserved.has(x.service)),
     };
   }
@@ -187,6 +188,7 @@ export async function updateWebRoczPvtClient(fd: FormData) {
       name,
       // The domain name is no longer edited here, so the saved one is left as it is.
       ...(amSent && amOk ? { accountManagerId: amId || null } : {}),
+      ...(fd.has("paymentTerm") ? { paymentTerm: ["PREPAID", "POSTPAID"].includes(s(fd, "paymentTerm")) ? s(fd, "paymentTerm") : "" } : {}),
       pocName: s(fd, "pocName") || null,
       pocMobile: s(fd, "pocMobile") || null,
       pocEmail: s(fd, "pocEmail") || null,

@@ -8554,6 +8554,7 @@ export namespace Prisma {
     gstin: string | null
     billingCompany: string | null
     billingDay: number | null
+    paymentTerm: string | null
     websiteName: string | null
     websiteDomain: string | null
     websiteServices: string | null
@@ -8600,6 +8601,7 @@ export namespace Prisma {
     gstin: string | null
     billingCompany: string | null
     billingDay: number | null
+    paymentTerm: string | null
     websiteName: string | null
     websiteDomain: string | null
     websiteServices: string | null
@@ -8646,6 +8648,7 @@ export namespace Prisma {
     gstin: number
     billingCompany: number
     billingDay: number
+    paymentTerm: number
     websiteName: number
     websiteDomain: number
     websiteServices: number
@@ -8724,6 +8727,7 @@ export namespace Prisma {
     gstin?: true
     billingCompany?: true
     billingDay?: true
+    paymentTerm?: true
     websiteName?: true
     websiteDomain?: true
     websiteServices?: true
@@ -8770,6 +8774,7 @@ export namespace Prisma {
     gstin?: true
     billingCompany?: true
     billingDay?: true
+    paymentTerm?: true
     websiteName?: true
     websiteDomain?: true
     websiteServices?: true
@@ -8816,6 +8821,7 @@ export namespace Prisma {
     gstin?: true
     billingCompany?: true
     billingDay?: true
+    paymentTerm?: true
     websiteName?: true
     websiteDomain?: true
     websiteServices?: true
@@ -8949,6 +8955,7 @@ export namespace Prisma {
     gstin: string
     billingCompany: string
     billingDay: number
+    paymentTerm: string
     websiteName: string
     websiteDomain: string
     websiteServices: string
@@ -9014,6 +9021,7 @@ export namespace Prisma {
     gstin?: boolean
     billingCompany?: boolean
     billingDay?: boolean
+    paymentTerm?: boolean
     websiteName?: boolean
     websiteDomain?: boolean
     websiteServices?: boolean
@@ -9084,6 +9092,7 @@ export namespace Prisma {
     gstin?: boolean
     billingCompany?: boolean
     billingDay?: boolean
+    paymentTerm?: boolean
     websiteName?: boolean
     websiteDomain?: boolean
     websiteServices?: boolean
@@ -9131,6 +9140,7 @@ export namespace Prisma {
     gstin?: boolean
     billingCompany?: boolean
     billingDay?: boolean
+    paymentTerm?: boolean
     websiteName?: boolean
     websiteDomain?: boolean
     websiteServices?: boolean
@@ -9178,6 +9188,7 @@ export namespace Prisma {
     gstin?: boolean
     billingCompany?: boolean
     billingDay?: boolean
+    paymentTerm?: boolean
     websiteName?: boolean
     websiteDomain?: boolean
     websiteServices?: boolean
@@ -9197,7 +9208,7 @@ export namespace Prisma {
     accountManagerId?: boolean
   }
 
-  export type ClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "name" | "website" | "industry" | "monthlyRetainer" | "googleBudget" | "seoPriority" | "seoScheduleDays" | "blogTarget" | "backlinkTarget" | "keywordTarget" | "gscLink" | "gaLink" | "domainAuthority" | "pocName" | "pocMobile" | "pocEmail" | "onboardDate" | "renewalDate" | "status" | "gstApplicable" | "gstRate" | "gstin" | "billingCompany" | "billingDay" | "websiteName" | "websiteDomain" | "websiteServices" | "domainTaken" | "domainAmount" | "hostingTaken" | "hostingAmount" | "designAmount" | "websiteTakenDate" | "websiteExpiryDate" | "websiteRenewAmount" | "followupLog" | "nextFollowup" | "notes" | "createdAt" | "updatedAt" | "accountManagerId", ExtArgs["result"]["client"]>
+  export type ClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "name" | "website" | "industry" | "monthlyRetainer" | "googleBudget" | "seoPriority" | "seoScheduleDays" | "blogTarget" | "backlinkTarget" | "keywordTarget" | "gscLink" | "gaLink" | "domainAuthority" | "pocName" | "pocMobile" | "pocEmail" | "onboardDate" | "renewalDate" | "status" | "gstApplicable" | "gstRate" | "gstin" | "billingCompany" | "billingDay" | "paymentTerm" | "websiteName" | "websiteDomain" | "websiteServices" | "domainTaken" | "domainAmount" | "hostingTaken" | "hostingAmount" | "designAmount" | "websiteTakenDate" | "websiteExpiryDate" | "websiteRenewAmount" | "followupLog" | "nextFollowup" | "notes" | "createdAt" | "updatedAt" | "accountManagerId", ExtArgs["result"]["client"]>
   export type ClientInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     accountManager?: boolean | Client$accountManagerArgs<ExtArgs>
     services?: boolean | Client$servicesArgs<ExtArgs>
@@ -9285,6 +9296,7 @@ export namespace Prisma {
       gstin: string
       billingCompany: string
       billingDay: number
+      paymentTerm: string
       websiteName: string
       websiteDomain: string
       websiteServices: string
@@ -9774,6 +9786,7 @@ export namespace Prisma {
     readonly gstin: FieldRef<"Client", 'String'>
     readonly billingCompany: FieldRef<"Client", 'String'>
     readonly billingDay: FieldRef<"Client", 'Int'>
+    readonly paymentTerm: FieldRef<"Client", 'String'>
     readonly websiteName: FieldRef<"Client", 'String'>
     readonly websiteDomain: FieldRef<"Client", 'String'>
     readonly websiteServices: FieldRef<"Client", 'String'>
@@ -51287,6 +51300,7 @@ export namespace Prisma {
     gstin: 'gstin',
     billingCompany: 'billingCompany',
     billingDay: 'billingDay',
+    paymentTerm: 'paymentTerm',
     websiteName: 'websiteName',
     websiteDomain: 'websiteDomain',
     websiteServices: 'websiteServices',
@@ -52277,6 +52291,7 @@ export namespace Prisma {
     gstin?: StringFilter<"Client"> | string
     billingCompany?: StringFilter<"Client"> | string
     billingDay?: IntFilter<"Client"> | number
+    paymentTerm?: StringFilter<"Client"> | string
     websiteName?: StringFilter<"Client"> | string
     websiteDomain?: StringFilter<"Client"> | string
     websiteServices?: StringFilter<"Client"> | string
@@ -52346,6 +52361,7 @@ export namespace Prisma {
     gstin?: SortOrder
     billingCompany?: SortOrder
     billingDay?: SortOrder
+    paymentTerm?: SortOrder
     websiteName?: SortOrder
     websiteDomain?: SortOrder
     websiteServices?: SortOrder
@@ -52418,6 +52434,7 @@ export namespace Prisma {
     gstin?: StringFilter<"Client"> | string
     billingCompany?: StringFilter<"Client"> | string
     billingDay?: IntFilter<"Client"> | number
+    paymentTerm?: StringFilter<"Client"> | string
     websiteName?: StringFilter<"Client"> | string
     websiteDomain?: StringFilter<"Client"> | string
     websiteServices?: StringFilter<"Client"> | string
@@ -52487,6 +52504,7 @@ export namespace Prisma {
     gstin?: SortOrder
     billingCompany?: SortOrder
     billingDay?: SortOrder
+    paymentTerm?: SortOrder
     websiteName?: SortOrder
     websiteDomain?: SortOrder
     websiteServices?: SortOrder
@@ -52541,6 +52559,7 @@ export namespace Prisma {
     gstin?: StringWithAggregatesFilter<"Client"> | string
     billingCompany?: StringWithAggregatesFilter<"Client"> | string
     billingDay?: IntWithAggregatesFilter<"Client"> | number
+    paymentTerm?: StringWithAggregatesFilter<"Client"> | string
     websiteName?: StringWithAggregatesFilter<"Client"> | string
     websiteDomain?: StringWithAggregatesFilter<"Client"> | string
     websiteServices?: StringWithAggregatesFilter<"Client"> | string
@@ -56042,6 +56061,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -56110,6 +56130,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -56178,6 +56199,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -56246,6 +56268,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -56314,6 +56337,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -56360,6 +56384,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -56405,6 +56430,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -60564,6 +60590,7 @@ export namespace Prisma {
     gstin?: SortOrder
     billingCompany?: SortOrder
     billingDay?: SortOrder
+    paymentTerm?: SortOrder
     websiteName?: SortOrder
     websiteDomain?: SortOrder
     websiteServices?: SortOrder
@@ -60625,6 +60652,7 @@ export namespace Prisma {
     gstin?: SortOrder
     billingCompany?: SortOrder
     billingDay?: SortOrder
+    paymentTerm?: SortOrder
     websiteName?: SortOrder
     websiteDomain?: SortOrder
     websiteServices?: SortOrder
@@ -60671,6 +60699,7 @@ export namespace Prisma {
     gstin?: SortOrder
     billingCompany?: SortOrder
     billingDay?: SortOrder
+    paymentTerm?: SortOrder
     websiteName?: SortOrder
     websiteDomain?: SortOrder
     websiteServices?: SortOrder
@@ -65434,6 +65463,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -65501,6 +65531,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -66121,6 +66152,7 @@ export namespace Prisma {
     gstin?: StringFilter<"Client"> | string
     billingCompany?: StringFilter<"Client"> | string
     billingDay?: IntFilter<"Client"> | number
+    paymentTerm?: StringFilter<"Client"> | string
     websiteName?: StringFilter<"Client"> | string
     websiteDomain?: StringFilter<"Client"> | string
     websiteServices?: StringFilter<"Client"> | string
@@ -66617,6 +66649,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -66684,6 +66717,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -66877,6 +66911,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -66944,6 +66979,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -68702,6 +68738,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -68769,6 +68806,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -68852,6 +68890,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -68919,6 +68958,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -68986,6 +69026,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -69053,6 +69094,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -69136,6 +69178,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -69203,6 +69246,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -69270,6 +69314,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -69337,6 +69382,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -69420,6 +69466,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -69487,6 +69534,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -69554,6 +69602,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -69621,6 +69670,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -69753,6 +69803,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -69820,6 +69871,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -69942,6 +69994,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -70009,6 +70062,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -70141,6 +70195,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -70208,6 +70263,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -70330,6 +70386,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -70397,6 +70454,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -70480,6 +70538,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -70547,6 +70606,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -70645,6 +70705,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -70712,6 +70773,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -70826,6 +70888,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -70893,6 +70956,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -71128,6 +71192,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -71195,6 +71260,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -71278,6 +71344,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -71345,6 +71412,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -71412,6 +71480,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -71479,6 +71548,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -71562,6 +71632,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -71629,6 +71700,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -71696,6 +71768,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -71763,6 +71836,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -71943,6 +72017,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -72010,6 +72085,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -72379,6 +72455,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -72446,6 +72523,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -72529,6 +72607,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -72596,6 +72675,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -72663,6 +72743,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -72730,6 +72811,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -72813,6 +72895,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -72880,6 +72963,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -72947,6 +73031,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -73014,6 +73099,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -73097,6 +73183,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -73164,6 +73251,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -73231,6 +73319,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -73298,6 +73387,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -73381,6 +73471,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -73448,6 +73539,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -73515,6 +73607,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -73582,6 +73675,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -73665,6 +73759,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -73732,6 +73827,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -73799,6 +73895,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -73866,6 +73963,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -73949,6 +74047,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -74016,6 +74115,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -74083,6 +74183,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -74150,6 +74251,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -74233,6 +74335,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -74300,6 +74403,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -74367,6 +74471,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -74434,6 +74539,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -74615,6 +74721,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -74682,6 +74789,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -74859,6 +74967,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -74926,6 +75035,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -75107,6 +75217,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -75174,6 +75285,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -75351,6 +75463,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -75418,6 +75531,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -75501,6 +75615,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -75568,6 +75683,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -75635,6 +75751,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -75702,6 +75819,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -75785,6 +75903,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -75852,6 +75971,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -77418,6 +77538,7 @@ export namespace Prisma {
     gstin?: string
     billingCompany?: string
     billingDay?: number
+    paymentTerm?: string
     websiteName?: string
     websiteDomain?: string
     websiteServices?: string
@@ -77668,6 +77789,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -77735,6 +77857,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string
@@ -77802,6 +77925,7 @@ export namespace Prisma {
     gstin?: StringFieldUpdateOperationsInput | string
     billingCompany?: StringFieldUpdateOperationsInput | string
     billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     websiteName?: StringFieldUpdateOperationsInput | string
     websiteDomain?: StringFieldUpdateOperationsInput | string
     websiteServices?: StringFieldUpdateOperationsInput | string

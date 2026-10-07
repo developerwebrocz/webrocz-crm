@@ -3,12 +3,13 @@
 import { X, Pencil } from "lucide-react";
 import { updateWebRoczClient } from "@/app/webrocz-actions";
 import WebRoczServicePicker from "@/components/WebRoczServicePicker";
+import WebRoczPaymentType from "@/components/WebRoczPaymentType";
 import WebRoczAccountManagerSelect from "@/components/WebRoczAccountManager";
 
 // Web Rocz (digital marketing) "Edit client" form — same fields as the Web Rocz add-client
 // form. Domain / hosting amounts and renewal dates are Web Solutions fields and are not
 // shown here; the Web Solutions edit form (EditModal in FinanceClientDetail) is untouched.
-type EditClient = { id: string; code: string; name: string; website: string | null; websiteDomain: string; pocName: string | null; pocMobile: string | null; pocEmail: string | null; status: string; notes: string | null; accountManagerId: string | null; billingDay?: number };
+type EditClient = { id: string; code: string; name: string; website: string | null; websiteDomain: string; pocName: string | null; pocMobile: string | null; pocEmail: string | null; status: string; notes: string | null; accountManagerId: string | null; billingDay?: number; paymentTerm?: string };
 
 export default function EditWebRoczClientModal({ client, services, close }: { client: EditClient; services: { service: string; detail: string | null }[]; close: () => void }) {
   return (
@@ -41,6 +42,8 @@ export default function EditWebRoczClientModal({ client, services, close }: { cl
             <select name="billingDay" defaultValue={String(client.billingDay ?? 0)} className="select mt-1"><option value="0">Not set</option>{Array.from({ length: 31 }, (_, i) => i + 1).map((d) => <option key={d} value={d}>{d}</option>)}</select>
             <span className="mt-1.5 block text-[11px] text-[var(--faint)]">The day of the month this client&apos;s invoice is raised (1, 5, 10 …).</span>
           </label>
+
+          <WebRoczPaymentType initial={client.paymentTerm ?? ""} />
 
           <WebRoczServicePicker initial={services} />
 

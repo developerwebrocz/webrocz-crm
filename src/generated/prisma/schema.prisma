@@ -103,6 +103,7 @@ model Client {
   // client show in that company's list before its first invoice exists. "" = from invoices only.
   billingCompany     String   @default("")
   billingDay         Int      @default(0) // day of the month the invoice is raised (1..31); 0 = not set
+  paymentTerm        String   @default("") // PREPAID | POSTPAID — ticked on the Web Rocz / Pvt Ltd client forms
   // --- Website renewal / hosting (one website per client) ---
   websiteName        String   @default("") // website URL
   websiteDomain      String   @default("") // e.g. example.com

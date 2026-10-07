@@ -4,6 +4,7 @@ import { useState } from "react";
 import { X, UserPlus } from "lucide-react";
 import { addClientFromFinance } from "@/app/actions";
 import WebRoczServicePicker from "@/components/WebRoczServicePicker";
+import WebRoczPaymentType from "@/components/WebRoczPaymentType";
 import WebRoczAccountManagerSelect from "@/components/WebRoczAccountManager";
 
 // Web Rocz Pvt Ltd (digital marketing, GST 18%) "Add client" form. Kept in its own file so
@@ -46,6 +47,8 @@ export default function AddWebRoczPvtClientModal({ close }: { close: () => void 
             <span className="mt-1.5 block text-[11px] text-[var(--faint)]">PDF / image — shows in the company hub with a Download link.</span>
           </label>
           <label className="block"><span className="eyebrow">Client GSTIN</span><input name="gstin" className="input mt-1 uppercase" placeholder="e.g. 36AABC…" /></label>
+
+          <WebRoczPaymentType />
 
           <WebRoczServicePicker />
 

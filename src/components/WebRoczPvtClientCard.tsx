@@ -19,7 +19,7 @@ const addMonth = (iso: string) => {
 };
 const daysBetween = (fromIso: string, toIso: string) => Math.round((Date.parse(toIso + "T00:00:00Z") - Date.parse(fromIso + "T00:00:00Z")) / 86400000);
 
-type CardClient = { accountManagerId: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; onboardDate: string; gstin: string };
+type CardClient = { accountManagerId: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; onboardDate: string; gstin: string; paymentTerm?: string };
 type CardInvoice = { issueDate: string; total: number; balance: number; company: string; projectDate?: string; paymentTerm?: string };
 
 export default function WebRoczPvtClientCard({ client, services, slaUrl, invoices }: { client: CardClient; services: { service: string; detail: string | null }[]; slaUrl: string; invoices: CardInvoice[] }) {
@@ -34,7 +34,8 @@ export default function WebRoczPvtClientCard({ client, services, slaUrl, invoice
   // Project date + payment type come from the latest invoice that has them (set on the invoice form).
   const newestFirst = [...dated].reverse();
   const projectDate = newestFirst.find((i) => i.projectDate)?.projectDate ?? "";
-  const term = newestFirst.find((i) => i.paymentTerm)?.paymentTerm ?? "";
+  // Payment type: as ticked in Add / Edit client, else from the latest invoice that has one.
+  const term = client.paymentTerm || (newestFirst.find((i) => i.paymentTerm)?.paymentTerm ?? "");
   const termLabel = term === "PREPAID" ? "Prepayment" : term === "POSTPAID" ? "Post payment" : "—";
   const expiry = last ? addMonth(last.issueDate) : "";
   const pending = dated.reduce((s, i) => s + Math.max(0, i.balance), 0);

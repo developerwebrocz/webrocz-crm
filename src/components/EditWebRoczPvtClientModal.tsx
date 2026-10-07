@@ -3,13 +3,14 @@
 import { X, Pencil } from "lucide-react";
 import { updateWebRoczPvtClient } from "@/app/webrocz-pvt-actions";
 import WebRoczServicePicker from "@/components/WebRoczServicePicker";
+import WebRoczPaymentType from "@/components/WebRoczPaymentType";
 import WebRoczAccountManagerSelect from "@/components/WebRoczAccountManager";
 
 // Web Rocz Pvt Ltd (digital marketing, GST 18%) "Edit client" form — same fields as its
 // add-client form: details, client GSTIN and the digital-marketing services. Domain / hosting
 // amounts and renewal dates are not shown. Kept in its own file so the Web Rocz and Web
 // Solutions edit forms are never affected.
-type EditClient = { id: string; code: string; name: string; accountManagerId: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; status: string; notes: string | null; gstin: string };
+type EditClient = { id: string; code: string; name: string; accountManagerId: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; status: string; notes: string | null; gstin: string; paymentTerm?: string };
 
 export default function EditWebRoczPvtClientModal({ client, services, close }: { client: EditClient; services: { service: string; detail: string | null }[]; close: () => void }) {
   return (
@@ -41,6 +42,8 @@ export default function EditWebRoczPvtClientModal({ client, services, close }: {
             <input name="gstin" defaultValue={client.gstin ?? ""} className="input mt-1 uppercase" placeholder="e.g. 36AABC…" />
             <span className="mt-1.5 block text-[11px] text-[var(--faint)]">Used on this client&apos;s GST tax invoices.</span>
           </label>
+
+          <WebRoczPaymentType initial={client.paymentTerm ?? ""} />
 
           <WebRoczServicePicker initial={services} />
 
