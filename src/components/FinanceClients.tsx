@@ -31,12 +31,13 @@ function monthsPending(invs: { balance: number; issueDate: string }[]): number {
   return Math.max(0, (now.getFullYear() - y) * 12 + (now.getMonth() + 1 - m));
 }
 const todayISO = () => new Date().toISOString().slice(0, 10);
+const ordinal = (n: number) => `${n}${n % 10 === 1 && n !== 11 ? "st" : n % 10 === 2 && n !== 12 ? "nd" : n % 10 === 3 && n !== 13 ? "rd" : "th"}`;
 const addDaysISO = (iso: string, n: number) => { const d = new Date((iso || todayISO()) + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 
 type MiniInv = { category: string; total: number; received: number; balance: number; overdue: boolean; issueDate: string; company: string };
 type Note = { invId: string; invNumber: string; date: string; by: string; note: string };
 type Followup = { date: string; by: string; note: string; next?: string };
-type Row = { id: string; code: string; name: string; domain: string; contact: string; phone: string; email: string; accountManager: string; slaUrl: string; slaTitle: string; slaBy: string; services: string[]; status: string; retainer: number; category: string; invs: MiniInv[]; lastInvoiceDate: string; billed: number; received: number; pending: number; companies: string[]; clientFollowups: Followup[]; nextFollowup: string; notes: Note[]; noteTarget: { id: string; number: string } | null };
+type Row = { id: string; code: string; name: string; billingDay?: number; domain: string; contact: string; phone: string; email: string; accountManager: string; slaUrl: string; slaTitle: string; slaBy: string; services: string[]; status: string; retainer: number; category: string; invs: MiniInv[]; lastInvoiceDate: string; billed: number; received: number; pending: number; companies: string[]; clientFollowups: Followup[]; nextFollowup: string; notes: Note[]; noteTarget: { id: string; number: string } | null };
 
 export default function FinanceClients({ rows, lockedCompany, lockedCategory, embedded, canDelete }: { rows: Row[]; lockedCompany?: string; lockedCategory?: string; embedded?: boolean; canDelete?: boolean }) {
   const [q, setQ] = useState("");
@@ -213,7 +214,12 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
               {paged.map((r, i) => (
                 <tr key={r.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
                   <td className="px-5 py-3 text-[12px] font-semibold tnum text-[var(--ink-2)]">{r.code || "—"}</td>
-                  <td className="px-5 py-3 text-[12.5px] tnum">{fmtDate(r.lastInvoiceDate)}</td>
+                  <td className="px-5 py-3 text-[12.5px] tnum">
+                    {/* Web Rocz bills on a fixed day each month (1st, 5th, 10th …): show that day, with the last invoice under it. */}
+                    {lockedCompany === "WEB_ROCZ" && r.billingDay
+                      ? <><span className="whitespace-nowrap font-semibold">{ordinal(r.billingDay)} <span className="font-normal text-[var(--muted)]">every month</span></span>{r.lastInvoiceDate && <div className="text-[11px] text-[var(--faint)]">last {fmtDate(r.lastInvoiceDate)}</div>}</>
+                      : fmtDate(r.lastInvoiceDate)}
+                  </td>
                   <td className="px-5 py-3"><Link href={companySel !== "ALL" ? `/accounts/${r.id}?company=${companySel}` : `/accounts/${r.id}`} prefetch className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.name}</Link>{r.companies.length > 0 && <div className="text-[11px] text-[var(--faint)]">{r.companies.map(companyLabel).join(", ")}</div>}</td>
                   {showDomain && <td className="px-5 py-3 text-[12px]">{r.domain ? <span className="inline-flex items-center gap-1 font-semibold text-[var(--indigo)]"><Globe size={11} /> {r.domain}</span> : <span className="text-[var(--faint)]">—</span>}</td>}
                   <td className="px-5 py-3 text-[12.5px] tnum">{r.phone || "—"}</td>

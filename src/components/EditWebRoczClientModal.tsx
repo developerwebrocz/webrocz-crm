@@ -8,7 +8,7 @@ import WebRoczAccountManagerSelect from "@/components/WebRoczAccountManager";
 // Web Rocz (digital marketing) "Edit client" form — same fields as the Web Rocz add-client
 // form. Domain / hosting amounts and renewal dates are Web Solutions fields and are not
 // shown here; the Web Solutions edit form (EditModal in FinanceClientDetail) is untouched.
-type EditClient = { id: string; code: string; name: string; website: string | null; websiteDomain: string; pocName: string | null; pocMobile: string | null; pocEmail: string | null; status: string; notes: string | null; accountManagerId: string | null };
+type EditClient = { id: string; code: string; name: string; website: string | null; websiteDomain: string; pocName: string | null; pocMobile: string | null; pocEmail: string | null; status: string; notes: string | null; accountManagerId: string | null; billingDay?: number };
 
 export default function EditWebRoczClientModal({ client, services, close }: { client: EditClient; services: { service: string; detail: string | null }[]; close: () => void }) {
   return (
@@ -35,6 +35,12 @@ export default function EditWebRoczClientModal({ client, services, close }: { cl
             <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" defaultValue={client.pocEmail ?? ""} className="input mt-1" /></label>
             <label className="block"><span className="eyebrow">Status</span><select name="status" defaultValue={client.status} className="select mt-1"><option value="ACTIVE">Active</option><option value="ON_HOLD">On hold</option><option value="UPCOMING">Upcoming</option></select></label>
           </div>
+
+          <label className="block">
+            <span className="eyebrow">Invoice date (every month)</span>
+            <select name="billingDay" defaultValue={String(client.billingDay ?? 0)} className="select mt-1"><option value="0">Not set</option>{Array.from({ length: 31 }, (_, i) => i + 1).map((d) => <option key={d} value={d}>{d}</option>)}</select>
+            <span className="mt-1.5 block text-[11px] text-[var(--faint)]">The day of the month this client&apos;s invoice is raised (1, 5, 10 …).</span>
+          </label>
 
           <WebRoczServicePicker initial={services} />
 

@@ -2178,7 +2178,7 @@ function catOfInvoice(inv: { leadId: string | null; items: string }, leadSvc: Ma
 export async function getFinanceClients() {
   const today = salesToday();
   const [clients, invoices, leads, amUsers, slaDocs] = await Promise.all([
-    prisma.client.findMany({ orderBy: { name: "asc" }, select: { id: true, code: true, name: true, billingCompany: true, websiteDomain: true, website: true, pocName: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true, followupLog: true, nextFollowup: true, accountManager: { select: { name: true } }, services: { select: { service: true, detail: true } } } }),
+    prisma.client.findMany({ orderBy: { name: "asc" }, select: { id: true, code: true, name: true, billingCompany: true, billingDay: true, websiteDomain: true, website: true, pocName: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true, followupLog: true, nextFollowup: true, accountManager: { select: { name: true } }, services: { select: { service: true, detail: true } } } }),
     prisma.salesInvoice.findMany({ orderBy: { createdAt: "desc" }, select: { id: true, number: true, clientId: true, billTo: true, total: true, received: true, issueDate: true, dueDate: true, leadId: true, items: true, notesLog: true, company: true, taxPct: true } }),
     prisma.lead.findMany({ select: { id: true, services: true } }),
     prisma.user.findMany({ where: { active: true, role: { in: ["ACCOUNT_MANAGER", "AM_HEAD", "DM_EXEC"] } }, orderBy: { name: "asc" }, select: { id: true, name: true } }),
@@ -2238,7 +2238,7 @@ export async function getFinanceClients() {
     try { const arr = JSON.parse(c.followupLog || "[]"); if (Array.isArray(arr)) clientFollowups = arr; } catch { /* ignore */ }
     const sla = slaByClient.get(c.id);
     return {
-      id: c.id, code: c.code, name: c.name, domain: c.websiteDomain || c.website || "", contact: c.pocName ?? "", phone: c.pocMobile ?? "", email: c.pocEmail ?? "",
+      id: c.id, code: c.code, name: c.name, billingDay: c.billingDay, domain: c.websiteDomain || c.website || "", contact: c.pocName ?? "", phone: c.pocMobile ?? "", email: c.pocEmail ?? "",
       accountManager: c.accountManager?.name ?? "",
       slaUrl: sla?.url ?? "", slaTitle: sla?.title ?? "", slaBy: sla?.by ?? "", services: c.services.map((s) => (["SEO", "SMO", "Videoshoot", "AI Reels"].includes(s.service) && s.detail ? `${s.service} (${s.detail})` : s.service)),
       status: c.status, retainer: c.monthlyRetainer || 0, category, invs,
