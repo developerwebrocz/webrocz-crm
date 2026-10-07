@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { recordPayment, createClientInvoice, generateInvoiceFromSla } from "@/app/sales-actions";
 import { updateClientFinance, logClientFollowup } from "@/app/actions";
 import { companyLabel } from "@/lib/domain";
@@ -29,6 +30,7 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
   const [payInv, setPayInv] = useState<Inv | null>(() => invoices.find((i) => i.id === openPayId && i.balance > 0) ?? null);
   const [newInv, setNewInv] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const router = useRouter();
   const backUrl = `/accounts/${client.id}`;
   // A Web Solutions client → its "New invoice" uses the website form (services + amounts +
   // payment screenshot). Detected from the URL company context OR any Web Solutions invoice.
@@ -127,6 +129,9 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* Web Rocz Pvt Ltd: straight back to the page this client was opened from (the
+                Pvt Ltd clients list or its invoices page); the hub if opened directly. */}
+            {isWebRoczPvtClient && <button onClick={() => (window.history.length > 1 ? router.back() : router.push("/pipeline/web-rocz-pvt"))} className="btn btn-ghost btn-sm"><ArrowLeft size={14} /> Back</button>}
             <button onClick={() => setEditOpen(true)} className="btn btn-ghost btn-sm"><Pencil size={14} /> Edit info</button>
             <Link href="/accounts" prefetch className="btn btn-ghost btn-sm"><ArrowLeft size={14} /> All clients</Link>
           </div>
