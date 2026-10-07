@@ -189,6 +189,7 @@ export async function updateWebRoczPvtClient(fd: FormData) {
       // The domain name is no longer edited here, so the saved one is left as it is.
       ...(amSent && amOk ? { accountManagerId: amId || null } : {}),
       ...(fd.has("paymentTerm") ? { paymentTerm: ["PREPAID", "POSTPAID"].includes(s(fd, "paymentTerm")) ? s(fd, "paymentTerm") : "" } : {}),
+      ...(fd.has("billingDay") ? { billingDay: Math.min(31, Math.max(0, n(fd, "billingDay"))) } : {}),
       pocName: s(fd, "pocName") || null,
       pocMobile: s(fd, "pocMobile") || null,
       pocEmail: s(fd, "pocEmail") || null,

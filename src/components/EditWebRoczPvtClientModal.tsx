@@ -10,7 +10,7 @@ import WebRoczAccountManagerSelect from "@/components/WebRoczAccountManager";
 // add-client form: details, client GSTIN and the digital-marketing services. Domain / hosting
 // amounts and renewal dates are not shown. Kept in its own file so the Web Rocz and Web
 // Solutions edit forms are never affected.
-type EditClient = { id: string; code: string; name: string; accountManagerId: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; status: string; notes: string | null; gstin: string; paymentTerm?: string };
+type EditClient = { id: string; code: string; name: string; accountManagerId: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; status: string; notes: string | null; gstin: string; paymentTerm?: string; billingDay?: number };
 
 export default function EditWebRoczPvtClientModal({ client, services, close }: { client: EditClient; services: { service: string; detail: string | null }[]; close: () => void }) {
   return (
@@ -41,6 +41,12 @@ export default function EditWebRoczPvtClientModal({ client, services, close }: {
             <span className="eyebrow">Client GSTIN</span>
             <input name="gstin" defaultValue={client.gstin ?? ""} className="input mt-1 uppercase" placeholder="e.g. 36AABC…" />
             <span className="mt-1.5 block text-[11px] text-[var(--faint)]">Used on this client&apos;s GST tax invoices.</span>
+          </label>
+
+          <label className="block">
+            <span className="eyebrow">Invoice date</span>
+            <select name="billingDay" defaultValue={String(client.billingDay ?? 0)} className="select mt-1"><option value="0">Not set</option>{Array.from({ length: 31 }, (_, i) => i + 1).map((d) => <option key={d} value={d}>{d}</option>)}</select>
+            <span className="mt-1.5 block text-[11px] text-[var(--faint)]">The day of the month this client&apos;s invoice is raised (1, 5, 10 …).</span>
           </label>
 
           <WebRoczPaymentType initial={client.paymentTerm ?? ""} />
