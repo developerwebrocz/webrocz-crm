@@ -217,9 +217,9 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
                 <tr key={r.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
                   <td className="px-5 py-3 text-[12px] font-semibold tnum text-[var(--ink-2)]">{r.code || "—"}</td>
                   <td className="px-5 py-3 text-[12.5px] tnum">
-                    {/* Web Rocz bills on a fixed day each month (1, 5, 10 …): show that day, with the last invoice under it. */}
+                    {/* Web Rocz bills on a fixed day each month (1, 5, 10 …): show just that day. */}
                     {lockedCompany === "WEB_ROCZ" && r.billingDay
-                      ? <><span className="font-semibold">{r.billingDay}</span>{r.lastInvoiceDate && <div className="text-[11px] text-[var(--faint)]">last {fmtDate(r.lastInvoiceDate)}</div>}</>
+                      ? <span className="font-semibold">{r.billingDay}</span>
                       : fmtDate(r.lastInvoiceDate)}
                   </td>
                   <td className="px-5 py-3"><Link href={companySel !== "ALL" ? `/accounts/${r.id}?company=${companySel}` : `/accounts/${r.id}`} prefetch className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.name}</Link>{r.companies.length > 0 && lockedCompany !== "WEB_ROCZ" && <div className="text-[11px] text-[var(--faint)]">{r.companies.map(companyLabel).join(", ")}</div>}</td>
