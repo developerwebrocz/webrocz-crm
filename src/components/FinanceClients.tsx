@@ -222,7 +222,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
                       ? <><span className="font-semibold">{r.billingDay}</span>{r.lastInvoiceDate && <div className="text-[11px] text-[var(--faint)]">last {fmtDate(r.lastInvoiceDate)}</div>}</>
                       : fmtDate(r.lastInvoiceDate)}
                   </td>
-                  <td className="px-5 py-3"><Link href={companySel !== "ALL" ? `/accounts/${r.id}?company=${companySel}` : `/accounts/${r.id}`} prefetch className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.name}</Link>{r.companies.length > 0 && <div className="text-[11px] text-[var(--faint)]">{r.companies.map(companyLabel).join(", ")}</div>}</td>
+                  <td className="px-5 py-3"><Link href={companySel !== "ALL" ? `/accounts/${r.id}?company=${companySel}` : `/accounts/${r.id}`} prefetch className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.name}</Link>{r.companies.length > 0 && lockedCompany !== "WEB_ROCZ" && <div className="text-[11px] text-[var(--faint)]">{r.companies.map(companyLabel).join(", ")}</div>}</td>
                   {showDomain && <td className="px-5 py-3 text-[12px]">{r.domain ? <span className="inline-flex items-center gap-1 font-semibold text-[var(--indigo)]"><Globe size={11} /> {r.domain}</span> : <span className="text-[var(--faint)]">—</span>}</td>}
                   <td className="px-5 py-3 text-[12.5px] tnum">{r.phone || "—"}</td>
                   <td className="px-5 py-3 text-[12.5px]">{r.email ? <a href={`mailto:${r.email}`} className="text-[var(--indigo)] hover:underline">{r.email}</a> : "—"}</td>
