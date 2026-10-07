@@ -45,8 +45,8 @@ export default function EditWebRoczPvtClientModal({ client, services, close }: {
 
           <label className="block">
             <span className="eyebrow">Invoice date</span>
-            <select name="billingDay" defaultValue={String(client.billingDay ?? 0)} className="select mt-1"><option value="0">Not set</option>{Array.from({ length: 31 }, (_, i) => i + 1).map((d) => <option key={d} value={d}>{d}</option>)}</select>
-            <span className="mt-1.5 block text-[11px] text-[var(--faint)]">The day of the month this client&apos;s invoice is raised (1, 5, 10 …).</span>
+            <select name="billingDay" defaultValue={String(client.billingDay ?? 0)} className="select mt-1"><option value="0">Not set</option>{[...new Set([1, 5, 10, 15, 20, 25, ...(client.billingDay ? [client.billingDay] : [])])].sort((a, b) => a - b).map((d) => <option key={d} value={d}>{d}</option>)}</select>
+            <span className="mt-1.5 block text-[11px] text-[var(--faint)]">The day of the month this client&apos;s invoice is raised (1, 5, 10, 15, 20 or 25).</span>
           </label>
 
           <WebRoczPaymentType initial={client.paymentTerm ?? ""} />

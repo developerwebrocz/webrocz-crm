@@ -34,7 +34,7 @@ export default function AddWebRoczClientModal({ close }: { close: () => void }) 
           </div>
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" className="input mt-1" /></label>
-            <label className="block"><span className="eyebrow">Invoice date</span><select name="billingDay" defaultValue="0" className="select mt-1"><option value="0">Not set</option>{Array.from({ length: 31 }, (_, i) => i + 1).map((d) => <option key={d} value={d}>{d}</option>)}</select></label>
+            <label className="block"><span className="eyebrow">Invoice date</span><select name="billingDay" defaultValue="0" className="select mt-1"><option value="0">Not set</option>{[1, 5, 10, 15, 20, 25].map((d) => <option key={d} value={d}>{d}</option>)}</select></label>
           </div>
           <label className="block">
             <span className="eyebrow">Upload SLA (optional)</span>
