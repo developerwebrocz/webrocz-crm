@@ -37,7 +37,7 @@ export default function EditWebRoczClientModal({ client, services, close }: { cl
           </div>
 
           <label className="block">
-            <span className="eyebrow">Invoice date (every month)</span>
+            <span className="eyebrow">Invoice date</span>
             <select name="billingDay" defaultValue={String(client.billingDay ?? 0)} className="select mt-1"><option value="0">Not set</option>{Array.from({ length: 31 }, (_, i) => i + 1).map((d) => <option key={d} value={d}>{d}</option>)}</select>
             <span className="mt-1.5 block text-[11px] text-[var(--faint)]">The day of the month this client&apos;s invoice is raised (1, 5, 10 …).</span>
           </label>

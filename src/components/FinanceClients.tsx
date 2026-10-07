@@ -31,7 +31,6 @@ function monthsPending(invs: { balance: number; issueDate: string }[]): number {
   return Math.max(0, (now.getFullYear() - y) * 12 + (now.getMonth() + 1 - m));
 }
 const todayISO = () => new Date().toISOString().slice(0, 10);
-const ordinal = (n: number) => `${n}${n % 10 === 1 && n !== 11 ? "st" : n % 10 === 2 && n !== 12 ? "nd" : n % 10 === 3 && n !== 13 ? "rd" : "th"}`;
 const addDaysISO = (iso: string, n: number) => { const d = new Date((iso || todayISO()) + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 
 type MiniInv = { category: string; total: number; received: number; balance: number; overdue: boolean; issueDate: string; company: string };
@@ -218,9 +217,9 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
                 <tr key={r.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
                   <td className="px-5 py-3 text-[12px] font-semibold tnum text-[var(--ink-2)]">{r.code || "—"}</td>
                   <td className="px-5 py-3 text-[12.5px] tnum">
-                    {/* Web Rocz bills on a fixed day each month (1st, 5th, 10th …): show that day, with the last invoice under it. */}
+                    {/* Web Rocz bills on a fixed day each month (1, 5, 10 …): show that day, with the last invoice under it. */}
                     {lockedCompany === "WEB_ROCZ" && r.billingDay
-                      ? <><span className="whitespace-nowrap font-semibold">{ordinal(r.billingDay)} <span className="font-normal text-[var(--muted)]">every month</span></span>{r.lastInvoiceDate && <div className="text-[11px] text-[var(--faint)]">last {fmtDate(r.lastInvoiceDate)}</div>}</>
+                      ? <><span className="font-semibold">{r.billingDay}</span>{r.lastInvoiceDate && <div className="text-[11px] text-[var(--faint)]">last {fmtDate(r.lastInvoiceDate)}</div>}</>
                       : fmtDate(r.lastInvoiceDate)}
                   </td>
                   <td className="px-5 py-3"><Link href={companySel !== "ALL" ? `/accounts/${r.id}?company=${companySel}` : `/accounts/${r.id}`} prefetch className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.name}</Link>{r.companies.length > 0 && <div className="text-[11px] text-[var(--faint)]">{r.companies.map(companyLabel).join(", ")}</div>}</td>

@@ -17,7 +17,6 @@ const addMonth = (iso: string) => {
   const lastDay = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
   return new Date(Date.UTC(y, m, Math.min(d, lastDay))).toISOString().slice(0, 10);
 };
-const ordinal = (n: number) => `${n}${n % 10 === 1 && n !== 11 ? "st" : n % 10 === 2 && n !== 12 ? "nd" : n % 10 === 3 && n !== 13 ? "rd" : "th"}`;
 const daysBetween = (fromIso: string, toIso: string) => Math.round((Date.parse(toIso + "T00:00:00Z") - Date.parse(fromIso + "T00:00:00Z")) / 86400000);
 
 type CardClient = { pocName: string | null; pocMobile: string | null; pocEmail: string | null; onboardDate: string; accountManagerId: string | null; monthlyRetainer?: number; billingDay?: number };
@@ -71,7 +70,7 @@ export default function WebRoczClientCard({ client, services, slaUrl, invoices }
         <div className="text-[12.5px]">
           <Row label="Register date" value={fmtDate(registerDate)} />
           <Row label="Billing cycle" value="Monthly" />
-          <Row label="Invoice date" value={client.billingDay ? `${ordinal(client.billingDay)} of every month` : "—"} />
+          <Row label="Invoice date" value={client.billingDay ? String(client.billingDay) : "—"} />
           <Row label="Last invoice" value={last ? fmtDate(last.issueDate) : "—"} />
           <div className="flex items-center justify-between gap-3 border-b border-[var(--line)] py-1.5">
             <span className="text-[12px] text-[var(--muted)]">Expiry date <span className="text-[var(--faint)]">(auto · +1 month)</span></span>
