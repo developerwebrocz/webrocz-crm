@@ -38,10 +38,7 @@ export default function AddWebRoczPvtClientModal({ close }: { close: () => void 
             <label className="block"><span className="eyebrow">Contact person</span><input name="pocName" className="input mt-1" /></label>
             <label className="block"><span className="eyebrow">Phone</span><input name="pocMobile" className="input mt-1" /></label>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" className="input mt-1" /></label>
-            <label className="block"><span className="eyebrow">Domain name</span><input name="website" className="input mt-1" placeholder="e.g. acme.com" /></label>
-          </div>
+          <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" className="input mt-1" /></label>
           <label className="block">
             <span className="eyebrow">Upload SLA (optional)</span>
             <input name="slaFile" type="file" accept="image/*,.pdf,.doc,.docx" className="input mt-1 !py-1.5 text-[12px]" />

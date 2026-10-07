@@ -19,7 +19,7 @@ const addMonth = (iso: string) => {
 };
 const daysBetween = (fromIso: string, toIso: string) => Math.round((Date.parse(toIso + "T00:00:00Z") - Date.parse(fromIso + "T00:00:00Z")) / 86400000);
 
-type CardClient = { website: string | null; websiteDomain: string; accountManagerId: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; onboardDate: string; gstin: string };
+type CardClient = { accountManagerId: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; onboardDate: string; gstin: string };
 type CardInvoice = { issueDate: string; total: number; balance: number; company: string; projectDate?: string; paymentTerm?: string };
 
 export default function WebRoczPvtClientCard({ client, services, slaUrl, invoices }: { client: CardClient; services: { service: string; detail: string | null }[]; slaUrl: string; invoices: CardInvoice[] }) {
@@ -50,7 +50,6 @@ export default function WebRoczPvtClientCard({ client, services, slaUrl, invoice
       <div className="card card-pad">
         <h3 className="eyebrow mb-2.5 flex items-center gap-1.5"><Building2 size={13} className="text-[var(--violet)]" /> Client &amp; services</h3>
         <div className="text-[12.5px]">
-          <Row label="Domain name" value={client.websiteDomain || client.website || "—"} />
           <Row label="Account manager" value={managerName} />
           <Row label="Contact person" value={client.pocName || "—"} />
           <Row label="Phone" value={client.pocMobile || "—"} />
