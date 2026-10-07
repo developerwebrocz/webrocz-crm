@@ -5,6 +5,7 @@ import Link from "next/link";
 import { downloadCsv } from "@/lib/csv";
 import { companyLabel } from "@/lib/domain";
 import type { PayInvoice, PayEntry, PayClient } from "@/lib/payments-queries";
+import PaymentCollectorModal from "@/components/PaymentCollectorModal";
 import { Wallet, Users, CheckCircle2, AlertTriangle, IndianRupee, CalendarDays, Search, Download, Clock } from "lucide-react";
 
 // Payments pipeline (/payments): who still owes money, who has paid in full, and how much
@@ -40,7 +41,9 @@ function periodBounds(k: string, today: string, from: string, to: string): [stri
 type ClientRow = { key: string; id: string | null; code: string; name: string; phone: string; accountManager: string; companies: string[]; invoices: number; billed: number; received: number; pending: number; overdue: number; pendingInvoices: number; oldestPending: string; overdueDays: number; lastPayDate: string; lastPayAmount: number };
 
 // `today` comes from the server (India date) so the first render matches in the browser.
-export default function PaymentsPipeline({ invoices, payments, clients, today }: { invoices: PayInvoice[]; payments: PayEntry[]; clients: PayClient[]; today: string }) {
+// `canReassign` (Super / Sub Admin) shows "Change name" beside each accountant.
+export default function PaymentsPipeline({ invoices, payments, clients, today, canReassign }: { invoices: PayInvoice[]; payments: PayEntry[]; clients: PayClient[]; today: string; canReassign?: boolean }) {
+  const [moveFrom, setMoveFrom] = useState<string | null>(null);
   const [company, setCompany] = useState("ALL");
   const [period, setPeriod] = useState("MONTH");
   const [from, setFrom] = useState("");
@@ -180,7 +183,7 @@ export default function PaymentsPipeline({ invoices, payments, clients, today }:
                 {perCollector.length === 0 && <tr><td colSpan={extraPeriodCol ? 5 : 4} className="px-5 py-8 text-center text-[var(--muted)]">No payments recorded yet.</td></tr>}
                 {perCollector.map((c) => (
                   <tr key={c.name} className="border-b border-[var(--line)] last:border-0">
-                    <td className="px-5 py-2.5 font-semibold">{c.name}</td>
+                    <td className="px-5 py-2.5 font-semibold">{c.name}{canReassign && <button onClick={() => setMoveFrom(c.name)} title="These payments were collected by someone else? Put them under the right name." className="ml-2 text-[11.5px] font-semibold text-[var(--violet)] hover:underline">Change name</button>}</td>
                     <td className="px-5 py-2.5 text-right tnum" style={{ color: c.today ? "var(--emerald)" : "var(--faint)" }}>{inr(c.today)}</td>
                     <td className="px-5 py-2.5 text-right tnum">{inr(c.yesterday)}</td>
                     <td className="px-5 py-2.5 text-right font-semibold tnum">{inr(c.month)}</td>
@@ -289,6 +292,7 @@ export default function PaymentsPipeline({ invoices, payments, clients, today }:
         </div>
         {periodPays.length > 15 && <div className="border-t border-[var(--line)] px-5 py-2.5 text-center"><button onClick={() => setShowAllPays((v) => !v)} className="text-[12.5px] font-semibold text-[var(--violet)] hover:underline">{showAllPays ? "Show fewer" : `Show all ${periodPays.length} payments`}</button></div>}
       </div>
+      {moveFrom && <PaymentCollectorModal key={moveFrom} from={moveFrom} all={coPays.filter((p) => p.by === moveFrom)} inPeriod={coPays.filter((p) => p.by === moveFrom && inPeriod(p.date))} periodLabel={periodLabel} close={() => setMoveFrom(null)} />}
     </div>
   );
 }

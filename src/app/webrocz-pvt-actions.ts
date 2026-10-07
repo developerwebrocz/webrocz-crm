@@ -254,6 +254,10 @@ export async function importWebRoczPvtSaleReport(_prev: PvtImportResult, fd: For
   // Historical invoices are already issued, so an admin's import marks them approved; an
   // accountant's import leaves them for the usual Super Admin approval.
   const autoApprove = me.role === "SUPER_ADMIN" || me.role === "SUB_ADMIN";
+  // The received amounts are recorded under the accountant picked in the dialog (an admin
+  // usually imports payments the accountant collected); otherwise under whoever imports.
+  const pickedBy = s(fd, "collectedBy");
+  const collector = pickedBy && (await prisma.user.findFirst({ where: { name: pickedBy, active: true }, select: { id: true } })) ? pickedBy : me.name;
   const GST_PCT = 18;
 
   const [clients, existing] = await Promise.all([
@@ -308,7 +312,7 @@ export async function importWebRoczPvtSaleReport(_prev: PvtImportResult, fd: For
     });
     if (received > 0) {
       const type = get(row, "payment type", "payment").toLowerCase();
-      await prisma.payment.create({ data: { invoiceId: inv.id, amount: received, date: payDate, mode: type.includes("cash") ? "CASH" : type.includes("bank") ? "BANK" : "OTHER", ref: payRef, note: "Imported from the sale report", by: me.name } });
+      await prisma.payment.create({ data: { invoiceId: inv.id, amount: received, date: payDate, mode: type.includes("cash") ? "CASH" : type.includes("bank") ? "BANK" : "OTHER", ref: payRef, note: "Imported from the sale report", by: collector } });
     }
     taken.add(number); created++; totalAdded += total;
   }

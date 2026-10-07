@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { X, Upload, CheckCircle2 } from "lucide-react";
 import { importWebRoczPvtSaleReport, type PvtImportResult } from "@/app/webrocz-pvt-actions";
+import { getPaymentCollectors, type Collector } from "@/app/payments-actions";
 
 // "Import" on the Web Rocz Pvt Ltd hub: upload the sale report (CSV) to add previous
 // invoices with their own invoice numbers, dates, parties, GSTINs, totals and received
@@ -10,6 +11,14 @@ import { importWebRoczPvtSaleReport, type PvtImportResult } from "@/app/webrocz-
 export default function ImportWebRoczPvtSaleReportModal({ close }: { close: () => void }) {
   const [result, action, pending] = useActionState<PvtImportResult, FormData>(importWebRoczPvtSaleReport, null);
   const done = result?.ok;
+  // Who collected the payments in the file — the accountant by default.
+  const [people, setPeople] = useState<Collector[]>([]);
+  const [collectedBy, setCollectedBy] = useState("");
+  useEffect(() => {
+    let alive = true;
+    getPaymentCollectors().then((d) => { if (!alive) return; setPeople(d); setCollectedBy((cur) => cur || d[0]?.name || ""); }).catch(() => { /* falls back to the person importing */ });
+    return () => { alive = false; };
+  }, []);
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
       <div className="flex w-full max-w-[500px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
@@ -32,6 +41,14 @@ export default function ImportWebRoczPvtSaleReportModal({ close }: { close: () =
             <label className="block">
               <span className="eyebrow">Sale report file (CSV)</span>
               <input name="file" type="file" accept=".csv,text/csv" required className="input mt-1 !py-1.5 text-[12px]" />
+            </label>
+            <label className="block">
+              <span className="eyebrow">Payments collected by</span>
+              <select name="collectedBy" value={collectedBy} onChange={(e) => setCollectedBy(e.target.value)} className="select mt-1">
+                {people.length === 0 && <option value="">Me</option>}
+                {people.map((p) => <option key={p.name} value={p.name}>{p.name}{p.role === "ACCOUNTANT" ? " — Accountant" : ""}</option>)}
+              </select>
+              <span className="mt-1.5 block text-[11px] text-[var(--faint)]">The received amounts in the file show under this name on the Payments page.</span>
             </label>
             <div className="rounded-[10px] bg-[var(--surface-2)] px-3 py-2.5 text-[11.5px] leading-relaxed text-[var(--muted)]">
               Columns: <b>Date, Invoice No, Party Name, GSTIN, Phone, Total, Received, Payment Type</b>.<br />
