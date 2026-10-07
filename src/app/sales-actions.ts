@@ -628,6 +628,8 @@ export async function addInvoice(fd: FormData) {
       paymentStatus: received >= total ? "Fully Received" : received > 0 ? "Partially Received" : "Pending",
       issueDate, dueDate,
       ...(services.length && description ? { notes: description } : {}),
+      // Web Rocz invoice form: Prepayment / Post payment tick (other forms do not send it).
+      ...(["PREPAID", "POSTPAID"].includes(s(fd, "paymentTerm")) ? { paymentTerm: s(fd, "paymentTerm") } : {}),
     },
   });
   if (received > 0) {

@@ -118,6 +118,10 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
                 <div />
               </>
             )}
+            {/* Web Rocz only: the payment type ticked on its invoice form can be changed. */}
+            {invoice.company === "WEB_ROCZ" && (
+              <><L label="Payment type"><select name="paymentTerm" defaultValue={invoice.paymentTerm ?? ""} className="select"><option value="">Not set</option><option value="PREPAID">Prepayment</option><option value="POSTPAID">Post payment</option></select></L><div /></>
+            )}
             <L label="Bill to (client)"><input name="billTo" defaultValue={invoice.billTo} className="input" /></L>
             <L label="Contact person"><input name="contact" defaultValue={invoice.contact ?? ""} className="input" /></L>
             <L label="Phone"><input name="phone" defaultValue={invoice.phone ?? ""} className="input" /></L>

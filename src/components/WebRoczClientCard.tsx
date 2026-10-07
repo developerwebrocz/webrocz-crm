@@ -20,7 +20,7 @@ const addMonth = (iso: string) => {
 const daysBetween = (fromIso: string, toIso: string) => Math.round((Date.parse(toIso + "T00:00:00Z") - Date.parse(fromIso + "T00:00:00Z")) / 86400000);
 
 type CardClient = { pocName: string | null; pocMobile: string | null; pocEmail: string | null; onboardDate: string; accountManagerId: string | null; monthlyRetainer?: number; billingDay?: number };
-type CardInvoice = { issueDate: string; total: number; company: string };
+type CardInvoice = { issueDate: string; total: number; company: string; paymentTerm?: string };
 
 export default function WebRoczClientCard({ client, services, slaUrl, invoices }: { client: CardClient; services: { service: string; detail: string | null }[]; slaUrl: string; invoices: CardInvoice[] }) {
   // The manager's name is looked up from the same list the Account manager dropdown uses.
@@ -32,6 +32,9 @@ export default function WebRoczClientCard({ client, services, slaUrl, invoices }
   const last = dated[dated.length - 1];
   const registerDate = first?.issueDate || client.onboardDate;
   const expiry = last ? addMonth(last.issueDate) : "";
+  // Payment type as ticked on the newest invoice that has one.
+  const term = [...dated].reverse().find((i) => i.paymentTerm)?.paymentTerm ?? "";
+  const termLabel = term === "PREPAID" ? "Prepayment" : term === "POSTPAID" ? "Post payment" : "—";
   const today = new Date().toISOString().slice(0, 10);
   const left = expiry ? daysBetween(today, expiry) : 0;
   const status = !expiry ? null
@@ -71,6 +74,7 @@ export default function WebRoczClientCard({ client, services, slaUrl, invoices }
           <Row label="Register date" value={fmtDate(registerDate)} />
           <Row label="Billing cycle" value="Monthly" />
           <Row label="Invoice date" value={client.billingDay ? String(client.billingDay) : "—"} />
+          <Row label="Payment type" value={termLabel} />
           <Row label="Last invoice" value={last ? fmtDate(last.issueDate) : "—"} />
           <div className="flex items-center justify-between gap-3 border-b border-[var(--line)] py-1.5">
             <span className="text-[12px] text-[var(--muted)]">Expiry date <span className="text-[var(--faint)]">(auto · +1 month)</span></span>
