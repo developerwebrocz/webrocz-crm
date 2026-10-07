@@ -130,6 +130,8 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
     received: filtered.reduce((s, r) => s + r.received, 0),
     pending: filtered.reduce((s, r) => s + r.pending, 0),
     overdueAmt: filtered.reduce((s, r) => s + r.overdueAmt, 0),
+    // agreed monthly amount of the shown clients (Web Rocz / Web Rocz Pvt Ltd)
+    monthly: filtered.reduce((s, r) => s + (r.retainer || 0), 0),
   }), [filtered]);
 
   // pagination — reset to page 1 when filters change (render-time, no effect)
@@ -155,7 +157,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
       {embedded ? (
         // Rendered under CompanyNav (company hub) — skip the gradient title, keep the actions.
         <div className="flex flex-wrap items-center justify-end gap-2">
-          <p className="mr-auto text-[12.5px] text-[var(--muted)]">{totals.clients} clients · Billed {inr(totals.billed)} · Pending <b style={{ color: "var(--amber)" }}>{inr(totals.pending)}</b></p>
+          <p className="mr-auto text-[12.5px] text-[var(--muted)]">{totals.clients} clients · {showSno ? <>Monthly <b className="text-[var(--ink-2)]">{inr(totals.monthly)}</b> · </> : null}Billed {inr(totals.billed)} · Pending <b style={{ color: "var(--amber)" }}>{inr(totals.pending)}</b></p>
           {lockedCompany && <button onClick={() => setAddInvOpen(true)} className="btn btn-ghost"><ReceiptText size={15} /> Add invoice</button>}
           {lockedCompany && <button onClick={() => setAddOpen(true)} className="btn btn-violet"><UserPlus size={15} /> Add Client</button>}
           {(lockedCompany === "WEB_ROCZ" || lockedCompany === "WEB_ROCZ_PVT") && <button onClick={() => setClientImportOpen(true)} title="Add client details from a sheet — no invoices" className="btn btn-ghost"><Upload size={15} /> Import clients</button>}
@@ -188,7 +190,9 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
       </div>
       )}
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className={"grid grid-cols-2 gap-3 " + (showSno ? "sm:grid-cols-5" : "sm:grid-cols-4")}>
+        {/* Web Rocz / Web Rocz Pvt Ltd: the clients' agreed monthly amounts added up */}
+        {showSno && <Kpi label={lockedCompany === "WEB_ROCZ_PVT" ? "Monthly amount · before GST" : "Monthly amount"} value={inr(totals.monthly)} tone="var(--violet)" icon={<Wallet size={15} />} />}
         <Kpi label={`Total billed${scopeLabel !== "All" ? ` · ${scopeLabel}` : ""}`} value={inr(totals.billed)} icon={<ReceiptText size={15} />} />
         <Kpi label="Received" value={inr(totals.received)} tone="var(--emerald)" icon={<CheckCircle2 size={15} />} />
         <Kpi label="Pending" value={inr(totals.pending)} tone="var(--amber)" icon={<Wallet size={15} />} />
@@ -239,7 +243,9 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
                     : <span className="text-[var(--faint)]">—</span>}</td>
                   {showAM && <td className="px-5 py-3 text-[12.5px]">{r.accountManager || <span className="text-[var(--faint)]">—</span>}</td>}
                   <td className="px-5 py-3"><CatChip c={catActive ? scopeLabel : r.category} services={r.services} /></td>
-                  <td className="px-5 py-3"><div className="text-[13px] font-semibold tnum">{inr(r.billed)}</div>{r.pending > 0 && (() => { const mp = monthsPending(r.scopedInvs); return <div className="text-[11px] font-semibold tnum" style={{ color: r.overdueAmt > 0 ? "var(--rose)" : "var(--amber)" }}>{inr(r.pending)} due{mp > 0 ? ` · ${mp} month${mp === 1 ? "" : "s"}` : ""}{r.overdueAmt > 0 ? " · overdue" : ""}</div>; })()}</td>
+                  <td className="px-5 py-3">{/* Web Rocz / Pvt Ltd: the client's monthly amount first, then what has been billed */}{showSno && r.retainer > 0
+                    ? <><div className="whitespace-nowrap text-[13px] font-semibold tnum">{inr(r.retainer)} <span className="text-[10.5px] font-medium text-[var(--faint)]">/ month{lockedCompany === "WEB_ROCZ_PVT" ? " + GST" : ""}</span></div>{r.billed > 0 && <div className="whitespace-nowrap text-[11px] tnum text-[var(--muted)]">Billed {inr(r.billed)}</div>}</>
+                    : <div className="text-[13px] font-semibold tnum">{inr(r.billed)}</div>}{r.pending > 0 && (() => { const mp = monthsPending(r.scopedInvs); return <div className="text-[11px] font-semibold tnum" style={{ color: r.overdueAmt > 0 ? "var(--rose)" : "var(--amber)" }}>{inr(r.pending)} due{mp > 0 ? ` · ${mp} month${mp === 1 ? "" : "s"}` : ""}{r.overdueAmt > 0 ? " · overdue" : ""}</div>; })()}</td>
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-1.5">
                       <button onClick={() => setFuRow(r)} title="Follow-up" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><MessageSquarePlus size={13} /> Follow-up{r.clientFollowups.length > 0 && <span className="grid h-4 min-w-[16px] place-items-center rounded-full bg-[var(--violet)] px-1 text-[9px] font-bold text-white">{r.clientFollowups.length}</span>}</button>
