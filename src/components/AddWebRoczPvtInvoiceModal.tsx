@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { X, Plus } from "lucide-react";
-import { addInvoice } from "@/app/sales-actions";
-import { getWebRoczPvtInvoiceDefaults, type WebRoczPvtInvoiceDefaults } from "@/app/webrocz-pvt-actions";
+import { addWebRoczPvtInvoice, getWebRoczPvtInvoiceDefaults, getWebRoczPvtNextInvoiceNumber, type PvtInvoiceResult, type WebRoczPvtInvoiceDefaults } from "@/app/webrocz-pvt-actions";
 import { WEB_ROCZ_CLIENT_SERVICES } from "@/lib/webrocz-services";
 
 // Web Rocz Pvt Ltd (digital marketing, GST 18%) invoice — works like the Web Rocz invoice
@@ -23,16 +22,28 @@ export default function AddWebRoczPvtInvoiceModal({ clientNames, close, returnTo
   const [customs, setCustoms] = useState<string[]>([]);
   const [gstin, setGstin] = useState("");
   const [amount, setAmount] = useState("");
+  // Invoice number: the next one in the Pvt Ltd series is suggested, and stays editable.
+  const [number, setNumber] = useState("");
+  const [issueDate, setIssueDate] = useState(today);
+  // Project date + payment type are remembered from the client's last invoice.
+  const [projectDate, setProjectDate] = useState("");
+  const [paymentTerm, setPaymentTerm] = useState("");
+  const [saved, save, saving] = useActionState<PvtInvoiceResult, FormData>(addWebRoczPvtInvoice, null);
   // Saved GSTIN + services per client (lower-cased name), loaded once when the form opens.
   const [defaults, setDefaults] = useState<WebRoczPvtInvoiceDefaults>({});
   // Once the accountant changes a tick / the GSTIN by hand, auto-fill never overwrites it.
   const svcEdited = useRef(false);
   const gstinEdited = useRef(false);
+  const numberEdited = useRef(false);
+  const projectEdited = useRef(false);
+  const termEdited = useRef(false);
   const nameRef = useRef(name);
 
   const applyClient = (clientName: string, from: WebRoczPvtInvoiceDefaults) => {
     const c = from[clientName.trim().toLowerCase()];
     if (!gstinEdited.current) setGstin(c?.gstin ?? "");
+    if (!projectEdited.current) setProjectDate(c?.projectDate ?? "");
+    if (!termEdited.current) setPaymentTerm(c?.paymentTerm ?? "");
     if (svcEdited.current) return;
     const names = (c?.services ?? []).map((x) => x.service);
     setOn(Object.fromEntries(names.filter((n) => PVT_SERVICES.includes(n)).map((n) => [n, true])));
@@ -44,6 +55,12 @@ export default function AddWebRoczPvtInvoiceModal({ clientNames, close, returnTo
     return () => { alive = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  useEffect(() => {
+    if (numberEdited.current) return;
+    let alive = true;
+    getWebRoczPvtNextInvoiceNumber(issueDate).then((v) => { if (alive && !numberEdited.current && v) setNumber(v); }).catch(() => { /* typed by hand instead */ });
+    return () => { alive = false; };
+  }, [issueDate]);
   const pickName = (v: string) => { setName(v); nameRef.current = v; applyClient(v, defaults); };
   // Monthly counts saved for the picked client (e.g. "8 blogs/month · 25 keywords"), shown beside the service.
   const detailOf = (sv: string) => defaults[name.trim().toLowerCase()]?.services.find((x) => x.service === sv)?.detail ?? "";
@@ -69,19 +86,35 @@ export default function AddWebRoczPvtInvoiceModal({ clientNames, close, returnTo
           </div>
           <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
         </div>
-        <form action={addInvoice} className="space-y-3 overflow-y-auto scroll-thin px-6 py-4">
-          <input type="hidden" name="return" value={returnTo} />
-          <input type="hidden" name="category" value="DM" />
-          <input type="hidden" name="gst" value="1" />
-          <input type="hidden" name="items" value={JSON.stringify([{ name: "Digital Marketing", qty: 1, rate: base, amount: base }])} />
+        <form action={save} className="space-y-3 overflow-y-auto scroll-thin px-6 py-4">
+          <input type="hidden" name="paymentTerm" value={paymentTerm} />
           {picked.map((sv, i) => <input key={i} type="hidden" name="services" value={sv} />)}
           <datalist id="webrocz-pvt-inv-client-names">{clientNames.map((nm) => <option key={nm} value={nm} />)}</datalist>
 
           <div className="grid grid-cols-2 gap-3">
-            <label className="block"><span className="eyebrow">Invoice date</span><input name="issueDate" type="date" defaultValue={today} className="input mt-1" /></label>
+            <label className="block"><span className="eyebrow">Invoice number</span><input name="number" value={number} onChange={(e) => { setNumber(e.target.value); numberEdited.current = true; }} className="input mt-1" placeholder="e.g. 2026-27/163" /><span className="mt-1 block text-[11px] text-[var(--faint)]">Filled automatically — change it if needed.</span></label>
+            <label className="block"><span className="eyebrow">Invoice date</span><input name="issueDate" type="date" required value={issueDate} onChange={(e) => setIssueDate(e.target.value)} className="input mt-1" /></label>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Company name</span><input name="clientName" required list="webrocz-pvt-inv-client-names" value={name} onChange={(e) => pickName(e.target.value)} readOnly={!!lockClientName} className={"input mt-1" + (lockClientName ? " bg-[var(--surface-2)]" : "")} placeholder="Company / client" /></label>
+            <label className="block"><span className="eyebrow">Project date</span><input name="projectDate" type="date" value={projectDate} onChange={(e) => { setProjectDate(e.target.value); projectEdited.current = true; }} className="input mt-1" /><span className="mt-1 block text-[11px] text-[var(--faint)]">The date the project started.</span></label>
           </div>
           <label className="block"><span className="eyebrow">Client GSTIN</span><input name="gstin" value={gstin} onChange={(e) => { setGstin(e.target.value); gstinEdited.current = true; }} className="input mt-1 uppercase" placeholder="e.g. 36AABCU9603R1ZM" /><span className="mt-1 block text-[11px] text-[var(--faint)]">Sets the place of supply (CGST/SGST vs IGST) on the tax invoice.</span></label>
+
+          <div>
+            <span className="eyebrow">Payment type</span>
+            <div className="mt-1.5 grid grid-cols-2 gap-2">
+              {[{ k: "PREPAID", label: "Prepayment", hint: "Paid before the work" }, { k: "POSTPAID", label: "Post payment", hint: "Paid after the work" }].map((t) => {
+                const active = paymentTerm === t.k;
+                return (
+                  <label key={t.k} className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-[10px] border px-3 py-1.5" style={active ? { borderColor: "var(--violet)", background: "color-mix(in srgb, var(--violet) 5%, white)" } : { borderColor: "var(--line-2)" }}>
+                    <input type="checkbox" checked={active} onChange={(e) => { setPaymentTerm(e.target.checked ? t.k : ""); termEdited.current = true; }} className="h-4 w-4 accent-[var(--violet)]" />
+                    <span><span className="block text-[13px] font-semibold">{t.label}</span><span className="block text-[11px] text-[var(--faint)]">{t.hint}</span></span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
 
           <div>
             <span className="eyebrow">Services</span>
@@ -122,11 +155,11 @@ export default function AddWebRoczPvtInvoiceModal({ clientNames, close, returnTo
           <label className="block"><span className="eyebrow">Description (optional)</span><input name="desc" className="input mt-1" placeholder="optional notes" /></label>
           <p className="rounded-[10px] bg-[var(--surface-2)] px-3 py-2 text-[11.5px] text-[var(--muted)]">→ <b>Web Rocz Pvt Ltd</b> · GST serial series</p>
 
-          {err && <p className="rounded-[10px] px-3 py-2 text-[12.5px] font-semibold text-[var(--rose)]" style={{ background: "color-mix(in srgb, var(--rose) 8%, white)" }}>{err}</p>}
+          {(err || saved?.error) && <p className="rounded-[10px] px-3 py-2 text-[12.5px] font-semibold text-[var(--rose)]" style={{ background: "color-mix(in srgb, var(--rose) 8%, white)" }}>{err || saved?.error}</p>}
 
           <div className="flex justify-end gap-2 pt-1">
             <button type="button" onClick={close} className="btn btn-ghost">Cancel</button>
-            <button type="submit" onClick={check} className="btn btn-violet"><Plus size={15} /> Create invoice</button>
+            <button type="submit" onClick={check} disabled={saving} className="btn btn-violet disabled:opacity-60"><Plus size={15} /> {saving ? "Creating…" : "Create invoice"}</button>
           </div>
         </form>
       </div>

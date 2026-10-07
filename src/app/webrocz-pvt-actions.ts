@@ -20,20 +20,125 @@ function n(fd: FormData, k: string) {
   return Number.isFinite(v) ? v : 0;
 }
 
-export type WebRoczPvtInvoiceDefaults = Record<string, { gstin: string; services: { service: string; detail: string | null }[] }>;
+export type WebRoczPvtInvoiceDefaults = Record<string, { gstin: string; projectDate: string; paymentTerm: string; services: { service: string; detail: string | null }[] }>;
 
-// Read-only: each client's saved GSTIN + digital-marketing services (lower-cased name), so
-// the Web Rocz Pvt Ltd invoice form can fill them in as soon as a company is picked.
+const PVT_ROLES = ["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"];
+const GST_PCT = 18;
+// Financial year of a date, as the Pvt Ltd invoice series writes it: April 2026 → "2026-27".
+function fyOf(iso: string): string {
+  const d = /^\d{4}-\d{2}-\d{2}$/.test(iso) ? new Date(iso + "T00:00:00Z") : new Date();
+  const y = d.getUTCFullYear(), start = d.getUTCMonth() >= 3 ? y : y - 1;
+  return `${start}-${String((start + 1) % 100).padStart(2, "0")}`;
+}
+// Next number in the Pvt Ltd series for that year: the highest "2026-27/N" so far, plus one.
+async function nextPvtNumber(iso: string): Promise<string> {
+  const prefix = `${fyOf(iso)}/`;
+  const used = await prisma.salesInvoice.findMany({ where: { number: { startsWith: prefix } }, select: { number: true } });
+  const max = used.reduce((m, i) => { const v = i.number.slice(prefix.length); return /^\d+$/.test(v) ? Math.max(m, parseInt(v, 10)) : m; }, 0);
+  return `${prefix}${max + 1}`;
+}
+
+// Read-only: each client's saved GSTIN + digital-marketing services (lower-cased name), and
+// the project date / payment type from its latest Pvt Ltd invoice, so the invoice form can
+// fill them in as soon as a company is picked.
 export async function getWebRoczPvtInvoiceDefaults(): Promise<WebRoczPvtInvoiceDefaults> {
   const u = await getCurrentUser();
-  if (!u || !["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"].includes(u.role)) return {};
-  const clients = await prisma.client.findMany({ select: { name: true, gstin: true, websiteServices: true, services: { select: { service: true, detail: true } } } });
+  if (!u || !PVT_ROLES.includes(u.role)) return {};
+  const clients = await prisma.client.findMany({ select: { name: true, gstin: true, websiteServices: true, services: { select: { service: true, detail: true } }, salesInvoices: { where: { company: "WEB_ROCZ_PVT" }, orderBy: { issueDate: "desc" }, select: { projectDate: true, paymentTerm: true } } } });
   const out: WebRoczPvtInvoiceDefaults = {};
   for (const c of clients) {
     const reserved = new Set(websiteServiceNames(c.websiteServices));
-    out[c.name.trim().toLowerCase()] = { gstin: c.gstin || "", services: c.services.filter((x) => !reserved.has(x.service)) };
+    out[c.name.trim().toLowerCase()] = {
+      gstin: c.gstin || "",
+      projectDate: c.salesInvoices.find((i) => i.projectDate)?.projectDate ?? "",
+      paymentTerm: c.salesInvoices.find((i) => i.paymentTerm)?.paymentTerm ?? "",
+      services: c.services.filter((x) => !reserved.has(x.service)),
+    };
   }
   return out;
+}
+
+// Read-only: the invoice number the form should suggest for an invoice dated `iso`.
+export async function getWebRoczPvtNextInvoiceNumber(iso: string): Promise<string> {
+  const u = await getCurrentUser();
+  if (!u || !PVT_ROLES.includes(u.role)) return "";
+  return nextPvtNumber(iso);
+}
+
+// Save an uploaded file under /public/uploads/<subdir>; returns its URL ("" when none).
+async function saveUpload(file: unknown, subdir: string): Promise<string> {
+  if (!file || typeof file === "string") return "";
+  const f = file as File;
+  if (!f.size || !f.arrayBuffer) return "";
+  const { writeFile, mkdir } = await import("node:fs/promises");
+  const path = await import("node:path");
+  const safe = (f.name || "file").replace(/[^a-zA-Z0-9._-]/g, "_").slice(-60);
+  const fname = `${Date.now()}-${safe}`;
+  const dir = path.join(process.cwd(), "public", "uploads", subdir);
+  await mkdir(dir, { recursive: true });
+  await writeFile(path.join(dir, fname), Buffer.from(await f.arrayBuffer()));
+  return `/uploads/${subdir}/${fname}`;
+}
+
+export type PvtInvoiceResult = { error: string } | null;
+
+// Create a Web Rocz Pvt Ltd invoice from its own form: the invoice number is the suggested
+// next one unless the accountant typed another, and the project date + payment type
+// (prepayment / post payment) are kept on the invoice. GST is added on top of the amount.
+export async function addWebRoczPvtInvoice(_prev: PvtInvoiceResult, fd: FormData): Promise<PvtInvoiceResult> {
+  const me = await getCurrentUser();
+  if (!me || !PVT_ROLES.includes(me.role)) return { error: "You do not have access to add invoices." };
+  const clientName = s(fd, "clientName");
+  const base = n(fd, "amount");
+  if (!clientName) return { error: "Enter the company name." };
+  if (base <= 0) return { error: "Enter the invoice amount." };
+  const issueDate = /^\d{4}-\d{2}-\d{2}$/.test(s(fd, "issueDate")) ? s(fd, "issueDate") : new Date().toISOString().slice(0, 10);
+  const number = s(fd, "number") || (await nextPvtNumber(issueDate));
+  if (await prisma.salesInvoice.findUnique({ where: { number }, select: { id: true } })) return { error: `Invoice number ${number} is already used. Change the number and try again.` };
+  const projectDate = /^\d{4}-\d{2}-\d{2}$/.test(s(fd, "projectDate")) ? s(fd, "projectDate") : "";
+  const paymentTerm = ["PREPAID", "POSTPAID"].includes(s(fd, "paymentTerm")) ? s(fd, "paymentTerm") : "";
+  const formGstin = s(fd, "gstin").toUpperCase();
+  const proofUrl = await saveUpload(fd.get("paymentProof"), "payments");
+  const invoiceDocUrl = await saveUpload(fd.get("invoiceDoc"), "invoices");
+
+  // Existing client by name (case-insensitive), else a new GST client.
+  const all = await prisma.client.findMany({ select: { id: true, code: true, name: true, gstin: true, gstRate: true, pocName: true, pocMobile: true, pocEmail: true } });
+  let client = all.find((c) => c.name.trim().toLowerCase() === clientName.toLowerCase()) ?? null;
+  if (!client) {
+    const code = `CLI-${all.reduce((m, c) => (c.code.startsWith("CLI-") ? Math.max(m, parseInt(c.code.slice(4), 10) || 0) : m), 999) + 1}`;
+    client = await prisma.client.create({ data: { code, name: clientName, status: "ACTIVE", gstApplicable: true, gstRate: GST_PCT, gstin: formGstin }, select: { id: true, code: true, name: true, gstin: true, gstRate: true, pocName: true, pocMobile: true, pocEmail: true } });
+  } else if (formGstin && !client.gstin) {
+    await prisma.client.update({ where: { id: client.id }, data: { gstin: formGstin, gstApplicable: true } });
+  }
+  const gstin = formGstin || client.gstin || "";
+  const taxPct = client.gstRate > 0 ? client.gstRate : GST_PCT;
+  const taxAmount = Math.round((base * taxPct) / 100);
+  const total = base + taxAmount;
+  const received = Math.min(Math.max(0, n(fd, "received")), total);
+  const due = /^\d{4}-\d{2}-\d{2}$/.test(s(fd, "dueDate")) ? s(fd, "dueDate") : (() => { const d = new Date(issueDate + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + 15); return d.toISOString().slice(0, 10); })();
+  const state = stateFromGstin(gstin);
+  const description = s(fd, "desc");
+
+  const inv = await prisma.salesInvoice.create({
+    data: {
+      number, clientId: client.id, pipeline: "WEBROCZ", company: "WEB_ROCZ_PVT",
+      billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "", clientGstin: gstin,
+      ...(state ? { clientState: state, placeOfSupply: state } : {}),
+      items: JSON.stringify([{ name: "Digital Marketing", qty: 1, rate: base, amount: base }]),
+      subtotal: base, taxPct, taxAmount, total, received, paymentProof: proofUrl, invoiceDoc: invoiceDocUrl,
+      paymentStatus: received >= total ? "Fully Received" : received > 0 ? "Partially Received" : "Pending",
+      issueDate, dueDate: due, projectDate, paymentTerm,
+      ...(description ? { notes: description } : {}),
+    },
+  });
+  if (received > 0) {
+    await prisma.payment.create({ data: { invoiceId: inv.id, amount: received, date: issueDate, mode: "OTHER", note: proofUrl ? "Invoice opening · payment screenshot attached" : "Invoice opening", ref: proofUrl, by: me.name } });
+  }
+  revalidatePath("/invoices");
+  revalidatePath(`/accounts/${client.id}`);
+  revalidatePath("/pipeline/web-rocz-pvt");
+  // Land on the invoice page so it can be checked and sent right away.
+  redirect(`/invoices/${inv.id}`);
 }
 
 // Accountant edits a Web Rocz Pvt Ltd client: contact details, domain name, GSTIN and the

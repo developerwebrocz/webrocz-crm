@@ -17447,6 +17447,8 @@ export namespace Prisma {
     paymentStatus: string | null
     paymentProof: string | null
     invoiceDoc: string | null
+    projectDate: string | null
+    paymentTerm: string | null
     notes: string | null
     issueDate: string | null
     dueDate: string | null
@@ -17483,6 +17485,8 @@ export namespace Prisma {
     paymentStatus: string | null
     paymentProof: string | null
     invoiceDoc: string | null
+    projectDate: string | null
+    paymentTerm: string | null
     notes: string | null
     issueDate: string | null
     dueDate: string | null
@@ -17519,6 +17523,8 @@ export namespace Prisma {
     paymentStatus: number
     paymentProof: number
     invoiceDoc: number
+    projectDate: number
+    paymentTerm: number
     notes: number
     issueDate: number
     dueDate: number
@@ -17573,6 +17579,8 @@ export namespace Prisma {
     paymentStatus?: true
     paymentProof?: true
     invoiceDoc?: true
+    projectDate?: true
+    paymentTerm?: true
     notes?: true
     issueDate?: true
     dueDate?: true
@@ -17609,6 +17617,8 @@ export namespace Prisma {
     paymentStatus?: true
     paymentProof?: true
     invoiceDoc?: true
+    projectDate?: true
+    paymentTerm?: true
     notes?: true
     issueDate?: true
     dueDate?: true
@@ -17645,6 +17655,8 @@ export namespace Prisma {
     paymentStatus?: true
     paymentProof?: true
     invoiceDoc?: true
+    projectDate?: true
+    paymentTerm?: true
     notes?: true
     issueDate?: true
     dueDate?: true
@@ -17768,6 +17780,8 @@ export namespace Prisma {
     paymentStatus: string
     paymentProof: string
     invoiceDoc: string
+    projectDate: string
+    paymentTerm: string
     notes: string | null
     issueDate: string
     dueDate: string
@@ -17823,6 +17837,8 @@ export namespace Prisma {
     paymentStatus?: boolean
     paymentProof?: boolean
     invoiceDoc?: boolean
+    projectDate?: boolean
+    paymentTerm?: boolean
     notes?: boolean
     issueDate?: boolean
     dueDate?: boolean
@@ -17862,6 +17878,8 @@ export namespace Prisma {
     paymentStatus?: boolean
     paymentProof?: boolean
     invoiceDoc?: boolean
+    projectDate?: boolean
+    paymentTerm?: boolean
     notes?: boolean
     issueDate?: boolean
     dueDate?: boolean
@@ -17899,6 +17917,8 @@ export namespace Prisma {
     paymentStatus?: boolean
     paymentProof?: boolean
     invoiceDoc?: boolean
+    projectDate?: boolean
+    paymentTerm?: boolean
     notes?: boolean
     issueDate?: boolean
     dueDate?: boolean
@@ -17936,6 +17956,8 @@ export namespace Prisma {
     paymentStatus?: boolean
     paymentProof?: boolean
     invoiceDoc?: boolean
+    projectDate?: boolean
+    paymentTerm?: boolean
     notes?: boolean
     issueDate?: boolean
     dueDate?: boolean
@@ -17952,7 +17974,7 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type SalesInvoiceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "number" | "leadId" | "clientId" | "pipeline" | "company" | "billTo" | "contact" | "phone" | "email" | "items" | "subtotal" | "taxPct" | "taxAmount" | "total" | "received" | "paymentStatus" | "paymentProof" | "invoiceDoc" | "notes" | "issueDate" | "dueDate" | "clientGstin" | "clientState" | "clientAddress" | "placeOfSupply" | "approved" | "approvedBy" | "approvedAt" | "notesLog" | "nextFollowup" | "emailedAt" | "createdAt", ExtArgs["result"]["salesInvoice"]>
+  export type SalesInvoiceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "number" | "leadId" | "clientId" | "pipeline" | "company" | "billTo" | "contact" | "phone" | "email" | "items" | "subtotal" | "taxPct" | "taxAmount" | "total" | "received" | "paymentStatus" | "paymentProof" | "invoiceDoc" | "projectDate" | "paymentTerm" | "notes" | "issueDate" | "dueDate" | "clientGstin" | "clientState" | "clientAddress" | "placeOfSupply" | "approved" | "approvedBy" | "approvedAt" | "notesLog" | "nextFollowup" | "emailedAt" | "createdAt", ExtArgs["result"]["salesInvoice"]>
   export type SalesInvoiceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     payments?: boolean | SalesInvoice$paymentsArgs<ExtArgs>
     client?: boolean | SalesInvoice$clientArgs<ExtArgs>
@@ -17991,6 +18013,8 @@ export namespace Prisma {
       paymentStatus: string
       paymentProof: string
       invoiceDoc: string
+      projectDate: string
+      paymentTerm: string
       notes: string | null
       issueDate: string
       dueDate: string
@@ -18449,6 +18473,8 @@ export namespace Prisma {
     readonly paymentStatus: FieldRef<"SalesInvoice", 'String'>
     readonly paymentProof: FieldRef<"SalesInvoice", 'String'>
     readonly invoiceDoc: FieldRef<"SalesInvoice", 'String'>
+    readonly projectDate: FieldRef<"SalesInvoice", 'String'>
+    readonly paymentTerm: FieldRef<"SalesInvoice", 'String'>
     readonly notes: FieldRef<"SalesInvoice", 'String'>
     readonly issueDate: FieldRef<"SalesInvoice", 'String'>
     readonly dueDate: FieldRef<"SalesInvoice", 'String'>
@@ -51351,6 +51377,8 @@ export namespace Prisma {
     paymentStatus: 'paymentStatus',
     paymentProof: 'paymentProof',
     invoiceDoc: 'invoiceDoc',
+    projectDate: 'projectDate',
+    paymentTerm: 'paymentTerm',
     notes: 'notes',
     issueDate: 'issueDate',
     dueDate: 'dueDate',
@@ -52929,6 +52957,8 @@ export namespace Prisma {
     paymentStatus?: StringFilter<"SalesInvoice"> | string
     paymentProof?: StringFilter<"SalesInvoice"> | string
     invoiceDoc?: StringFilter<"SalesInvoice"> | string
+    projectDate?: StringFilter<"SalesInvoice"> | string
+    paymentTerm?: StringFilter<"SalesInvoice"> | string
     notes?: StringNullableFilter<"SalesInvoice"> | string | null
     issueDate?: StringFilter<"SalesInvoice"> | string
     dueDate?: StringFilter<"SalesInvoice"> | string
@@ -52967,6 +52997,8 @@ export namespace Prisma {
     paymentStatus?: SortOrder
     paymentProof?: SortOrder
     invoiceDoc?: SortOrder
+    projectDate?: SortOrder
+    paymentTerm?: SortOrder
     notes?: SortOrderInput | SortOrder
     issueDate?: SortOrder
     dueDate?: SortOrder
@@ -53008,6 +53040,8 @@ export namespace Prisma {
     paymentStatus?: StringFilter<"SalesInvoice"> | string
     paymentProof?: StringFilter<"SalesInvoice"> | string
     invoiceDoc?: StringFilter<"SalesInvoice"> | string
+    projectDate?: StringFilter<"SalesInvoice"> | string
+    paymentTerm?: StringFilter<"SalesInvoice"> | string
     notes?: StringNullableFilter<"SalesInvoice"> | string | null
     issueDate?: StringFilter<"SalesInvoice"> | string
     dueDate?: StringFilter<"SalesInvoice"> | string
@@ -53046,6 +53080,8 @@ export namespace Prisma {
     paymentStatus?: SortOrder
     paymentProof?: SortOrder
     invoiceDoc?: SortOrder
+    projectDate?: SortOrder
+    paymentTerm?: SortOrder
     notes?: SortOrderInput | SortOrder
     issueDate?: SortOrder
     dueDate?: SortOrder
@@ -53090,6 +53126,8 @@ export namespace Prisma {
     paymentStatus?: StringWithAggregatesFilter<"SalesInvoice"> | string
     paymentProof?: StringWithAggregatesFilter<"SalesInvoice"> | string
     invoiceDoc?: StringWithAggregatesFilter<"SalesInvoice"> | string
+    projectDate?: StringWithAggregatesFilter<"SalesInvoice"> | string
+    paymentTerm?: StringWithAggregatesFilter<"SalesInvoice"> | string
     notes?: StringNullableWithAggregatesFilter<"SalesInvoice"> | string | null
     issueDate?: StringWithAggregatesFilter<"SalesInvoice"> | string
     dueDate?: StringWithAggregatesFilter<"SalesInvoice"> | string
@@ -56775,6 +56813,8 @@ export namespace Prisma {
     paymentStatus?: string
     paymentProof?: string
     invoiceDoc?: string
+    projectDate?: string
+    paymentTerm?: string
     notes?: string | null
     issueDate: string
     dueDate?: string
@@ -56813,6 +56853,8 @@ export namespace Prisma {
     paymentStatus?: string
     paymentProof?: string
     invoiceDoc?: string
+    projectDate?: string
+    paymentTerm?: string
     notes?: string | null
     issueDate: string
     dueDate?: string
@@ -56849,6 +56891,8 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     paymentProof?: StringFieldUpdateOperationsInput | string
     invoiceDoc?: StringFieldUpdateOperationsInput | string
+    projectDate?: StringFieldUpdateOperationsInput | string
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     issueDate?: StringFieldUpdateOperationsInput | string
     dueDate?: StringFieldUpdateOperationsInput | string
@@ -56887,6 +56931,8 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     paymentProof?: StringFieldUpdateOperationsInput | string
     invoiceDoc?: StringFieldUpdateOperationsInput | string
+    projectDate?: StringFieldUpdateOperationsInput | string
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     issueDate?: StringFieldUpdateOperationsInput | string
     dueDate?: StringFieldUpdateOperationsInput | string
@@ -56924,6 +56970,8 @@ export namespace Prisma {
     paymentStatus?: string
     paymentProof?: string
     invoiceDoc?: string
+    projectDate?: string
+    paymentTerm?: string
     notes?: string | null
     issueDate: string
     dueDate?: string
@@ -56959,6 +57007,8 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     paymentProof?: StringFieldUpdateOperationsInput | string
     invoiceDoc?: StringFieldUpdateOperationsInput | string
+    projectDate?: StringFieldUpdateOperationsInput | string
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     issueDate?: StringFieldUpdateOperationsInput | string
     dueDate?: StringFieldUpdateOperationsInput | string
@@ -56995,6 +57045,8 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     paymentProof?: StringFieldUpdateOperationsInput | string
     invoiceDoc?: StringFieldUpdateOperationsInput | string
+    projectDate?: StringFieldUpdateOperationsInput | string
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     issueDate?: StringFieldUpdateOperationsInput | string
     dueDate?: StringFieldUpdateOperationsInput | string
@@ -60887,6 +60939,8 @@ export namespace Prisma {
     paymentStatus?: SortOrder
     paymentProof?: SortOrder
     invoiceDoc?: SortOrder
+    projectDate?: SortOrder
+    paymentTerm?: SortOrder
     notes?: SortOrder
     issueDate?: SortOrder
     dueDate?: SortOrder
@@ -60931,6 +60985,8 @@ export namespace Prisma {
     paymentStatus?: SortOrder
     paymentProof?: SortOrder
     invoiceDoc?: SortOrder
+    projectDate?: SortOrder
+    paymentTerm?: SortOrder
     notes?: SortOrder
     issueDate?: SortOrder
     dueDate?: SortOrder
@@ -60967,6 +61023,8 @@ export namespace Prisma {
     paymentStatus?: SortOrder
     paymentProof?: SortOrder
     invoiceDoc?: SortOrder
+    projectDate?: SortOrder
+    paymentTerm?: SortOrder
     notes?: SortOrder
     issueDate?: SortOrder
     dueDate?: SortOrder
@@ -67194,6 +67252,8 @@ export namespace Prisma {
     paymentStatus?: string
     paymentProof?: string
     invoiceDoc?: string
+    projectDate?: string
+    paymentTerm?: string
     notes?: string | null
     issueDate: string
     dueDate?: string
@@ -67230,6 +67290,8 @@ export namespace Prisma {
     paymentStatus?: string
     paymentProof?: string
     invoiceDoc?: string
+    projectDate?: string
+    paymentTerm?: string
     notes?: string | null
     issueDate: string
     dueDate?: string
@@ -68087,6 +68149,8 @@ export namespace Prisma {
     paymentStatus?: StringFilter<"SalesInvoice"> | string
     paymentProof?: StringFilter<"SalesInvoice"> | string
     invoiceDoc?: StringFilter<"SalesInvoice"> | string
+    projectDate?: StringFilter<"SalesInvoice"> | string
+    paymentTerm?: StringFilter<"SalesInvoice"> | string
     notes?: StringNullableFilter<"SalesInvoice"> | string | null
     issueDate?: StringFilter<"SalesInvoice"> | string
     dueDate?: StringFilter<"SalesInvoice"> | string
@@ -70754,6 +70818,8 @@ export namespace Prisma {
     paymentStatus?: string
     paymentProof?: string
     invoiceDoc?: string
+    projectDate?: string
+    paymentTerm?: string
     notes?: string | null
     issueDate: string
     dueDate?: string
@@ -70791,6 +70857,8 @@ export namespace Prisma {
     paymentStatus?: string
     paymentProof?: string
     invoiceDoc?: string
+    projectDate?: string
+    paymentTerm?: string
     notes?: string | null
     issueDate: string
     dueDate?: string
@@ -70842,6 +70910,8 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     paymentProof?: StringFieldUpdateOperationsInput | string
     invoiceDoc?: StringFieldUpdateOperationsInput | string
+    projectDate?: StringFieldUpdateOperationsInput | string
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     issueDate?: StringFieldUpdateOperationsInput | string
     dueDate?: StringFieldUpdateOperationsInput | string
@@ -70879,6 +70949,8 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     paymentProof?: StringFieldUpdateOperationsInput | string
     invoiceDoc?: StringFieldUpdateOperationsInput | string
+    projectDate?: StringFieldUpdateOperationsInput | string
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     issueDate?: StringFieldUpdateOperationsInput | string
     dueDate?: StringFieldUpdateOperationsInput | string
@@ -78204,6 +78276,8 @@ export namespace Prisma {
     paymentStatus?: string
     paymentProof?: string
     invoiceDoc?: string
+    projectDate?: string
+    paymentTerm?: string
     notes?: string | null
     issueDate: string
     dueDate?: string
@@ -78644,6 +78718,8 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     paymentProof?: StringFieldUpdateOperationsInput | string
     invoiceDoc?: StringFieldUpdateOperationsInput | string
+    projectDate?: StringFieldUpdateOperationsInput | string
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     issueDate?: StringFieldUpdateOperationsInput | string
     dueDate?: StringFieldUpdateOperationsInput | string
@@ -78680,6 +78756,8 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     paymentProof?: StringFieldUpdateOperationsInput | string
     invoiceDoc?: StringFieldUpdateOperationsInput | string
+    projectDate?: StringFieldUpdateOperationsInput | string
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     issueDate?: StringFieldUpdateOperationsInput | string
     dueDate?: StringFieldUpdateOperationsInput | string
@@ -78716,6 +78794,8 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     paymentProof?: StringFieldUpdateOperationsInput | string
     invoiceDoc?: StringFieldUpdateOperationsInput | string
+    projectDate?: StringFieldUpdateOperationsInput | string
+    paymentTerm?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     issueDate?: StringFieldUpdateOperationsInput | string
     dueDate?: StringFieldUpdateOperationsInput | string

@@ -16,7 +16,7 @@ export default async function InvoiceByIdPage({ params, searchParams }: { params
   const sp = await searchParams;
   const d = await getInvoiceById(id);
   if (!d) redirect("/invoices");
-  const sent = sp.sent === "1" ? "ok" : sp.sent === "0" ? "fail" : sp.sent === "locked" ? "locked" : "";
+  const sent = sp.sent === "1" ? "ok" : sp.sent === "0" ? "fail" : sp.sent === "locked" ? "locked" : sp.sent === "dupno" ? "dupno" : "";
   const isSuperAdmin = ["SUPER_ADMIN", "SUB_ADMIN"].includes(user.role);
   const canManage = ["SUPER_ADMIN", "SUB_ADMIN", "ACCOUNTANT"].includes(user.role);
   const pipeline = (d.invoice as { pipeline?: string } | null)?.pipeline;

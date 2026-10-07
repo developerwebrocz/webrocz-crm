@@ -449,9 +449,19 @@ export async function saveInvoice(fd: FormData) {
       return { ...it, qty: 1, rate: amt, amount: amt };
     }));
   }
+  // Web Rocz Pvt Ltd edit form only (other forms do not send these): a corrected invoice
+  // number — refused if another invoice already has it — plus project date and payment type.
+  const newNumber = s(fd, "number");
+  const numberClash = !!newNumber && newNumber !== inv.number && !!(await prisma.salesInvoice.findUnique({ where: { number: newNumber }, select: { id: true } }));
+  const pvtExtra = {
+    ...(newNumber && newNumber !== inv.number && !numberClash ? { number: newNumber } : {}),
+    ...(fd.has("projectDate") ? { projectDate: /^\d{4}-\d{2}-\d{2}$/.test(s(fd, "projectDate")) ? s(fd, "projectDate") : "" } : {}),
+    ...(fd.has("paymentTerm") ? { paymentTerm: ["PREPAID", "POSTPAID"].includes(s(fd, "paymentTerm")) ? s(fd, "paymentTerm") : "" } : {}),
+  };
   await prisma.salesInvoice.update({
     where: { id: invId },
     data: {
+      ...pvtExtra,
       billTo: s(fd, "billTo") || inv.billTo, contact: s(fd, "contact"), phone: s(fd, "phone"), email: s(fd, "email"),
       clientGstin: s(fd, "clientGstin"), clientState: s(fd, "clientState") || inv.clientState, clientAddress: s(fd, "clientAddress"),
       placeOfSupply: s(fd, "placeOfSupply") || inv.placeOfSupply,
@@ -462,7 +472,7 @@ export async function saveInvoice(fd: FormData) {
     },
   });
   revalidatePath(invoiceReturn(leadId, invId));
-  redirect(invoiceReturn(leadId, invId));
+  redirect(numberClash ? `${invoiceReturn(leadId, invId)}?sent=dupno` : invoiceReturn(leadId, invId));
 }
 
 const PAY_MODES = ["UPI", "BANK", "CHEQUE", "CASH", "CARD", "OTHER"];

@@ -20,7 +20,7 @@ const addMonth = (iso: string) => {
 const daysBetween = (fromIso: string, toIso: string) => Math.round((Date.parse(toIso + "T00:00:00Z") - Date.parse(fromIso + "T00:00:00Z")) / 86400000);
 
 type CardClient = { accountManagerId: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; onboardDate: string; gstin: string };
-type CardInvoice = { issueDate: string; total: number; balance: number; company: string };
+type CardInvoice = { issueDate: string; total: number; balance: number; company: string; projectDate?: string; paymentTerm?: string };
 
 export default function WebRoczPvtClientCard({ client, services, slaUrl, invoices }: { client: CardClient; services: { service: string; detail: string | null }[]; slaUrl: string; invoices: CardInvoice[] }) {
   // The manager's name is looked up from the same list the Account manager dropdown uses.
@@ -31,6 +31,11 @@ export default function WebRoczPvtClientCard({ client, services, slaUrl, invoice
   const first = dated[0];
   const last = dated[dated.length - 1];
   const registerDate = first?.issueDate || client.onboardDate;
+  // Project date + payment type come from the latest invoice that has them (set on the invoice form).
+  const newestFirst = [...dated].reverse();
+  const projectDate = newestFirst.find((i) => i.projectDate)?.projectDate ?? "";
+  const term = newestFirst.find((i) => i.paymentTerm)?.paymentTerm ?? "";
+  const termLabel = term === "PREPAID" ? "Prepayment" : term === "POSTPAID" ? "Post payment" : "—";
   const expiry = last ? addMonth(last.issueDate) : "";
   const pending = dated.reduce((s, i) => s + Math.max(0, i.balance), 0);
   const today = new Date().toISOString().slice(0, 10);
@@ -70,7 +75,9 @@ export default function WebRoczPvtClientCard({ client, services, slaUrl, invoice
       <div className="card card-pad">
         <h3 className="eyebrow mb-2.5 flex items-center gap-1.5"><CalendarClock size={13} className="text-[var(--violet)]" /> Registration &amp; monthly renewal</h3>
         <div className="text-[12.5px]">
+          <Row label="Project date" value={projectDate ? fmtDate(projectDate) : "—"} />
           <Row label="Register date" value={fmtDate(registerDate)} />
+          <Row label="Payment type" value={termLabel} />
           <Row label="Billing cycle" value="Monthly · GST 18%" />
           <Row label="Last invoice" value={last ? fmtDate(last.issueDate) : "—"} />
           <div className="flex items-center justify-between gap-3 border-b border-[var(--line)] py-1.5">

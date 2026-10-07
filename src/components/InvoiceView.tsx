@@ -99,6 +99,7 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
 
       {sent === "ok" && <div className="no-print rounded-[10px] px-4 py-2.5 text-[13px] font-medium" style={{ background: "color-mix(in srgb,var(--emerald) 8%,white)", color: "var(--emerald)" }}>✓ Invoice emailed to the client.</div>}
       {sent === "fail" && <div className="no-print rounded-[10px] px-4 py-2.5 text-[13px] font-medium" style={{ background: "color-mix(in srgb,var(--rose) 8%,white)", color: "var(--rose)" }}>Could not send — email not configured or address invalid. Use Download PDF instead.</div>}
+      {sent === "dupno" && <div className="no-print rounded-[10px] px-4 py-2.5 text-[13px] font-medium" style={{ background: "color-mix(in srgb,var(--rose) 8%,white)", color: "var(--rose)" }}>That invoice number is already used by another invoice — the number was not changed.</div>}
       {sent === "locked" && <div className="no-print rounded-[10px] px-4 py-2.5 text-[13px] font-medium" style={{ background: "color-mix(in srgb,var(--amber) 12%,white)", color: "#92600a" }}>Cannot send yet — needs Super Admin approval first.</div>}
 
       {/* edit panel */}
@@ -107,6 +108,16 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
           <h3 className="text-[14px] font-bold">Edit invoice</h3>
           <form action={saveInvoice} className="mt-3 grid gap-3 sm:grid-cols-2">
             <input type="hidden" name="invoiceId" value={invoice.id} /><input type="hidden" name="leadId" value={leadId} />
+            {/* Web Rocz Pvt Ltd only: its invoice number can be corrected, and the project date /
+                payment type entered on its invoice form can be changed. */}
+            {invoice.company === "WEB_ROCZ_PVT" && (
+              <>
+                <L label="Invoice number"><input name="number" defaultValue={invoice.number} className="input" /></L>
+                <L label="Project date"><input type="date" name="projectDate" defaultValue={invoice.projectDate ?? ""} className="input" /></L>
+                <L label="Payment type"><select name="paymentTerm" defaultValue={invoice.paymentTerm ?? ""} className="select"><option value="">Not set</option><option value="PREPAID">Prepayment</option><option value="POSTPAID">Post payment</option></select></L>
+                <div />
+              </>
+            )}
             <L label="Bill to (client)"><input name="billTo" defaultValue={invoice.billTo} className="input" /></L>
             <L label="Contact person"><input name="contact" defaultValue={invoice.contact ?? ""} className="input" /></L>
             <L label="Phone"><input name="phone" defaultValue={invoice.phone ?? ""} className="input" /></L>
