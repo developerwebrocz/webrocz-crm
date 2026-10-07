@@ -4,7 +4,10 @@
 //
 //   Look (changes nothing):   npx tsx prisma/restore-client-from-backup.ts "PEST"
 //   Restore:                  npx tsx prisma/restore-client-from-backup.ts "PEST" --yes
-import Database from "better-sqlite3";
+//
+// Uses the same Prisma + SQLite adapter as the app and the other scripts here.
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaClient } from "../src/generated/prisma/client.js";
 import { readFileSync, readdirSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 
@@ -25,19 +28,24 @@ import { basename, dirname, join } from "node:path";
 const LIVE = (process.env.DATABASE_URL ?? "file:./prisma/dev.db").replace(/^file:/, "");
 const YES = process.argv.includes("--yes");
 const text = process.argv.slice(2).find((a) => !a.startsWith("--")) ?? "";
-const inr = (v: number) => "Rs " + (v || 0).toLocaleString("en-IN");
+const inr = (v: number) => "Rs " + (Number(v) || 0).toLocaleString("en-IN");
+const open = (file: string) => new PrismaClient({ adapter: new PrismaBetterSqlite3({ url: `file:${file}` }) });
+const q = (s: string) => s.replace(/'/g, "''");
 
 type ClientRow = { id: string; code: string; name: string };
 type InvRow = { id: string; number: string; total: number; received: number; company: string; issueDate: string };
+type Found = { client: ClientRow; invoices: InvRow[] };
 
-function find(file: string): { client: ClientRow; invoices: InvRow[] }[] {
-  const db = new Database(file, { readonly: true });
+async function find(file: string): Promise<Found[]> {
+  const db = open(file);
   try {
-    const clients = db.prepare("SELECT id, code, name FROM Client WHERE name LIKE ? ORDER BY name").all(`%${text}%`) as ClientRow[];
-    return clients.map((client) => ({ client, invoices: db.prepare("SELECT id, number, total, received, company, issueDate FROM SalesInvoice WHERE clientId = ? ORDER BY issueDate").all(client.id) as InvRow[] }));
-  } finally { db.close(); }
+    const clients = await db.$queryRawUnsafe<ClientRow[]>(`SELECT id, code, name FROM Client WHERE name LIKE '%${q(text)}%' ORDER BY name`);
+    const out: Found[] = [];
+    for (const client of clients) out.push({ client, invoices: await db.$queryRawUnsafe<InvRow[]>(`SELECT id, number, total, received, company, issueDate FROM SalesInvoice WHERE clientId = '${q(client.id)}' ORDER BY issueDate`) });
+    return out;
+  } finally { await db.$disconnect(); }
 }
-const show = (rows: { client: ClientRow; invoices: InvRow[] }[]) => {
+const show = (rows: Found[]) => {
   for (const r of rows) {
     console.log(`  ${r.client.code}  ${r.client.name}`);
     for (const i of r.invoices) console.log(`      ${i.number}  ${i.issueDate}  ${i.company}  total ${inr(i.total)}  received ${inr(i.received)}`);
@@ -45,19 +53,20 @@ const show = (rows: { client: ClientRow; invoices: InvRow[] }[]) => {
   }
 };
 
-function main() {
+async function main() {
   if (!text) { console.log('Give part of the client name, e.g.  npx tsx prisma/restore-client-from-backup.ts "PEST"'); return; }
   console.log(YES ? `=== RESTORING clients matching "${text}" ===` : `=== LOOKING for clients matching "${text}" — nothing is changed ===`);
-  const liveRows = find(LIVE);
+  console.log(`Live database: ${LIVE}`);
+  const liveRows = await find(LIVE);
   console.log(`\nIn the live database now: ${liveRows.length ? "" : "not found"}`);
   show(liveRows);
 
   const dir = dirname(LIVE);
-  const backups = readdirSync(dir).filter((f) => f.startsWith(basename(LIVE) + ".backup-")).sort().reverse().map((f) => join(dir, f));
+  const backups = readdirSync(dir).filter((f) => f.startsWith(basename(LIVE) + ".backup-")).sort().reverse().map((f) => join(dir, f).replace(/\\/g, "/"));
   console.log(`\nBackups checked: ${backups.length}`);
-  let source: { file: string; rows: { client: ClientRow; invoices: InvRow[] }[] } | null = null;
+  let source: { file: string; rows: Found[] } | null = null;
   for (const file of backups) {
-    const rows = find(file);
+    const rows = await find(file);
     console.log(`  ${basename(file)}: ${rows.length ? "FOUND" : "not found"}`);
     show(rows);
     // newest backup that still has a client which is missing from live
@@ -68,41 +77,41 @@ function main() {
   console.log(`\nCan be restored from ${basename(source.file)}: ${source.rows.map((r) => r.client.name).join(", ")}`);
   if (!YES) { console.log("\nLOOK_DONE — add --yes to restore."); return; }
 
-  const db = new Database(LIVE);
+  const db = open(LIVE);
   try {
     const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-    db.exec(`VACUUM INTO '${`${LIVE}.backup-before-restore-${stamp}`.replace(/'/g, "''")}'`);
-    db.prepare("ATTACH DATABASE ? AS bak").run(source.file);
-    const cols = (schema: string, table: string) => (db.prepare(`PRAGMA ${schema}.table_info("${table}")`).all() as { name: string }[]).map((c) => c.name);
-    const tables = (db.prepare("SELECT name FROM bak.sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_prisma%'").all() as { name: string }[]).map((t) => t.name);
+    await db.$executeRawUnsafe(`VACUUM INTO '${q(`${LIVE}.backup-before-restore-${stamp}`)}'`);
+    await db.$executeRawUnsafe(`ATTACH DATABASE '${q(source.file)}' AS bak`);
+    const cols = async (schema: string, table: string) => (await db.$queryRawUnsafe<{ name: string }[]>(`PRAGMA ${schema}.table_info("${table}")`)).map((c) => c.name);
+    const tables = (await db.$queryRawUnsafe<{ name: string }[]>("SELECT name FROM bak.sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_prisma%'")).map((t) => t.name);
     // copy rows of one table, using only the columns both databases have
-    const copy = (table: string, where: string, arg: string) => {
-      const shared = cols("bak", table).filter((c) => cols("main", table).includes(c)).map((c) => `"${c}"`).join(", ");
-      return db.prepare(`INSERT OR IGNORE INTO main."${table}" (${shared}) SELECT ${shared} FROM bak."${table}" WHERE ${where}`).run(arg).changes;
+    const copy = async (table: string, where: string) => {
+      const live = await cols("main", table);
+      const shared = (await cols("bak", table)).filter((c) => live.includes(c)).map((c) => `"${c}"`).join(", ");
+      return db.$executeRawUnsafe(`INSERT OR IGNORE INTO main."${table}" (${shared}) SELECT ${shared} FROM bak."${table}" WHERE ${where}`);
     };
-    const restore = db.transaction(() => {
-      for (const r of source!.rows) {
-        // a client code that has since been reused gets the next free code
-        const clash = db.prepare("SELECT id FROM main.Client WHERE code = ? AND id <> ?").get(r.client.code, r.client.id);
-        copy("Client", "id = ?", r.client.id);
-        if (clash) {
-          const max = (db.prepare("SELECT code FROM main.Client WHERE code LIKE 'CLI-%'").all() as { code: string }[]).reduce((m, c) => Math.max(m, parseInt(c.code.slice(4), 10) || 0), 999);
-          const shared = cols("bak", "Client").filter((c) => cols("main", "Client").includes(c) && c !== "code").map((c) => `"${c}"`).join(", ");
-          db.prepare(`INSERT OR IGNORE INTO main.Client ("code", ${shared}) SELECT ?, ${shared} FROM bak.Client WHERE id = ?`).run(`CLI-${max + 1}`, r.client.id);
-        }
-        if (!db.prepare("SELECT id FROM main.Client WHERE id = ?").get(r.client.id)) throw new Error(`Could not restore client ${r.client.name}`);
-        let rows = 0;
-        for (const t of tables) if (t !== "Client" && cols("bak", t).includes("clientId")) rows += copy(t, "clientId = ?", r.client.id);
-        const pays = copy("Payment", "invoiceId IN (SELECT id FROM bak.SalesInvoice WHERE clientId = ?)", r.client.id);
-        const back = db.prepare("SELECT number FROM main.SalesInvoice WHERE clientId = ?").all(r.client.id) as { number: string }[];
-        console.log(`  restored ${r.client.name}: ${back.length} invoice(s) [${back.map((i) => i.number).join(", ")}], ${pays} payment(s), ${rows} linked row(s)`);
-        const lost = r.invoices.filter((i) => !back.some((b) => b.number === i.number));
-        if (lost.length) console.log(`  NOT restored (invoice number now used by another invoice): ${lost.map((i) => i.number).join(", ")}`);
-      }
-    });
-    restore();
+    for (const r of source.rows) {
+      const id = q(r.client.id);
+      // a client code that has since been reused gets the next free code
+      const clash = await db.$queryRawUnsafe<{ id: string }[]>(`SELECT id FROM main.Client WHERE code = '${q(r.client.code)}' AND id <> '${id}'`);
+      if (clash.length) {
+        const codes = await db.$queryRawUnsafe<{ code: string }[]>("SELECT code FROM main.Client WHERE code LIKE 'CLI-%'");
+        const max = codes.reduce((m, c) => Math.max(m, parseInt(c.code.slice(4), 10) || 0), 999);
+        const live = await cols("main", "Client");
+        const shared = (await cols("bak", "Client")).filter((c) => live.includes(c) && c !== "code").map((c) => `"${c}"`).join(", ");
+        await db.$executeRawUnsafe(`INSERT OR IGNORE INTO main."Client" ("code", ${shared}) SELECT 'CLI-${max + 1}', ${shared} FROM bak."Client" WHERE id = '${id}'`);
+      } else await copy("Client", `id = '${id}'`);
+      if (!(await db.$queryRawUnsafe<{ id: string }[]>(`SELECT id FROM main.Client WHERE id = '${id}'`)).length) throw new Error(`Could not restore client ${r.client.name}`);
+      let rows = 0;
+      for (const t of tables) if (t !== "Client" && (await cols("bak", t)).includes("clientId")) rows += await copy(t, `clientId = '${id}'`);
+      const pays = await copy("Payment", `invoiceId IN (SELECT id FROM bak.SalesInvoice WHERE clientId = '${id}')`);
+      const back = await db.$queryRawUnsafe<{ number: string }[]>(`SELECT number FROM main.SalesInvoice WHERE clientId = '${id}'`);
+      console.log(`  restored ${r.client.name}: ${back.length} invoice(s) [${back.map((i) => i.number).join(", ")}], ${pays} payment(s), ${rows} linked row(s)`);
+      const lost = r.invoices.filter((i) => !back.some((b) => b.number === i.number));
+      if (lost.length) console.log(`  NOT restored (invoice number now used by another invoice): ${lost.map((i) => i.number).join(", ")}`);
+    }
     console.log("\nRESTORE_DONE");
-  } finally { db.close(); }
+  } finally { await db.$disconnect(); }
 }
 
-main();
+main().catch((e) => { console.error("SCRIPT_ERROR:", e); process.exitCode = 1; });
