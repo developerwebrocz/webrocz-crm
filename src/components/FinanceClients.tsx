@@ -111,7 +111,10 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
     });
     // Newest clients first (CLI-#### code increments with each new client).
     const codeNum = (c: string) => parseInt((c || "").replace(/\D/g, ""), 10) || 0;
-    list.sort((a, b) => codeNum(b.code) - codeNum(a.code) || a.name.localeCompare(b.name));
+    // Web Rocz: in invoice-day order (1st, 5th, 10th …), clients without a day last; within
+    // the same day by name. Every other list keeps newest first.
+    if (lockedCompany === "WEB_ROCZ") list.sort((a, b) => (a.billingDay || 99) - (b.billingDay || 99) || a.name.localeCompare(b.name));
+    else list.sort((a, b) => codeNum(b.code) - codeNum(a.code) || a.name.localeCompare(b.name));
     return list;
   }, [computed, nq, payStatus, clientSel, companySel]);
 
