@@ -185,7 +185,8 @@ export async function updateWebRoczPvtClient(fd: FormData) {
     where: { id },
     data: {
       name,
-      // The domain name is no longer edited here, so the saved one is left as it is.
+      // Domain name: saved when the form has the field (shows in the clients list "Domain" column).
+      ...(fd.has("website") ? { website: s(fd, "website") || null, websiteDomain: s(fd, "website") } : {}),
       ...(amSent && amOk ? { accountManagerId: amId || null } : {}),
       pocName: s(fd, "pocName") || null,
       pocMobile: s(fd, "pocMobile") || null,
