@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { recordPayment, createClientInvoice, generateInvoiceFromSla } from "@/app/sales-actions";
-import { updateClientFinance, logClientFollowup } from "@/app/actions";
+import { updateClientFinance } from "@/app/actions";
 import { companyLabel } from "@/lib/domain";
 import AddInvoiceModal from "@/components/AddInvoiceModal";
 import EditWebRoczClientModal from "@/components/EditWebRoczClientModal";
@@ -12,6 +12,7 @@ import EditWebRoczPvtClientModal from "@/components/EditWebRoczPvtClientModal";
 import AddWebRoczInvoiceModal from "@/components/AddWebRoczInvoiceModal";
 import WebRoczClientCard from "@/components/WebRoczClientCard";
 import WebRoczPvtClientCard from "@/components/WebRoczPvtClientCard";
+import ClientFollowupChannels from "@/components/ClientFollowupChannels";
 import AddWebRoczPvtInvoiceModal from "@/components/AddWebRoczPvtInvoiceModal";
 import { ReceiptText, Wallet, CheckCircle2, Clock, Phone, Mail, IndianRupee, X, ArrowLeft, Building2, Plus, Pencil, MessageSquarePlus, CalendarClock, Globe, FileSignature, FileText, Download } from "lucide-react";
 
@@ -313,31 +314,22 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
           <h2 className="flex items-center gap-1.5 text-[14px] font-bold"><MessageSquarePlus size={15} className="text-[var(--violet)]" /> Follow-ups ({clientFollowups.length})</h2>
           {client.nextFollowup && <span className="inline-flex items-center gap-1 text-[12px] font-semibold text-[var(--amber)]"><CalendarClock size={13} /> Next: {fmtDate(client.nextFollowup)}</span>}
         </div>
-        <div className="grid gap-4 p-5 lg:grid-cols-2">
-          <form action={logClientFollowup} className="space-y-3">
-            <input type="hidden" name="id" value={client.id} />
-            <input type="hidden" name="return" value={backUrl} />
-            <label className="block"><span className="eyebrow">Log a response / note</span><textarea name="note" rows={3} className="input mt-1" placeholder="e.g. Spoke to POC — payment promised by Friday" /></label>
-            <label className="block"><span className="eyebrow">Next follow-up date</span><input name="next" type="date" defaultValue={client.nextFollowup || todayISO()} className="input mt-1" /></label>
-            <button type="submit" className="btn btn-violet"><MessageSquarePlus size={15} /> Save follow-up</button>
-          </form>
-          <div className="max-h-[280px] overflow-y-auto scroll-thin">
-            {clientFollowups.length === 0 && invoices.every((i) => i.followups.length === 0) && <p className="text-[12.5px] text-[var(--muted)]">No follow-ups logged yet.</p>}
-            <div className="space-y-2">
-              {clientFollowups.map((n, i) => (
-                <div key={i} className="rounded-[10px] border border-[var(--line)] px-3 py-2 text-[12.5px]">
-                  <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-[var(--faint)]"><span className="tnum">{fmtDate(n.date)}</span><span className="font-semibold text-[var(--violet)]">· {n.by || "—"}</span>{n.next && <span className="ml-auto inline-flex items-center gap-1"><CalendarClock size={11} /> {fmtDate(n.next)}</span>}</div>
-                  <div className="mt-0.5 text-[var(--ink-2)]">{n.note}</div>
-                </div>
-              ))}
-              {invoices.flatMap((inv) => inv.followups.map((n, i) => (
-                <div key={`${inv.id}-${i}`} className="rounded-[10px] border border-dashed border-[var(--line)] px-3 py-2 text-[12.5px]">
-                  <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-[var(--faint)]"><span className="tnum">{fmtDate(n.date)}</span><span>· {n.by || "—"}</span><span className="ml-auto font-semibold">{inv.number}</span></div>
-                  <div className="mt-0.5 text-[var(--ink-2)]">{n.note}</div>
-                </div>
-              )))}
+        {/* Phone and WhatsApp follow-ups are logged and listed separately. */}
+        <div className="space-y-4 p-5">
+          <ClientFollowupChannels clientId={client.id} returnTo={backUrl} followups={clientFollowups} />
+          {invoices.some((i) => i.followups.length > 0) && (
+            <div>
+              <div className="mb-1 text-[11px] font-bold uppercase tracking-wide text-[var(--faint)]">On invoices</div>
+              <div className="space-y-2">
+                {invoices.flatMap((inv) => inv.followups.map((n, i) => (
+                  <div key={`${inv.id}-${i}`} className="rounded-[10px] border border-dashed border-[var(--line)] px-3 py-2 text-[12.5px]">
+                    <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-[var(--faint)]"><span className="tnum">{fmtDate(n.date)}</span><span>· {n.by || "—"}</span><span className="ml-auto font-semibold">{inv.number}</span></div>
+                    <div className="mt-0.5 text-[var(--ink-2)]">{n.note}</div>
+                  </div>
+                )))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

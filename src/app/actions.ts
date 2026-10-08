@@ -842,10 +842,12 @@ export async function logClientFollowup(fd: FormData) {
   const next = s(fd, "next");
   if (!note && !next) redirect(back);
   const client = await prisma.client.findUnique({ where: { id }, select: { followupLog: true } });
-  let log: { date: string; by: string; note: string; next?: string }[] = [];
+  let log: { date: string; by: string; note: string; next?: string; via?: string }[] = [];
   try { const arr = JSON.parse(client?.followupLog || "[]"); if (Array.isArray(arr)) log = arr; } catch { /* ignore */ }
   const date = new Date().toISOString().slice(0, 10);
-  if (note) log.push({ date, by: u.name, note, next });
+  // Phone / WhatsApp follow-ups are kept apart; forms that do not send a type save as before.
+  const via = ["PHONE", "WHATSAPP"].includes(s(fd, "via")) ? s(fd, "via") : "";
+  if (note) log.push({ date, by: u.name, note, next, ...(via ? { via } : {}) });
   await prisma.client.update({ where: { id }, data: { followupLog: JSON.stringify(log), nextFollowup: next || undefined } });
   revalidatePath("/accounts");
   revalidatePath(`/accounts/${id}`);

@@ -2234,7 +2234,7 @@ export async function getFinanceClients() {
     const received = invs.reduce((s, i) => s + i.received, 0);
     const pending = invs.reduce((s, i) => s + i.balance, 0);
     // Client-level follow-up log (accountant's own notes on the client, with their name).
-    let clientFollowups: { date: string; by: string; note: string; next?: string }[] = [];
+    let clientFollowups: { date: string; by: string; note: string; next?: string; via?: string }[] = [];
     try { const arr = JSON.parse(c.followupLog || "[]"); if (Array.isArray(arr)) clientFollowups = arr; } catch { /* ignore */ }
     const sla = slaByClient.get(c.id);
     return {
@@ -2556,7 +2556,7 @@ export async function getFinanceClientDetail(clientId: string) {
     overdue: invoices.filter((i) => i.overdue).reduce((s, i) => s + i.balance, 0),
     invoices: invoices.length,
   };
-  let clientFollowups: { date: string; by: string; note: string; next?: string }[] = [];
+  let clientFollowups: { date: string; by: string; note: string; next?: string; via?: string }[] = [];
   try { const arr = JSON.parse(client.followupLog || "[]"); if (Array.isArray(arr)) clientFollowups = arr.sort((a, b) => (a.date < b.date ? 1 : -1)); } catch { /* ignore */ }
   return { client: { ...client, onboardDate: client.onboardDate.toISOString().slice(0, 10) }, invoices, payments, totals, clientFollowups, amUsers, slas };
 }

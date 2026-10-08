@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { deleteClientFinance, addClientFromFinance, logClientFollowup } from "@/app/actions";
+import { deleteClientFinance, addClientFromFinance } from "@/app/actions";
 import { importFinanceCsv } from "@/app/sales-actions";
 import { downloadCsv } from "@/lib/csv";
 import AddInvoiceModal from "@/components/AddInvoiceModal";
@@ -13,8 +13,9 @@ import AddWebRoczPvtInvoiceModal from "@/components/AddWebRoczPvtInvoiceModal";
 import ImportWebRoczPvtSaleReportModal from "@/components/ImportWebRoczPvtSaleReportModal";
 import ImportWebRoczClientsModal from "@/components/ImportWebRoczClientsModal";
 import ImportWebRoczPvtClientsModal from "@/components/ImportWebRoczPvtClientsModal";
+import ClientFollowupChannels from "@/components/ClientFollowupChannels";
 import { companyLabel, COMPANY_KEYS } from "@/lib/domain";
-import { Users, Search, ReceiptText, Wallet, CheckCircle2, ChevronRight, ChevronLeft, MessageSquarePlus, Pencil, Trash2, X, Download, UserPlus, CalendarClock, Upload, Plus, Globe } from "lucide-react";
+import { Users, Search, ReceiptText, Wallet, CheckCircle2, ChevronRight, ChevronLeft, MessageSquarePlus, Pencil, Trash2, X, Download, UserPlus, Upload, Plus, Globe } from "lucide-react";
 
 const PAGE_SIZE = 10;
 
@@ -31,8 +32,6 @@ function monthsPending(invs: { balance: number; issueDate: string }[]): number {
   const now = new Date();
   return Math.max(0, (now.getFullYear() - y) * 12 + (now.getMonth() + 1 - m));
 }
-const todayISO = () => new Date().toISOString().slice(0, 10);
-const addDaysISO = (iso: string, n: number) => { const d = new Date((iso || todayISO()) + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 
 type MiniInv = { category: string; total: number; received: number; balance: number; overdue: boolean; issueDate: string; company: string };
 type Note = { invId: string; invNumber: string; date: string; by: string; note: string };
@@ -411,9 +410,11 @@ function AddClientModal({ lockedCompany, lockedCategory, close }: { lockedCompan
 // Client follow-up: the accountant logs a response on the client (their name is stored
 // with each entry). Invoice-level follow-up notes are shown below for context.
 function FollowupModal({ r, close }: { r: Row; close: () => void }) {
+  // After saving, come back to the list the popup was opened from (Web Rocz, Pvt Ltd, …).
+  const here = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/accounts";
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
-      <div className="flex max-h-[92vh] w-full max-w-[520px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
+      <div className="flex max-h-[92vh] w-full max-w-[860px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
           <div>
             <h2 className="text-[16px] font-bold">Follow-up · {r.name}</h2>
@@ -422,35 +423,24 @@ function FollowupModal({ r, close }: { r: Row; close: () => void }) {
           <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
         </div>
 
-        <div className="max-h-[38vh] overflow-y-auto scroll-thin px-6 py-4">
-          {r.clientFollowups.length === 0 && r.notes.length === 0 && <p className="text-[12.5px] text-[var(--muted)]">No follow-ups logged yet.</p>}
-          {r.clientFollowups.length > 0 && <div className="mb-1 text-[11px] font-bold uppercase tracking-wide text-[var(--faint)]">Client follow-ups</div>}
-          <div className="space-y-2">
-            {r.clientFollowups.map((n, i) => (
-              <div key={i} className="rounded-[10px] border border-[var(--line)] px-3 py-2 text-[12.5px]">
-                <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-[var(--faint)]"><span className="tnum">{fmtDate(n.date)}</span><span className="font-semibold text-[var(--violet)]">· {n.by || "—"}</span>{n.next && <span className="ml-auto inline-flex items-center gap-1"><CalendarClock size={11} /> {fmtDate(n.next)}</span>}</div>
-                <div className="mt-0.5 text-[var(--ink-2)]">{n.note}</div>
+        {/* Phone and WhatsApp follow-ups are logged and listed separately. */}
+        <div className="space-y-4 overflow-y-auto scroll-thin px-6 py-4">
+          <ClientFollowupChannels clientId={r.id} returnTo={here} followups={r.clientFollowups} />
+          {r.notes.length > 0 && (
+            <div>
+              <div className="mb-1 text-[11px] font-bold uppercase tracking-wide text-[var(--faint)]">On invoices</div>
+              <div className="space-y-2">
+                {r.notes.map((n, i) => (
+                  <div key={i} className="rounded-[10px] border border-dashed border-[var(--line)] px-3 py-2 text-[12.5px]">
+                    <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-[var(--faint)]"><span className="tnum">{fmtDate(n.date)}</span><span>· {n.by || "—"}</span><span className="ml-auto font-semibold">{n.invNumber}</span></div>
+                    <div className="mt-0.5 text-[var(--ink-2)]">{n.note}</div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          {r.notes.length > 0 && <div className="mb-1 mt-3 text-[11px] font-bold uppercase tracking-wide text-[var(--faint)]">On invoices</div>}
-          <div className="space-y-2">
-            {r.notes.map((n, i) => (
-              <div key={i} className="rounded-[10px] border border-dashed border-[var(--line)] px-3 py-2 text-[12.5px]">
-                <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-[var(--faint)]"><span className="tnum">{fmtDate(n.date)}</span><span>· {n.by || "—"}</span><span className="ml-auto font-semibold">{n.invNumber}</span></div>
-                <div className="mt-0.5 text-[var(--ink-2)]">{n.note}</div>
-              </div>
-            ))}
-          </div>
+            </div>
+          )}
         </div>
-
-        <form action={logClientFollowup} className="space-y-3 border-t border-[var(--line)] px-6 py-4">
-          <input type="hidden" name="id" value={r.id} />
-          <input type="hidden" name="return" value="/accounts" />
-          <label className="block"><span className="eyebrow">Response / note</span><textarea name="note" rows={2} className="input mt-1" placeholder="e.g. Called — will pay by Friday" /></label>
-          <label className="block"><span className="eyebrow">Next follow-up date</span><input name="next" type="date" defaultValue={addDaysISO(todayISO(), 3)} className="input mt-1" /></label>
-          <div className="flex justify-end gap-2"><button type="button" onClick={close} className="btn btn-ghost">Close</button><button type="submit" className="btn btn-violet"><MessageSquarePlus size={15} /> Save follow-up</button></div>
-        </form>
+        <div className="flex justify-end border-t border-[var(--line)] px-6 py-3"><button type="button" onClick={close} className="btn btn-ghost">Close</button></div>
       </div>
     </div>
   );
