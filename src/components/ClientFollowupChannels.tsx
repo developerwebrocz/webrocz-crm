@@ -24,42 +24,58 @@ export default function ClientFollowupChannels({ clientId, returnTo, followups }
   const newestFirst = [...followups].sort((a, b) => (a.date < b.date ? 1 : -1));
   const earlier = newestFirst.filter((f) => f.via !== "PHONE" && f.via !== "WHATSAPP");
   return (
-    <div className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-2">
+    <div className="space-y-5">
+      <div className="grid items-start gap-4 md:grid-cols-2">
         {CHANNELS.map(({ key, label, Icon, color, placeholder }) => {
           const list = newestFirst.filter((f) => f.via === key);
           const next = list.find((f) => f.next)?.next ?? "";
           return (
-            <div key={key} className="flex flex-col overflow-hidden rounded-[12px] border" style={{ borderColor: `color-mix(in srgb, ${color} 30%, white)` }}>
-              <div className="flex items-center justify-between gap-2 px-3.5 py-2.5" style={{ background: `color-mix(in srgb, ${color} 8%, white)` }}>
-                <span className="flex items-center gap-1.5 text-[13px] font-bold" style={{ color }}><Icon size={15} /> {label} follow-up <span className="font-semibold text-[var(--muted)]">({list.length})</span></span>
-                {next && <span className="inline-flex items-center gap-1 whitespace-nowrap text-[11px] font-semibold text-[var(--amber)]"><CalendarClock size={12} /> Next: {fmtDate(next)}</span>}
-              </div>
+            <section key={key} className="overflow-hidden rounded-[14px] border bg-[var(--surface)]" style={{ borderColor: `color-mix(in srgb, ${color} 28%, white)` }}>
+              {/* header: what this side is, how many, and when the next one is due */}
+              <header className="flex items-center gap-2.5 px-4 py-3" style={{ background: `color-mix(in srgb, ${color} 7%, white)` }}>
+                <span className="grid h-8 w-8 flex-none place-items-center rounded-full text-white" style={{ background: color }}><Icon size={15} /></span>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[14.5px] font-bold leading-tight text-[var(--ink)]">{label} follow-up</div>
+                  <div className="mt-0.5 text-[11.5px] leading-tight text-[var(--muted)]">{list.length === 0 ? "None yet" : `${list.length} logged`}</div>
+                </div>
+                {next && (
+                  <span className="flex-none rounded-full px-2.5 py-1 text-right text-[11.5px] font-semibold leading-none" style={{ color: "#92600a", background: "color-mix(in srgb, var(--amber) 14%, white)" }}>
+                    <span className="mr-1 font-medium">Next</span><span className="tnum">{fmtDate(next)}</span>
+                  </span>
+                )}
+              </header>
 
-              <form action={logClientFollowup} className="space-y-2.5 border-b border-[var(--line)] px-3.5 py-3">
+              <form action={logClientFollowup} className="space-y-3 px-4 py-4">
                 <input type="hidden" name="id" value={clientId} />
                 <input type="hidden" name="return" value={returnTo} />
                 <input type="hidden" name="via" value={key} />
-                <label className="block"><span className="eyebrow">{label} — response / note</span><textarea name="note" rows={2} required className="input mt-1" placeholder={placeholder} /></label>
-                <div className="flex items-end gap-2">
-                  <label className="block flex-1"><span className="eyebrow">Next follow-up date</span><input name="next" type="date" defaultValue={addDaysISO(todayISO(), 3)} className="input mt-1" /></label>
-                  <button type="submit" className="btn btn-sm whitespace-nowrap text-white" style={{ background: color }}><MessageSquarePlus size={14} /> Save</button>
+                <label className="block">
+                  <span className="text-[12.5px] font-semibold text-[var(--ink-2)]">Response / note</span>
+                  <textarea name="note" rows={3} required className="input mt-1.5 resize-none !text-[13.5px] leading-relaxed" placeholder={placeholder} />
+                </label>
+                <div className="grid grid-cols-[1fr_auto] items-end gap-2.5">
+                  <label className="block">
+                    <span className="text-[12.5px] font-semibold text-[var(--ink-2)]">Next follow-up date</span>
+                    <input name="next" type="date" defaultValue={addDaysISO(todayISO(), 3)} className="input mt-1.5 !text-[13.5px]" />
+                  </label>
+                  <button type="submit" className="btn h-[43px] justify-center whitespace-nowrap px-5 text-white" style={{ background: color }}><MessageSquarePlus size={15} /> Save</button>
                 </div>
               </form>
 
-              <div className="max-h-[220px] flex-1 space-y-2 overflow-y-auto scroll-thin px-3.5 py-3">
-                <div className="text-[11px] font-bold uppercase tracking-wide text-[var(--faint)]">Previous {label} follow-ups</div>
-                {list.length === 0 && <p className="text-[12.5px] text-[var(--muted)]">No {label} follow-up yet.</p>}
-                {list.map((n, i) => <Entry key={i} n={n} />)}
+              <div className="border-t border-[var(--line)] px-4 py-3.5">
+                <div className="mb-2 text-[12.5px] font-semibold text-[var(--ink-2)]">Previous {label} follow-ups</div>
+                {list.length === 0
+                  ? <p className="rounded-[10px] bg-[var(--surface-2)] px-3 py-2.5 text-[12.5px] text-[var(--muted)]">Nothing logged yet.</p>
+                  : <div className="max-h-[230px] space-y-2 overflow-y-auto scroll-thin pr-0.5">{list.map((n, i) => <Entry key={i} n={n} />)}</div>}
               </div>
-            </div>
+            </section>
           );
         })}
       </div>
 
       {earlier.length > 0 && (
         <div>
-          <div className="mb-1 text-[11px] font-bold uppercase tracking-wide text-[var(--faint)]">Earlier follow-ups <span className="font-medium normal-case">(saved before Phone / WhatsApp were separate)</span></div>
+          <div className="mb-2 text-[12.5px] font-semibold text-[var(--ink-2)]">Earlier follow-ups <span className="font-normal text-[var(--muted)]">· saved before Phone and WhatsApp were separate</span></div>
           <div className="space-y-2">{earlier.map((n, i) => <Entry key={i} n={n} />)}</div>
         </div>
       )}
@@ -67,11 +83,18 @@ export default function ClientFollowupChannels({ clientId, returnTo, followups }
   );
 }
 
+// One logged follow-up: date + who on the left, its next-follow-up date on the right, note below.
 function Entry({ n }: { n: ClientFollowup }) {
   return (
-    <div className="rounded-[10px] border border-[var(--line)] px-3 py-2 text-[12.5px]">
-      <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-[var(--faint)]"><span className="tnum">{fmtDate(n.date)}</span><span className="font-semibold text-[var(--violet)]">· {n.by || "—"}</span>{n.next && <span className="ml-auto inline-flex items-center gap-1"><CalendarClock size={11} /> {fmtDate(n.next)}</span>}</div>
-      <div className="mt-0.5 whitespace-pre-wrap text-[var(--ink-2)]">{n.note}</div>
+    <div className="rounded-[10px] border border-[var(--line)] px-3.5 py-2.5">
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0 truncate text-[12px] leading-tight">
+          <span className="font-semibold tnum text-[var(--ink)]">{fmtDate(n.date)}</span>
+          <span className="text-[var(--muted)]"> · {n.by || "—"}</span>
+        </div>
+        {n.next && <span className="inline-flex flex-none items-center gap-1 text-[11.5px] font-medium leading-tight text-[var(--muted)]"><CalendarClock size={12} /> Next <span className="tnum font-semibold text-[var(--ink-2)]">{fmtDate(n.next)}</span></span>}
+      </div>
+      <div className="mt-1.5 whitespace-pre-wrap text-[13px] leading-relaxed text-[var(--ink)]">{n.note}</div>
     </div>
   );
 }
