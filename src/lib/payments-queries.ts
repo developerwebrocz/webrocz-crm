@@ -5,13 +5,13 @@ import { prisma } from "./prisma";
 // in the browser, so changing a filter never needs another round trip.
 export type PayInvoice = { id: string; number: string; clientKey: string; clientId: string | null; clientName: string; company: string; total: number; received: number; issueDate: string; dueDate: string };
 export type PayEntry = { id: string; invoiceId: string; invoiceNumber: string; clientKey: string; clientId: string | null; clientName: string; company: string; amount: number; date: string; mode: string; ref: string; note: string; by: string };
-export type PayClient = { key: string; id: string | null; code: string; name: string; phone: string; accountManager: string };
+export type PayClient = { key: string; id: string | null; code: string; name: string; phone: string; accountManager: string; billingDay: number };
 
 export async function getPaymentsPipeline(): Promise<{ invoices: PayInvoice[]; payments: PayEntry[]; clients: PayClient[] }> {
   const [invs, pays, cls] = await Promise.all([
     prisma.salesInvoice.findMany({ orderBy: { issueDate: "asc" }, select: { id: true, number: true, clientId: true, billTo: true, company: true, taxPct: true, total: true, received: true, issueDate: true, dueDate: true } }),
     prisma.payment.findMany({ orderBy: [{ date: "desc" }, { createdAt: "desc" }], select: { id: true, invoiceId: true, amount: true, date: true, mode: true, ref: true, note: true, by: true } }),
-    prisma.client.findMany({ select: { id: true, code: true, name: true, pocMobile: true, accountManager: { select: { name: true } } } }),
+    prisma.client.findMany({ select: { id: true, code: true, name: true, pocMobile: true, billingDay: true, accountManager: { select: { name: true } } } }),
   ]);
   const clientById = new Map(cls.map((c) => [c.id, c]));
   // An invoice without a client link is grouped under its bill-to name.
@@ -36,7 +36,7 @@ export async function getPaymentsPipeline(): Promise<{ invoices: PayInvoice[]; p
     if (seen.has(i.clientKey)) continue;
     seen.add(i.clientKey);
     const c = i.clientId ? clientById.get(i.clientId) : undefined;
-    clients.push({ key: i.clientKey, id: i.clientId, code: c?.code ?? "", name: i.clientName, phone: c?.pocMobile ?? "", accountManager: c?.accountManager?.name ?? "" });
+    clients.push({ key: i.clientKey, id: i.clientId, code: c?.code ?? "", name: i.clientName, phone: c?.pocMobile ?? "", accountManager: c?.accountManager?.name ?? "", billingDay: c?.billingDay ?? 0 });
   }
   return { invoices, payments, clients };
 }

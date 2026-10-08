@@ -6,7 +6,8 @@ import { downloadCsv } from "@/lib/csv";
 import { companyLabel } from "@/lib/domain";
 import type { PayInvoice, PayEntry, PayClient } from "@/lib/payments-queries";
 import PaymentCollectorModal from "@/components/PaymentCollectorModal";
-import { Wallet, Users, CheckCircle2, AlertTriangle, IndianRupee, CalendarDays, Search, Download, Clock } from "lucide-react";
+import WebRoczPvtFollowupModal from "@/components/WebRoczPvtFollowupModal";
+import { Wallet, Users, CheckCircle2, AlertTriangle, IndianRupee, CalendarDays, Search, Download, Clock, MessageSquarePlus } from "lucide-react";
 
 // Payments pipeline (/payments): who still owes money, who has paid in full, and how much
 // was collected day by day and by whom. Everything is worked out from the invoices and the
@@ -14,8 +15,6 @@ import { Wallet, Users, CheckCircle2, AlertTriangle, IndianRupee, CalendarDays, 
 
 const inr = (v: number) => "₹" + Math.round(v || 0).toLocaleString("en-IN");
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split("-"); return d ? `${d}-${m}-${y}` : iso; };
-const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const monthOf = (iso: string) => { const [y, m] = (iso || "").split("-"); return m ? `${MON[parseInt(m, 10) - 1] ?? m} '${y.slice(2)}` : "—"; };
 // Local calendar date (not UTC), so "today" matches the accountant's day.
 const localISO = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 const shift = (iso: string, days: number) => { const d = new Date(iso + "T00:00:00"); d.setDate(d.getDate() + days); return localISO(d); };
@@ -38,12 +37,14 @@ function periodBounds(k: string, today: string, from: string, to: string): [stri
   return ["", ""];
 }
 
-type ClientRow = { key: string; id: string | null; code: string; name: string; phone: string; accountManager: string; companies: string[]; invoices: number; billed: number; received: number; pending: number; overdue: number; pendingInvoices: number; oldestPending: string; overdueDays: number; lastPayDate: string; lastPayAmount: number };
+type ClientRow = { key: string; id: string | null; code: string; name: string; phone: string; accountManager: string; companies: string[]; invoices: number; billed: number; received: number; pending: number; overdue: number; pendingInvoices: number; oldestPending: string; overdueDays: number; lastPayDate: string; lastPayAmount: number; billingDay: number; lastInvoiceDate: string };
 
 // `today` comes from the server (India date) so the first render matches in the browser.
 // `canReassign` (Super / Sub Admin) shows "Change name" beside each accountant.
 export default function PaymentsPipeline({ invoices, payments, clients, today, canReassign }: { invoices: PayInvoice[]; payments: PayEntry[]; clients: PayClient[]; today: string; canReassign?: boolean }) {
   const [moveFrom, setMoveFrom] = useState<string | null>(null);
+  // Client whose Follow-up popup (Phone / WhatsApp) is open.
+  const [fuClient, setFuClient] = useState<{ id: string; name: string } | null>(null);
   const [company, setCompany] = useState("ALL");
   const [period, setPeriod] = useState("MONTH");
   const [from, setFrom] = useState("");
@@ -64,10 +65,11 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
     for (const i of invoices) {
       if (!inCo(i.company)) continue;
       const m = meta.get(i.clientKey);
-      const r = map.get(i.clientKey) ?? { key: i.clientKey, id: i.clientId, code: m?.code ?? "", name: i.clientName, phone: m?.phone ?? "", accountManager: m?.accountManager ?? "", companies: [], invoices: 0, billed: 0, received: 0, pending: 0, overdue: 0, pendingInvoices: 0, oldestPending: "", overdueDays: 0, lastPayDate: "", lastPayAmount: 0 };
+      const r = map.get(i.clientKey) ?? { key: i.clientKey, id: i.clientId, code: m?.code ?? "", name: i.clientName, phone: m?.phone ?? "", accountManager: m?.accountManager ?? "", companies: [], invoices: 0, billed: 0, received: 0, pending: 0, overdue: 0, pendingInvoices: 0, oldestPending: "", overdueDays: 0, lastPayDate: "", lastPayAmount: 0, billingDay: m?.billingDay ?? 0, lastInvoiceDate: "" };
       const bal = Math.max(0, i.total - i.received);
       r.invoices++; r.billed += i.total; r.received += i.total - bal; r.pending += bal;
       if (!r.companies.includes(i.company)) r.companies.push(i.company);
+      if (i.issueDate > r.lastInvoiceDate) r.lastInvoiceDate = i.issueDate;
       if (bal > 0) {
         r.pendingInvoices++;
         if (!r.oldestPending || i.issueDate < r.oldestPending) r.oldestPending = i.issueDate;
@@ -235,12 +237,15 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
         <div className="overflow-x-auto">
           <table className="w-full text-[13px]">
             <thead><tr className="border-b border-[var(--line)] text-left text-[var(--muted)]">
-              <th className="th">Client</th><th className="th">Company</th><th className="th !text-right">Invoices</th><th className="th !text-right">Billed</th><th className="th !text-right">Received</th><th className="th !text-right">Pending</th><th className="th">Pending since</th><th className="th">Last payment</th><th className="th">Account manager</th>
+              <th className="th">S.No</th><th className="th">Invoice date</th><th className="th">Client</th><th className="th">Company</th><th className="th !text-right">Invoices</th><th className="th !text-right">Billed</th><th className="th !text-right">Received</th><th className="th !text-right">Pending</th><th className="th">Account manager</th><th className="th">Follow-up</th>
             </tr></thead>
             <tbody>
-              {shownClients.length === 0 && <tr><td colSpan={9} className="px-5 py-10 text-center text-[var(--muted)]">{tab === "PENDING" ? "No client has a payment pending." : tab === "RECEIVED" ? "No client is fully paid yet." : "No clients billed."}</td></tr>}
-              {shownClients.map((r) => (
+              {shownClients.length === 0 && <tr><td colSpan={10} className="px-5 py-10 text-center text-[var(--muted)]">{tab === "PENDING" ? "No client has a payment pending." : tab === "RECEIVED" ? "No client is fully paid yet." : "No clients billed."}</td></tr>}
+              {shownClients.map((r, idx) => (
                 <tr key={r.key} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
+                  <td className="px-5 py-2.5 font-semibold tnum text-[var(--muted)]">{idx + 1}</td>
+                  {/* the day of the month the client is invoiced (1, 5, 10 …); else the latest invoice date */}
+                  <td className="whitespace-nowrap px-5 py-2.5 tnum">{r.billingDay ? <span className="font-semibold">{r.billingDay}</span> : fmtDate(r.lastInvoiceDate)}</td>
                   <td className="px-5 py-2.5">
                     {r.id ? <Link href={`/accounts/${r.id}${company !== "ALL" ? `?company=${company}` : r.companies.length === 1 ? `?company=${r.companies[0]}` : ""}`} prefetch className="font-semibold text-[var(--violet)] hover:underline">{r.name}</Link> : <span className="font-semibold">{r.name}</span>}
                     <div className="text-[11.5px] text-[var(--faint)]">{[r.code, r.phone].filter(Boolean).join(" · ")}</div>
@@ -250,13 +255,12 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
                   <td className="px-5 py-2.5 text-right tnum">{inr(r.billed)}</td>
                   <td className="px-5 py-2.5 text-right tnum" style={{ color: "var(--emerald)" }}>{inr(r.received)}</td>
                   <td className="px-5 py-2.5 text-right font-semibold tnum" style={{ color: r.pending > 0 ? "var(--amber)" : "var(--emerald)" }}>{inr(r.pending)}</td>
-                  <td className="whitespace-nowrap px-5 py-2.5 text-[12px]">
-                    {r.pending > 0
-                      ? <>{monthOf(r.oldestPending)} <span className="text-[var(--faint)]">· {r.pendingInvoices} invoice{r.pendingInvoices === 1 ? "" : "s"}</span>{r.overdue > 0 && <span className="ml-1.5 rounded-full px-1.5 py-0.5 text-[10.5px] font-bold" style={{ color: "var(--rose)", background: "color-mix(in srgb, var(--rose) 10%, white)" }}>{r.overdueDays}d overdue</span>}</>
-                      : <span className="rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ color: "var(--emerald)", background: "color-mix(in srgb, var(--emerald) 12%, white)" }}>All received</span>}
-                  </td>
-                  <td className="whitespace-nowrap px-5 py-2.5 text-[12px]">{r.lastPayDate ? <>{fmtDate(r.lastPayDate)} <span className="text-[var(--faint)]">· {inr(r.lastPayAmount)}</span></> : <span className="text-[var(--faint)]">{r.received > 0 ? "—" : "No payment yet"}</span>}</td>
                   <td className="px-5 py-2.5 text-[12.5px]">{r.accountManager || <span className="text-[var(--faint)]">—</span>}</td>
+                  <td className="px-5 py-2.5">
+                    {r.id
+                      ? <button onClick={() => setFuClient({ id: r.id as string, name: r.name })} title="Follow-up — Phone / WhatsApp" className="inline-flex items-center gap-1 whitespace-nowrap rounded-[7px] border border-[var(--line-2)] px-2.5 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface)]"><MessageSquarePlus size={13} /> Follow-up</button>
+                      : <span className="text-[var(--faint)]">—</span>}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -292,6 +296,7 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
         </div>
         {periodPays.length > 15 && <div className="border-t border-[var(--line)] px-5 py-2.5 text-center"><button onClick={() => setShowAllPays((v) => !v)} className="text-[12.5px] font-semibold text-[var(--violet)] hover:underline">{showAllPays ? "Show fewer" : `Show all ${periodPays.length} payments`}</button></div>}
       </div>
+      {fuClient && <WebRoczPvtFollowupModal clientId={fuClient.id} name={fuClient.name} close={() => setFuClient(null)} />}
       {moveFrom && <PaymentCollectorModal key={moveFrom} from={moveFrom} all={coPays.filter((p) => p.by === moveFrom)} inPeriod={coPays.filter((p) => p.by === moveFrom && inPeriod(p.date))} periodLabel={periodLabel} close={() => setMoveFrom(null)} />}
     </div>
   );
