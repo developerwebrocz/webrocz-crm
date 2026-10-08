@@ -54,7 +54,10 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
   const isHead = user.role.endsWith("_HEAD");
 
   const groups: Group[] = [];
-  groups.push({ items: [{ href: "/", label: "Dashboard", icon: LayoutDashboard }] });
+  // Super Admin gets the Payments pipeline right at the top, next to the Dashboard
+  // (everyone else who has it finds it under Accountants).
+  const paymentsOnTop = user.role === "SUPER_ADMIN";
+  groups.push({ items: [{ href: "/", label: "Dashboard", icon: LayoutDashboard }, ...(paymentsOnTop ? [{ href: "/payments", label: "Payments", icon: Wallet }] : [])] });
 
   // Sales nav split into two clear groups + reports.
   const leadsGroup: Group = { label: "Leads", items: [
@@ -103,7 +106,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
   });
   // Accountant finance suite — also shown to Super/Sub Admin (they oversee finance).
   const financeGroups: Group[] = [
-    { label: "Accountants", items: [...companyItems, { href: "/payments", label: "Payments", icon: Wallet }] },
+    { label: "Accountants", items: [...companyItems, ...(paymentsOnTop ? [] : [{ href: "/payments", label: "Payments", icon: Wallet }])] },
     { label: "Finance", items: [
       { href: "/dm-clients", label: "All DM Clients", icon: Megaphone },
       { href: "/sla", label: "SLAs", icon: FileSignature },

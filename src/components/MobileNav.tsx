@@ -39,7 +39,9 @@ const ADMIN_NAV: Item[] = [
 function navFor(role: string): Item[] {
   if (role === "ACCOUNTANT") return FINANCE_NAV;
   if (role === "SALES_HEAD" || role === "SALES_EXEC") return SALES_NAV;
-  return ADMIN_NAV; // SUPER_ADMIN / SUB_ADMIN and other management roles
+  // Super Admin: the Payments pipeline comes right after the Dashboard (same as the sidebar).
+  if (role === "SUPER_ADMIN") return [ADMIN_NAV[0], { href: "/payments", label: "Payments" }, ...ADMIN_NAV.slice(1)];
+  return ADMIN_NAV; // SUB_ADMIN and other management roles
 }
 
 export default function MobileNav({ role }: { role: string }) {
