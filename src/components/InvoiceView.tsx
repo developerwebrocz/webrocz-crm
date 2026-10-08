@@ -4,6 +4,7 @@ import { useState } from "react";
 import { generateInvoice, saveInvoice, emailInvoice, approveInvoice, addInvoiceNote } from "@/app/sales-actions";
 import { SELLER } from "@/lib/domain";
 import InvoicePrintable from "@/components/InvoicePrintable";
+import { printInvoiceAs } from "@/lib/print-invoice";
 import { ArrowLeft, Download, Mail, Pencil, FileText, CheckCircle2, Lock, ShieldCheck, MessageCircle } from "lucide-react";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -81,7 +82,7 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
           )}
           {canManage && <button onClick={() => setEdit((v) => !v)} className="btn btn-ghost btn-sm"><Pencil size={14} /> Edit</button>}
           {ready
-            ? <button onClick={() => window.print()} className="btn btn-violet btn-sm"><Download size={14} /> Download PDF</button>
+            ? <button onClick={() => printInvoiceAs(invoice.billTo, invoice.number)} title="The PDF is saved with the client's name" className="btn btn-violet btn-sm"><Download size={14} /> Download PDF</button>
             : <span className="inline-flex items-center gap-1.5 rounded-[10px] border border-[var(--line-2)] px-3 py-1.5 text-[12.5px] font-semibold text-[var(--muted)]"><Lock size={13} /> Download after approval</span>}
         </div>
       </div>

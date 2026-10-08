@@ -34,7 +34,8 @@ export default async function PublicInvoicePage({ params }: { params: Promise<{ 
       <div className="mx-auto w-full max-w-[900px] space-y-4">
         <div className="no-print flex items-center justify-between gap-3">
           <Image src="/webrocz-horizontal.png" alt="Web Rocz" width={150} height={38} className="h-[26px] w-auto object-contain" priority />
-          <InvoicePrintButton />
+          {/* the downloaded PDF is named after the client */}
+          <InvoicePrintButton clientName={String((invoice as Record<string, unknown>).billTo ?? "")} invoiceNumber={String((invoice as Record<string, unknown>).number ?? "")} />
         </div>
 
         <InvoicePrintable invoice={invoice} />
