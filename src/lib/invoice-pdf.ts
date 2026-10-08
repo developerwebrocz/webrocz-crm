@@ -47,6 +47,13 @@ function pdfFromPages(pages: Page[]): Blob {
 
 export async function buildInvoicePdf(node: HTMLElement): Promise<Blob> {
   const { toCanvas } = await import("html-to-image");
+  // Wait until the logo / signature pictures have loaded — an invoice drawn a moment ago may
+  // still be fetching them, and a picture that has not loaded yet would be missing from the PDF.
+  await Promise.all(Array.from(node.querySelectorAll("img")).map((img) => (img.complete && img.naturalWidth > 0 ? null : new Promise<void>((res) => {
+    const done = () => res();
+    img.addEventListener("load", done, { once: true }); img.addEventListener("error", done, { once: true });
+    setTimeout(done, 8000); // never hang on a broken picture
+  }))));
   // A copy of the invoice laid out at a fixed width, off-screen, so the PDF looks the same
   // from a phone and from a wide monitor.
   const holder = document.createElement("div");

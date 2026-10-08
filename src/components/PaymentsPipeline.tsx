@@ -8,6 +8,7 @@ import type { PayInvoice, PayEntry, PayClient, PayFollowup } from "@/lib/payment
 import { fmtTime } from "@/components/ClientFollowupChannels";
 import PaymentCollectorModal from "@/components/PaymentCollectorModal";
 import WebRoczPvtFollowupModal from "@/components/WebRoczPvtFollowupModal";
+import { InvoiceDownloadButton, ClientInvoicesModal, type DownloadableInvoice } from "@/components/PaymentsInvoiceDownload";
 import { Wallet, Users, CheckCircle2, AlertTriangle, IndianRupee, CalendarDays, Search, Download, Clock, MessageSquarePlus } from "lucide-react";
 
 // Payments pipeline (/payments): who still owes money, who has paid in full, and how much
@@ -38,14 +39,17 @@ function periodBounds(k: string, today: string, from: string, to: string): [stri
   return ["", ""];
 }
 
-type ClientRow = { key: string; id: string | null; code: string; name: string; phone: string; accountManager: string; companies: string[]; invoices: number; billed: number; received: number; pending: number; overdue: number; pendingInvoices: number; oldestPending: string; overdueDays: number; lastPayDate: string; lastPayAmount: number; billingDay: number; lastInvoiceDate: string; lastFollowup: PayFollowup | null };
+type ClientRow = { key: string; id: string | null; code: string; name: string; phone: string; accountManager: string; companies: string[]; invoices: number; billed: number; received: number; pending: number; overdue: number; pendingInvoices: number; oldestPending: string; overdueDays: number; lastPayDate: string; lastPayAmount: number; billingDay: number; lastInvoiceDate: string; lastFollowup: PayFollowup | null; invoiceList: DownloadableInvoice[] };
 
 // `today` comes from the server (India date) so the first render matches in the browser.
 // `canReassign` (Super / Sub Admin) shows "Change name" beside each accountant.
-export default function PaymentsPipeline({ invoices, payments, clients, today, canReassign }: { invoices: PayInvoice[]; payments: PayEntry[]; clients: PayClient[]; today: string; canReassign?: boolean }) {
+// `canDownload` (Super Admin) shows the invoice download buttons.
+export default function PaymentsPipeline({ invoices, payments, clients, today, canReassign, canDownload }: { invoices: PayInvoice[]; payments: PayEntry[]; clients: PayClient[]; today: string; canReassign?: boolean; canDownload?: boolean }) {
   const [moveFrom, setMoveFrom] = useState<string | null>(null);
   // Client whose Follow-up popup (Phone / WhatsApp) is open.
   const [fuClient, setFuClient] = useState<{ id: string; name: string } | null>(null);
+  // Client whose invoices list (for download) is open.
+  const [dlClient, setDlClient] = useState<{ name: string; invoices: DownloadableInvoice[] } | null>(null);
   const [company, setCompany] = useState("ALL");
   const [period, setPeriod] = useState("MONTH");
   const [from, setFrom] = useState("");
@@ -67,11 +71,12 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
     for (const i of invoices) {
       if (!inCo(i.company)) continue;
       const m = meta.get(i.clientKey);
-      const r = map.get(i.clientKey) ?? { key: i.clientKey, id: i.clientId, code: m?.code ?? "", name: i.clientName, phone: m?.phone ?? "", accountManager: m?.accountManager ?? "", companies: [], invoices: 0, billed: 0, received: 0, pending: 0, overdue: 0, pendingInvoices: 0, oldestPending: "", overdueDays: 0, lastPayDate: "", lastPayAmount: 0, billingDay: m?.billingDay ?? 0, lastInvoiceDate: "", lastFollowup: m?.lastFollowup ?? null };
+      const r = map.get(i.clientKey) ?? { key: i.clientKey, id: i.clientId, code: m?.code ?? "", name: i.clientName, phone: m?.phone ?? "", accountManager: m?.accountManager ?? "", companies: [], invoices: 0, billed: 0, received: 0, pending: 0, overdue: 0, pendingInvoices: 0, oldestPending: "", overdueDays: 0, lastPayDate: "", lastPayAmount: 0, billingDay: m?.billingDay ?? 0, lastInvoiceDate: "", lastFollowup: m?.lastFollowup ?? null, invoiceList: [] };
       const bal = Math.max(0, i.total - i.received);
       r.invoices++; r.billed += i.total; r.received += i.total - bal; r.pending += bal;
       if (!r.companies.includes(i.company)) r.companies.push(i.company);
       if (i.issueDate > r.lastInvoiceDate) r.lastInvoiceDate = i.issueDate;
+      r.invoiceList.push({ id: i.id, number: i.number, issueDate: i.issueDate, total: i.total, balance: bal });
       if (bal > 0) {
         r.pendingInvoices++;
         if (!r.oldestPending || i.issueDate < r.oldestPending) r.oldestPending = i.issueDate;
@@ -312,10 +317,10 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
         <div className="overflow-x-auto">
           <table className="w-full text-[13px]">
             <thead><tr className="border-b border-[var(--line)] text-left text-[var(--muted)]">
-              <th className="th">S.No</th><th className="th">Invoice date</th><th className="th">Client</th><th className="th">Company</th><th className="th !text-right">Billed</th><th className="th !text-right">Received</th><th className="th !text-right">Pending</th><th className="th">Account manager</th><th className="th">Follow-up</th>
+              <th className="th">S.No</th><th className="th">Invoice date</th><th className="th">Client</th><th className="th">Company</th><th className="th !text-right">Billed</th><th className="th !text-right">Received</th><th className="th !text-right">Pending</th><th className="th">Account manager</th><th className="th">Follow-up</th>{canDownload && <th className="th">Invoice</th>}
             </tr></thead>
             <tbody>
-              {shownClients.length === 0 && <tr><td colSpan={9} className="px-5 py-10 text-center text-[var(--muted)]">{tab === "PENDING" ? "No client has a payment pending." : tab === "RECEIVED" ? "No client is fully paid yet." : "No clients billed."}</td></tr>}
+              {shownClients.length === 0 && <tr><td colSpan={canDownload ? 10 : 9} className="px-5 py-10 text-center text-[var(--muted)]">{tab === "PENDING" ? "No client has a payment pending." : tab === "RECEIVED" ? "No client is fully paid yet." : "No clients billed."}</td></tr>}
               {shownClients.map((r, idx) => (
                 <tr key={r.key} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
                   <td className="px-5 py-2.5 font-semibold tnum text-[var(--muted)]">{idx + 1}</td>
@@ -342,6 +347,15 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
                       </div>
                     )}
                   </td>
+                  {/* Super Admin: download this client's invoice — one invoice downloads straight away,
+                      several open a list (newest first) to pick from */}
+                  {canDownload && (
+                    <td className="px-5 py-2.5 align-top">
+                      {r.invoiceList.length === 1
+                        ? <InvoiceDownloadButton invoiceId={r.invoiceList[0].id} number={r.invoiceList[0].number} clientName={r.name} />
+                        : <button type="button" onClick={() => setDlClient({ name: r.name, invoices: [...r.invoiceList].sort((x, y) => (x.issueDate < y.issueDate ? 1 : -1)) })} title="Choose an invoice to download" className="inline-flex items-center gap-1 whitespace-nowrap rounded-[7px] border border-[var(--line-2)] px-2.5 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface)]"><Download size={13} /> Download ({r.invoiceList.length})</button>}
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -365,7 +379,7 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
                   <td className="whitespace-nowrap px-5 py-2.5">{fmtDate(p.date)}</td>
                   <td className="px-5 py-2.5 font-semibold">{p.clientName}</td>
                   <td className="px-5 py-2.5 text-[12px] text-[var(--ink-2)]">{companyLabel(p.company)}</td>
-                  <td className="whitespace-nowrap px-5 py-2.5"><Link href={`/invoices/${p.invoiceId}`} prefetch className="text-[var(--violet)] hover:underline">{p.invoiceNumber}</Link></td>
+                  <td className="whitespace-nowrap px-5 py-2.5"><span className="inline-flex items-center gap-2"><Link href={`/invoices/${p.invoiceId}`} prefetch className="text-[var(--violet)] hover:underline">{p.invoiceNumber}</Link>{canDownload && <InvoiceDownloadButton invoiceId={p.invoiceId} number={p.invoiceNumber} clientName={p.clientName} compact />}</span></td>
                   <td className="px-5 py-2.5 text-right font-semibold tnum" style={{ color: "var(--emerald)" }}>{inr(p.amount)}</td>
                   <td className="px-5 py-2.5">{MODE[p.mode] ?? p.mode}</td>
                   <td className="px-5 py-2.5 text-[12px] text-[var(--ink-2)]">{p.ref && !p.ref.startsWith("/uploads/") ? p.ref : p.ref ? <a href={p.ref} target="_blank" rel="noreferrer" className="text-[var(--violet)] hover:underline">Proof</a> : "—"}</td>
@@ -377,6 +391,7 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
         </div>
         {periodPays.length > 15 && <div className="border-t border-[var(--line)] px-5 py-2.5 text-center"><button onClick={() => setShowAllPays((v) => !v)} className="text-[12.5px] font-semibold text-[var(--violet)] hover:underline">{showAllPays ? "Show fewer" : `Show all ${periodPays.length} payments`}</button></div>}
       </div>
+      {dlClient && <ClientInvoicesModal clientName={dlClient.name} invoices={dlClient.invoices} close={() => setDlClient(null)} />}
       {fuClient && <WebRoczPvtFollowupModal clientId={fuClient.id} name={fuClient.name} close={() => setFuClient(null)} />}
       {moveFrom && <PaymentCollectorModal key={moveFrom} from={moveFrom} all={coPays.filter((p) => p.by === moveFrom)} inPeriod={coPays.filter((p) => p.by === moveFrom && inPeriod(p.date))} periodLabel={periodLabel} close={() => setMoveFrom(null)} />}
     </div>

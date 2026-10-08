@@ -37,3 +37,12 @@ export async function reassignPaymentCollector(_prev: ReassignResult, fd: FormDa
   revalidatePath("/payments");
   return { ok: true, message: `${moved} payment${moved === 1 ? "" : "s"} moved from ${from} to ${to}.` };
 }
+
+// Read-only: one invoice with everything the printable invoice needs, for the "Download
+// invoice" buttons on the Payments pipeline (Super Admin only).
+export async function getInvoiceForDownload(invoiceId: string) {
+  const me = await getCurrentUser();
+  if (!me || me.role !== "SUPER_ADMIN" || !invoiceId) return null;
+  const { getPublicInvoice } = await import("@/lib/queries");
+  return getPublicInvoice(invoiceId);
+}

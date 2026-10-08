@@ -16,5 +16,5 @@ export default async function PaymentsPage() {
   const data = await getPaymentsPipeline();
   // Today's date in India (UTC+5:30), where the accounts team works.
   const today = new Date(Date.now() + 5.5 * 60 * 60 * 1000).toISOString().slice(0, 10);
-  return <PaymentsPipeline invoices={data.invoices} payments={data.payments} clients={data.clients} today={today} canReassign={user.role === "SUPER_ADMIN" || user.role === "SUB_ADMIN"} />;
+  return <PaymentsPipeline invoices={data.invoices} payments={data.payments} clients={data.clients} today={today} canReassign={user.role === "SUPER_ADMIN" || user.role === "SUB_ADMIN"} canDownload={user.role === "SUPER_ADMIN"} />;
 }
