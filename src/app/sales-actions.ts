@@ -471,6 +471,14 @@ export async function saveInvoice(fd: FormData) {
       dueDate: s(fd, "dueDate") || inv.dueDate || addDaysISO(s(fd, "issueDate") || inv.issueDate, 15),
     },
   });
+  // "Received" raised on the edit form → the extra amount is also entered in the payment
+  // ledger (today, by whoever edited), so the daily collections and the received amounts on
+  // the Payments page keep agreeing. Lowering it adds nothing (the Payments check shows it).
+  const addedReceived = Math.min(n(fd, "received"), base + taxAmount) - inv.received;
+  if (addedReceived > 0) {
+    const payDate = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }); // YYYY-MM-DD, India date
+    await prisma.payment.create({ data: { invoiceId: invId, amount: addedReceived, date: payDate, mode: "OTHER", note: "Received amount updated on the invoice", by: me.name } });
+  }
   revalidatePath(invoiceReturn(leadId, invId));
   redirect(numberClash ? `${invoiceReturn(leadId, invId)}?sent=dupno` : invoiceReturn(leadId, invId));
 }

@@ -54,6 +54,7 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
   const [q, setQ] = useState("");
   const [tab, setTab] = useState<"PENDING" | "RECEIVED" | "ALL">("PENDING");
   const [showAllPays, setShowAllPays] = useState(false);
+  const [showCheck, setShowCheck] = useState(false); // invoices whose received amount and payment entries differ
   const nq = q.trim().toLowerCase();
   const [pFrom, pTo] = periodBounds(period, today, from, to);
   const inCo = (c: string) => company === "ALL" || c === company;
@@ -126,6 +127,21 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
   }).filter((c) => by === "ALL" || c.name === by).sort((a, b) => b.period - a.period);
 
   const periodLabel = PERIODS.find((p) => p.k === period)?.label ?? "";
+  const yesterday = shift(today, -1);
+  const collectedYesterday = amountOn(coPays, (p) => p.date === yesterday && byMatch(p));
+  const paysToday = coPays.filter((p) => p.date === today && byMatch(p)).length;
+  const paysYesterday = coPays.filter((p) => p.date === yesterday && byMatch(p)).length;
+  const notDue = Math.max(0, totalPending - totalOverdue); // pending, but its due date has not passed yet
+  const pct = (v: number) => (totalBilled > 0 ? Math.round((v / totalBilled) * 100) : 0);
+  // Check: the "received" amount on each invoice should equal the payment entries recorded
+  // for it. Where they differ, the received / pending figures and the collections do not agree.
+  const check = useMemo(() => {
+    const ledger = new Map<string, number>();
+    for (const pmt of payments) ledger.set(pmt.invoiceId, (ledger.get(pmt.invoiceId) ?? 0) + pmt.amount);
+    const off = invoices.filter((i) => inCo(i.company)).map((i) => ({ inv: i, entries: ledger.get(i.id) ?? 0, diff: i.received - (ledger.get(i.id) ?? 0) })).filter((x) => Math.abs(x.diff) >= 1);
+    return { off, missing: off.reduce((t, x) => t + Math.max(0, x.diff), 0), extra: off.reduce((t, x) => t + Math.max(0, -x.diff), 0) };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [invoices, payments, company]);
   // Today / Yesterday / This month already have their own columns in the accountant table.
   const extraPeriodCol = !["TODAY", "YESTERDAY", "MONTH"].includes(period);
   const visiblePays = showAllPays ? periodPays : periodPays.slice(0, 15);
@@ -146,19 +162,77 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
         </div>
       </div>
 
-      {/* where things stand now */}
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <Kpi icon={<Clock size={15} />} tone="var(--amber)" label="Clients with payment pending" value={String(pendingClients.length)} sub={`${inr(totalPending)} pending`} />
-        <Kpi icon={<CheckCircle2 size={15} />} tone="var(--emerald)" label="Clients fully received" value={String(receivedClients.length)} sub={`${inr(totalReceived)} received in all`} />
-        <Kpi icon={<AlertTriangle size={15} />} tone="var(--rose)" label="Overdue" value={inr(totalOverdue)} sub={`${overdueClients.length} client${overdueClients.length === 1 ? "" : "s"} past the due date`} />
-        <Kpi icon={<IndianRupee size={15} />} tone="var(--violet)" label="Total billed" value={inr(totalBilled)} sub={`${clientRows.length} client${clientRows.length === 1 ? "" : "s"} billed`} />
+      {/* where the money stands now: billed = received + pending (overdue is the late part of pending) */}
+      <div className="card card-pad">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <h2 className="text-[15px] font-bold">Where the money stands <span className="text-[12.5px] font-normal text-[var(--muted)]">· as of {fmtDate(today)}{company !== "ALL" ? ` · ${companyLabel(company)}` : ""}</span></h2>
+          <span className="text-[12.5px] text-[var(--muted)]">{clientRows.length} client{clientRows.length === 1 ? "" : "s"} billed</span>
+        </div>
+
+        <div className="mt-4 grid gap-4 sm:grid-cols-3">
+          <Money icon={<IndianRupee size={15} />} tone="var(--violet)" label="Total billed" value={inr(totalBilled)} sub={`${clientRows.length} client${clientRows.length === 1 ? "" : "s"} · all invoices`} />
+          <Money icon={<CheckCircle2 size={15} />} tone="var(--emerald)" label="Received" value={inr(totalReceived)} sub={`${pct(totalReceived)}% of billed · ${receivedClients.length} client${receivedClients.length === 1 ? "" : "s"} fully paid`} />
+          <Money icon={<Clock size={15} />} tone="var(--amber)" label="Pending" value={inr(totalPending)} sub={`${pct(totalPending)}% of billed · ${pendingClients.length} client${pendingClients.length === 1 ? "" : "s"} still to pay`} />
+        </div>
+
+        {/* one bar: received | pending not yet due | overdue */}
+        {totalBilled > 0 && (
+          <div className="mt-4">
+            <div className="flex h-2.5 overflow-hidden rounded-full bg-[var(--surface-2)]">
+              <div style={{ width: `${(totalReceived / totalBilled) * 100}%`, background: "var(--emerald)" }} />
+              <div style={{ width: `${(notDue / totalBilled) * 100}%`, background: "var(--amber)" }} />
+              <div style={{ width: `${(totalOverdue / totalBilled) * 100}%`, background: "var(--rose)" }} />
+            </div>
+            <div className="mt-2.5 flex flex-wrap gap-x-6 gap-y-1.5 text-[12.5px]">
+              <Legend color="var(--emerald)" label="Received" value={inr(totalReceived)} />
+              <Legend color="var(--amber)" label="Pending · not yet due" value={inr(notDue)} />
+              <Legend color="var(--rose)" label="Pending · overdue" value={inr(totalOverdue)} note={overdueClients.length ? `${overdueClients.length} client${overdueClients.length === 1 ? "" : "s"} past the due date` : ""} />
+            </div>
+          </div>
+        )}
+
+        {/* do the totals agree with the payment entries? */}
+        <div className="mt-4 border-t border-[var(--line)] pt-3 text-[12.5px]">
+          {check.off.length === 0
+            ? <span className="inline-flex items-center gap-1.5 font-medium text-[var(--emerald)]"><CheckCircle2 size={14} /> Checked — every received amount has matching payment entries.</span>
+            : (
+              <div>
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-medium" style={{ color: "#92600a" }}>
+                  <AlertTriangle size={14} className="flex-none" />
+                  <span>
+                    {check.missing > 0 && <>{inr(check.missing)} is marked received on invoices but has no payment entry, so it is not in the collections below. </>}
+                    {check.extra > 0 && <>{inr(check.extra)} of payment entries is more than what the invoices show as received. </>}
+                  </span>
+                  <button type="button" onClick={() => setShowCheck((v) => !v)} className="font-semibold text-[var(--violet)] hover:underline">{showCheck ? "Hide" : `Show ${check.off.length} invoice${check.off.length === 1 ? "" : "s"}`}</button>
+                </div>
+                {showCheck && (
+                  <div className="mt-2 overflow-x-auto rounded-[10px] border border-[var(--line)]">
+                    <table className="w-full text-[12.5px]">
+                      <thead><tr className="border-b border-[var(--line)] text-left text-[var(--muted)]"><th className="th">Invoice</th><th className="th">Client</th><th className="th !text-right">Received on invoice</th><th className="th !text-right">Payment entries</th><th className="th !text-right">Difference</th></tr></thead>
+                      <tbody>
+                        {check.off.map((x) => (
+                          <tr key={x.inv.id} className="border-b border-[var(--line)] last:border-0">
+                            <td className="px-5 py-2"><Link href={`/invoices/${x.inv.id}`} prefetch className="font-semibold text-[var(--violet)] hover:underline">{x.inv.number}</Link></td>
+                            <td className="px-5 py-2">{x.inv.clientName}</td>
+                            <td className="px-5 py-2 text-right tnum">{inr(x.inv.received)}</td>
+                            <td className="px-5 py-2 text-right tnum">{inr(x.entries)}</td>
+                            <td className="px-5 py-2 text-right font-semibold tnum" style={{ color: "#92600a" }}>{x.diff > 0 ? "+" : "-"}{inr(Math.abs(x.diff))}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
+        </div>
       </div>
 
-      {/* collections */}
+      {/* collections — from the payment entries, by the date of each payment */}
       <div className="grid gap-3 sm:grid-cols-3">
-        <Kpi icon={<CalendarDays size={15} />} tone="var(--emerald)" label={`Collected today · ${fmtDate(today)}`} value={inr(collectedToday)} sub={by === "ALL" ? "by everyone" : `by ${by}`} />
+        <Kpi icon={<CalendarDays size={15} />} tone="var(--emerald)" label={`Collected today · ${fmtDate(today)}`} value={inr(collectedToday)} sub={`${paysToday} payment${paysToday === 1 ? "" : "s"} · ${by === "ALL" ? "by everyone" : `by ${by}`}`} />
+        <Kpi icon={<CalendarDays size={15} />} tone="var(--ink-2)" label={`Collected yesterday · ${fmtDate(yesterday)}`} value={inr(collectedYesterday)} sub={`${paysYesterday} payment${paysYesterday === 1 ? "" : "s"}`} />
         <Kpi icon={<Wallet size={15} />} tone="var(--emerald)" label={`Collected · ${periodLabel}`} value={inr(collectedPeriod)} sub={`${periodPays.length} payment${periodPays.length === 1 ? "" : "s"}${pFrom ? ` · ${fmtDate(pFrom)} to ${fmtDate(pTo)}` : ""}`} />
-        <Kpi icon={<Clock size={15} />} tone="var(--amber)" label="Still to collect" value={inr(totalPending)} sub={`from ${pendingClients.length} client${pendingClients.length === 1 ? "" : "s"}`} />
       </div>
 
       {/* filters — under the summary cards */}
@@ -316,6 +390,26 @@ function Kpi({ icon, label, value, sub, tone }: { icon: React.ReactNode; label: 
       <div className="mt-1.5 text-[24px] font-extrabold leading-tight tnum" style={{ color: tone }}>{value}</div>
       {sub && <div className="mt-0.5 text-[12px] text-[var(--muted)]">{sub}</div>}
     </div>
+  );
+}
+// A headline amount inside the summary card.
+function Money({ icon, label, value, sub, tone }: { icon: React.ReactNode; label: string; value: string; sub: string; tone: string }) {
+  return (
+    <div className="rounded-[12px] px-4 py-3" style={{ background: `color-mix(in srgb, ${tone} 6%, white)` }}>
+      <div className="flex items-center gap-1.5 text-[12px] font-semibold text-[var(--ink-2)]"><span style={{ color: tone }}>{icon}</span>{label}</div>
+      <div className="mt-1 text-[26px] font-extrabold leading-tight tnum" style={{ color: tone }}>{value}</div>
+      <div className="mt-0.5 text-[12px] text-[var(--muted)]">{sub}</div>
+    </div>
+  );
+}
+function Legend({ color, label, value, note }: { color: string; label: string; value: string; note?: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <span className="h-2.5 w-2.5 flex-none rounded-full" style={{ background: color }} />
+      <span className="text-[var(--muted)]">{label}</span>
+      <span className="font-semibold tnum text-[var(--ink)]">{value}</span>
+      {note && <span className="text-[var(--faint)]">· {note}</span>}
+    </span>
   );
 }
 function Tab({ active, onClick, tone, children }: { active: boolean; onClick: () => void; tone: string; children: React.ReactNode }) {
