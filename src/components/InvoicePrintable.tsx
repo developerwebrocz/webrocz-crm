@@ -135,7 +135,10 @@ export default function InvoicePrintable({ invoice }: { invoice: any }) {
         </div>
         <div className="flex flex-col items-center justify-between px-4 py-3 text-center">
           <div className="text-[11.5px]">For : {seller.name}</div>
-          <div className="mt-6 text-[11.5px] font-semibold">Authorized Signatory</div>
+          {/* Web Rocz Pvt Ltd invoices carry the signature; the other companies keep the blank space. */}
+          {invoice.company === "WEB_ROCZ_PVT"
+            ? <><img src="/webrocz-pvt-signature.png" alt="Signature" width={148} height={46} className="mt-1 h-[46px] w-[148px] flex-none object-contain" /><div className="text-[11.5px] font-semibold">Authorized Signatory</div></>
+            : <div className="mt-6 text-[11.5px] font-semibold">Authorized Signatory</div>}
         </div>
       </div>
     </div>
