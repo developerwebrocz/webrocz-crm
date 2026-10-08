@@ -12,7 +12,7 @@ import EditWebRoczPvtClientModal from "@/components/EditWebRoczPvtClientModal";
 import AddWebRoczInvoiceModal from "@/components/AddWebRoczInvoiceModal";
 import WebRoczClientCard from "@/components/WebRoczClientCard";
 import WebRoczPvtClientCard from "@/components/WebRoczPvtClientCard";
-import ClientFollowupChannels from "@/components/ClientFollowupChannels";
+import ClientFollowupChannels, { latestFollowup, followupWhen } from "@/components/ClientFollowupChannels";
 import AddWebRoczPvtInvoiceModal from "@/components/AddWebRoczPvtInvoiceModal";
 import { ReceiptText, Wallet, CheckCircle2, Clock, Phone, Mail, IndianRupee, X, ArrowLeft, Building2, Plus, Pencil, MessageSquarePlus, CalendarClock, Globe, FileSignature, FileText, Download } from "lucide-react";
 
@@ -312,7 +312,7 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
       <div className="card !p-0 overflow-hidden">
         <div className="flex items-center justify-between border-b border-[var(--line)] px-5 py-3">
           <h2 className="flex items-center gap-1.5 text-[14px] font-bold"><MessageSquarePlus size={15} className="text-[var(--violet)]" /> Follow-ups ({clientFollowups.length})</h2>
-          {client.nextFollowup && <span className="inline-flex items-center gap-1 text-[12px] font-semibold text-[var(--amber)]"><CalendarClock size={13} /> Next: {fmtDate(client.nextFollowup)}</span>}
+          {(() => { const last = latestFollowup(clientFollowups); return last ? <span className="inline-flex items-center gap-1 text-[12px] font-semibold text-[var(--muted)]"><CalendarClock size={13} /> Last follow-up: <span className="tnum text-[var(--ink-2)]">{followupWhen(last)}</span></span> : null; })()}
         </div>
         {/* Phone and WhatsApp follow-ups are logged and listed separately. */}
         <div className="space-y-4 p-5">

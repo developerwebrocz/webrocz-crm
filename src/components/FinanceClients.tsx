@@ -13,7 +13,7 @@ import AddWebRoczPvtInvoiceModal from "@/components/AddWebRoczPvtInvoiceModal";
 import ImportWebRoczPvtSaleReportModal from "@/components/ImportWebRoczPvtSaleReportModal";
 import ImportWebRoczClientsModal from "@/components/ImportWebRoczClientsModal";
 import ImportWebRoczPvtClientsModal from "@/components/ImportWebRoczPvtClientsModal";
-import ClientFollowupChannels from "@/components/ClientFollowupChannels";
+import ClientFollowupChannels, { latestFollowup, followupWhen } from "@/components/ClientFollowupChannels";
 import { companyLabel, COMPANY_KEYS } from "@/lib/domain";
 import { Users, Search, ReceiptText, Wallet, CheckCircle2, ChevronRight, ChevronLeft, MessageSquarePlus, Pencil, Trash2, X, Download, UserPlus, Upload, Plus, Globe } from "lucide-react";
 
@@ -418,7 +418,7 @@ function FollowupModal({ r, close }: { r: Row; close: () => void }) {
         <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
           <div>
             <h2 className="text-[16px] font-bold">Follow-up · {r.name}</h2>
-            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">{r.clientFollowups.length} client follow-up{r.clientFollowups.length === 1 ? "" : "s"}{r.nextFollowup ? ` · next ${fmtDate(r.nextFollowup)}` : ""}</p>
+            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">{r.clientFollowups.length} client follow-up{r.clientFollowups.length === 1 ? "" : "s"}{(() => { const last = latestFollowup(r.clientFollowups); return last ? ` · last ${followupWhen(last)}` : ""; })()}</p>
           </div>
           <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
         </div>

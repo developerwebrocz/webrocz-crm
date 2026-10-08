@@ -265,7 +265,6 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
                       <div className="mt-1.5 max-w-[230px] text-[11.5px] leading-snug" title={r.lastFollowup.note}>
                         <div className="whitespace-nowrap text-[var(--muted)]"><span className="font-semibold" style={{ color: r.lastFollowup.via === "WHATSAPP" ? "var(--emerald)" : r.lastFollowup.via === "PHONE" ? "var(--indigo)" : "var(--muted)" }}>{r.lastFollowup.via === "WHATSAPP" ? "WhatsApp" : r.lastFollowup.via === "PHONE" ? "Phone" : "Earlier"}</span> · <span className="tnum">{fmtDate(r.lastFollowup.date)}</span>{fmtTime(r.lastFollowup.time) ? <span className="tnum"> · {fmtTime(r.lastFollowup.time)}</span> : null}</div>
                         <div className="truncate text-[var(--ink-2)]">{r.lastFollowup.note}</div>
-                        {r.lastFollowup.next && <div className="whitespace-nowrap text-[var(--amber)]">Next <span className="tnum">{fmtDate(r.lastFollowup.next)}{fmtTime(r.lastFollowup.nextTime) ? ` · ${fmtTime(r.lastFollowup.nextTime)}` : ""}</span></div>}
                       </div>
                     )}
                   </td>

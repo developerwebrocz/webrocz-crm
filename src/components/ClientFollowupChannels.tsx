@@ -1,11 +1,11 @@
 "use client";
 
-import { Phone, MessageCircle, CalendarClock, MessageSquarePlus } from "lucide-react";
+import { Phone, MessageCircle, MessageSquarePlus } from "lucide-react";
 import { logClientFollowup } from "@/app/actions";
 
 // Client follow-ups kept separately by how the client was reached: Phone and WhatsApp.
-// Each side has its own "log a follow-up" form (note, when it was done — date + time — and
-// the next follow-up date + time) and its own
+// Each side has its own "log a follow-up" form (note and when it was done — date + time; the
+// team follows up every day, so no "next follow-up" date is asked) and its own
 // history, newest first. Follow-ups saved before this existed carry no type and are listed
 // under "Earlier follow-ups". Used by the Follow-up popup in the clients list and by the
 // Follow-ups card on a client's page.
@@ -15,8 +15,14 @@ export type ClientFollowup = { date: string; time?: string; by: string; note: st
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
 // "17:42" → "5:42 PM" (follow-ups saved before the time was recorded have none).
 export const fmtTime = (hm?: string) => { const m = /^(\d{1,2}):(\d{2})/.exec(hm || ""); if (!m) return ""; const h = Number(m[1]); return `${h % 12 || 12}:${m[2]} ${h < 12 ? "AM" : "PM"}`; };
-const todayISO = () => new Date().toISOString().slice(0, 10);
-const addDaysISO = (iso: string, n: number) => { const d = new Date((iso || todayISO()) + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+// "08-10-2026 · 5:42 PM" — when a follow-up was done.
+export const followupWhen = (f: { date: string; time?: string }) => fmtDate(f.date) + (fmtTime(f.time) ? ` · ${fmtTime(f.time)}` : "");
+// The newest follow-up of a client (by date, then time; later-saved wins a tie), or null.
+export function latestFollowup<T extends { date: string; time?: string }>(list: T[]): T | null {
+  let best: T | null = null, key = "";
+  for (const f of list) { const k = `${f.date} ${f.time || ""}`; if (!best || k >= key) { best = f; key = k; } }
+  return best;
+}
 
 const CHANNELS = [
   { key: "PHONE", label: "Phone", Icon: Phone, color: "var(--indigo)", placeholder: "e.g. Called — will pay by Friday" },
@@ -38,8 +44,7 @@ export default function ClientFollowupChannels({ clientId, returnTo, followups }
       <div className="grid items-start gap-4 md:grid-cols-2">
         {CHANNELS.map(({ key, label, Icon, color, placeholder }) => {
           const list = newestFirst.filter((f) => f.via === key);
-          const nextOne = list.find((f) => f.next);
-          const next = nextOne?.next ?? "", nextTime = fmtTime(nextOne?.nextTime);
+          const last = list[0]; // newest first → the previous follow-up
           return (
             <section key={key} className="overflow-hidden rounded-[14px] border bg-[var(--surface)]" style={{ borderColor: `color-mix(in srgb, ${color} 28%, white)` }}>
               {/* header: what this side is, how many, and when the next one is due */}
@@ -49,9 +54,9 @@ export default function ClientFollowupChannels({ clientId, returnTo, followups }
                   <div className="text-[14.5px] font-bold leading-tight text-[var(--ink)]">{label} follow-up</div>
                   <div className="mt-0.5 text-[11.5px] leading-tight text-[var(--muted)]">{list.length === 0 ? "None yet" : `${list.length} logged`}</div>
                 </div>
-                {next && (
-                  <span className="flex-none rounded-full px-2.5 py-1 text-right text-[11.5px] font-semibold leading-none" style={{ color: "#92600a", background: "color-mix(in srgb, var(--amber) 14%, white)" }}>
-                    <span className="mr-1 font-medium">Next</span><span className="tnum">{fmtDate(next)}{nextTime ? ` · ${nextTime}` : ""}</span>
+                {last && (
+                  <span className="flex-none rounded-full px-2.5 py-1 text-right text-[11.5px] font-semibold leading-none" style={{ color, background: `color-mix(in srgb, ${color} 12%, white)` }}>
+                    <span className="mr-1 font-medium">Last</span><span className="tnum">{followupWhen(last)}</span>
                   </span>
                 )}
               </header>
@@ -68,11 +73,6 @@ export default function ClientFollowupChannels({ clientId, returnTo, followups }
                 <div className="grid grid-cols-2 gap-2.5">
                   <label className="block"><span className={lbl}>Follow-up date</span><input ref={fillToday} name="date" type="date" className="input mt-1.5 !text-[13.5px]" /></label>
                   <label className="block"><span className={lbl}>Follow-up time</span><input ref={fillNow} name="time" type="time" className="input mt-1.5 !text-[13.5px]" /></label>
-                </div>
-                {/* when to follow up again */}
-                <div className="grid grid-cols-2 gap-2.5">
-                  <label className="block"><span className={lbl}>Next follow-up date</span><input name="next" type="date" defaultValue={addDaysISO(todayISO(), 3)} className="input mt-1.5 !text-[13.5px]" /></label>
-                  <label className="block"><span className={lbl}>Next follow-up time</span><input name="nextTime" type="time" className="input mt-1.5 !text-[13.5px]" /></label>
                 </div>
                 <div className="flex justify-end"><button type="submit" className="btn justify-center whitespace-nowrap px-6 text-white" style={{ background: color }}><MessageSquarePlus size={15} /> Save follow-up</button></div>
               </form>
@@ -98,10 +98,9 @@ export default function ClientFollowupChannels({ clientId, returnTo, followups }
   );
 }
 
-// One logged follow-up: when it was done (date · time) and by whom, the note, then when to
-// follow up next.
+// One logged follow-up: when it was done (date · time), by whom, and the note.
 function Entry({ n }: { n: ClientFollowup }) {
-  const time = fmtTime(n.time), nextTime = fmtTime(n.nextTime);
+  const time = fmtTime(n.time);
   return (
     <div className="rounded-[10px] border border-[var(--line)] px-3.5 py-2.5">
       <div className="flex items-center justify-between gap-3 text-[12px] leading-tight">
@@ -109,7 +108,6 @@ function Entry({ n }: { n: ClientFollowup }) {
         <span className="min-w-0 truncate text-[var(--muted)]">{n.by || "—"}</span>
       </div>
       <div className="mt-1.5 whitespace-pre-wrap text-[13px] leading-relaxed text-[var(--ink)]">{n.note}</div>
-      {n.next && <div className="mt-1.5 flex items-center gap-1 text-[11.5px] font-medium leading-tight" style={{ color: "#92600a" }}><CalendarClock size={12} /> Next follow-up: <span className="tnum font-semibold">{fmtDate(n.next)}{nextTime ? ` · ${nextTime}` : ""}</span></div>}
     </div>
   );
 }
