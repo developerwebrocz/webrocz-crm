@@ -329,3 +329,15 @@ export async function importWebRoczPvtSaleReport(_prev: PvtImportResult, fd: For
   ];
   return { ok: true, message: created ? "Sale report imported into Web Rocz Pvt Ltd." : "Nothing new to import.", details };
 }
+
+// Read-only: a client's own follow-up log (Phone / WhatsApp / earlier), newest first, for the
+// Follow-up button on the Web Rocz Pvt Ltd invoices list.
+export async function getWebRoczPvtClientFollowups(clientId: string): Promise<{ date: string; by: string; note: string; next?: string; via?: string }[]> {
+  const u = await getCurrentUser();
+  if (!u || !PVT_ROLES.includes(u.role) || !clientId) return [];
+  const c = await prisma.client.findUnique({ where: { id: clientId }, select: { followupLog: true } });
+  try {
+    const arr = JSON.parse(c?.followupLog || "[]");
+    return Array.isArray(arr) ? arr.sort((a, b) => (a.date < b.date ? 1 : -1)) : [];
+  } catch { return []; }
+}

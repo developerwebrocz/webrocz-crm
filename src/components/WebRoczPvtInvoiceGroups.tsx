@@ -3,6 +3,7 @@
 import { Fragment, useMemo, useState } from "react";
 import Link from "next/link";
 import { ChevronRight, ShieldCheck, Clock, MessageSquarePlus, Pencil, Trash2, ExternalLink } from "lucide-react";
+import WebRoczPvtFollowupModal from "@/components/WebRoczPvtFollowupModal";
 
 // Web Rocz Pvt Ltd invoices list, grouped by client: one row per client with its totals;
 // clicking the row opens that client's invoices underneath. Kept in its own file so the
@@ -35,14 +36,16 @@ export default function WebRoczPvtInvoiceGroups({ rows, hideApproval, canDelete,
     }).sort((a, b) => (a.last < b.last ? 1 : -1));
   }, [rows]);
   const [open, setOpen] = useState<Record<string, boolean>>({});
+  // Client whose Follow-up popup (Phone / WhatsApp) is open.
+  const [fuClient, setFuClient] = useState<{ id: string; name: string } | null>(null);
   const isOpen = (key: string) => open[key] ?? (!!openAll || groups.length === 1);
-  const cols = hideApproval ? 7 : 8;
+  const cols = hideApproval ? 8 : 9;
   return (
     <div className="card !p-0 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-[13px]">
           <thead><tr className="border-b border-[var(--line)] text-left text-[var(--muted)]">
-            <th className="th">Client</th><th className="th">Invoices</th><th className="th">Period</th><th className="th !text-right">Total</th><th className="th !text-right">Received</th><th className="th !text-right">Balance</th><th className="th !pl-10">Payment</th>{!hideApproval && <th className="th">Approval</th>}
+            <th className="th">Client</th><th className="th">Invoices</th><th className="th">Period</th><th className="th !text-right">Total</th><th className="th !text-right">Received</th><th className="th !text-right">Balance</th><th className="th !pl-10">Payment</th>{!hideApproval && <th className="th">Approval</th>}<th className="th">Action</th>
           </tr></thead>
           <tbody>
             {groups.length === 0 && <tr><td colSpan={cols} className="px-4 py-10 text-center text-[13px] text-[var(--muted)]">No invoices found.</td></tr>}
@@ -76,6 +79,11 @@ export default function WebRoczPvtInvoiceGroups({ rows, hideApproval, canDelete,
                         ? <span className="inline-flex items-center gap-1 text-[12px] font-semibold" style={{ color: "var(--emerald)" }}><ShieldCheck size={13} /> Approved</span>
                         : <span className="inline-flex items-center gap-1 text-[12px] font-semibold" style={{ color: "var(--amber)" }}><Clock size={13} /> {unapproved} pending</span>}
                     </td>}
+                    {/* Follow-up on the client itself (Phone / WhatsApp); a row with no linked client
+                        falls back to the follow-up notes of its latest invoice. */}
+                    <td className="px-4 py-3">
+                      <button onClick={(e) => { e.stopPropagation(); if (g.clientId) setFuClient({ id: g.clientId, name: g.name }); else onFollowup(g.invoices[0]); }} title="Follow-up — Phone / WhatsApp" className="inline-flex items-center gap-1 whitespace-nowrap rounded-[7px] border border-[var(--line-2)] bg-[var(--surface)] px-2.5 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><MessageSquarePlus size={13} /> Follow-up</button>
+                    </td>
                   </tr>
                   {shown && (
                     <tr className="border-b border-[var(--line)]">
@@ -125,6 +133,7 @@ export default function WebRoczPvtInvoiceGroups({ rows, hideApproval, canDelete,
           </tbody>
         </table>
       </div>
+      {fuClient && <WebRoczPvtFollowupModal clientId={fuClient.id} name={fuClient.name} close={() => setFuClient(null)} />}
     </div>
   );
 }
