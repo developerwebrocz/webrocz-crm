@@ -842,15 +842,20 @@ export async function logClientFollowup(fd: FormData) {
   const next = s(fd, "next");
   if (!note && !next) redirect(back);
   const client = await prisma.client.findUnique({ where: { id }, select: { followupLog: true } });
-  let log: { date: string; time?: string; by: string; note: string; next?: string; via?: string }[] = [];
+  let log: { date: string; time?: string; by: string; note: string; next?: string; nextTime?: string; via?: string }[] = [];
   try { const arr = JSON.parse(client?.followupLog || "[]"); if (Array.isArray(arr)) log = arr; } catch { /* ignore */ }
-  // Date and time of the follow-up, by the clock in India (the server itself may run on UTC).
+  // Date and time of the follow-up: what was entered on the form (it is filled with "now" and
+  // can be corrected), else now by the clock in India (the server itself may run on UTC).
   const now = new Date();
-  const date = now.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }); // YYYY-MM-DD
-  const time = now.toLocaleTimeString("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: false }); // HH:MM
+  const today = now.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }); // YYYY-MM-DD
+  const isTime = (v: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v);
+  const formDate = s(fd, "date");
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(formDate) && formDate <= today ? formDate : today;
+  const time = isTime(s(fd, "time")) ? s(fd, "time") : now.toLocaleTimeString("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: false }); // HH:MM
+  const nextTime = next && isTime(s(fd, "nextTime")) ? s(fd, "nextTime") : "";
   // Phone / WhatsApp follow-ups are kept apart; forms that do not send a type save as before.
   const via = ["PHONE", "WHATSAPP"].includes(s(fd, "via")) ? s(fd, "via") : "";
-  if (note) log.push({ date, time, by: u.name, note, next, ...(via ? { via } : {}) });
+  if (note) log.push({ date, time, by: u.name, note, next, ...(nextTime ? { nextTime } : {}), ...(via ? { via } : {}) });
   await prisma.client.update({ where: { id }, data: { followupLog: JSON.stringify(log), nextFollowup: next || undefined } });
   revalidatePath("/accounts");
   revalidatePath(`/accounts/${id}`);

@@ -7,7 +7,7 @@ export type PayInvoice = { id: string; number: string; clientKey: string; client
 export type PayEntry = { id: string; invoiceId: string; invoiceNumber: string; clientKey: string; clientId: string | null; clientName: string; company: string; amount: number; date: string; mode: string; ref: string; note: string; by: string };
 export type PayClient = { key: string; id: string | null; code: string; name: string; phone: string; accountManager: string; billingDay: number; lastFollowup: PayFollowup | null };
 // The newest follow-up logged on the client (Phone / WhatsApp / earlier untyped ones).
-export type PayFollowup = { date: string; time: string; by: string; note: string; next: string; via: string };
+export type PayFollowup = { date: string; time: string; by: string; note: string; next: string; nextTime: string; via: string };
 
 function latestFollowup(raw: string | null | undefined): PayFollowup | null {
   try {
@@ -15,7 +15,7 @@ function latestFollowup(raw: string | null | undefined): PayFollowup | null {
     if (!Array.isArray(arr) || !arr.length) return null;
     let best = arr[0], bestKey = `${arr[0]?.date || ""} ${arr[0]?.time || ""}`;
     for (const f of arr) { const k = `${f?.date || ""} ${f?.time || ""}`; if (k >= bestKey) { best = f; bestKey = k; } } // later entry wins a tie
-    return { date: String(best?.date || ""), time: String(best?.time || ""), by: String(best?.by || ""), note: String(best?.note || ""), next: String(best?.next || ""), via: String(best?.via || "") };
+    return { date: String(best?.date || ""), time: String(best?.time || ""), by: String(best?.by || ""), note: String(best?.note || ""), next: String(best?.next || ""), nextTime: String(best?.nextTime || ""), via: String(best?.via || "") };
   } catch { return null; }
 }
 

@@ -4,12 +4,13 @@ import { Phone, MessageCircle, CalendarClock, MessageSquarePlus } from "lucide-r
 import { logClientFollowup } from "@/app/actions";
 
 // Client follow-ups kept separately by how the client was reached: Phone and WhatsApp.
-// Each side has its own "log a follow-up" form (note + next follow-up date) and its own
+// Each side has its own "log a follow-up" form (note, when it was done — date + time — and
+// the next follow-up date + time) and its own
 // history, newest first. Follow-ups saved before this existed carry no type and are listed
 // under "Earlier follow-ups". Used by the Follow-up popup in the clients list and by the
 // Follow-ups card on a client's page.
 
-export type ClientFollowup = { date: string; time?: string; by: string; note: string; next?: string; via?: string };
+export type ClientFollowup = { date: string; time?: string; by: string; note: string; next?: string; nextTime?: string; via?: string };
 
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
 // "17:42" → "5:42 PM" (follow-ups saved before the time was recorded have none).
@@ -26,12 +27,19 @@ export default function ClientFollowupChannels({ clientId, returnTo, followups }
   // newest first: by date, then time; same moment (or no time) → the one saved later first
   const newestFirst = followups.map((f, i) => ({ f, i })).sort((a, b) => { const ka = a.f.date + " " + (a.f.time || ""), kb = b.f.date + " " + (b.f.time || ""); return ka === kb ? b.i - a.i : ka < kb ? 1 : -1; }).map((x) => x.f);
   const earlier = newestFirst.filter((f) => f.via !== "PHONE" && f.via !== "WHATSAPP");
+  // The follow-up date + time boxes are filled with "now" on this computer as soon as they
+  // appear (in the browser, so it is the user's clock and not the server's).
+  const two = (v: number) => String(v).padStart(2, "0");
+  const fillToday = (el: HTMLInputElement | null) => { if (el && !el.value) { const d = new Date(); el.value = `${d.getFullYear()}-${two(d.getMonth() + 1)}-${two(d.getDate())}`; el.max = el.value; } };
+  const fillNow = (el: HTMLInputElement | null) => { if (el && !el.value) { const d = new Date(); el.value = `${two(d.getHours())}:${two(d.getMinutes())}`; } };
+  const lbl = "text-[12.5px] font-semibold text-[var(--ink-2)]";
   return (
     <div className="space-y-5">
       <div className="grid items-start gap-4 md:grid-cols-2">
         {CHANNELS.map(({ key, label, Icon, color, placeholder }) => {
           const list = newestFirst.filter((f) => f.via === key);
-          const next = list.find((f) => f.next)?.next ?? "";
+          const nextOne = list.find((f) => f.next);
+          const next = nextOne?.next ?? "", nextTime = fmtTime(nextOne?.nextTime);
           return (
             <section key={key} className="overflow-hidden rounded-[14px] border bg-[var(--surface)]" style={{ borderColor: `color-mix(in srgb, ${color} 28%, white)` }}>
               {/* header: what this side is, how many, and when the next one is due */}
@@ -43,7 +51,7 @@ export default function ClientFollowupChannels({ clientId, returnTo, followups }
                 </div>
                 {next && (
                   <span className="flex-none rounded-full px-2.5 py-1 text-right text-[11.5px] font-semibold leading-none" style={{ color: "#92600a", background: "color-mix(in srgb, var(--amber) 14%, white)" }}>
-                    <span className="mr-1 font-medium">Next</span><span className="tnum">{fmtDate(next)}</span>
+                    <span className="mr-1 font-medium">Next</span><span className="tnum">{fmtDate(next)}{nextTime ? ` · ${nextTime}` : ""}</span>
                   </span>
                 )}
               </header>
@@ -56,13 +64,17 @@ export default function ClientFollowupChannels({ clientId, returnTo, followups }
                   <span className="text-[12.5px] font-semibold text-[var(--ink-2)]">Response / note</span>
                   <textarea name="note" rows={3} required className="input mt-1.5 resize-none !text-[13.5px] leading-relaxed" placeholder={placeholder} />
                 </label>
-                <div className="grid grid-cols-[1fr_auto] items-end gap-2.5">
-                  <label className="block">
-                    <span className="text-[12.5px] font-semibold text-[var(--ink-2)]">Next follow-up date</span>
-                    <input name="next" type="date" defaultValue={addDaysISO(todayISO(), 3)} className="input mt-1.5 !text-[13.5px]" />
-                  </label>
-                  <button type="submit" className="btn h-[43px] justify-center whitespace-nowrap px-5 text-white" style={{ background: color }}><MessageSquarePlus size={15} /> Save</button>
+                {/* when this follow-up was done — filled with now, can be changed */}
+                <div className="grid grid-cols-2 gap-2.5">
+                  <label className="block"><span className={lbl}>Follow-up date</span><input ref={fillToday} name="date" type="date" className="input mt-1.5 !text-[13.5px]" /></label>
+                  <label className="block"><span className={lbl}>Follow-up time</span><input ref={fillNow} name="time" type="time" className="input mt-1.5 !text-[13.5px]" /></label>
                 </div>
+                {/* when to follow up again */}
+                <div className="grid grid-cols-2 gap-2.5">
+                  <label className="block"><span className={lbl}>Next follow-up date</span><input name="next" type="date" defaultValue={addDaysISO(todayISO(), 3)} className="input mt-1.5 !text-[13.5px]" /></label>
+                  <label className="block"><span className={lbl}>Next follow-up time</span><input name="nextTime" type="time" className="input mt-1.5 !text-[13.5px]" /></label>
+                </div>
+                <div className="flex justify-end"><button type="submit" className="btn justify-center whitespace-nowrap px-6 text-white" style={{ background: color }}><MessageSquarePlus size={15} /> Save follow-up</button></div>
               </form>
 
               <div className="border-t border-[var(--line)] px-4 py-3.5">
@@ -86,19 +98,18 @@ export default function ClientFollowupChannels({ clientId, returnTo, followups }
   );
 }
 
-// One logged follow-up: date + who on the left, its next-follow-up date on the right, note below.
+// One logged follow-up: when it was done (date · time) and by whom, the note, then when to
+// follow up next.
 function Entry({ n }: { n: ClientFollowup }) {
+  const time = fmtTime(n.time), nextTime = fmtTime(n.nextTime);
   return (
     <div className="rounded-[10px] border border-[var(--line)] px-3.5 py-2.5">
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0 truncate text-[12px] leading-tight">
-          <span className="font-semibold tnum text-[var(--ink)]">{fmtDate(n.date)}</span>
-          {fmtTime(n.time) && <span className="font-semibold tnum text-[var(--ink)]"> · {fmtTime(n.time)}</span>}
-          <span className="text-[var(--muted)]"> · {n.by || "—"}</span>
-        </div>
-        {n.next && <span className="inline-flex flex-none items-center gap-1 text-[11.5px] font-medium leading-tight text-[var(--muted)]"><CalendarClock size={12} /> Next <span className="tnum font-semibold text-[var(--ink-2)]">{fmtDate(n.next)}</span></span>}
+      <div className="flex items-center justify-between gap-3 text-[12px] leading-tight">
+        <span className="whitespace-nowrap font-semibold tnum text-[var(--ink)]">{fmtDate(n.date)}{time ? ` · ${time}` : ""}</span>
+        <span className="min-w-0 truncate text-[var(--muted)]">{n.by || "—"}</span>
       </div>
       <div className="mt-1.5 whitespace-pre-wrap text-[13px] leading-relaxed text-[var(--ink)]">{n.note}</div>
+      {n.next && <div className="mt-1.5 flex items-center gap-1 text-[11.5px] font-medium leading-tight" style={{ color: "#92600a" }}><CalendarClock size={12} /> Next follow-up: <span className="tnum font-semibold">{fmtDate(n.next)}{nextTime ? ` · ${nextTime}` : ""}</span></div>}
     </div>
   );
 }
