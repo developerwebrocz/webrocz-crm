@@ -143,20 +143,6 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
         </div>
       </div>
 
-      {/* filters */}
-      <div className="card card-pad">
-        <div className="flex flex-wrap items-end gap-3">
-          <label className="block"><span className="eyebrow block">Company</span><select value={company} onChange={(e) => setCompany(e.target.value)} className="select mt-1 !w-auto">{COMPANIES.map((c) => <option key={c.k} value={c.k}>{c.label}</option>)}</select></label>
-          <label className="block"><span className="eyebrow block">Collections period</span><select value={period} onChange={(e) => setPeriod(e.target.value)} className="select mt-1 !w-auto">{PERIODS.map((p) => <option key={p.k} value={p.k}>{p.label}</option>)}</select></label>
-          {period === "CUSTOM" && <>
-            <label className="block"><span className="eyebrow block">From</span><input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="input mt-1 !w-auto" /></label>
-            <label className="block"><span className="eyebrow block">To</span><input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="input mt-1 !w-auto" /></label>
-          </>}
-          <label className="block"><span className="eyebrow block">Collected by</span><select value={by} onChange={(e) => setBy(e.target.value)} className="select mt-1 !w-auto"><option value="ALL">Everyone</option>{collectors.map((c) => <option key={c} value={c}>{c}</option>)}</select></label>
-          {(company !== "ALL" || period !== "MONTH" || by !== "ALL" || q) && <button onClick={() => { setCompany("ALL"); setPeriod("MONTH"); setBy("ALL"); setQ(""); setFrom(""); setTo(""); }} className="btn btn-ghost btn-sm mb-0.5">Clear filters</button>}
-        </div>
-      </div>
-
       {/* where things stand now */}
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Kpi icon={<Clock size={15} />} tone="var(--amber)" label="Clients with payment pending" value={String(pendingClients.length)} sub={`${inr(totalPending)} pending`} />
@@ -170,6 +156,20 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
         <Kpi icon={<CalendarDays size={15} />} tone="var(--emerald)" label={`Collected today · ${fmtDate(today)}`} value={inr(collectedToday)} sub={by === "ALL" ? "by everyone" : `by ${by}`} />
         <Kpi icon={<Wallet size={15} />} tone="var(--emerald)" label={`Collected · ${periodLabel}`} value={inr(collectedPeriod)} sub={`${periodPays.length} payment${periodPays.length === 1 ? "" : "s"}${pFrom ? ` · ${fmtDate(pFrom)} to ${fmtDate(pTo)}` : ""}`} />
         <Kpi icon={<Clock size={15} />} tone="var(--amber)" label="Still to collect" value={inr(totalPending)} sub={`from ${pendingClients.length} client${pendingClients.length === 1 ? "" : "s"}`} />
+      </div>
+
+      {/* filters — under the summary cards */}
+      <div className="card card-pad">
+        <div className="flex flex-wrap items-end gap-3">
+          <label className="block"><span className="eyebrow block">Company</span><select value={company} onChange={(e) => setCompany(e.target.value)} className="select mt-1 !w-auto">{COMPANIES.map((c) => <option key={c.k} value={c.k}>{c.label}</option>)}</select></label>
+          <label className="block"><span className="eyebrow block">Collections period</span><select value={period} onChange={(e) => setPeriod(e.target.value)} className="select mt-1 !w-auto">{PERIODS.map((p) => <option key={p.k} value={p.k}>{p.label}</option>)}</select></label>
+          {period === "CUSTOM" && <>
+            <label className="block"><span className="eyebrow block">From</span><input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="input mt-1 !w-auto" /></label>
+            <label className="block"><span className="eyebrow block">To</span><input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="input mt-1 !w-auto" /></label>
+          </>}
+          <label className="block"><span className="eyebrow block">Collected by</span><select value={by} onChange={(e) => setBy(e.target.value)} className="select mt-1 !w-auto"><option value="ALL">Everyone</option>{collectors.map((c) => <option key={c} value={c}>{c}</option>)}</select></label>
+          {(company !== "ALL" || period !== "MONTH" || by !== "ALL" || q) && <button onClick={() => { setCompany("ALL"); setPeriod("MONTH"); setBy("ALL"); setQ(""); setFrom(""); setTo(""); }} className="btn btn-ghost btn-sm mb-0.5">Clear filters</button>}
+        </div>
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
