@@ -1,16 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { generateInvoice, saveInvoice, emailInvoice, approveInvoice, addInvoiceNote } from "@/app/sales-actions";
 import { SELLER } from "@/lib/domain";
 import InvoicePrintable from "@/components/InvoicePrintable";
-import { printInvoiceAs } from "@/lib/print-invoice";
+import { printInvoiceAs, invoiceFileName } from "@/lib/print-invoice";
+import { buildInvoicePdf, greetingForNow } from "@/lib/invoice-pdf";
 import { ArrowLeft, Download, Mail, Pencil, FileText, CheckCircle2, Lock, ShieldCheck, MessageCircle } from "lucide-react";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, approvalOff, sent, backHref }: { lead: any; invoice: any; canManage: boolean; isSuperAdmin: boolean; approvalOff?: boolean; sent: string; backHref: string }) {
   const [edit, setEdit] = useState(false);
+  // "Send on WhatsApp": busy while the PDF is made, then what happened (saved / shared / …).
+  const [wa, setWa] = useState<"" | "busy" | "saved" | "shared" | "tap" | "error">("");
+  const [waFile, setWaFile] = useState("");
+  const [pendingShare, setPendingShare] = useState<{ file: File; text: string } | null>(null);
+  const [waLink, setWaLink] = useState(""); // shown when the browser did not let the chat open by itself
+  // The PDF is started as soon as the pointer reaches the button, so the click itself is instant
+  // (browsers only let a click open WhatsApp / the share sheet for a few seconds).
+  const pdfJob = useRef<{ at: number; job: Promise<Blob> } | null>(null);
+  const preparePdf = () => {
+    const node = typeof document !== "undefined" ? document.getElementById("invoice") : null;
+    if (!node) return null;
+    if (!pdfJob.current || Date.now() - pdfJob.current.at > 20_000) {
+      const job = buildInvoicePdf(node);
+      job.catch(() => { pdfJob.current = null; });
+      pdfJob.current = { at: Date.now(), job };
+    }
+    return pdfJob.current.job;
+  };
   const leadId = lead?.id ?? "";
 
   if (!invoice) {
@@ -37,27 +56,56 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
 
   // Open WhatsApp (web/app) with the invoice details pre-filled to the client's number.
   // Click-to-send: the accountant reviews and taps Send (no messages leave without a person).
-  const sendWhatsApp = () => {
+  // The invoice goes as a PDF file (not a link), with a greeting that follows the time of day.
+  //  • Phone: the PDF is handed to the phone's share sheet → WhatsApp → pick the client.
+  //  • Computer: WhatsApp opens on the client's chat with the message typed in, and the PDF is
+  //    saved with the client's name, ready to attach (a website cannot attach it by itself).
+  const sendWhatsApp = async () => {
     const digits = (invoice.phone || "").replace(/\D/g, "");
-    if (!digits) return;
+    if (!digits || wa === "busy") return;
     const phone = digits.length === 10 ? `91${digits}` : digits; // default to India country code
     const rupees = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
-    // Public, no-login invoice link (opens the printable PDF invoice directly for the client).
-    const origin = typeof window !== "undefined" ? window.location.origin : "";
-    const link = `${origin}/share/invoice/${invoice.id}`;
-    const lines = [
-      `Dear ${invoice.contact || invoice.billTo},`,
+    const text = [
+      `Hi ${invoice.contact || invoice.billTo}, ${greetingForNow()}.`,
       "",
-      `Please find your invoice *${invoice.number}* from Web Rocz.`,
+      `Please find attached your invoice *${invoice.number}* from Web Rocz.`,
       `Amount: ${rupees(invoice.total)}`,
       balance > 0 ? `Balance due: ${rupees(balance)}` : "Status: Paid in full",
       "",
-      `Open / download your invoice PDF: ${link}`,
-      "",
       "Thank you for choosing us.",
-    ];
-    const msg = encodeURIComponent(lines.join("\n"));
-    window.open(`https://wa.me/${phone}?text=${msg}`, "_blank", "noopener,noreferrer");
+    ].join("\n");
+    const job = preparePdf();
+    if (!job) return;
+    const onPhone = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const chat = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+    setWa("busy"); setWaLink("");
+    try {
+      const file = new File([await job], `${invoiceFileName(invoice.billTo, invoice.number)}.pdf`, { type: "application/pdf" });
+      setWaFile(file.name);
+      if (onPhone && typeof navigator.canShare === "function" && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file], text }); setWa("shared"); }
+        catch (e) {
+          if ((e as Error)?.name === "AbortError") { setWa(""); return; }
+          // the phone wants a fresh tap before sharing — keep the PDF ready behind a button
+          setPendingShare({ file, text }); setWa("tap");
+        }
+        return;
+      }
+      // save the PDF with the client's name
+      const url = URL.createObjectURL(file);
+      const a = document.createElement("a");
+      a.href = url; a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 30_000);
+      // then open the client's chat with the message typed in
+      if (onPhone) window.location.href = chat;
+      else { const w = window.open(chat, "_blank"); if (w) w.opener = null; else setWaLink(chat); }
+      setWa("saved");
+    } catch { setWa("error"); }
+  };
+  const shareReady = async () => {
+    if (!pendingShare) return;
+    try { await navigator.share({ files: [pendingShare.file], text: pendingShare.text }); setWa("shared"); setPendingShare(null); }
+    catch (e) { if ((e as Error)?.name !== "AbortError") setWa("error"); }
   };
   // In the accountant CRM there's no approval gate — treat invoices as ready to download/send.
   const ready = invoice.approved || approvalOff;
@@ -158,13 +206,30 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
       {canManage && (
         <div className="no-print card card-pad">
           <h3 className="text-[14px] font-bold">Send to client</h3>
-          <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">{ready ? "Email a branded copy, or open WhatsApp with the invoice details ready to send." : "Locked — needs Super Admin approval first."}{invoice.emailedAt ? ` Last emailed: ${new Date(invoice.emailedAt).toLocaleString("en-IN")}.` : ""}</p>
+          <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">{ready ? "Email a branded copy, or send the invoice PDF on WhatsApp." : "Locked — needs Super Admin approval first."}{invoice.emailedAt ? ` Last emailed: ${new Date(invoice.emailedAt).toLocaleString("en-IN")}.` : ""}</p>
           <form action={emailInvoice} className="mt-3 flex flex-wrap items-end gap-2">
             <input type="hidden" name="invoiceId" value={invoice.id} /><input type="hidden" name="leadId" value={leadId} />
             <div className="flex-1 min-w-[240px]"><L label="Client email"><input name="to" type="email" required defaultValue={invoice.email ?? lead?.email ?? ""} placeholder="client@example.com" className="input" /></L></div>
             <button disabled={!ready} className="btn btn-violet disabled:opacity-40"><Mail size={15} /> Email invoice</button>
-            <button type="button" onClick={sendWhatsApp} disabled={!ready} title={invoice.phone ? `Open WhatsApp to ${invoice.phone}` : "No phone number on this invoice"} className="btn btn-ghost disabled:opacity-40" style={{ borderColor: "color-mix(in srgb, #25D366 55%, white)", color: "#128C4B" }}><MessageCircle size={15} /> Send on WhatsApp</button>
+            <button type="button" onClick={sendWhatsApp} onPointerEnter={() => { if (ready && invoice.phone) preparePdf(); }} onFocus={() => { if (ready && invoice.phone) preparePdf(); }} disabled={!ready || wa === "busy"} title={invoice.phone ? `Send the invoice PDF on WhatsApp to ${invoice.phone}` : "No phone number on this invoice"} className="btn btn-ghost disabled:opacity-40" style={{ borderColor: "color-mix(in srgb, #25D366 55%, white)", color: "#128C4B" }}><MessageCircle size={15} /> {wa === "busy" ? "Preparing PDF…" : "Send on WhatsApp"}</button>
           </form>
+          {wa === "saved" && (
+            <div className="mt-2.5 rounded-[10px] px-3.5 py-2.5 text-[12.5px] leading-relaxed" style={{ background: "color-mix(in srgb, #25D366 9%, white)", color: "#0f5132" }}>
+              <b>PDF saved:</b> {waFile}<br />
+              {waLink
+                ? <><a href={waLink} target="_blank" rel="noreferrer" className="font-bold underline">Open this client&apos;s WhatsApp chat</a> — the message is already typed. </>
+                : <>WhatsApp is open on this client&apos;s chat with the message typed. </>}
+              In the chat click the <b>attach (📎 / +)</b> button → <b>Document</b> → choose this PDF (or drag it into the chat) and press Send.
+            </div>
+          )}
+          {wa === "tap" && (
+            <div className="mt-2.5 flex flex-wrap items-center gap-2 rounded-[10px] px-3.5 py-2.5 text-[12.5px]" style={{ background: "color-mix(in srgb, #25D366 9%, white)", color: "#0f5132" }}>
+              <span>The PDF is ready.</span>
+              <button type="button" onClick={shareReady} className="btn btn-sm text-white" style={{ background: "#128C4B" }}><MessageCircle size={14} /> Share PDF on WhatsApp</button>
+            </div>
+          )}
+          {wa === "shared" && <p className="mt-2 text-[12.5px] font-semibold" style={{ color: "#128C4B" }}>✓ Invoice PDF handed to WhatsApp.</p>}
+          {wa === "error" && <p className="mt-2 text-[12.5px] font-semibold text-[var(--rose)]">Could not prepare the PDF. Use Download PDF above and attach it in WhatsApp.</p>}
           {!invoice.phone && <p className="mt-1.5 text-[11.5px] text-[var(--amber)]">Add the client&apos;s phone (Edit above) to enable WhatsApp.</p>}
         </div>
       )}
