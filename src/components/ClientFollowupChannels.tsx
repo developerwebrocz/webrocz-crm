@@ -9,9 +9,11 @@ import { logClientFollowup } from "@/app/actions";
 // under "Earlier follow-ups". Used by the Follow-up popup in the clients list and by the
 // Follow-ups card on a client's page.
 
-export type ClientFollowup = { date: string; by: string; note: string; next?: string; via?: string };
+export type ClientFollowup = { date: string; time?: string; by: string; note: string; next?: string; via?: string };
 
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
+// "17:42" → "5:42 PM" (follow-ups saved before the time was recorded have none).
+export const fmtTime = (hm?: string) => { const m = /^(\d{1,2}):(\d{2})/.exec(hm || ""); if (!m) return ""; const h = Number(m[1]); return `${h % 12 || 12}:${m[2]} ${h < 12 ? "AM" : "PM"}`; };
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const addDaysISO = (iso: string, n: number) => { const d = new Date((iso || todayISO()) + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 
@@ -21,7 +23,8 @@ const CHANNELS = [
 ] as const;
 
 export default function ClientFollowupChannels({ clientId, returnTo, followups }: { clientId: string; returnTo: string; followups: ClientFollowup[] }) {
-  const newestFirst = [...followups].sort((a, b) => (a.date < b.date ? 1 : -1));
+  // newest first: by date, then time; same moment (or no time) → the one saved later first
+  const newestFirst = followups.map((f, i) => ({ f, i })).sort((a, b) => { const ka = a.f.date + " " + (a.f.time || ""), kb = b.f.date + " " + (b.f.time || ""); return ka === kb ? b.i - a.i : ka < kb ? 1 : -1; }).map((x) => x.f);
   const earlier = newestFirst.filter((f) => f.via !== "PHONE" && f.via !== "WHATSAPP");
   return (
     <div className="space-y-5">
@@ -90,6 +93,7 @@ function Entry({ n }: { n: ClientFollowup }) {
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0 truncate text-[12px] leading-tight">
           <span className="font-semibold tnum text-[var(--ink)]">{fmtDate(n.date)}</span>
+          {fmtTime(n.time) && <span className="font-semibold tnum text-[var(--ink)]"> · {fmtTime(n.time)}</span>}
           <span className="text-[var(--muted)]"> · {n.by || "—"}</span>
         </div>
         {n.next && <span className="inline-flex flex-none items-center gap-1 text-[11.5px] font-medium leading-tight text-[var(--muted)]"><CalendarClock size={12} /> Next <span className="tnum font-semibold text-[var(--ink-2)]">{fmtDate(n.next)}</span></span>}

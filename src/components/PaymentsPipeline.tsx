@@ -4,7 +4,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { downloadCsv } from "@/lib/csv";
 import { companyLabel } from "@/lib/domain";
-import type { PayInvoice, PayEntry, PayClient } from "@/lib/payments-queries";
+import type { PayInvoice, PayEntry, PayClient, PayFollowup } from "@/lib/payments-queries";
+import { fmtTime } from "@/components/ClientFollowupChannels";
 import PaymentCollectorModal from "@/components/PaymentCollectorModal";
 import WebRoczPvtFollowupModal from "@/components/WebRoczPvtFollowupModal";
 import { Wallet, Users, CheckCircle2, AlertTriangle, IndianRupee, CalendarDays, Search, Download, Clock, MessageSquarePlus } from "lucide-react";
@@ -37,7 +38,7 @@ function periodBounds(k: string, today: string, from: string, to: string): [stri
   return ["", ""];
 }
 
-type ClientRow = { key: string; id: string | null; code: string; name: string; phone: string; accountManager: string; companies: string[]; invoices: number; billed: number; received: number; pending: number; overdue: number; pendingInvoices: number; oldestPending: string; overdueDays: number; lastPayDate: string; lastPayAmount: number; billingDay: number; lastInvoiceDate: string };
+type ClientRow = { key: string; id: string | null; code: string; name: string; phone: string; accountManager: string; companies: string[]; invoices: number; billed: number; received: number; pending: number; overdue: number; pendingInvoices: number; oldestPending: string; overdueDays: number; lastPayDate: string; lastPayAmount: number; billingDay: number; lastInvoiceDate: string; lastFollowup: PayFollowup | null };
 
 // `today` comes from the server (India date) so the first render matches in the browser.
 // `canReassign` (Super / Sub Admin) shows "Change name" beside each accountant.
@@ -65,7 +66,7 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
     for (const i of invoices) {
       if (!inCo(i.company)) continue;
       const m = meta.get(i.clientKey);
-      const r = map.get(i.clientKey) ?? { key: i.clientKey, id: i.clientId, code: m?.code ?? "", name: i.clientName, phone: m?.phone ?? "", accountManager: m?.accountManager ?? "", companies: [], invoices: 0, billed: 0, received: 0, pending: 0, overdue: 0, pendingInvoices: 0, oldestPending: "", overdueDays: 0, lastPayDate: "", lastPayAmount: 0, billingDay: m?.billingDay ?? 0, lastInvoiceDate: "" };
+      const r = map.get(i.clientKey) ?? { key: i.clientKey, id: i.clientId, code: m?.code ?? "", name: i.clientName, phone: m?.phone ?? "", accountManager: m?.accountManager ?? "", companies: [], invoices: 0, billed: 0, received: 0, pending: 0, overdue: 0, pendingInvoices: 0, oldestPending: "", overdueDays: 0, lastPayDate: "", lastPayAmount: 0, billingDay: m?.billingDay ?? 0, lastInvoiceDate: "", lastFollowup: m?.lastFollowup ?? null };
       const bal = Math.max(0, i.total - i.received);
       r.invoices++; r.billed += i.total; r.received += i.total - bal; r.pending += bal;
       if (!r.companies.includes(i.company)) r.companies.push(i.company);
@@ -237,10 +238,10 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
         <div className="overflow-x-auto">
           <table className="w-full text-[13px]">
             <thead><tr className="border-b border-[var(--line)] text-left text-[var(--muted)]">
-              <th className="th">S.No</th><th className="th">Invoice date</th><th className="th">Client</th><th className="th">Company</th><th className="th !text-right">Invoices</th><th className="th !text-right">Billed</th><th className="th !text-right">Received</th><th className="th !text-right">Pending</th><th className="th">Account manager</th><th className="th">Follow-up</th>
+              <th className="th">S.No</th><th className="th">Invoice date</th><th className="th">Client</th><th className="th">Company</th><th className="th !text-right">Billed</th><th className="th !text-right">Received</th><th className="th !text-right">Pending</th><th className="th">Account manager</th><th className="th">Follow-up</th>
             </tr></thead>
             <tbody>
-              {shownClients.length === 0 && <tr><td colSpan={10} className="px-5 py-10 text-center text-[var(--muted)]">{tab === "PENDING" ? "No client has a payment pending." : tab === "RECEIVED" ? "No client is fully paid yet." : "No clients billed."}</td></tr>}
+              {shownClients.length === 0 && <tr><td colSpan={9} className="px-5 py-10 text-center text-[var(--muted)]">{tab === "PENDING" ? "No client has a payment pending." : tab === "RECEIVED" ? "No client is fully paid yet." : "No clients billed."}</td></tr>}
               {shownClients.map((r, idx) => (
                 <tr key={r.key} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
                   <td className="px-5 py-2.5 font-semibold tnum text-[var(--muted)]">{idx + 1}</td>
@@ -251,7 +252,6 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
                     <div className="text-[11.5px] text-[var(--faint)]">{[r.code, r.phone].filter(Boolean).join(" · ")}</div>
                   </td>
                   <td className="px-5 py-2.5 text-[12px] text-[var(--ink-2)]">{r.companies.map(companyLabel).join(", ")}</td>
-                  <td className="px-5 py-2.5 text-right tnum">{r.invoices}</td>
                   <td className="px-5 py-2.5 text-right tnum">{inr(r.billed)}</td>
                   <td className="px-5 py-2.5 text-right tnum" style={{ color: "var(--emerald)" }}>{inr(r.received)}</td>
                   <td className="px-5 py-2.5 text-right font-semibold tnum" style={{ color: r.pending > 0 ? "var(--amber)" : "var(--emerald)" }}>{inr(r.pending)}</td>
@@ -260,6 +260,14 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
                     {r.id
                       ? <button onClick={() => setFuClient({ id: r.id as string, name: r.name })} title="Follow-up — Phone / WhatsApp" className="inline-flex items-center gap-1 whitespace-nowrap rounded-[7px] border border-[var(--line-2)] px-2.5 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface)]"><MessageSquarePlus size={13} /> Follow-up</button>
                       : <span className="text-[var(--faint)]">—</span>}
+                    {/* the previous follow-up, if there is one: how, when, and what was noted */}
+                    {r.lastFollowup && (
+                      <div className="mt-1.5 max-w-[230px] text-[11.5px] leading-snug" title={r.lastFollowup.note}>
+                        <div className="whitespace-nowrap text-[var(--muted)]"><span className="font-semibold" style={{ color: r.lastFollowup.via === "WHATSAPP" ? "var(--emerald)" : r.lastFollowup.via === "PHONE" ? "var(--indigo)" : "var(--muted)" }}>{r.lastFollowup.via === "WHATSAPP" ? "WhatsApp" : r.lastFollowup.via === "PHONE" ? "Phone" : "Earlier"}</span> · <span className="tnum">{fmtDate(r.lastFollowup.date)}</span>{fmtTime(r.lastFollowup.time) ? <span className="tnum"> · {fmtTime(r.lastFollowup.time)}</span> : null}</div>
+                        <div className="truncate text-[var(--ink-2)]">{r.lastFollowup.note}</div>
+                        {r.lastFollowup.next && <div className="whitespace-nowrap text-[var(--amber)]">Next <span className="tnum">{fmtDate(r.lastFollowup.next)}</span></div>}
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
