@@ -15,7 +15,11 @@ import { getCurrentUser } from "@/lib/auth";
 //
 // Server settings (.env on the server, never in git):
 //   WHATSAPP_TOKEN          permanent access token of the WhatsApp Business app
-//   WHATSAPP_PHONE_ID       "Phone number ID" of the sending number
+//   WHATSAPP_PHONE_ID       "Phone number ID" of the sending number (used for everyone not listed below)
+//   WHATSAPP_SENDERS        optional — a different sending number per person, by login email:
+//                           prashanth@webrocz.com=111111111111111,other@webrocz.com=222222222222222
+//                           (both numbers sit in the same WhatsApp Business account, so they
+//                           share the token and the template)
 //   WHATSAPP_TEMPLATE       name of the approved template   (default: invoice_pdf)
 //   WHATSAPP_TEMPLATE_LANG  its language code               (default: en)
 // Until the token + phone id are set this action answers NOT_CONFIGURED and the invoice page
@@ -27,6 +31,19 @@ const GREETINGS = ["Good morning", "Good afternoon", "Good evening"];
 export type WhatsAppSendResult = { ok: boolean; code?: "NOT_CONFIGURED" | "LOCKED" | "NO_PHONE" | "FAILED"; message: string };
 
 // Template variables may not contain line breaks / tabs / long runs of spaces.
+// The sending number for the person who is logged in: their own (WHATSAPP_SENDERS, matched by
+// login email, else by name) or the common one (WHATSAPP_PHONE_ID).
+function senderPhoneId(me: { email?: string | null; name: string }): string {
+  const key = (v: string) => v.trim().toLowerCase();
+  for (const pair of (process.env.WHATSAPP_SENDERS || "").split(/[,;\r\n]+/)) {
+    const i = pair.lastIndexOf("=");
+    if (i < 1) continue;
+    const who = key(pair.slice(0, i)), id = pair.slice(i + 1).trim();
+    if (id && who && (who === key(me.email || "") || who === key(me.name))) return id;
+  }
+  return (process.env.WHATSAPP_PHONE_ID || "").trim();
+}
+
 const oneLine = (v: string) => (v || "").replace(/[\r\n\t]+/g, " ").replace(/ {2,}/g, " ").trim() || "-";
 const rupees = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 
@@ -49,7 +66,7 @@ export async function sendInvoiceOnWhatsApp(fd: FormData): Promise<WhatsAppSendR
   if (!me || !ROLES.includes(me.role)) return { ok: false, code: "FAILED", message: "You do not have access to send invoices." };
 
   const token = process.env.WHATSAPP_TOKEN || "";
-  const phoneId = process.env.WHATSAPP_PHONE_ID || "";
+  const phoneId = senderPhoneId(me);
   if (!token || !phoneId) return { ok: false, code: "NOT_CONFIGURED", message: "WhatsApp API is not set up on the server yet." };
   const template = process.env.WHATSAPP_TEMPLATE || "invoice_pdf";
   const lang = process.env.WHATSAPP_TEMPLATE_LANG || "en";
