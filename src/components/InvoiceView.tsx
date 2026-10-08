@@ -6,6 +6,7 @@ import { SELLER } from "@/lib/domain";
 import InvoicePrintable from "@/components/InvoicePrintable";
 import { printInvoiceAs, invoiceFileName } from "@/lib/print-invoice";
 import { buildInvoicePdf, greetingForNow } from "@/lib/invoice-pdf";
+import { sendInvoiceOnWhatsApp } from "@/app/whatsapp-actions";
 import { ArrowLeft, Download, Mail, Pencil, FileText, CheckCircle2, Lock, ShieldCheck, MessageCircle } from "lucide-react";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -13,7 +14,8 @@ import { ArrowLeft, Download, Mail, Pencil, FileText, CheckCircle2, Lock, Shield
 export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, approvalOff, sent, backHref }: { lead: any; invoice: any; canManage: boolean; isSuperAdmin: boolean; approvalOff?: boolean; sent: string; backHref: string }) {
   const [edit, setEdit] = useState(false);
   // "Send on WhatsApp": busy while the PDF is made, then what happened (saved / shared / …).
-  const [wa, setWa] = useState<"" | "busy" | "saved" | "shared" | "tap" | "error">("");
+  const [wa, setWa] = useState<"" | "busy" | "sent" | "apiError" | "saved" | "shared" | "tap" | "error">("");
+  const [waMsg, setWaMsg] = useState(""); // what the WhatsApp API answered (sent to … / why not)
   const [waFile, setWaFile] = useState("");
   const [pendingShare, setPendingShare] = useState<{ file: File; text: string } | null>(null);
   const [waLink, setWaLink] = useState(""); // shown when the browser did not let the chat open by itself
@@ -82,6 +84,14 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
     try {
       const file = new File([await job], `${invoiceFileName(invoice.billTo, invoice.number)}.pdf`, { type: "application/pdf" });
       setWaFile(file.name);
+      // WhatsApp Business API set up on the server → the message and the PDF go straight into
+      // the client's chat from here; nothing is downloaded and no WhatsApp window is opened.
+      const fd = new FormData();
+      fd.append("invoiceId", invoice.id); fd.append("greeting", greetingForNow()); fd.append("pdf", file);
+      const api = await sendInvoiceOnWhatsApp(fd).catch(() => null);
+      if (api?.ok) { setWaMsg(api.message); setWa("sent"); return; }
+      if (api && api.code !== "NOT_CONFIGURED") { setWaMsg(api.message); setWa("apiError"); return; }
+      // API not set up yet → the manual way below
       if (onPhone && typeof navigator.canShare === "function" && navigator.canShare({ files: [file] })) {
         try { await navigator.share({ files: [file], text }); setWa("shared"); }
         catch (e) {
@@ -211,8 +221,10 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
             <input type="hidden" name="invoiceId" value={invoice.id} /><input type="hidden" name="leadId" value={leadId} />
             <div className="flex-1 min-w-[240px]"><L label="Client email"><input name="to" type="email" required defaultValue={invoice.email ?? lead?.email ?? ""} placeholder="client@example.com" className="input" /></L></div>
             <button disabled={!ready} className="btn btn-violet disabled:opacity-40"><Mail size={15} /> Email invoice</button>
-            <button type="button" onClick={sendWhatsApp} onPointerEnter={() => { if (ready && invoice.phone) preparePdf(); }} onFocus={() => { if (ready && invoice.phone) preparePdf(); }} disabled={!ready || wa === "busy"} title={invoice.phone ? `Send the invoice PDF on WhatsApp to ${invoice.phone}` : "No phone number on this invoice"} className="btn btn-ghost disabled:opacity-40" style={{ borderColor: "color-mix(in srgb, #25D366 55%, white)", color: "#128C4B" }}><MessageCircle size={15} /> {wa === "busy" ? "Preparing PDF…" : "Send on WhatsApp"}</button>
+            <button type="button" onClick={sendWhatsApp} onPointerEnter={() => { if (ready && invoice.phone) preparePdf(); }} onFocus={() => { if (ready && invoice.phone) preparePdf(); }} disabled={!ready || wa === "busy"} title={invoice.phone ? `Send the invoice PDF on WhatsApp to ${invoice.phone}` : "No phone number on this invoice"} className="btn btn-ghost disabled:opacity-40" style={{ borderColor: "color-mix(in srgb, #25D366 55%, white)", color: "#128C4B" }}><MessageCircle size={15} /> {wa === "busy" ? "Sending…" : "Send on WhatsApp"}</button>
           </form>
+          {wa === "sent" && <p className="mt-2.5 rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold" style={{ background: "color-mix(in srgb, #25D366 10%, white)", color: "#0f5132" }}>✓ {waMsg}</p>}
+          {wa === "apiError" && <p className="mt-2.5 rounded-[10px] px-3.5 py-2.5 text-[12.5px] font-semibold text-[var(--rose)]" style={{ background: "color-mix(in srgb, var(--rose) 8%, white)" }}>Not sent. {waMsg}</p>}
           {wa === "saved" && (
             <div className="mt-2.5 rounded-[10px] px-3.5 py-2.5 text-[12.5px] leading-relaxed" style={{ background: "color-mix(in srgb, #25D366 9%, white)", color: "#0f5132" }}>
               <b>PDF saved:</b> {waFile}<br />
