@@ -1,7 +1,7 @@
 import { getAmDashboard, getCreativeTeam, getClientOptions, getAssignedByMe } from "@/lib/queries";
 import { inrShort, inr } from "@/lib/domain";
 import AssignCreativeForm from "@/components/AssignCreativeForm";
-import RequestShootForm from "@/components/RequestShootForm";
+import MyShootRequests from "@/components/MyShootRequests";
 import {
   Users, Megaphone, Target, Images, IndianRupee, TrendingUp, AlertTriangle,
   ArrowRight, Wallet, Zap, Palette, Clapperboard,
@@ -35,10 +35,12 @@ export default async function AmOverview({ user }: { user: { id: string; name: s
         <div className="flex flex-wrap items-center gap-2">
           <a href="/ads" className="btn btn-ghost"><Megaphone size={15} /> Meta entry</a>
           <a href="/google-ads" className="btn btn-ghost"><Target size={15} /> Google Ads</a>
-          <RequestShootForm clients={clientOpts.map((c) => ({ id: c.id, name: c.name }))} />
           <AssignCreativeForm members={creativeTeam} clients={clientOpts.map((c) => ({ id: c.id, name: c.name }))} />
         </div>
       </div>
+
+      {/* shoot requests sent to Studio X — status of each */}
+      <MyShootRequests userId={user.id} clients={clientOpts.map((c) => ({ id: c.id, name: c.name }))} />
 
       {/* KPIs */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

@@ -463,8 +463,8 @@ function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, o
         <span className="rounded-full bg-[var(--surface-2)] px-2.5 py-1 text-[11.5px] font-bold tnum text-[var(--ink-2)]">{rows.length}</span>
       </div>
       <div className="overflow-x-auto scroll-thin">
-        <table className="w-full min-w-[880px] text-left">
-          <thead><tr className="border-b border-[var(--line)]">{["Date & time", "Shoot", isRentSection ? "Renter" : "Client", "Location", "Shooter", ...(isRentSection ? ["Rent"] : []), "Status", ...(canManage ? [""] : [])].map((h, i) => <th key={i} className="th px-4 py-2.5">{h}</th>)}</tr></thead>
+        <table className="w-full min-w-[1040px] text-left">
+          <thead><tr className="border-b border-[var(--line)]">{["Date & time", "Shoot", isRentSection ? "Renter" : "Client", "Location", "Shooter", "Note", ...(isRentSection ? ["Rent"] : []), "Status", ...(canManage ? [""] : [])].map((h, i) => <th key={i} className="th px-4 py-2.5">{h}</th>)}</tr></thead>
           <tbody>
             {rows.map((r) => {
               const st = SHOOT_STATUS[r.status as keyof typeof SHOOT_STATUS];
@@ -480,7 +480,7 @@ function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, o
                     <div className="text-[11px] text-[var(--faint)] tnum">{r.code}</div>
                     <div className="mt-1 flex flex-wrap gap-1">
                       {r.conflict && <span className="inline-flex items-center gap-1 rounded-full bg-[color-mix(in_srgb,var(--rose)_12%,white)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--rose)]"><CircleAlert size={9} /> {r.conflict}</span>}
-                      {r.requestedBy && !r.assignedToId && <span className="rounded-full bg-[color-mix(in_srgb,var(--violet)_12%,white)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--violet)]">Requested · {r.requestedBy}</span>}
+                      {r.requestedBy && <span className="rounded-full bg-[color-mix(in_srgb,var(--violet)_12%,white)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--violet)]">{r.assignedToId ? "Requested by" : "New request ·"} {r.requestedBy}</span>}
                       {r.footageLink && <a href={r.footageLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-full bg-[var(--surface-2)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--sky)]"><Film size={9} /> Footage</a>}
                       {r.handedOff && <span className="inline-flex items-center gap-1 rounded-full bg-[color-mix(in_srgb,var(--emerald)_12%,white)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--emerald)]"><CheckCircle2 size={9} /> Handed off</span>}
                     </div>
@@ -498,6 +498,10 @@ function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, o
                   <td className="px-4 py-3 text-[12.5px]">{r.assignee
                     ? <span className="inline-flex items-center gap-1.5"><span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--surface-3)] text-[10px] font-bold text-[var(--ink-2)]">{initials(r.assignee)}</span> {r.assignee}</span>
                     : <span className="text-[var(--faint)]">Unassigned</span>}</td>
+                  {/* the brief / note written when the shoot was requested or scheduled */}
+                  <td className="max-w-[240px] px-4 py-3 text-[12px] leading-snug text-[var(--ink-2)]">
+                    {r.notes ? <div className="line-clamp-3 whitespace-pre-wrap" title={r.notes}>{r.notes}</div> : <span className="text-[var(--faint)]">—</span>}
+                  </td>
                   {isRentSection && (
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="flex items-center gap-2">
@@ -536,7 +540,7 @@ function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, o
                 </tr>
               );
             })}
-            {rows.length === 0 && <tr><td colSpan={10} className="px-4 py-10 text-center text-sm text-[var(--muted)]">{empty}</td></tr>}
+            {rows.length === 0 && <tr><td colSpan={11} className="px-4 py-10 text-center text-sm text-[var(--muted)]">{empty}</td></tr>}
           </tbody>
         </table>
       </div>

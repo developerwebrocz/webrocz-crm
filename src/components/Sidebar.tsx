@@ -162,7 +162,8 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     if (isDesigner) work.push({ href: "/designs", label: "My Designs", icon: Palette });
     if (isEditor) work.push({ href: "/videos", label: "My Videos", icon: Clapperboard });
     if (isStudioHead) work.push({ href: "/shoots", label: "Studio X", icon: Camera });
-    if (isShooter) work.push({ href: "/shoots", label: "My Shoots", icon: Camera });
+    // video editors can be assigned as the shooter too, so they get the same link
+    if (isShooter || isEditor) work.push({ href: "/shoots", label: "My Shoots", icon: Camera });
     if (isDev) work.push({ href: "/projects", label: "Developer Team", icon: Code2 });
     work.push({ href: "/tasks", label: "My Tasks", icon: ListChecks, badge: taskCount || undefined });
     // SEO team log their work inside SEO Performance, so no separate "Update Work"/"Approvals" clutter.

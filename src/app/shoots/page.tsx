@@ -5,7 +5,8 @@ import ShootBoard from "@/components/ShootBoard";
 
 export const dynamic = "force-dynamic";
 
-const ALLOWED = ["STUDIO_HEAD", "VIDEOGRAPHER", "SUPER_ADMIN", "SUB_ADMIN"];
+// EDITOR: video editors can be picked as the shooter, so they see the shoots assigned to them.
+const ALLOWED = ["STUDIO_HEAD", "VIDEOGRAPHER", "EDITOR", "SUPER_ADMIN", "SUB_ADMIN"];
 
 export default async function ShootsPage() {
   const user = await getCurrentUser();

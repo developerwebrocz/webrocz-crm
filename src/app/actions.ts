@@ -1735,17 +1735,33 @@ export async function saveShoot(fd: FormData) {
   };
   if (!data.date) redirect("/shoots");
 
+  const kind = category === "STUDIO_RENT" ? "Studio X rental" : "WebRocz shoot";
+  const when = `${data.date}${data.startTime ? ` ${data.startTime}` : ""}${data.endTime ? `–${data.endTime}` : ""}`;
+  const shooterName = assignedToId ? (await prisma.user.findUnique({ where: { id: assignedToId }, select: { name: true } }))?.name ?? "" : "";
   if (id) {
+    const before = await prisma.shoot.findUnique({ where: { id }, select: { assignedToId: true, date: true, startTime: true, endTime: true, requestedById: true } });
     await prisma.shoot.update({ where: { id }, data });
-  } else {
-    const created = await prisma.shoot.create({ data: { ...data, code: await nextShootCodeLocal() } });
-    if (assignedToId) {
-      await notify(assignedToId, `New shoot assigned: ${title}`,
-        `${category === "STUDIO_RENT" ? "Studio X rental" : "WebRocz shoot"} · ${data.date}${data.startTime ? ` ${data.startTime}` : ""}`, "/shoots", "violet");
+    const newShooter = !!assignedToId && assignedToId !== before?.assignedToId;
+    const retimed = !!before && (before.date !== data.date || before.startTime !== data.startTime || before.endTime !== data.endTime);
+    // the shooter hears about a shoot given to them, or about a new date / time
+    if (assignedToId && assignedToId !== me.id && (newShooter || retimed)) {
+      await notify(assignedToId, newShooter ? `New shoot assigned: ${title}` : `Shoot time changed: ${title}`, `${kind} · ${when}`, "/shoots", "violet");
     }
-    void created;
+    // a shooter who is taken off the shoot is told too
+    if (before?.assignedToId && before.assignedToId !== assignedToId && before.assignedToId !== me.id) {
+      await notify(before.assignedToId, `Shoot reassigned: ${title}`, `${kind} · ${when} — no longer assigned to you`, "/shoots", "amber");
+    }
+    // the account manager who asked for it sees it has been scheduled
+    if (before?.requestedById && before.requestedById !== me.id && (newShooter || retimed)) {
+      await notify(before.requestedById, `Shoot scheduled: ${title}`, `${when}${shooterName ? ` · Shooter: ${shooterName}` : ""}`, "/", "emerald");
+    }
+  } else {
+    await prisma.shoot.create({ data: { ...data, code: await nextShootCodeLocal() } });
+    if (assignedToId && assignedToId !== me.id) {
+      await notify(assignedToId, `New shoot assigned: ${title}`, `${kind} · ${when}`, "/shoots", "violet");
+    }
   }
-  revalidatePath("/shoots");
+  revalidatePath("/shoots"); revalidatePath("/");
   redirect("/shoots");
 }
 
@@ -1762,7 +1778,19 @@ export async function setShootStatus(fd: FormData) {
   // the assigned shooter or a studio manager may change status
   if (!STUDIO_MANAGERS.includes(me.role) && shoot.assignedToId !== me.id) redirect("/shoots");
   await prisma.shoot.update({ where: { id }, data: { status } });
-  revalidatePath("/shoots");
+  if (status !== shoot.status) {
+    const label = status.replace("_", " ").toLowerCase();
+    // the account manager who asked for the shoot
+    if (shoot.requestedById && shoot.requestedById !== me.id && (status === "COMPLETED" || status === "CANCELLED" || status === "IN_PROGRESS")) {
+      await notify(shoot.requestedById, `Shoot ${label}: ${shoot.title}`, `${shoot.date} · updated by ${me.name}`, "/", status === "CANCELLED" ? "rose" : "emerald");
+    }
+    // Studio X head(s), when the shooter updates it
+    if (!STUDIO_MANAGERS.includes(me.role)) {
+      const heads = await prisma.user.findMany({ where: { active: true, role: "STUDIO_HEAD" }, select: { id: true } });
+      for (const h of heads) await notify(h.id, `Shoot ${label}: ${shoot.title}`, `${shoot.date} · ${me.name}`, "/shoots", "violet");
+    }
+  }
+  revalidatePath("/shoots"); revalidatePath("/");
   redirect("/shoots");
 }
 
@@ -1810,8 +1838,10 @@ export async function requestShoot(fd: FormData) {
   const heads = await prisma.user.findMany({ where: { active: true, role: "STUDIO_HEAD" }, select: { id: true } });
   const client = clientId ? await prisma.client.findUnique({ where: { id: clientId }, select: { name: true } }) : null;
   for (const h of heads) await notify(h.id, `New shoot request: ${title}`, `From ${me.name}${client ? ` · ${client.name}` : ""} · ${date}`, "/shoots", "violet");
-  revalidatePath("/shoots");
-  redirect(from === "/" ? "/shoots" : from);
+  revalidatePath("/shoots"); revalidatePath("/");
+  // Admins land on the Studio X board; account managers come back to their own dashboard,
+  // where "My shoot requests" shows the new request and its status.
+  redirect(from !== "/" ? from : STUDIO_MANAGERS.includes(me.role) ? "/shoots" : "/?shoot=requested");
 }
 
 // Shooter or manager saves the raw-footage link for a shoot.
