@@ -1,14 +1,25 @@
 "use client";
 
+import { useState } from "react";
 import { Download } from "lucide-react";
+import { downloadInvoicePdf } from "@/lib/invoice-download";
 import { printInvoiceAs } from "@/lib/print-invoice";
 
-// Client-side "Download PDF" — browsers' print-to-PDF renders the isolated #invoice block.
-// The PDF is named after the client ("<client name> - <invoice number>").
+// "Download PDF" on the shared invoice link: saves the invoice as a PDF file named after the
+// client ("<client name> - <invoice number>.pdf"). No print box, so the browser cannot stamp
+// its own date / web address on the page. If the PDF cannot be built, it falls back to printing.
 export default function InvoicePrintButton({ clientName = "", invoiceNumber = "" }: { clientName?: string; invoiceNumber?: string }) {
+  const [busy, setBusy] = useState(false);
+  const download = async () => {
+    if (busy) return;
+    setBusy(true);
+    try { await downloadInvoicePdf(clientName, invoiceNumber); }
+    catch { printInvoiceAs(clientName, invoiceNumber); }
+    finally { setBusy(false); }
+  };
   return (
-    <button onClick={() => printInvoiceAs(clientName, invoiceNumber)} className="btn btn-violet btn-sm">
-      <Download size={14} /> Download PDF
+    <button onClick={download} disabled={busy} className="btn btn-violet btn-sm disabled:opacity-60">
+      <Download size={14} /> {busy ? "Preparing PDF…" : "Download PDF"}
     </button>
   );
 }

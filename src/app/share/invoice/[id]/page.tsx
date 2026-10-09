@@ -27,9 +27,11 @@ export default async function PublicInvoicePage({ params }: { params: Promise<{ 
       <style>{`@media print {
         body * { visibility: hidden !important; }
         #invoice, #invoice * { visibility: visible !important; }
-        #invoice { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none !important; }
+        #invoice { position: absolute; left: 8mm; top: 8mm; width: calc(100% - 16mm); box-shadow: none !important; }
         .no-print { display: none !important; }
-      }`}</style>
+      }
+      /* no page margin → the browser cannot print its own date / title / web address */
+      @page { size: A4; margin: 0; }`}</style>
 
       <div className="mx-auto w-full max-w-[900px] space-y-4">
         <div className="no-print flex items-center justify-between gap-3">

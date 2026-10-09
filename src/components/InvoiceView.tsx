@@ -5,6 +5,7 @@ import { generateInvoice, saveInvoice, emailInvoice, approveInvoice, addInvoiceN
 import { SELLER } from "@/lib/domain";
 import InvoicePrintable from "@/components/InvoicePrintable";
 import { printInvoiceAs, invoiceFileName } from "@/lib/print-invoice";
+import { downloadInvoicePdf } from "@/lib/invoice-download";
 import { buildInvoicePdf, greetingForNow } from "@/lib/invoice-pdf";
 import { sendInvoiceOnWhatsApp } from "@/app/whatsapp-actions";
 import { ArrowLeft, Download, Mail, Pencil, FileText, CheckCircle2, Lock, ShieldCheck, MessageCircle } from "lucide-react";
@@ -23,6 +24,7 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
   const [waFile, setWaFile] = useState("");
   const [pendingShare, setPendingShare] = useState<{ file: File; text: string } | null>(null);
   const [waLink, setWaLink] = useState(""); // shown when the browser did not let the chat open by itself
+  const [downloading, setDownloading] = useState(false); // "Download PDF" is building the file
   // The PDF is started as soon as the pointer reaches the button, so the click itself is instant
   // (browsers only let a click open WhatsApp / the share sheet for a few seconds).
   const pdfJob = useRef<{ at: number; job: Promise<Blob> } | null>(null);
@@ -35,6 +37,15 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
       pdfJob.current = { at: Date.now(), job };
     }
     return pdfJob.current.job;
+  };
+  // Download PDF: saves the invoice as a real PDF file named after the client. (The old way
+  // opened the browser's Print box, which stamps today's date and the web address on the page.)
+  const downloadPdf = async () => {
+    if (downloading) return;
+    setDownloading(true);
+    try { await downloadInvoicePdf(invoice.billTo, invoice.number, preparePdf()); }
+    catch { printInvoiceAs(invoice.billTo, invoice.number); } // could not build the file → print instead
+    finally { setDownloading(false); }
   };
   const leadId = lead?.id ?? "";
 
@@ -129,9 +140,11 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
       <style>{`@media print {
         body * { visibility: hidden !important; }
         #invoice, #invoice * { visibility: visible !important; }
-        #invoice { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none !important; }
+        #invoice { position: absolute; left: 8mm; top: 8mm; width: calc(100% - 16mm); box-shadow: none !important; }
         .no-print { display: none !important; }
-      }`}</style>
+      }
+      /* no page margin → the browser cannot print its own date / title / web address */
+      @page { size: A4; margin: 0; }`}</style>
 
       {/* action bar */}
       <div className="no-print flex flex-wrap items-center gap-2">
@@ -144,7 +157,7 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
           )}
           {canManage && <button onClick={() => setEdit((v) => !v)} className="btn btn-ghost btn-sm"><Pencil size={14} /> Edit</button>}
           {ready
-            ? <button onClick={() => printInvoiceAs(invoice.billTo, invoice.number)} title="The PDF is saved with the client's name" className="btn btn-violet btn-sm"><Download size={14} /> Download PDF</button>
+            ? <button onClick={downloadPdf} onPointerEnter={() => { preparePdf(); }} disabled={downloading} title="Saves the invoice as a PDF named after the client" className="btn btn-violet btn-sm disabled:opacity-60"><Download size={14} /> {downloading ? "Preparing PDF…" : "Download PDF"}</button>
             : <span className="inline-flex items-center gap-1.5 rounded-[10px] border border-[var(--line-2)] px-3 py-1.5 text-[12.5px] font-semibold text-[var(--muted)]"><Lock size={13} /> Download after approval</span>}
         </div>
       </div>
