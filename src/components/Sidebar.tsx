@@ -161,13 +161,14 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     if (isSeo) work.push({ href: "/seo", label: "SEO Performance", icon: Search });
     if (isDesigner) work.push({ href: "/designs", label: "My Designs", icon: Palette });
     if (isEditor) work.push({ href: "/videos", label: "My Videos", icon: Clapperboard });
-    if (isStudioHead) work.push({ href: "/shoots", label: "Studio X", icon: Camera });
+    if (isStudioHead) work.push({ href: "/shoots", label: "Studio X Shoot", icon: Camera });
     // video editors can be assigned as the shooter too, so they get the same link
     if (isShooter || isEditor) work.push({ href: "/shoots", label: "My Shoots", icon: Camera });
     if (isDev) work.push({ href: "/projects", label: "Developer Team", icon: Code2 });
     work.push({ href: "/tasks", label: "My Tasks", icon: ListChecks, badge: taskCount || undefined });
     // SEO team log their work inside SEO Performance, so no separate "Update Work"/"Approvals" clutter.
-    if (!isSeo) work.push({ href: "/updates", label: "Update Work", icon: ClipboardList });
+    // (the Studio X head works from the shoots board, so no "Update Work" there either)
+    if (!isSeo && !isStudioHead) work.push({ href: "/updates", label: "Update Work", icon: ClipboardList });
     if (isHead && !isSeo) work.push({ href: "/approvals", label: "Approvals", icon: ClipboardCheck, badge: approvalsCount || undefined });
     work.push({ href: "/reports", label: "Reports", icon: FileBarChart });
     groups.push({ label: "My Work", items: work });
