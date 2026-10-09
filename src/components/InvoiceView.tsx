@@ -13,6 +13,10 @@ import { ArrowLeft, Download, Mail, Pencil, FileText, CheckCircle2, Lock, Shield
 
 export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, approvalOff, sent, backHref }: { lead: any; invoice: any; canManage: boolean; isSuperAdmin: boolean; approvalOff?: boolean; sent: string; backHref: string }) {
   const [edit, setEdit] = useState(false);
+  // Edit form: the invoice total is typed exactly as it should read on the invoice; the
+  // taxable amount and GST shown under it are worked back from that total.
+  const [editTotal, setEditTotal] = useState(String(invoice?.total ?? ""));
+  const [editPct, setEditPct] = useState(String(invoice?.taxPct ?? 0));
   // "Send on WhatsApp": busy while the PDF is made, then what happened (saved / shared / …).
   const [wa, setWa] = useState<"" | "busy" | "sent" | "apiError" | "saved" | "shared" | "tap" | "error">("");
   const [waMsg, setWaMsg] = useState(""); // what the WhatsApp API answered (sent to … / why not)
@@ -196,12 +200,31 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
             {invoice.company === "WEB_SOLUTIONS" || invoice.company === "WEB_ROCZ" /* Web Rocz always prints "Digital Marketing" */
               ? <input type="hidden" name="itemName" value={items[0]?.name ?? ""} />
               : <L label="Item / service description"><input name="itemName" defaultValue={items[0]?.name ?? ""} className="input" /></L>}
-            <L label="Taxable amount (₹)"><input type="number" name="total" defaultValue={invoice.subtotal} className="input" /></L>
-            {invoice.company === "WEB_SOLUTIONS" || invoice.company === "WEB_ROCZ"
-              ? <input type="hidden" name="taxPct" value={invoice.taxPct} />
-              : <L label="GST %"><input type="number" name="taxPct" defaultValue={invoice.taxPct} className="input" /></L>}
-            <L label="Received (₹)"><input type="number" name="received" defaultValue={invoice.received} className="input" /></L>
-            <L label="Payment status"><select name="paymentStatus" defaultValue={invoice.paymentStatus} className="select"><option>Pending</option><option>Advance Paid</option><option>Fully Paid</option></select></L>
+            {/* Amount: what is typed here is the invoice total, saved exactly as typed. Web Solutions
+                and Web Rocz have no GST; for a GST invoice the taxable amount + GST inside that total
+                are shown underneath. */}
+            {(() => {
+              const noGst = invoice.company === "WEB_SOLUTIONS" || invoice.company === "WEB_ROCZ";
+              const t = Math.max(0, Math.round(Number(editTotal) || 0));
+              const pct = noGst ? invoice.taxPct : Math.max(0, Math.round(Number(editPct) || 0));
+              const taxable = Math.round((t * 100) / (100 + pct));
+              const rs = (v: number) => "₹" + v.toLocaleString("en-IN");
+              return (
+                <>
+                  <L label={noGst || pct === 0 ? "Invoice amount (₹)" : "Invoice total (₹) — with GST"}>
+                    <input type="number" name="grandTotal" min={0} step="any" value={editTotal} onChange={(e) => setEditTotal(e.target.value)} className="input !font-bold tnum" />
+                    {pct > 0 && <span className="mt-1 block text-[11.5px] text-[var(--muted)]">Taxable {rs(taxable)} + GST {pct}% {rs(t - taxable)} = <b className="text-[var(--ink-2)]">{rs(t)}</b></span>}
+                  </L>
+                  {noGst
+                    ? <input type="hidden" name="taxPct" value={invoice.taxPct} />
+                    : <L label="GST %"><input type="number" name="taxPct" min={0} value={editPct} onChange={(e) => setEditPct(e.target.value)} className="input" /></L>}
+                  <L label="Received (₹)">
+                    <input type="number" name="received" min={0} max={t} step="any" defaultValue={invoice.received} className="input tnum" />
+                    <span className="mt-1 block text-[11.5px] text-[var(--muted)]">Payment status is set by itself: Pending / Partially Received / Fully Received.</span>
+                  </L>
+                </>
+              );
+            })()}
             <L label="Invoice date"><input type="date" name="issueDate" defaultValue={invoice.issueDate} className="input" /></L>
             <div className="sm:col-span-2"><L label="Terms / notes"><textarea name="notes" defaultValue={invoice.notes ?? ""} rows={2} className="textarea" /></L></div>
             <div className="sm:col-span-2 flex justify-end gap-2"><button type="button" onClick={() => setEdit(false)} className="btn btn-ghost btn-sm">Cancel</button><button className="btn btn-violet btn-sm">Save invoice</button></div>

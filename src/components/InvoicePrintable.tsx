@@ -78,7 +78,13 @@ export default function InvoicePrintable({ invoice }: { invoice: any }) {
         </thead>
         <tbody>
           {items.map((it: any, i: number) => {
-            const gst = Math.round((it.amount * invoice.taxPct) / 100);
+            // GST of each line; the last priced line takes what is left of the invoice's saved
+            // GST, so the lines always add up to the Total row (no stray rupee from rounding).
+            const pricedIdx = items.map((x: any, k: number) => (x.amount > 0 ? k : -1)).filter((k: number) => k >= 0);
+            const lineGst = (x: any) => Math.round((x.amount * invoice.taxPct) / 100);
+            const before = pricedIdx.filter((k: number) => k < i).reduce((t: number, k: number) => t + lineGst(items[k]), 0);
+            const linesMatch = items.reduce((t: number, x: any) => t + (x.amount || 0), 0) === invoice.subtotal;
+            const gst = linesMatch && i === pricedIdx[pricedIdx.length - 1] ? invoice.taxAmount - before : lineGst(it);
             // A service listed without its own price (covered by another line) reads "Included".
             const included = items.length > 1 && !it.amount && !it.rate;
             return (

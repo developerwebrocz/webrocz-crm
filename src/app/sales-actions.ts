@@ -8,7 +8,8 @@ import { financialYear, stateFromGstin, companyFor } from "@/lib/domain";
 
 // local form helpers
 function s(fd: FormData, k: string) { return (fd.get(k) as string | null)?.toString().trim() ?? ""; }
-function n(fd: FormData, k: string) { const v = parseInt(s(fd, k).replace(/[^\d-]/g, ""), 10); return Number.isFinite(v) ? v : 0; }
+// Whole rupees: commas / "₹" are ignored and a decimal amount is rounded ("12,500.60" → 12501).
+function n(fd: FormData, k: string) { const v = Math.round(parseFloat(s(fd, k).replace(/[^\d.-]/g, ""))); return Number.isFinite(v) ? v : 0; }
 // Next CLI-#### client code — numeric max over CLI- codes only (see actions.ts for why).
 async function nextClientCode() {
   const rows = await prisma.client.findMany({ where: { code: { startsWith: "CLI-" } }, select: { code: true } });
@@ -426,9 +427,17 @@ export async function saveInvoice(fd: FormData) {
   const invId = s(fd, "invoiceId"); const leadId = s(fd, "leadId");
   const inv = await prisma.salesInvoice.findUnique({ where: { id: invId } });
   if (!inv) redirect(invoiceReturn(leadId, invId));
-  const base = n(fd, "total"); // taxable base
-  const taxPct = n(fd, "taxPct");
-  const taxAmount = Math.round((base * taxPct) / 100);
+  const taxPct = Math.max(0, n(fd, "taxPct"));
+  // The edit form sends the invoice TOTAL exactly as it must read on the invoice ("grandTotal",
+  // GST included). The taxable amount and the GST are worked back from it, so the saved total is
+  // exactly what was typed — never a rupee more or less from rounding, and GST is never added on
+  // top a second time. (Other callers still send the taxable amount as "total".)
+  const typedTotal = fd.has("grandTotal") ? Math.max(0, n(fd, "grandTotal")) : null;
+  const base = typedTotal !== null ? Math.round((typedTotal * 100) / (100 + taxPct)) : n(fd, "total"); // taxable base
+  const taxAmount = typedTotal !== null ? typedTotal - base : Math.round((base * taxPct) / 100);
+  // Received can never be more than the invoice total; the status follows from the two amounts.
+  const newReceived = Math.min(Math.max(0, n(fd, "received")), base + taxAmount);
+  const autoStatus = base + taxAmount > 0 && newReceived >= base + taxAmount ? "Fully Received" : newReceived > 0 ? "Partially Received" : "Pending";
   const svcLine = s(fd, "itemName") || inv.billTo;
   // An itemized invoice (several service lines) keeps its lines when the description was not
   // edited — so fixing e.g. the phone or "received" does not collapse Domain + Hosting +
@@ -466,15 +475,15 @@ export async function saveInvoice(fd: FormData) {
       clientGstin: s(fd, "clientGstin"), clientState: s(fd, "clientState") || inv.clientState, clientAddress: s(fd, "clientAddress"),
       placeOfSupply: s(fd, "placeOfSupply") || inv.placeOfSupply,
       items: itemsJson,
-      subtotal: base, taxPct, taxAmount, total: base + taxAmount, received: n(fd, "received"),
-      paymentStatus: s(fd, "paymentStatus") || inv.paymentStatus, notes: s(fd, "notes"), issueDate: s(fd, "issueDate") || inv.issueDate,
+      subtotal: base, taxPct, taxAmount, total: base + taxAmount, received: newReceived,
+      paymentStatus: typedTotal !== null ? autoStatus : (s(fd, "paymentStatus") || inv.paymentStatus), notes: s(fd, "notes"), issueDate: s(fd, "issueDate") || inv.issueDate,
       dueDate: s(fd, "dueDate") || inv.dueDate || addDaysISO(s(fd, "issueDate") || inv.issueDate, 15),
     },
   });
   // "Received" raised on the edit form → the extra amount is also entered in the payment
   // ledger (today, by whoever edited), so the daily collections and the received amounts on
   // the Payments page keep agreeing. Lowering it adds nothing (the Payments check shows it).
-  const addedReceived = Math.min(n(fd, "received"), base + taxAmount) - inv.received;
+  const addedReceived = newReceived - inv.received;
   if (addedReceived > 0) {
     const payDate = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }); // YYYY-MM-DD, India date
     await prisma.payment.create({ data: { invoiceId: invId, amount: addedReceived, date: payDate, mode: "OTHER", note: "Received amount updated on the invoice", by: me.name } });

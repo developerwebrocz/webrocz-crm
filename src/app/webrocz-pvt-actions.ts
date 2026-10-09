@@ -15,8 +15,9 @@ function s(fd: FormData, k: string) {
   const v = fd.get(k);
   return typeof v === "string" ? v.trim() : "";
 }
+// Whole rupees: commas are ignored and a decimal amount is rounded.
 function n(fd: FormData, k: string) {
-  const v = parseInt(s(fd, k), 10);
+  const v = Math.round(parseFloat(s(fd, k).replace(/[^\d.-]/g, "")));
   return Number.isFinite(v) ? v : 0;
 }
 
@@ -90,9 +91,11 @@ export async function addWebRoczPvtInvoice(_prev: PvtInvoiceResult, fd: FormData
   const me = await getCurrentUser();
   if (!me || !PVT_ROLES.includes(me.role)) return { error: "You do not have access to add invoices." };
   const clientName = s(fd, "clientName");
-  const base = n(fd, "amount");
+  // Either box on the form may be filled: the amount before GST, or the total with GST.
+  const typedBase = Math.max(0, n(fd, "amount"));
+  const typedTotal = Math.max(0, n(fd, "grandTotal"));
   if (!clientName) return { error: "Enter the company name." };
-  if (base <= 0) return { error: "Enter the invoice amount." };
+  if (typedBase <= 0 && typedTotal <= 0) return { error: "Enter the invoice amount." };
   const issueDate = /^\d{4}-\d{2}-\d{2}$/.test(s(fd, "issueDate")) ? s(fd, "issueDate") : new Date().toISOString().slice(0, 10);
   const number = s(fd, "number") || (await nextPvtNumber(issueDate));
   if (await prisma.salesInvoice.findUnique({ where: { number }, select: { id: true } })) return { error: `Invoice number ${number} is already used. Change the number and try again.` };
@@ -113,8 +116,11 @@ export async function addWebRoczPvtInvoice(_prev: PvtInvoiceResult, fd: FormData
   }
   const gstin = formGstin || client.gstin || "";
   const taxPct = client.gstRate > 0 ? client.gstRate : GST_PCT;
-  const taxAmount = Math.round((base * taxPct) / 100);
-  const total = base + taxAmount;
+  // The total on the invoice is exactly the "Total with GST" typed on the form; the taxable
+  // amount and GST are worked back from it (no rupee gained or lost to rounding).
+  const total = typedTotal > 0 ? typedTotal : typedBase + Math.round((typedBase * taxPct) / 100);
+  const base = typedTotal > 0 ? Math.round((typedTotal * 100) / (100 + taxPct)) : typedBase;
+  const taxAmount = total - base;
   const received = Math.min(Math.max(0, n(fd, "received")), total);
   const due = /^\d{4}-\d{2}-\d{2}$/.test(s(fd, "dueDate")) ? s(fd, "dueDate") : (() => { const d = new Date(issueDate + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + 15); return d.toISOString().slice(0, 10); })();
   const state = stateFromGstin(gstin);

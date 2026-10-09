@@ -67,8 +67,14 @@ export default function AddWebRoczPvtInvoiceModal({ clientNames, close, returnTo
   // The invoice itself carries one "Digital Marketing" line for the amount (GST is added on
   // top by the save action); the ticks only show which services this client takes.
   const picked = [...PVT_SERVICES.filter((k) => on[k]), ...customs.map((c) => c.trim()).filter(Boolean)];
-  const base = Math.max(0, Number(amount) || 0);
-  const gstAmount = Math.round((base * GST_PCT) / 100);
+  // Two linked boxes: type the amount before GST, or type the total with GST — the other one
+  // follows. The total is what gets saved on the invoice, exactly as shown.
+  const [gross, setGross] = useState("");
+  const typeBase = (v: string) => { setAmount(v); const b = Math.max(0, Math.round(Number(v) || 0)); setGross(v === "" ? "" : String(b + Math.round((b * GST_PCT) / 100))); };
+  const typeGross = (v: string) => { setGross(v); const g = Math.max(0, Math.round(Number(v) || 0)); setAmount(v === "" ? "" : String(Math.round((g * 100) / (100 + GST_PCT)))); };
+  const total = Math.max(0, Math.round(Number(gross) || 0));
+  const base = Math.max(0, Math.round(Number(amount) || 0));
+  const gstAmount = Math.max(0, total - base);
   const [err, setErr] = useState("");
   // The button stays clickable; what is missing is explained instead of silently blocking.
   const problem = base <= 0 ? "Enter the invoice amount." : "";
@@ -117,12 +123,19 @@ export default function AddWebRoczPvtInvoiceModal({ clientNames, close, returnTo
           </div>
 
           <div className="rounded-[12px] border border-[var(--line-2)] px-4 py-3" style={{ background: "color-mix(in srgb, var(--violet) 6%, white)" }}>
-            <label className="block">
-              <span className="text-[12px] font-bold uppercase tracking-wide text-[var(--muted)]">Invoice amount (₹) <span className="font-normal normal-case text-[var(--faint)]">before GST</span></span>
-              <input name="amount" type="number" min={0} value={amount} onChange={(e) => { setAmount(e.target.value); setErr(""); }} className={"input mt-1.5 !text-[18px] !font-extrabold tnum" + (err && base <= 0 ? " !border-[var(--rose)]" : "")} placeholder="0" />
-            </label>
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block">
+                <span className="text-[12px] font-bold uppercase tracking-wide text-[var(--muted)]">Amount (₹) <span className="font-normal normal-case text-[var(--faint)]">before GST</span></span>
+                <input name="amount" type="number" min={0} step="any" value={amount} onChange={(e) => { typeBase(e.target.value); setErr(""); }} className={"input mt-1.5 !text-[17px] !font-extrabold tnum" + (err && base <= 0 ? " !border-[var(--rose)]" : "")} placeholder="0" />
+              </label>
+              <label className="block">
+                <span className="text-[12px] font-bold uppercase tracking-wide text-[var(--muted)]">Total (₹) <span className="font-normal normal-case text-[var(--faint)]">with GST</span></span>
+                <input name="grandTotal" type="number" min={0} step="any" value={gross} onChange={(e) => { typeGross(e.target.value); setErr(""); }} className={"input mt-1.5 !text-[17px] !font-extrabold tnum" + (err && base <= 0 ? " !border-[var(--rose)]" : "")} placeholder="0" />
+              </label>
+            </div>
+            <div className="mt-1.5 text-[11.5px] text-[var(--faint)]">Fill either box — the other is worked out. The invoice is saved with exactly the total shown.</div>
             <div className="mt-2 flex items-center justify-between text-[12px] text-[var(--muted)]"><span>GST {GST_PCT}%</span><span className="tnum">{inr(gstAmount)}</span></div>
-            <div className="mt-1.5 flex items-center justify-between border-t border-[var(--line)] pt-1.5"><span className="text-[12px] font-bold uppercase tracking-wide text-[var(--muted)]">Total (incl. GST)</span><span className="text-[22px] font-extrabold tnum text-[var(--violet)]">{inr(base + gstAmount)}</span></div>
+            <div className="mt-1.5 flex items-center justify-between border-t border-[var(--line)] pt-1.5"><span className="text-[12px] font-bold uppercase tracking-wide text-[var(--muted)]">Invoice total</span><span className="text-[22px] font-extrabold tnum text-[var(--violet)]">{inr(total)}</span></div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
