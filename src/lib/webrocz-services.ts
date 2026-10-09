@@ -26,3 +26,19 @@ export function countFromDetail(detail: string | null | undefined, unit: string)
 export function detailFromCounts(counts: WebRoczCount[], qty: (field: string) => number): string {
   return counts.map((c) => ({ c, q: qty(c.field) })).filter((x) => x.q > 0).map((x) => `${x.q} ${x.c.unit}`).join(" · ");
 }
+
+// Services typed with "+ Add service" on the Web Rocz / Web Rocz Pvt Ltd invoice form are
+// printed on the invoice as their own lines under "Digital Marketing Services" (without a
+// separate price — the invoice amount covers them). The ticked standard services (Meta Ads,
+// SEO …) are not printed: they are what "Digital Marketing Services" stands for. A typed name
+// that is just another word for that main line ("All DM", "Digital Marketing") is skipped too.
+export function invoiceExtraLines(customs: string[]): string[] {
+  const standard = new Set(WEB_ROCZ_CLIENT_SERVICES.map((x) => x.name.toLowerCase()));
+  const seen = new Set<string>();
+  return customs.map((c) => c.trim().replace(/\s+/g, " ")).filter((c) => {
+    const k = c.toLowerCase();
+    if (!c || standard.has(k) || seen.has(k) || /^(all\s*)?(dm|digital\s+marketing(\s+services?)?)$/i.test(c)) return false;
+    seen.add(k);
+    return true;
+  });
+}

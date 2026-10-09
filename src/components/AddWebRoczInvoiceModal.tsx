@@ -5,7 +5,7 @@ import { todayIST } from "@/lib/india-date";
 import { X, Plus } from "lucide-react";
 import { addInvoice } from "@/app/sales-actions";
 import { getWebRoczInvoiceDefaults, type WebRoczInvoiceDefaults } from "@/app/webrocz-actions";
-import { WEB_ROCZ_CLIENT_SERVICES } from "@/lib/webrocz-services";
+import { WEB_ROCZ_CLIENT_SERVICES, invoiceExtraLines } from "@/lib/webrocz-services";
 
 // Web Rocz (digital marketing, non-GST) invoice — billed monthly: tick the services and enter
 // one invoice amount. Picking a known company ticks the services chosen for it in Add / Edit
@@ -69,7 +69,8 @@ export default function AddWebRoczInvoiceModal({ clientNames, close, returnTo = 
           <input type="hidden" name="return" value={returnTo} />
           <input type="hidden" name="category" value="DM" />
           <input type="hidden" name="gst" value="0" />
-          <input type="hidden" name="items" value={JSON.stringify([{ name: "Digital Marketing Services", qty: 1, rate: total, amount: total }])} />
+          {/* line 1 carries the amount; every service typed with "+ Add service" follows as its own line */}
+          <input type="hidden" name="items" value={JSON.stringify([{ name: "Digital Marketing Services", qty: 1, rate: total, amount: total }, ...invoiceExtraLines(customs).map((name) => ({ name, qty: 1, rate: 0, amount: 0 }))])} />
           {picked.map((sv, i) => <input key={i} type="hidden" name="services" value={sv} />)}
           <datalist id="webrocz-inv-client-names">{clientNames.map((nm) => <option key={nm} value={nm} />)}</datalist>
 

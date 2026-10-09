@@ -13,8 +13,10 @@ export default function InvoicePrintable({ invoice }: { invoice: any }) {
   // new ones. Web Solutions prints its saved lines as they are.
   const DM_LINE = "Digital Marketing Services";
   const savedLines: any[] = invoice.itemsArr ?? [];
+  // Lines added with "+ Add service" (saved without a price) are printed under the main line.
+  const addedLines = savedLines.filter((it, i) => i > 0 && it?.name && !it.amount && !it.rate);
   const items = invoice.company === "WEB_ROCZ"
-    ? [{ name: DM_LINE, qty: 1, rate: invoice.subtotal, amount: invoice.subtotal }]
+    ? [{ name: DM_LINE, qty: 1, rate: invoice.subtotal, amount: invoice.subtotal }, ...addedLines]
     : invoice.company === "WEB_ROCZ_PVT"
       ? savedLines.map((it) => (String(it?.name ?? "").trim().toLowerCase() === "digital marketing" ? { ...it, name: DM_LINE } : it))
       : savedLines;

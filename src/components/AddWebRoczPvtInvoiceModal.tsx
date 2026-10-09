@@ -4,7 +4,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { todayIST } from "@/lib/india-date";
 import { X, Plus } from "lucide-react";
 import { addWebRoczPvtInvoice, getWebRoczPvtInvoiceDefaults, getWebRoczPvtNextInvoiceNumber, type PvtInvoiceResult, type WebRoczPvtInvoiceDefaults } from "@/app/webrocz-pvt-actions";
-import { WEB_ROCZ_CLIENT_SERVICES } from "@/lib/webrocz-services";
+import { WEB_ROCZ_CLIENT_SERVICES, invoiceExtraLines } from "@/lib/webrocz-services";
 
 // Web Rocz Pvt Ltd (digital marketing, GST 18%) invoice — works like the Web Rocz invoice
 // form (tick the services, one invoice amount, a known company ticks its saved services) but
@@ -92,6 +92,8 @@ export default function AddWebRoczPvtInvoiceModal({ clientNames, close, returnTo
         </div>
         <form action={save} className="space-y-3 overflow-y-auto scroll-thin px-6 py-4">
           {picked.map((sv, i) => <input key={i} type="hidden" name="services" value={sv} />)}
+          {/* services typed with "+ Add service" → their own lines on the invoice */}
+          {invoiceExtraLines(customs).map((sv, i) => <input key={`x${i}`} type="hidden" name="extraLines" value={sv} />)}
           <datalist id="webrocz-pvt-inv-client-names">{clientNames.map((nm) => <option key={nm} value={nm} />)}</datalist>
 
           <div className="grid grid-cols-2 gap-3">

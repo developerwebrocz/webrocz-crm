@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { WEB_ROCZ_CLIENT_SERVICES, detailFromCounts } from "@/lib/webrocz-services";
+import { WEB_ROCZ_CLIENT_SERVICES, detailFromCounts, invoiceExtraLines } from "@/lib/webrocz-services";
 import { websiteServiceNames } from "@/lib/webrocz-queries";
 import { stateFromGstin } from "@/lib/domain";
 import { nextInvoiceNumber } from "@/lib/invoice-number";
@@ -122,7 +122,8 @@ export async function addWebRoczPvtInvoice(_prev: PvtInvoiceResult, fd: FormData
       number, clientId: client.id, pipeline: "WEBROCZ", company: "WEB_ROCZ_PVT",
       billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "", clientGstin: gstin,
       ...(state ? { clientState: state, placeOfSupply: state } : {}),
-      items: JSON.stringify([{ name: "Digital Marketing Services", qty: 1, rate: base, amount: base }]),
+      // line 1 carries the amount; services typed with "+ Add service" follow as their own lines
+      items: JSON.stringify([{ name: "Digital Marketing Services", qty: 1, rate: base, amount: base }, ...invoiceExtraLines(fd.getAll("extraLines").map((v) => String(v))).map((name) => ({ name, qty: 1, rate: 0, amount: 0 }))]),
       subtotal: base, taxPct, taxAmount, total, received, paymentProof: proofUrl, invoiceDoc: invoiceDocUrl,
       paymentStatus: received >= total ? "Fully Received" : received > 0 ? "Partially Received" : "Pending",
       issueDate, dueDate: due, projectDate, paymentTerm,
