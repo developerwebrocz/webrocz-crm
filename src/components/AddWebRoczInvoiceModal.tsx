@@ -68,7 +68,7 @@ export default function AddWebRoczInvoiceModal({ clientNames, close, returnTo = 
           <input type="hidden" name="return" value={returnTo} />
           <input type="hidden" name="category" value="DM" />
           <input type="hidden" name="gst" value="0" />
-          <input type="hidden" name="items" value={JSON.stringify([{ name: "Digital Marketing", qty: 1, rate: total, amount: total }])} />
+          <input type="hidden" name="items" value={JSON.stringify([{ name: "Digital Marketing Services", qty: 1, rate: total, amount: total }])} />
           {picked.map((sv, i) => <input key={i} type="hidden" name="services" value={sv} />)}
           <datalist id="webrocz-inv-client-names">{clientNames.map((nm) => <option key={nm} value={nm} />)}</datalist>
 

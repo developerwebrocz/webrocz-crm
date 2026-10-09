@@ -7,11 +7,17 @@ const inr = (v: number) => "₨ " + (v || 0).toLocaleString("en-IN", { minimumFr
 // public share link so both render identically. Pure markup (no hooks), server-safe.
 export default function InvoicePrintable({ invoice }: { invoice: any }) {
   // Web Rocz bills digital marketing as one service: its invoice always prints a single
-  // "Digital Marketing" line for the full amount, whatever services were ticked (SEO, SMO, …).
-  // Every other company prints its saved lines as they are.
+  // "Digital Marketing Services" line for the full amount, whatever services were ticked
+  // (SEO, SMO, …). Web Rocz Pvt Ltd prints its saved lines, with the older "Digital Marketing"
+  // wording shown as "Digital Marketing Services" too — so invoices saved earlier match the
+  // new ones. Web Solutions prints its saved lines as they are.
+  const DM_LINE = "Digital Marketing Services";
+  const savedLines: any[] = invoice.itemsArr ?? [];
   const items = invoice.company === "WEB_ROCZ"
-    ? [{ name: "Digital Marketing", qty: 1, rate: invoice.subtotal, amount: invoice.subtotal }]
-    : (invoice.itemsArr ?? []);
+    ? [{ name: DM_LINE, qty: 1, rate: invoice.subtotal, amount: invoice.subtotal }]
+    : invoice.company === "WEB_ROCZ_PVT"
+      ? savedLines.map((it) => (String(it?.name ?? "").trim().toLowerCase() === "digital marketing" ? { ...it, name: DM_LINE } : it))
+      : savedLines;
   const balance = invoice.total - (invoice.received || 0);
   // The billing entity (company) that issued this invoice drives the seller block details.
   const seller = companySeller(invoice.company || "");

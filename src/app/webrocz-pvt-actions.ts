@@ -125,7 +125,7 @@ export async function addWebRoczPvtInvoice(_prev: PvtInvoiceResult, fd: FormData
       number, clientId: client.id, pipeline: "WEBROCZ", company: "WEB_ROCZ_PVT",
       billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "", clientGstin: gstin,
       ...(state ? { clientState: state, placeOfSupply: state } : {}),
-      items: JSON.stringify([{ name: "Digital Marketing", qty: 1, rate: base, amount: base }]),
+      items: JSON.stringify([{ name: "Digital Marketing Services", qty: 1, rate: base, amount: base }]),
       subtotal: base, taxPct, taxAmount, total, received, paymentProof: proofUrl, invoiceDoc: invoiceDocUrl,
       paymentStatus: received >= total ? "Fully Received" : received > 0 ? "Partially Received" : "Pending",
       issueDate, dueDate: due, projectDate, paymentTerm,
@@ -284,7 +284,7 @@ export async function importWebRoczPvtSaleReport(_prev: PvtImportResult, fd: For
     const gstin = get(row, "gstin", "gst no", "gst number").toUpperCase();
     const phone = get(row, "phone", "party phone no.", "party phone no", "mobile");
     const received = Math.min(total, Math.max(0, amt(get(row, "received", "received / paid", "paid"))));
-    const item = get(row, "item", "item name", "service") || "Digital Marketing";
+    const item = get(row, "item", "item name", "service") || "Digital Marketing Services";
     const address = get(row, "address", "party address");
     const payDate = isoDate(get(row, "payment date", "received date")) || date;
     const payRef = get(row, "payment ref", "payment no", "receipt no");
