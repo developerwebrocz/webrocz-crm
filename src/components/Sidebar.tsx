@@ -161,7 +161,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     if (isSeo) work.push({ href: "/seo", label: "SEO Performance", icon: Search });
     if (isDesigner) work.push({ href: "/designs", label: "My Designs", icon: Palette });
     if (isEditor) work.push({ href: "/videos", label: "My Videos", icon: Clapperboard });
-    if (isStudioHead) work.push({ href: "/shoots", label: "Studio X Shoot", icon: Camera });
+    if (isStudioHead) work.push({ href: "/shoots", label: "Studiox Shoot", icon: Camera });
     // video editors can be assigned as the shooter too, so they get the same link
     if (isShooter || isEditor) work.push({ href: "/shoots", label: "My Shoots", icon: Camera });
     if (isDev) work.push({ href: "/projects", label: "Developer Team", icon: Code2 });

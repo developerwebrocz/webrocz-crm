@@ -60,8 +60,8 @@ export default function ShootBoard({
       {/* header */}
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <span className="eyebrow">{canManage ? "Studio X · shooting & rentals" : "My shoots"}</span>
-          <h1 className="mt-1.5 text-[26px] font-extrabold tracking-tight">Shooting &amp; Studio X</h1>
+          <span className="eyebrow">{canManage ? "Shoots & rentals" : "My shoots"}</span>
+          <h1 className="mt-1.5 text-[26px] font-extrabold tracking-tight">Studiox Shoot</h1>
           <p className="mt-1 text-sm text-[var(--muted)]">{canManage ? "Schedule WebRocz client shoots and Studio X rentals, assign the shooter and track rent." : `Your assigned shoots, ${userName ?? ""}.`}</p>
         </div>
         {canAdd && <button onClick={() => { setEdit(null); setAdding(true); }} className="btn btn-violet"><Plus size={15} /> Add shoot / booking</button>}
