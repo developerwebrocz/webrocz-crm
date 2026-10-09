@@ -3,6 +3,7 @@ import { createUser } from "@/app/actions";
 import { Card, Eyebrow, PageHeader } from "@/components/ui";
 import AddMemberForm from "@/components/AddMemberForm";
 import TeamTable from "@/components/TeamTable";
+import { emailConfigured } from "@/lib/email";
 import { Users, UserCheck, CheckCircle2, Clock } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -33,7 +34,7 @@ export default async function TeamPage() {
         ))}
       </div>
 
-      <TeamTable members={members} />
+      <TeamTable members={members} emailOn={emailConfigured()} />
 
       <Card>
         <Eyebrow>Add team member</Eyebrow>

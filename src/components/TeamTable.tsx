@@ -3,7 +3,7 @@
 import { Fragment, useMemo, useState } from "react";
 import { initials, ROLES } from "@/lib/domain";
 import { toggleUserActive, impersonate, resetUserPassword, updateUser, deleteUser, resendInvite } from "@/app/actions";
-import { Search, Eye, KeyRound, Pencil, Trash2, Mail, ArrowRightLeft } from "lucide-react";
+import { Search, Eye, KeyRound, Pencil, Trash2, Mail, ArrowRightLeft, Link2, Check } from "lucide-react";
 import TransferWorkModal from "@/components/TransferWorkModal";
 
 type Member = {
@@ -20,7 +20,18 @@ const roleTone: Record<string, string> = {
   DEV_HEAD: "var(--emerald)", WEB_DEV: "var(--emerald)",
 };
 
-export default function TeamTable({ members }: { members: Member[] }) {
+// `emailOn`: the server has an email service set up. When it has not, invite emails are never
+// sent — the "Copy login link" button is then the way to give a new member their set-password link.
+export default function TeamTable({ members, emailOn = true }: { members: Member[]; emailOn?: boolean }) {
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  // The same link the invite email carries: the staff login page, opened on "set your password".
+  const copyLoginLink = async (m: Member) => {
+    const link = `${window.location.origin}/staff?setpw=1&email=${encodeURIComponent(m.email || "")}`;
+    try { await navigator.clipboard.writeText(link); }
+    catch { window.prompt("Copy this link and send it to " + m.name, link); }
+    setCopiedId(m.id);
+    setTimeout(() => setCopiedId((id) => (id === m.id ? null : id)), 2500);
+  };
   const [q, setQ] = useState("");
   const [role, setRole] = useState("ALL");
   const [editId, setEditId] = useState<string | null>(null);
@@ -44,6 +55,12 @@ export default function TeamTable({ members }: { members: Member[] }) {
 
   return (
     <div className="card !p-0 overflow-hidden">
+      {/* no email service on the server → say plainly that invites are not emailed */}
+      {!emailOn && members.some((m) => !m.hasPassword && m.email) && (
+        <div className="border-b border-[var(--line)] px-5 py-2.5 text-[12.5px]" style={{ background: "color-mix(in srgb, var(--amber) 9%, white)", color: "#92600a" }}>
+          <b>Invite emails are not being sent</b> — the email service is not set up on the server. For a member marked <b>Pending set-up</b>, click <b>Copy login link</b> and send it to them (WhatsApp); they open it and set their own password.
+        </div>
+      )}
       {/* toolbar */}
       <div className="flex flex-wrap items-center gap-3 border-b border-[var(--line)] px-5 py-3.5">
         <div className="relative min-w-[200px] flex-1 sm:max-w-[300px]">
@@ -111,7 +128,12 @@ export default function TeamTable({ members }: { members: Member[] }) {
                         <button title={`Open ${m.name}'s dashboard`} className="grid h-8 w-8 place-items-center rounded-lg border border-[var(--violet)]/40 text-[var(--violet)] transition hover:bg-[color-mix(in_srgb,var(--violet)_8%,white)]"><Eye size={14} /></button>
                       </form>
                     )}
+                    {/* Pending member: copy their set-password link (to send on WhatsApp) … */}
                     {!m.hasPassword && m.email && (
+                      <button type="button" onClick={() => copyLoginLink(m)} title={`Copy ${m.name}'s login link — send it on WhatsApp so they can set a password`} className={`inline-flex h-8 items-center gap-1 whitespace-nowrap rounded-lg border px-2 text-[12px] font-semibold transition ${copiedId === m.id ? "border-[var(--emerald)] text-[var(--emerald)]" : "border-[var(--violet)]/40 text-[var(--violet)] hover:bg-[color-mix(in_srgb,var(--violet)_8%,white)]"}`}>{copiedId === m.id ? <><Check size={13} /> Copied</> : <><Link2 size={13} /> Copy login link</>}</button>
+                    )}
+                    {/* … and, when the email service is set up, re-send the invite email. */}
+                    {!m.hasPassword && m.email && emailOn && (
                       <form action={resendInvite}>
                         <input type="hidden" name="id" value={m.id} />
                         <button title="Resend invite email (set-password link)" className="grid h-8 w-8 place-items-center rounded-lg border border-[var(--violet)]/40 text-[var(--violet)] transition hover:bg-[color-mix(in_srgb,var(--violet)_8%,white)]"><Mail size={13} /></button>
