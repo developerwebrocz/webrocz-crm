@@ -850,6 +850,7 @@ export async function getShootBoard(userId: string, role: string) {
     status: s.status, rentAmount: s.rentAmount, paid: s.paid, notes: s.notes,
     requestedBy: s.requestedBy?.name ?? null, footageLink: s.footageLink, handedOff: s.handedOff,
     conflict: conflicts[s.id] ?? null,
+    followups: (() => { try { const a = JSON.parse(s.followupLog || "[]"); return Array.isArray(a) ? (a as { date: string; time?: string; by: string; note: string; via?: string }[]) : []; } catch { return []; } })(),
   }));
 
   const active = rows.filter((r) => r.status !== "CANCELLED");

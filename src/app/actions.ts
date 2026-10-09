@@ -1826,7 +1826,7 @@ export async function requestShoot(fd: FormData) {
   if (!date) redirect(from);
   const clientId = s(fd, "clientId") || null;
   const title = s(fd, "title") || "Client shoot request";
-  await prisma.shoot.create({
+  const created = await prisma.shoot.create({
     data: {
       code: await nextShootCodeLocal(), category: "WEBROCZ", title, clientId,
       date, startTime: s(fd, "startTime"), endTime: s(fd, "endTime"),
@@ -1837,7 +1837,14 @@ export async function requestShoot(fd: FormData) {
   });
   const heads = await prisma.user.findMany({ where: { active: true, role: "STUDIO_HEAD" }, select: { id: true } });
   const client = clientId ? await prisma.client.findUnique({ where: { id: clientId }, select: { name: true } }) : null;
-  for (const h of heads) await notify(h.id, `New shoot request: ${title}`, `From ${me.name}${client ? ` · ${client.name}` : ""} · ${date}`, "/shoots", "violet");
+  // Is something already booked at that date and time? (the form warns before sending; this
+  // also tells Studio X and leaves a notification for the account manager)
+  const { timesOverlap, timeRange } = await import("@/lib/shoot-overlap");
+  const sameDay = await prisma.shoot.findMany({ where: { date, status: { not: "CANCELLED" }, id: { not: created.id } }, select: { code: true, title: true, startTime: true, endTime: true } });
+  const clash = sameDay.filter((x) => timesOverlap(s(fd, "startTime"), s(fd, "endTime"), x.startTime, x.endTime));
+  const clashText = clash.map((x) => `${x.code} ${timeRange(x.startTime, x.endTime)}`).join(", ");
+  for (const h of heads) await notify(h.id, `New shoot request: ${title}`, `From ${me.name}${client ? ` · ${client.name}` : ""} · ${date}${clash.length ? ` · ⚠ clashes with ${clashText}` : ""}`, "/shoots", clash.length ? "amber" : "violet");
+  if (clash.length) await notify(me.id, `Already booked at that time: ${title}`, `${date} ${timeRange(s(fd, "startTime"), s(fd, "endTime"))} clashes with ${clashText}. Studio X will confirm or suggest another time.`, "/", "amber");
   revalidatePath("/shoots"); revalidatePath("/");
   // Admins land on the Studio X board; account managers come back to their own dashboard,
   // where "My shoot requests" shows the new request and its status.

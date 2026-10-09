@@ -36934,6 +36934,7 @@ export namespace Prisma {
     requestedById: string | null
     footageLink: string | null
     handedOff: boolean | null
+    followupLog: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -36959,6 +36960,7 @@ export namespace Prisma {
     requestedById: string | null
     footageLink: string | null
     handedOff: boolean | null
+    followupLog: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -36984,6 +36986,7 @@ export namespace Prisma {
     requestedById: number
     footageLink: number
     handedOff: number
+    followupLog: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -37019,6 +37022,7 @@ export namespace Prisma {
     requestedById?: true
     footageLink?: true
     handedOff?: true
+    followupLog?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -37044,6 +37048,7 @@ export namespace Prisma {
     requestedById?: true
     footageLink?: true
     handedOff?: true
+    followupLog?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -37069,6 +37074,7 @@ export namespace Prisma {
     requestedById?: true
     footageLink?: true
     handedOff?: true
+    followupLog?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -37181,6 +37187,7 @@ export namespace Prisma {
     requestedById: string | null
     footageLink: string
     handedOff: boolean
+    followupLog: string
     createdAt: Date
     updatedAt: Date
     _count: ShootCountAggregateOutputType | null
@@ -37225,6 +37232,7 @@ export namespace Prisma {
     requestedById?: boolean
     footageLink?: boolean
     handedOff?: boolean
+    followupLog?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     client?: boolean | Shoot$clientArgs<ExtArgs>
@@ -37253,6 +37261,7 @@ export namespace Prisma {
     requestedById?: boolean
     footageLink?: boolean
     handedOff?: boolean
+    followupLog?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     client?: boolean | Shoot$clientArgs<ExtArgs>
@@ -37281,6 +37290,7 @@ export namespace Prisma {
     requestedById?: boolean
     footageLink?: boolean
     handedOff?: boolean
+    followupLog?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     client?: boolean | Shoot$clientArgs<ExtArgs>
@@ -37309,11 +37319,12 @@ export namespace Prisma {
     requestedById?: boolean
     footageLink?: boolean
     handedOff?: boolean
+    followupLog?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ShootOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "category" | "title" | "clientId" | "renterName" | "phone" | "date" | "startTime" | "endTime" | "locationType" | "location" | "assignedToId" | "status" | "rentAmount" | "paid" | "notes" | "requestedById" | "footageLink" | "handedOff" | "createdAt" | "updatedAt", ExtArgs["result"]["shoot"]>
+  export type ShootOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "category" | "title" | "clientId" | "renterName" | "phone" | "date" | "startTime" | "endTime" | "locationType" | "location" | "assignedToId" | "status" | "rentAmount" | "paid" | "notes" | "requestedById" | "footageLink" | "handedOff" | "followupLog" | "createdAt" | "updatedAt", ExtArgs["result"]["shoot"]>
   export type ShootInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | Shoot$clientArgs<ExtArgs>
     assignedTo?: boolean | Shoot$assignedToArgs<ExtArgs>
@@ -37358,6 +37369,7 @@ export namespace Prisma {
       requestedById: string | null
       footageLink: string
       handedOff: boolean
+      followupLog: string
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["shoot"]>
@@ -37806,6 +37818,7 @@ export namespace Prisma {
     readonly requestedById: FieldRef<"Shoot", 'String'>
     readonly footageLink: FieldRef<"Shoot", 'String'>
     readonly handedOff: FieldRef<"Shoot", 'Boolean'>
+    readonly followupLog: FieldRef<"Shoot", 'String'>
     readonly createdAt: FieldRef<"Shoot", 'DateTime'>
     readonly updatedAt: FieldRef<"Shoot", 'DateTime'>
   }
@@ -51735,6 +51748,7 @@ export namespace Prisma {
     requestedById: 'requestedById',
     footageLink: 'footageLink',
     handedOff: 'handedOff',
+    followupLog: 'followupLog',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -54619,6 +54633,7 @@ export namespace Prisma {
     requestedById?: StringNullableFilter<"Shoot"> | string | null
     footageLink?: StringFilter<"Shoot"> | string
     handedOff?: BoolFilter<"Shoot"> | boolean
+    followupLog?: StringFilter<"Shoot"> | string
     createdAt?: DateTimeFilter<"Shoot"> | Date | string
     updatedAt?: DateTimeFilter<"Shoot"> | Date | string
     client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
@@ -54647,6 +54662,7 @@ export namespace Prisma {
     requestedById?: SortOrderInput | SortOrder
     footageLink?: SortOrder
     handedOff?: SortOrder
+    followupLog?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     client?: ClientOrderByWithRelationInput
@@ -54678,6 +54694,7 @@ export namespace Prisma {
     requestedById?: StringNullableFilter<"Shoot"> | string | null
     footageLink?: StringFilter<"Shoot"> | string
     handedOff?: BoolFilter<"Shoot"> | boolean
+    followupLog?: StringFilter<"Shoot"> | string
     createdAt?: DateTimeFilter<"Shoot"> | Date | string
     updatedAt?: DateTimeFilter<"Shoot"> | Date | string
     client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
@@ -54706,6 +54723,7 @@ export namespace Prisma {
     requestedById?: SortOrderInput | SortOrder
     footageLink?: SortOrder
     handedOff?: SortOrder
+    followupLog?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ShootCountOrderByAggregateInput
@@ -54739,6 +54757,7 @@ export namespace Prisma {
     requestedById?: StringNullableWithAggregatesFilter<"Shoot"> | string | null
     footageLink?: StringWithAggregatesFilter<"Shoot"> | string
     handedOff?: BoolWithAggregatesFilter<"Shoot"> | boolean
+    followupLog?: StringWithAggregatesFilter<"Shoot"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Shoot"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Shoot"> | Date | string
   }
@@ -58729,6 +58748,7 @@ export namespace Prisma {
     notes?: string
     footageLink?: string
     handedOff?: boolean
+    followupLog?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     client?: ClientCreateNestedOneWithoutShootsInput
@@ -58757,6 +58777,7 @@ export namespace Prisma {
     requestedById?: string | null
     footageLink?: string
     handedOff?: boolean
+    followupLog?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -58779,6 +58800,7 @@ export namespace Prisma {
     notes?: StringFieldUpdateOperationsInput | string
     footageLink?: StringFieldUpdateOperationsInput | string
     handedOff?: BoolFieldUpdateOperationsInput | boolean
+    followupLog?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneWithoutShootsNestedInput
@@ -58807,6 +58829,7 @@ export namespace Prisma {
     requestedById?: NullableStringFieldUpdateOperationsInput | string | null
     footageLink?: StringFieldUpdateOperationsInput | string
     handedOff?: BoolFieldUpdateOperationsInput | boolean
+    followupLog?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -58832,6 +58855,7 @@ export namespace Prisma {
     requestedById?: string | null
     footageLink?: string
     handedOff?: boolean
+    followupLog?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -58854,6 +58878,7 @@ export namespace Prisma {
     notes?: StringFieldUpdateOperationsInput | string
     footageLink?: StringFieldUpdateOperationsInput | string
     handedOff?: BoolFieldUpdateOperationsInput | boolean
+    followupLog?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -58879,6 +58904,7 @@ export namespace Prisma {
     requestedById?: NullableStringFieldUpdateOperationsInput | string | null
     footageLink?: StringFieldUpdateOperationsInput | string
     handedOff?: BoolFieldUpdateOperationsInput | boolean
+    followupLog?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -62053,6 +62079,7 @@ export namespace Prisma {
     requestedById?: SortOrder
     footageLink?: SortOrder
     handedOff?: SortOrder
+    followupLog?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -62082,6 +62109,7 @@ export namespace Prisma {
     requestedById?: SortOrder
     footageLink?: SortOrder
     handedOff?: SortOrder
+    followupLog?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -62107,6 +62135,7 @@ export namespace Prisma {
     requestedById?: SortOrder
     footageLink?: SortOrder
     handedOff?: SortOrder
+    followupLog?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -66010,6 +66039,7 @@ export namespace Prisma {
     notes?: string
     footageLink?: string
     handedOff?: boolean
+    followupLog?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     client?: ClientCreateNestedOneWithoutShootsInput
@@ -66036,6 +66066,7 @@ export namespace Prisma {
     requestedById?: string | null
     footageLink?: string
     handedOff?: boolean
+    followupLog?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -66067,6 +66098,7 @@ export namespace Prisma {
     notes?: string
     footageLink?: string
     handedOff?: boolean
+    followupLog?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     client?: ClientCreateNestedOneWithoutShootsInput
@@ -66093,6 +66125,7 @@ export namespace Prisma {
     notes?: string
     footageLink?: string
     handedOff?: boolean
+    followupLog?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -66504,6 +66537,7 @@ export namespace Prisma {
     requestedById?: StringNullableFilter<"Shoot"> | string | null
     footageLink?: StringFilter<"Shoot"> | string
     handedOff?: BoolFilter<"Shoot"> | boolean
+    followupLog?: StringFilter<"Shoot"> | string
     createdAt?: DateTimeFilter<"Shoot"> | Date | string
     updatedAt?: DateTimeFilter<"Shoot"> | Date | string
   }
@@ -67982,6 +68016,7 @@ export namespace Prisma {
     notes?: string
     footageLink?: string
     handedOff?: boolean
+    followupLog?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedTo?: UserCreateNestedOneWithoutShootsInput
@@ -68008,6 +68043,7 @@ export namespace Prisma {
     requestedById?: string | null
     footageLink?: string
     handedOff?: boolean
+    followupLog?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -77734,6 +77770,7 @@ export namespace Prisma {
     requestedById?: string | null
     footageLink?: string
     handedOff?: boolean
+    followupLog?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -77758,6 +77795,7 @@ export namespace Prisma {
     notes?: string
     footageLink?: string
     handedOff?: boolean
+    followupLog?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -78449,6 +78487,7 @@ export namespace Prisma {
     notes?: StringFieldUpdateOperationsInput | string
     footageLink?: StringFieldUpdateOperationsInput | string
     handedOff?: BoolFieldUpdateOperationsInput | boolean
+    followupLog?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneWithoutShootsNestedInput
@@ -78475,6 +78514,7 @@ export namespace Prisma {
     requestedById?: NullableStringFieldUpdateOperationsInput | string | null
     footageLink?: StringFieldUpdateOperationsInput | string
     handedOff?: BoolFieldUpdateOperationsInput | boolean
+    followupLog?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -78499,6 +78539,7 @@ export namespace Prisma {
     requestedById?: NullableStringFieldUpdateOperationsInput | string | null
     footageLink?: StringFieldUpdateOperationsInput | string
     handedOff?: BoolFieldUpdateOperationsInput | boolean
+    followupLog?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -78521,6 +78562,7 @@ export namespace Prisma {
     notes?: StringFieldUpdateOperationsInput | string
     footageLink?: StringFieldUpdateOperationsInput | string
     handedOff?: BoolFieldUpdateOperationsInput | boolean
+    followupLog?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneWithoutShootsNestedInput
@@ -78547,6 +78589,7 @@ export namespace Prisma {
     notes?: StringFieldUpdateOperationsInput | string
     footageLink?: StringFieldUpdateOperationsInput | string
     handedOff?: BoolFieldUpdateOperationsInput | boolean
+    followupLog?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -78571,6 +78614,7 @@ export namespace Prisma {
     notes?: StringFieldUpdateOperationsInput | string
     footageLink?: StringFieldUpdateOperationsInput | string
     handedOff?: BoolFieldUpdateOperationsInput | boolean
+    followupLog?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -78893,6 +78937,7 @@ export namespace Prisma {
     requestedById?: string | null
     footageLink?: string
     handedOff?: boolean
+    followupLog?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -79815,6 +79860,7 @@ export namespace Prisma {
     notes?: StringFieldUpdateOperationsInput | string
     footageLink?: StringFieldUpdateOperationsInput | string
     handedOff?: BoolFieldUpdateOperationsInput | boolean
+    followupLog?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedTo?: UserUpdateOneWithoutShootsNestedInput
@@ -79841,6 +79887,7 @@ export namespace Prisma {
     requestedById?: NullableStringFieldUpdateOperationsInput | string | null
     footageLink?: StringFieldUpdateOperationsInput | string
     handedOff?: BoolFieldUpdateOperationsInput | boolean
+    followupLog?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -79865,6 +79912,7 @@ export namespace Prisma {
     requestedById?: NullableStringFieldUpdateOperationsInput | string | null
     footageLink?: StringFieldUpdateOperationsInput | string
     handedOff?: BoolFieldUpdateOperationsInput | boolean
+    followupLog?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

@@ -3,10 +3,12 @@
 import { useMemo, useState, useEffect } from "react";
 import { saveShoot, setShootStatus, toggleShootPaid, deleteShoot, saveShootFootage, handOffToEditor } from "@/app/actions";
 import { SHOOT_CATEGORIES, SHOOT_STATUS, SHOOT_STATUS_KEYS, SHOOT_LOCATIONS, VIDEO_TYPES, inr, inrShort, initials } from "@/lib/domain";
+import { logShootFollowup } from "@/app/shoot-actions";
+import ClientFollowupChannels, { latestFollowup, followupWhen, type ClientFollowup } from "@/components/ClientFollowupChannels";
 import {
   Camera, Video, CalendarClock, IndianRupee, Plus, X, Pencil, Trash2,
   MapPin, Phone, CheckCircle2, CircleAlert, List, CalendarDays, ChevronLeft, ChevronRight,
-  Users, Film, Send, ExternalLink, Download,
+  Users, Film, Send, ExternalLink, Download, MessageSquarePlus,
 } from "lucide-react";
 
 type Row = {
@@ -16,6 +18,7 @@ type Row = {
   assignee: string | null; assignedToId: string | null;
   status: string; rentAmount: number; paid: boolean; notes: string;
   requestedBy: string | null; footageLink: string; handedOff: boolean; conflict: string | null;
+  followups?: ClientFollowup[]; // Phone / WhatsApp follow-ups logged on this shoot
 };
 type Kpis = { todayShoots: number; upcoming: number; rentalsThisMonth: number; rentalRevenue: number; rentalUnpaid: number; webroczCount: number; rentCount: number; completed: number; conflicts: number; requests: number };
 type Opt = { id: string; name: string };
@@ -35,6 +38,9 @@ export default function ShootBoard({
   const [edit, setEdit] = useState<Row | null>(null);
   const [adding, setAdding] = useState(false);
   const [footageFor, setFootageFor] = useState<Row | null>(null);
+  const [followId, setFollowId] = useState<string | null>(null); // shoot whose Follow-up popup is open
+  const followFor = followId ? rows.find((r) => r.id === followId) ?? null : null;
+  const setFollowFor = (r: Row) => setFollowId(r.id);
   const editors = shooters.filter((s) => s.role === "EDITOR");
 
   const statusRows = useMemo(() => rows.filter((r) => (status === "ALL" || r.status === status) && (cat === "ALL" || r.category === cat)), [rows, status, cat]);
@@ -125,13 +131,13 @@ export default function ShootBoard({
           {showWebrocz && (
             <ShootSection
               title="WebRocz Client Shoots" desc="WebRocz clients who need a shoot — Mallesh travels to the client's location."
-              icon={Camera} tone="violet" rows={webroczRows} canManage={canManage} today={today} onEdit={onEdit} onFootage={setFootageFor}
+              icon={Camera} tone="violet" rows={webroczRows} canManage={canManage} today={today} onEdit={onEdit} onFootage={setFootageFor} onFollowup={setFollowFor}
               empty={canAdd ? "No WebRocz client shoots yet — add one above." : "No WebRocz shoots assigned to you."} />
           )}
           {showRent && (
             <ShootSection
               title="Studio X Rentals" desc="People who book Studio X for rent — Mallesh shoots their content at the studio."
-              icon={Video} tone="amber" rows={rentRows} canManage={canManage} today={today} onEdit={onEdit} onFootage={setFootageFor}
+              icon={Video} tone="amber" rows={rentRows} canManage={canManage} today={today} onEdit={onEdit} onFootage={setFootageFor} onFollowup={setFollowFor}
               empty={canAdd ? "No studio rentals yet — add one above." : "No studio rentals assigned to you."} />
           )}
         </>
@@ -140,6 +146,7 @@ export default function ShootBoard({
       {(adding || edit) && canAdd && (
         <ShootModal row={edit} clientOptions={clientOptions} shooters={shooters} today={today} defaultAssignee={!canManage && selfId ? selfId : ""} onClose={() => { setAdding(false); setEdit(null); }} />
       )}
+      {followFor && <ShootFollowupModal row={followFor} close={() => setFollowId(null)} />}
       {footageFor && (
         <FootageModal row={footageFor} editors={editors} onClose={() => setFootageFor(null)} />
       )}
@@ -446,8 +453,32 @@ function ShootCalendar({ rows, today, canManage, onEdit }: { rows: Row[]; today:
   );
 }
 
-function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, onEdit, onFootage, empty }: {
-  title: string; desc: string; icon: typeof Camera; tone: string; rows: Row[]; canManage: boolean; today: string; onEdit: (r: Row) => void; onFootage: (r: Row) => void; empty: string;
+// Follow-up popup for one shoot: Phone and WhatsApp follow-ups, each logged and listed
+// separately with the date and time (same boxes as the client follow-ups).
+function ShootFollowupModal({ row, close }: { row: Row; close: () => void }) {
+  const here = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/shoots";
+  const who = row.category === "STUDIO_RENT" ? (row.renterName || "Studio X rental") : (row.client ?? row.title);
+  return (
+    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
+      <div className="flex max-h-[92vh] w-full max-w-[860px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
+          <div>
+            <h2 className="text-[16px] font-bold">Follow-up · {who}</h2>
+            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">{row.title} · {row.code} · {fmtDate(row.date)}{row.startTime ? ` · ${row.startTime}${row.endTime ? ` – ${row.endTime}` : ""}` : ""}{row.phone ? ` · ${row.phone}` : ""}</p>
+          </div>
+          <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
+        </div>
+        <div className="overflow-y-auto scroll-thin px-6 py-4">
+          <ClientFollowupChannels clientId={row.id} returnTo={here} followups={row.followups ?? []} action={logShootFollowup} />
+        </div>
+        <div className="flex justify-end border-t border-[var(--line)] px-6 py-3"><button type="button" onClick={close} className="btn btn-ghost">Close</button></div>
+      </div>
+    </div>
+  );
+}
+
+function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, onEdit, onFootage, onFollowup, empty }: {
+  title: string; desc: string; icon: typeof Camera; tone: string; rows: Row[]; canManage: boolean; today: string; onEdit: (r: Row) => void; onFootage: (r: Row) => void; onFollowup: (r: Row) => void; empty: string;
 }) {
   const isRentSection = title.toLowerCase().includes("rental");
   return (
@@ -463,8 +494,8 @@ function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, o
         <span className="rounded-full bg-[var(--surface-2)] px-2.5 py-1 text-[11.5px] font-bold tnum text-[var(--ink-2)]">{rows.length}</span>
       </div>
       <div className="overflow-x-auto scroll-thin">
-        <table className="w-full min-w-[1040px] text-left">
-          <thead><tr className="border-b border-[var(--line)]">{["Date & time", "Shoot", isRentSection ? "Renter" : "Client", "Location", "Shooter", "Note", ...(isRentSection ? ["Rent"] : []), "Status", ...(canManage ? [""] : [])].map((h, i) => <th key={i} className="th px-4 py-2.5">{h}</th>)}</tr></thead>
+        <table className="w-full min-w-[1200px] text-left">
+          <thead><tr className="border-b border-[var(--line)]">{["Date & time", "Shoot", isRentSection ? "Renter" : "Client", "Location", "Shooter", "Note", "Follow-up", ...(isRentSection ? ["Rent"] : []), "Status", ...(canManage ? [""] : [])].map((h, i) => <th key={i} className="th px-4 py-2.5">{h}</th>)}</tr></thead>
           <tbody>
             {rows.map((r) => {
               const st = SHOOT_STATUS[r.status as keyof typeof SHOOT_STATUS];
@@ -501,6 +532,16 @@ function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, o
                   {/* the brief / note written when the shoot was requested or scheduled */}
                   <td className="max-w-[240px] px-4 py-3 text-[12px] leading-snug text-[var(--ink-2)]">
                     {r.notes ? <div className="line-clamp-3 whitespace-pre-wrap" title={r.notes}>{r.notes}</div> : <span className="text-[var(--faint)]">—</span>}
+                  </td>
+                  {/* Phone / WhatsApp follow-up on this shoot, with the previous one shown under the button */}
+                  <td className="px-4 py-3 align-top">
+                    <button type="button" onClick={() => onFollowup(r)} title="Follow-up — Phone / WhatsApp" className="inline-flex items-center gap-1 whitespace-nowrap rounded-[7px] border border-[var(--line-2)] px-2.5 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:border-[var(--ink)]"><MessageSquarePlus size={13} /> Follow-up{r.followups?.length ? ` (${r.followups.length})` : ""}</button>
+                    {(() => { const last = latestFollowup(r.followups ?? []); return last ? (
+                      <div className="mt-1.5 max-w-[210px] text-[11.5px] leading-snug" title={last.note}>
+                        <div className="whitespace-nowrap text-[var(--muted)]"><span className="font-semibold" style={{ color: last.via === "WHATSAPP" ? "var(--emerald)" : "var(--violet)" }}>{last.via === "WHATSAPP" ? "WhatsApp" : "Phone"}</span> · <span className="tnum">{followupWhen(last)}</span></div>
+                        <div className="truncate text-[var(--ink-2)]">{last.note}</div>
+                      </div>
+                    ) : null; })()}
                   </td>
                   {isRentSection && (
                     <td className="px-4 py-3 whitespace-nowrap">
@@ -540,7 +581,7 @@ function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, o
                 </tr>
               );
             })}
-            {rows.length === 0 && <tr><td colSpan={11} className="px-4 py-10 text-center text-sm text-[var(--muted)]">{empty}</td></tr>}
+            {rows.length === 0 && <tr><td colSpan={12} className="px-4 py-10 text-center text-sm text-[var(--muted)]">{empty}</td></tr>}
           </tbody>
         </table>
       </div>

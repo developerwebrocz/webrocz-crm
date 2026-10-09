@@ -638,6 +638,7 @@ model Shoot {
   requestedBy  User?    @relation("ShootRequester", fields: [requestedById], references: [id], onDelete: SetNull)
   footageLink  String   @default("") // raw footage drive link after the shoot
   handedOff    Boolean  @default(false) // handed to a video editor
+  followupLog  String   @default("[]") // JSON: [{date,time,by,note,via}] — Phone / WhatsApp follow-ups on this shoot
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

@@ -29,7 +29,9 @@ const CHANNELS = [
   { key: "WHATSAPP", label: "WhatsApp", Icon: MessageCircle, color: "var(--emerald)", placeholder: "e.g. Sent the invoice on WhatsApp — seen, no reply yet" },
 ] as const;
 
-export default function ClientFollowupChannels({ clientId, returnTo, followups }: { clientId: string; returnTo: string; followups: ClientFollowup[] }) {
+// `action` is where a follow-up is saved; it defaults to the client's own log. Studio X
+// passes its shoot action (then `clientId` carries the shoot id).
+export default function ClientFollowupChannels({ clientId, returnTo, followups, action = logClientFollowup }: { clientId: string; returnTo: string; followups: ClientFollowup[]; action?: (fd: FormData) => void | Promise<void> }) {
   // newest first: by date, then time; same moment (or no time) → the one saved later first
   const newestFirst = followups.map((f, i) => ({ f, i })).sort((a, b) => { const ka = a.f.date + " " + (a.f.time || ""), kb = b.f.date + " " + (b.f.time || ""); return ka === kb ? b.i - a.i : ka < kb ? 1 : -1; }).map((x) => x.f);
   const earlier = newestFirst.filter((f) => f.via !== "PHONE" && f.via !== "WHATSAPP");
@@ -61,7 +63,7 @@ export default function ClientFollowupChannels({ clientId, returnTo, followups }
                 )}
               </header>
 
-              <form action={logClientFollowup} className="space-y-3 px-4 py-4">
+              <form action={action} className="space-y-3 px-4 py-4">
                 <input type="hidden" name="id" value={clientId} />
                 <input type="hidden" name="return" value={returnTo} />
                 <input type="hidden" name="via" value={key} />

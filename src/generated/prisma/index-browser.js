@@ -546,6 +546,7 @@ exports.Prisma.ShootScalarFieldEnum = {
   requestedById: 'requestedById',
   footageLink: 'footageLink',
   handedOff: 'handedOff',
+  followupLog: 'followupLog',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
