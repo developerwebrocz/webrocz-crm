@@ -5,6 +5,8 @@ import { getCurrentUser } from "@/lib/auth";
 import { WEB_ROCZ_CLIENT_SERVICES, detailFromCounts } from "@/lib/webrocz-services";
 import { websiteServiceNames } from "@/lib/webrocz-queries";
 import { stateFromGstin } from "@/lib/domain";
+import { nextInvoiceNumber } from "@/lib/invoice-number";
+import { todayIST } from "@/lib/india-date";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -25,19 +27,8 @@ export type WebRoczPvtInvoiceDefaults = Record<string, { gstin: string; projectD
 
 const PVT_ROLES = ["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"];
 const GST_PCT = 18;
-// Financial year of a date, as the Pvt Ltd invoice series writes it: April 2026 → "2026-27".
-function fyOf(iso: string): string {
-  const d = /^\d{4}-\d{2}-\d{2}$/.test(iso) ? new Date(iso + "T00:00:00Z") : new Date();
-  const y = d.getUTCFullYear(), start = d.getUTCMonth() >= 3 ? y : y - 1;
-  return `${start}-${String((start + 1) % 100).padStart(2, "0")}`;
-}
-// Next number in the Pvt Ltd series for that year: the highest "2026-27/N" so far, plus one.
-async function nextPvtNumber(iso: string): Promise<string> {
-  const prefix = `${fyOf(iso)}/`;
-  const used = await prisma.salesInvoice.findMany({ where: { number: { startsWith: prefix } }, select: { number: true } });
-  const max = used.reduce((m, i) => { const v = i.number.slice(prefix.length); return /^\d+$/.test(v) ? Math.max(m, parseInt(v, 10)) : m; }, 0);
-  return `${prefix}${max + 1}`;
-}
+// Next number in the Pvt Ltd series for the invoice date's financial year ("2026-27/164").
+const nextPvtNumber = (iso: string) => nextInvoiceNumber(true, /^\d{4}-\d{2}-\d{2}$/.test(iso) ? iso : undefined);
 
 // Read-only: each client's saved GSTIN + digital-marketing services (lower-cased name), and
 // the project date / payment type from its latest Pvt Ltd invoice, so the invoice form can
@@ -96,7 +87,7 @@ export async function addWebRoczPvtInvoice(_prev: PvtInvoiceResult, fd: FormData
   const typedTotal = Math.max(0, n(fd, "grandTotal"));
   if (!clientName) return { error: "Enter the company name." };
   if (typedBase <= 0 && typedTotal <= 0) return { error: "Enter the invoice amount." };
-  const issueDate = /^\d{4}-\d{2}-\d{2}$/.test(s(fd, "issueDate")) ? s(fd, "issueDate") : new Date().toISOString().slice(0, 10);
+  const issueDate = /^\d{4}-\d{2}-\d{2}$/.test(s(fd, "issueDate")) ? s(fd, "issueDate") : todayIST();
   const number = s(fd, "number") || (await nextPvtNumber(issueDate));
   if (await prisma.salesInvoice.findUnique({ where: { number }, select: { id: true } })) return { error: `Invoice number ${number} is already used. Change the number and try again.` };
   const projectDate = /^\d{4}-\d{2}-\d{2}$/.test(s(fd, "projectDate")) ? s(fd, "projectDate") : "";

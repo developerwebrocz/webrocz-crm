@@ -1,7 +1,9 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { SERVICES, SERVICE_KEYS, type ServiceKey, financialYear, companyFor, stateFromGstin, GADS_TYPE_KEYS } from "@/lib/domain";
+import { SERVICES, SERVICE_KEYS, type ServiceKey, companyFor, stateFromGstin, GADS_TYPE_KEYS } from "@/lib/domain";
+import { nextInvoiceNumbers } from "@/lib/invoice-number";
+import { todayIST } from "@/lib/india-date";
 import { WEB_ROCZ_CLIENT_SERVICES, detailFromCounts } from "@/lib/webrocz-services";
 import { hashPassword, verifyPassword, getCurrentUser, getRealUser } from "@/lib/auth";
 import { sendEmail, inviteEmailHtml } from "@/lib/email";
@@ -728,15 +730,14 @@ export async function addClientFromFinance(fd: FormData) {
 
   if (groups.length) {
     let paidLeft = Math.max(0, n(fd, "paid"));
-    const issueDate = new Date().toISOString().slice(0, 10);
+    const issueDate = todayIST();
     const dd = new Date(issueDate + "T00:00:00Z"); dd.setUTCDate(dd.getUTCDate() + 15);
     const dueDate = dd.toISOString().slice(0, 10);
-    const fy = financialYear();
     const hasGst = gst > 0;
-    const prefix = `${hasGst ? "GST" : "NG"}/${fy}/`;
     const clientState = stateFromGstin(gstin);
-    const lastInv = await prisma.salesInvoice.findFirst({ where: { number: { startsWith: prefix } }, orderBy: { createdAt: "desc" }, select: { number: true } });
-    let seq = lastInv ? parseInt(lastInv.number.split("/").pop() || "0", 10) + 1 : 1;
+    // Same number series as the company's own invoice form (Pvt Ltd: "2026-27/164"; non-GST: "NG/2026-27/025").
+    const numbers = await nextInvoiceNumbers(hasGst, issueDate, groups.length);
+    let numIdx = 0;
     for (const g of groups) {
       const base = g.items.reduce((s, it) => s + it.amount, 0);
       const taxAmount = Math.round((base * gst) / 100);
@@ -745,7 +746,7 @@ export async function addClientFromFinance(fd: FormData) {
       const company = companyFor(hasGst, g.category);
       const inv = await prisma.salesInvoice.create({
         data: {
-          number: `${prefix}${String(seq++).padStart(3, "0")}`, clientId: client.id, pipeline: "WEBROCZ", company,
+          number: numbers[numIdx++], clientId: client.id, pipeline: "WEBROCZ", company,
           billTo: client.name, contact: scalars.pocName ?? "", phone: scalars.pocMobile ?? "", email: scalars.pocEmail ?? "", clientGstin: gstin,
           clientState, placeOfSupply: clientState,
           items: JSON.stringify(g.items.map((it) => ({ name: it.name, qty: 1, rate: it.amount, amount: it.amount }))),
@@ -803,8 +804,12 @@ export async function updateClientFinance(fd: FormData) {
   const hostingAmount = hostingTaken ? Math.max(0, n(fd, "hostingAmount")) : 0;
   const designAmount = designTaken ? Math.max(0, n(fd, "designAmount")) : 0;
   const takenDate = s(fd, "websiteTakenDate");
-  // Expiry = register date + 1 year (computed, not entered).
-  const expiryDate = (() => { if (!takenDate) return ""; const d = new Date(takenDate + "T00:00:00Z"); if (isNaN(d.getTime())) return ""; d.setUTCFullYear(d.getUTCFullYear() + 1); return d.toISOString().slice(0, 10); })();
+  // Expiry = register date + 1 year — worked out only when the register date is actually
+  // changed (or there is no expiry yet). Saving any other detail keeps the expiry as it is,
+  // so one set by a renewal invoice or on the Renewals page is not reset or wiped.
+  const plusYear = (() => { if (!takenDate) return ""; const d = new Date(takenDate + "T00:00:00Z"); if (isNaN(d.getTime())) return ""; d.setUTCFullYear(d.getUTCFullYear() + 1); return d.toISOString().slice(0, 10); })();
+  const before = await prisma.client.findUnique({ where: { id }, select: { websiteTakenDate: true, websiteExpiryDate: true } });
+  const expiryDate = takenDate && takenDate !== (before?.websiteTakenDate ?? "") ? plusYear : (before?.websiteExpiryDate || plusYear);
   await prisma.client.update({
     where: { id },
     data: {

@@ -19,6 +19,14 @@ function latestFollowup(raw: string | null | undefined): PayFollowup | null {
   } catch { return null; }
 }
 
+// Older invoices saved without a due date count as due 15 days after the invoice date — the
+// same rule the clients and invoices lists use, so "overdue" agrees everywhere.
+function net15(issueDate: string): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(issueDate || "")) return "";
+  const d = new Date(issueDate + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + 15);
+  return d.toISOString().slice(0, 10);
+}
+
 export async function getPaymentsPipeline(): Promise<{ invoices: PayInvoice[]; payments: PayEntry[]; clients: PayClient[] }> {
   const [invs, pays, cls] = await Promise.all([
     prisma.salesInvoice.findMany({ orderBy: { issueDate: "asc" }, select: { id: true, number: true, clientId: true, billTo: true, company: true, taxPct: true, total: true, received: true, issueDate: true, dueDate: true } }),
@@ -34,7 +42,7 @@ export async function getPaymentsPipeline(): Promise<{ invoices: PayInvoice[]; p
   const invoices: PayInvoice[] = invs.map((i) => ({
     id: i.id, number: i.number, clientKey: keyOf(i), clientId: i.clientId,
     clientName: (i.clientId && clientById.get(i.clientId)?.name) || i.billTo || "—",
-    company: companyOf(i), total: i.total, received: Math.min(i.received, i.total), issueDate: i.issueDate, dueDate: i.dueDate || "",
+    company: companyOf(i), total: i.total, received: Math.min(i.received, i.total), issueDate: i.issueDate, dueDate: i.dueDate || net15(i.issueDate),
   }));
   const invById = new Map(invoices.map((i) => [i.id, i]));
   const payments: PayEntry[] = pays.flatMap((p) => {

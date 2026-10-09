@@ -4,7 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { financialYear, stateFromGstin, companyFor } from "@/lib/domain";
+import { stateFromGstin, companyFor } from "@/lib/domain";
+import { nextInvoiceNumber } from "@/lib/invoice-number";
+import { todayIST } from "@/lib/india-date";
 
 // local form helpers
 function s(fd: FormData, k: string) { return (fd.get(k) as string | null)?.toString().trim() ?? ""; }
@@ -69,15 +71,9 @@ async function logLead(leadId: string, actor: string, action: string, detail = "
 }
 
 // ---- Invoice generation (auto on onboarding, GST tax-invoice, printable + emailable) ----
-// Two independent financial-year serial series: GST bills vs non-GST bills.
-//   GST  → "GST/2026-27/001"     Non-GST → "NG/2026-27/001"
-async function invoiceNumber(gst: boolean) {
-  const fy = financialYear();
-  const prefix = `${gst ? "GST" : "NG"}/${fy}/`;
-  const last = await prisma.salesInvoice.findFirst({ where: { number: { startsWith: prefix } }, orderBy: { createdAt: "desc" }, select: { number: true } });
-  const seq = last ? parseInt(last.number.split("/").pop() || "0", 10) + 1 : 1;
-  return `${prefix}${String(seq).padStart(3, "0")}`;
-}
+// Two financial-year serial series (see lib/invoice-number): GST bills (Web Rocz Pvt Ltd,
+// "2026-27/164") and non-GST bills ("NG/2026-27/025"). The year comes from the invoice date.
+const invoiceNumber = (gst: boolean, issueDate?: string) => nextInvoiceNumber(gst, issueDate);
 type InvoiceLead = { id: string; services: string; clientId?: string | null };
 async function createInvoiceForLead(lead: InvoiceLead, opts: { billTo: string; contact: string; phone: string; email: string; total: number; paymentStatus: string; pipeline: string; clientId?: string | null; notes?: string; gst?: boolean }) {
   const existing = await prisma.salesInvoice.findFirst({ where: { leadId: lead.id } });
@@ -92,12 +88,12 @@ async function createInvoiceForLead(lead: InvoiceLead, opts: { billTo: string; c
   const taxAmount = Math.round((base * taxPct) / 100);
   const items = [{ name: desc, qty: 1, rate: base, amount: base }];
   const received = (opts.paymentStatus || "").toLowerCase().includes("fully") ? base + taxAmount : 0;
-  const issueDate = new Date().toISOString().slice(0, 10);
+  const issueDate = todayIST();
   const isDM = /digital|market|dm|smo|seo|social/i.test(lead.services || "");
   const company = companyFor(gst, isDM ? "DM" : "WEBSITE");
   return prisma.salesInvoice.create({
     data: {
-      number: await invoiceNumber(gst), leadId: lead.id, clientId: opts.clientId ?? lead.clientId ?? null,
+      number: await invoiceNumber(gst, issueDate), leadId: lead.id, clientId: opts.clientId ?? lead.clientId ?? null,
       pipeline: opts.pipeline, company, billTo: opts.billTo, contact: opts.contact, phone: opts.phone, email: opts.email,
       items: JSON.stringify(items), subtotal: base, taxPct, taxAmount, total: base + taxAmount, received,
       paymentStatus: opts.paymentStatus || "Pending", notes: opts.notes ?? "", issueDate,
@@ -282,7 +278,7 @@ export async function saveMeeting(fd: FormData) {
 export async function markLost(fd: FormData) {
   const g = await salesGuard(s(fd, "id"));
   if (!g) redirect("/sales");
-  await prisma.lead.update({ where: { id: g.lead.id }, data: { stage: "LOST", lostReason: s(fd, "lostReason"), lostNotes: s(fd, "lostNotes"), lostDate: s(fd, "lostDate") || new Date().toISOString().slice(0, 10) } });
+  await prisma.lead.update({ where: { id: g.lead.id }, data: { stage: "LOST", lostReason: s(fd, "lostReason"), lostNotes: s(fd, "lostNotes"), lostDate: s(fd, "lostDate") || todayIST() } });
   await logLead(g.lead.id, g.me.name, "Marked Lost", s(fd, "lostReason"));
   revalidatePath("/sales"); revalidatePath(leadPath(g.lead.id));
   redirect(leadPath(g.lead.id));
@@ -438,6 +434,17 @@ export async function saveInvoice(fd: FormData) {
   // Received can never be more than the invoice total; the status follows from the two amounts.
   const newReceived = Math.min(Math.max(0, n(fd, "received")), base + taxAmount);
   const autoStatus = base + taxAmount > 0 && newReceived >= base + taxAmount ? "Fully Received" : newReceived > 0 ? "Partially Received" : "Pending";
+  // Invoice date changed → the due date moves by the same number of days (it used to stay
+  // behind, so a re-dated invoice showed overdue before it was even issued).
+  const newIssue = s(fd, "issueDate") || inv.issueDate;
+  const shiftedDue = (() => {
+    if (!inv.dueDate || !/^\d{4}-\d{2}-\d{2}$/.test(inv.issueDate) || !/^\d{4}-\d{2}-\d{2}$/.test(newIssue)) return inv.dueDate || addDaysISO(newIssue, 15);
+    const gap = Math.round((Date.parse(inv.dueDate + "T00:00:00Z") - Date.parse(inv.issueDate + "T00:00:00Z")) / 86400000);
+    return addDaysISO(newIssue, Number.isFinite(gap) && gap >= 0 ? gap : 15);
+  })();
+  // GSTIN changed → state and place of supply follow it (CGST+SGST inside Telangana, IGST outside).
+  const newGstin = s(fd, "clientGstin").toUpperCase();
+  const gstinState = newGstin && newGstin !== (inv.clientGstin || "").toUpperCase() ? stateFromGstin(newGstin) : "";
   const svcLine = s(fd, "itemName") || inv.billTo;
   // An itemized invoice (several service lines) keeps its lines when the description was not
   // edited — so fixing e.g. the phone or "received" does not collapse Domain + Hosting +
@@ -472,21 +479,20 @@ export async function saveInvoice(fd: FormData) {
     data: {
       ...pvtExtra,
       billTo: s(fd, "billTo") || inv.billTo, contact: s(fd, "contact"), phone: s(fd, "phone"), email: s(fd, "email"),
-      clientGstin: s(fd, "clientGstin"), clientState: s(fd, "clientState") || inv.clientState, clientAddress: s(fd, "clientAddress"),
-      placeOfSupply: s(fd, "placeOfSupply") || inv.placeOfSupply,
+      clientGstin: newGstin, clientState: gstinState || s(fd, "clientState") || inv.clientState, clientAddress: s(fd, "clientAddress"),
+      placeOfSupply: gstinState || s(fd, "placeOfSupply") || inv.placeOfSupply,
       items: itemsJson,
       subtotal: base, taxPct, taxAmount, total: base + taxAmount, received: newReceived,
       paymentStatus: typedTotal !== null ? autoStatus : (s(fd, "paymentStatus") || inv.paymentStatus), notes: s(fd, "notes"), issueDate: s(fd, "issueDate") || inv.issueDate,
-      dueDate: s(fd, "dueDate") || inv.dueDate || addDaysISO(s(fd, "issueDate") || inv.issueDate, 15),
+      dueDate: s(fd, "dueDate") || shiftedDue,
     },
   });
-  // "Received" raised on the edit form → the extra amount is also entered in the payment
-  // ledger (today, by whoever edited), so the daily collections and the received amounts on
-  // the Payments page keep agreeing. Lowering it adds nothing (the Payments check shows it).
-  const addedReceived = newReceived - inv.received;
-  if (addedReceived > 0) {
-    const payDate = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }); // YYYY-MM-DD, India date
-    await prisma.payment.create({ data: { invoiceId: invId, amount: addedReceived, date: payDate, mode: "OTHER", note: "Received amount updated on the invoice", by: me.name } });
+  // "Received" changed on the edit form → the difference is also entered in the payment ledger
+  // (today, by whoever edited): a raise as a payment, a reduction as a minus correction. So the
+  // received amount on the invoice and its payment entries always agree.
+  const receivedDiff = newReceived - inv.received;
+  if (receivedDiff !== 0) {
+    await prisma.payment.create({ data: { invoiceId: invId, amount: receivedDiff, date: todayIST(), mode: "OTHER", note: receivedDiff > 0 ? "Received amount updated on the invoice" : "Received amount corrected (reduced) on the invoice", by: me.name } });
   }
   revalidatePath(invoiceReturn(leadId, invId));
   redirect(numberClash ? `${invoiceReturn(leadId, invId)}?sent=dupno` : invoiceReturn(leadId, invId));
@@ -507,16 +513,14 @@ export async function recordPayment(fd: FormData) {
   const amount = Math.min(n(fd, "amount"), inv.total - inv.received);
   if (amount <= 0) redirect(back);
   const mode = PAY_MODES.includes(s(fd, "mode")) ? s(fd, "mode") : "BANK";
-  const date = s(fd, "date") || new Date().toISOString().slice(0, 10);
+  const date = s(fd, "date") || todayIST();
   await prisma.payment.create({
     data: { invoiceId: invId, amount, date, mode, ref: s(fd, "ref"), note: s(fd, "note"), by: me.name },
   });
-  // Recompute received from the ledger + any pre-ledger opening balance, capped at total.
-  const agg = await prisma.payment.aggregate({ where: { invoiceId: invId }, _sum: { amount: true } });
-  const ledger = agg._sum.amount ?? 0;
-  // Pre-ledger `received` (e.g. "fully paid" set at onboarding) that has no Payment rows:
-  const opening = Math.max(0, inv.received - (ledger - amount));
-  const received = Math.min(inv.total, opening + ledger);
+  // The invoice's received amount goes up by exactly this payment (capped at the total).
+  // (It used to be rebuilt from the payment entries, which made it jump if "Received" had been
+  // corrected on the invoice in between.)
+  const received = Math.min(inv.total, inv.received + amount);
   const paymentStatus = received >= inv.total ? "Fully Received" : received > 0 ? "Partially Received" : "Pending";
   await prisma.salesInvoice.update({ where: { id: invId }, data: { received, paymentStatus } });
   await notifyRole("SUPER_ADMIN", `Payment recorded: ${inv.number}`, `${me.name} · ₹${amount.toLocaleString("en-IN")} (${mode})`, invoiceReturn(inv.leadId ?? "", invId), "emerald");
@@ -542,7 +546,7 @@ export async function createClientInvoice(fd: FormData) {
   const taxPct = Math.max(0, n(fd, "taxPct"));
   const taxAmount = Math.round((base * taxPct) / 100);
   const total = base + taxAmount;
-  const issueDate = s(fd, "issueDate") || new Date().toISOString().slice(0, 10);
+  const issueDate = s(fd, "issueDate") || todayIST();
   const dueDate = s(fd, "dueDate") || addDaysISO(issueDate, 15);
   const received = Math.min(Math.max(0, n(fd, "received")), total);
   const gstin = s(fd, "gstin") || client.gstin;
@@ -556,7 +560,7 @@ export async function createClientInvoice(fd: FormData) {
 
   const inv = await prisma.salesInvoice.create({
     data: {
-      number: await invoiceNumber(gst), clientId, pipeline: "WEBROCZ", company,
+      number: await invoiceNumber(gst, issueDate), clientId, pipeline: "WEBROCZ", company,
       billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "", clientGstin: gstin,
       clientState, placeOfSupply: clientState,
       items: JSON.stringify([{ name: desc, qty: 1, rate: base, amount: base }]),
@@ -628,7 +632,7 @@ export async function addInvoice(fd: FormData) {
   const taxPct = gst ? (client.gstRate > 0 ? client.gstRate : 18) : 0;
   const taxAmount = Math.round((base * taxPct) / 100);
   const total = base + taxAmount;
-  const issueDate = s(fd, "issueDate") || new Date().toISOString().slice(0, 10);
+  const issueDate = s(fd, "issueDate") || todayIST();
   const dueDate = s(fd, "dueDate") || addDaysISO(issueDate, 15);
   const received = Math.min(Math.max(0, n(fd, "received")), total);
   const gstin = formGstin || client.gstin || "";
@@ -637,7 +641,7 @@ export async function addInvoice(fd: FormData) {
 
   const inv = await prisma.salesInvoice.create({
     data: {
-      number: await invoiceNumber(gst), clientId: client.id, pipeline: "WEBROCZ", company,
+      number: await invoiceNumber(gst, issueDate), clientId: client.id, pipeline: "WEBROCZ", company,
       billTo: client.name, contact: client.pocName ?? "", phone: client.pocMobile ?? "", email: client.pocEmail ?? "", clientGstin: gstin,
       clientState, placeOfSupply: clientState,
       items: JSON.stringify(invoiceItems.length ? invoiceItems : [{ name: desc, qty: 1, rate: base, amount: base }]),
@@ -681,9 +685,13 @@ function parseCsvRows(text: string): Record<string, string>[] {
 function normDate(d: string): string {
   const t = (d || "").trim();
   if (/^\d{4}-\d{2}-\d{2}/.test(t)) return t.slice(0, 10);
-  const m = t.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/); // DD-MM-YYYY or DD/MM/YYYY
-  if (m) return `${m[3]}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}`;
-  return new Date().toISOString().slice(0, 10);
+  const valid = (y: string, mo: string, d: string) => { const iso = `${y}-${mo.padStart(2, "0")}-${d.padStart(2, "0")}`; const dt = new Date(iso + "T00:00:00Z"); return !isNaN(dt.getTime()) && dt.toISOString().slice(0, 10) === iso ? iso : ""; };
+  const m = t.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4}|\d{2})$/); // DD-MM-YYYY, DD/MM/YYYY, DD-MM-YY
+  if (m) { const iso = valid(m[3].length === 2 ? `20${m[3]}` : m[3], m[2], m[1]); if (iso) return iso; }
+  const MON = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+  const w = t.match(/^(\d{1,2})[-\s/]([A-Za-z]{3})[A-Za-z]*[-\s/,]+(\d{4}|\d{2})$/); // 15 Jan 2025, 15-Jan-25
+  if (w && MON.includes(w[2].toLowerCase())) { const iso = valid(w[3].length === 2 ? `20${w[3]}` : w[3], String(MON.indexOf(w[2].toLowerCase()) + 1), w[1]); if (iso) return iso; }
+  return todayIST();
 }
 
 export async function importFinanceCsv(fd: FormData) {
@@ -722,7 +730,7 @@ export async function importFinanceCsv(fd: FormData) {
     const clientState = stateFromGstin(gstin);
     const inv = await prisma.salesInvoice.create({
       data: {
-        number: await invoiceNumber(gst), clientId, pipeline: "WEBROCZ", company: comp,
+        number: await invoiceNumber(gst, issueDate), clientId, pipeline: "WEBROCZ", company: comp,
         billTo: name, clientGstin: gstin, clientState, placeOfSupply: clientState,
         items: JSON.stringify([{ name: desc, qty: 1, rate: amount, amount }]),
         subtotal: amount, taxPct, taxAmount, total, received: rec,
@@ -761,7 +769,9 @@ export async function addInvoiceNote(fd: FormData) {
   if (!inv || !note) redirect(invoiceReturn(leadId, invId));
   let log: { date: string; by: string; note: string }[] = [];
   try { const a = JSON.parse(inv.notesLog || "[]"); if (Array.isArray(a)) log = a; } catch { /* ignore */ }
-  log.unshift({ date: new Date().toISOString().slice(0, 16).replace("T", " "), by: me.name, note });
+  // date + time in India ("2026-10-09 15:42"); toISOString() is UTC, 5h30 behind
+  const nowIST = new Date();
+  log.unshift({ date: `${todayIST(nowIST)} ${nowIST.toLocaleTimeString("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: false })}`, by: me.name, note });
   await prisma.salesInvoice.update({ where: { id: invId }, data: { notesLog: JSON.stringify(log.slice(0, 100)), nextFollowup: s(fd, "nextFollowup") || inv.nextFollowup } });
   await notifyRole("SUPER_ADMIN", `Invoice note: ${inv.number}`, `${me.name}: ${note.slice(0, 80)}`, invoiceReturn(leadId, invId), "amber");
   revalidatePath(invoiceReturn(leadId, invId));
@@ -870,6 +880,13 @@ export async function generateInvoiceFromSla(fd: FormData) {
   // manager, phone, email, GST) are complete — not just an orphan invoice with a billTo.
   let client = sla.client;
   if (!client) {
+    // The client may have been added after the SLA was uploaded: link to it instead of
+    // creating a second client with the same name.
+    const wanted = sla.clientName.trim().toLowerCase();
+    const sameName = wanted ? (await prisma.client.findMany()).find((c) => c.name.trim().toLowerCase() === wanted) : undefined;
+    if (sameName) { client = sameName; await prisma.sla.update({ where: { id: sla.id }, data: { clientId: sameName.id } }); }
+  }
+  if (!client) {
     client = await prisma.client.create({
       data: {
         code: await nextClientCode(), name: sla.clientName, status: "ACTIVE",
@@ -888,12 +905,12 @@ export async function generateInvoiceFromSla(fd: FormData) {
   // Prefer the SLA's captured GSTIN, falling back to the client's on record.
   const gstin = sla.gstin || client.gstin || "";
   const clientState = stateFromGstin(gstin);
-  const issueDate = new Date().toISOString().slice(0, 10);
+  const issueDate = todayIST();
   const desc = sla.title || (category === "DM" ? "Digital Marketing" : "Website Development");
   const billTo = client.name || sla.clientName;
   const inv = await prisma.salesInvoice.create({
     data: {
-      number: await invoiceNumber(gst), clientId: client.id, pipeline: "WEBROCZ", company,
+      number: await invoiceNumber(gst, issueDate), clientId: client.id, pipeline: "WEBROCZ", company,
       billTo, contact: client.pocName || sla.pocName || "", phone: client.pocMobile || sla.pocMobile || "", email: client.pocEmail || sla.pocEmail || "", clientGstin: gstin,
       clientState, placeOfSupply: clientState,
       items: JSON.stringify([{ name: desc, qty: 1, rate: base, amount: base }]),

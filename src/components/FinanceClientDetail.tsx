@@ -14,12 +14,13 @@ import WebRoczClientCard from "@/components/WebRoczClientCard";
 import WebRoczPvtClientCard from "@/components/WebRoczPvtClientCard";
 import ClientFollowupChannels, { latestFollowup, followupWhen } from "@/components/ClientFollowupChannels";
 import ClientImportantNotes, { parseImportantNotes } from "@/components/ClientImportantNotes";
+import { todayIST } from "@/lib/india-date";
 import AddWebRoczPvtInvoiceModal from "@/components/AddWebRoczPvtInvoiceModal";
 import { ReceiptText, Wallet, CheckCircle2, Clock, Phone, Mail, IndianRupee, X, ArrowLeft, Building2, Plus, Pencil, MessageSquarePlus, CalendarClock, Globe, FileSignature, FileText, Download } from "lucide-react";
 
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
-const todayISO = () => new Date().toISOString().slice(0, 10);
+const todayISO = () => todayIST();
 
 type Client = { id: string; code: string; name: string; website: string | null; industry: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; monthlyRetainer: number; status: string; renewalDate: string; gstApplicable: boolean; gstRate: number; gstin: string; onboardDate: string; notes: string | null; websiteName: string; websiteDomain: string; websiteServices: string; domainTaken: boolean; domainAmount: number; hostingTaken: boolean; hostingAmount: number; designAmount: number; websiteTakenDate: string; websiteExpiryDate: string; websiteRenewAmount: number; nextFollowup: string; accountManagerId: string | null; billingCompany?: string; billingDay?: number; paymentTerm?: string; importantNotes?: string };
 type Inv = { id: string; number: string; total: number; received: number; balance: number; approved: boolean; paymentStatus: string; issueDate: string; dueDate: string; leadId: string | null; category: string; overdue: boolean; company: string; followups: { date: string; by: string; note: string }[]; invoiceDoc?: string; projectDate?: string; paymentTerm?: string };
@@ -341,7 +342,7 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
         </div>
       </div>
 
-      {payInv && <PaymentModal inv={payInv} clientName={client.name} back={backUrl} close={() => setPayInv(null)} />}
+      {payInv && <PaymentModal inv={payInv} clientName={client.name} back={`${backUrl}${company ? `?company=${company}` : ""}`} close={() => setPayInv(null)} />}
       {newInv && (company === "WEB_ROCZ_PVT"
         ? <AddWebRoczPvtInvoiceModal clientNames={[]} lockClientName={client.name} returnTo={`${backUrl}?company=WEB_ROCZ_PVT`} close={() => setNewInv(false)} />
         : isWebSolClient
@@ -511,6 +512,12 @@ function PaymentModal({ inv, clientName, back, close }: { inv: Inv; clientName: 
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Amount (₹)</span><input name="amount" type="number" min={1} max={inv.balance} defaultValue={inv.balance} required className="input mt-1" /></label>
             <label className="block"><span className="eyebrow">Date</span><input name="date" type="date" defaultValue={todayISO()} className="input mt-1" /></label>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block"><span className="eyebrow">Paid by</span>
+              <select name="mode" defaultValue="UPI" className="select mt-1"><option value="UPI">UPI</option><option value="BANK">Bank transfer</option><option value="CASH">Cash</option><option value="CHEQUE">Cheque</option><option value="CARD">Card</option><option value="OTHER">Other</option></select>
+            </label>
+            <label className="block"><span className="eyebrow">Reference / UTR</span><input name="ref" className="input mt-1" placeholder="optional" /></label>
           </div>
           <label className="block"><span className="eyebrow">Note</span><input name="note" className="input mt-1" placeholder="optional" /></label>
           <div className="flex justify-end gap-2 pt-1">

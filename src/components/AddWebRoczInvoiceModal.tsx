@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { todayIST } from "@/lib/india-date";
 import { X, Plus } from "lucide-react";
 import { addInvoice } from "@/app/sales-actions";
 import { getWebRoczInvoiceDefaults, type WebRoczInvoiceDefaults } from "@/app/webrocz-actions";
@@ -18,7 +19,7 @@ type Props = { clientNames: string[]; close: () => void; returnTo?: string; clie
 
 export default function AddWebRoczInvoiceModal({ clientNames, close, returnTo = "/invoices", lockClientName }: Props) {
   const [name, setName] = useState(lockClientName ?? "");
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayIST(); // today in India
   const [on, setOn] = useState<Record<string, boolean>>({});
   const [customs, setCustoms] = useState<string[]>([]);
   const [amount, setAmount] = useState("");

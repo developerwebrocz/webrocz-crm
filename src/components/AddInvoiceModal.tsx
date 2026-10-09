@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { todayIST } from "@/lib/india-date";
 import { X, Plus } from "lucide-react";
 import { addInvoice } from "@/app/sales-actions";
 
@@ -16,7 +17,7 @@ export default function AddInvoiceModal({ clientNames, close, returnTo = "/invoi
   const isPvt = lockCompany === "WEB_ROCZ_PVT";
   const isItemized = isWebSol || isPvt; // both use the itemized services + amounts form
   const target = gst ? "Web Rocz Pvt Ltd" : category === "DM" ? "Web Rocz" : "Web Solutions";
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayIST(); // today in India
   // Itemized services: each ticked service gets its own amount → the total is their sum.
   // Web Solutions = website only; Web Rocz Pvt Ltd = website + digital marketing (GST).
   const WEBSOL_SERVICES = isPvt

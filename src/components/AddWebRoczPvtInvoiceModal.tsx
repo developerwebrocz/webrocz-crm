@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
+import { todayIST } from "@/lib/india-date";
 import { X, Plus } from "lucide-react";
 import { addWebRoczPvtInvoice, getWebRoczPvtInvoiceDefaults, getWebRoczPvtNextInvoiceNumber, type PvtInvoiceResult, type WebRoczPvtInvoiceDefaults } from "@/app/webrocz-pvt-actions";
 import { WEB_ROCZ_CLIENT_SERVICES } from "@/lib/webrocz-services";
@@ -17,7 +18,7 @@ const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 // `lockClientName` is used from a client's own page (the company cannot be changed there).
 export default function AddWebRoczPvtInvoiceModal({ clientNames, close, returnTo = "/invoices", lockClientName }: { clientNames: string[]; close: () => void; returnTo?: string; lockClientName?: string }) {
   const [name, setName] = useState(lockClientName ?? "");
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayIST(); // today in India
   const [on, setOn] = useState<Record<string, boolean>>({});
   const [customs, setCustoms] = useState<string[]>([]);
   const [gstin, setGstin] = useState("");
