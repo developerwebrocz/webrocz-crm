@@ -181,6 +181,7 @@ exports.Prisma.ClientScalarFieldEnum = {
   billingCompany: 'billingCompany',
   billingDay: 'billingDay',
   paymentTerm: 'paymentTerm',
+  importantNotes: 'importantNotes',
   websiteName: 'websiteName',
   websiteDomain: 'websiteDomain',
   websiteServices: 'websiteServices',

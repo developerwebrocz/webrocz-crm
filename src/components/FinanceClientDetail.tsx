@@ -13,6 +13,7 @@ import AddWebRoczInvoiceModal from "@/components/AddWebRoczInvoiceModal";
 import WebRoczClientCard from "@/components/WebRoczClientCard";
 import WebRoczPvtClientCard from "@/components/WebRoczPvtClientCard";
 import ClientFollowupChannels, { latestFollowup, followupWhen } from "@/components/ClientFollowupChannels";
+import ClientImportantNotes, { parseImportantNotes } from "@/components/ClientImportantNotes";
 import AddWebRoczPvtInvoiceModal from "@/components/AddWebRoczPvtInvoiceModal";
 import { ReceiptText, Wallet, CheckCircle2, Clock, Phone, Mail, IndianRupee, X, ArrowLeft, Building2, Plus, Pencil, MessageSquarePlus, CalendarClock, Globe, FileSignature, FileText, Download } from "lucide-react";
 
@@ -20,7 +21,7 @@ const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
-type Client = { id: string; code: string; name: string; website: string | null; industry: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; monthlyRetainer: number; status: string; renewalDate: string; gstApplicable: boolean; gstRate: number; gstin: string; onboardDate: string; notes: string | null; websiteName: string; websiteDomain: string; websiteServices: string; domainTaken: boolean; domainAmount: number; hostingTaken: boolean; hostingAmount: number; designAmount: number; websiteTakenDate: string; websiteExpiryDate: string; websiteRenewAmount: number; nextFollowup: string; accountManagerId: string | null; billingCompany?: string; billingDay?: number; paymentTerm?: string };
+type Client = { id: string; code: string; name: string; website: string | null; industry: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; monthlyRetainer: number; status: string; renewalDate: string; gstApplicable: boolean; gstRate: number; gstin: string; onboardDate: string; notes: string | null; websiteName: string; websiteDomain: string; websiteServices: string; domainTaken: boolean; domainAmount: number; hostingTaken: boolean; hostingAmount: number; designAmount: number; websiteTakenDate: string; websiteExpiryDate: string; websiteRenewAmount: number; nextFollowup: string; accountManagerId: string | null; billingCompany?: string; billingDay?: number; paymentTerm?: string; importantNotes?: string };
 type Inv = { id: string; number: string; total: number; received: number; balance: number; approved: boolean; paymentStatus: string; issueDate: string; dueDate: string; leadId: string | null; category: string; overdue: boolean; company: string; followups: { date: string; by: string; note: string }[]; invoiceDoc?: string; projectDate?: string; paymentTerm?: string };
 type Pay = { id: string; invoiceId: string; invoiceNumber: string; amount: number; date: string; mode: string; ref: string; note: string; by: string };
 type Followup = { date: string; by: string; note: string; next?: string };
@@ -147,50 +148,57 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
         <Kpi label="Overdue" value={inr(view.overdue)} tone="var(--rose)" icon={<Clock size={15} />} />
       </div>
 
-      {isWebSolClient && (
-        <div className="grid gap-3 lg:grid-cols-2">
-          {/* Left — client & domain details */}
-          <div className="card card-pad">
-            <h3 className="eyebrow mb-2.5 flex items-center gap-1.5"><Globe size={13} className="text-[var(--violet)]" /> Client &amp; domain</h3>
-            <div className="text-[12.5px]">
-              <DRow label="Domain name" value={client.websiteDomain || "—"} />
-              <DRow label="Contact person" value={client.pocName || "—"} />
-              <DRow label="Phone" value={client.pocMobile || "—"} />
-              <DRow label="Email" value={client.pocEmail || "—"} />
-              <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] py-1.5">
-                <span className="text-[12px] text-[var(--muted)]">Services</span>
-                <span className="flex flex-wrap justify-end gap-1">
-                  {webServices.length ? webServices.map((s) => <span key={s} className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[11px] font-semibold text-[var(--ink-2)]">{s}</span>) : <span className="font-semibold">—</span>}
-                </span>
+      {/* company details on the left; Important notes as its own column beside Registration & renewal
+          (on narrower screens the notes drop below the details) */}
+      <div className="grid gap-3 xl:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)]">
+        <div className="grid min-w-0 gap-3 xl:grid-rows-[1fr]">
+          {isWebSolClient && (
+            <div className="grid gap-3 lg:grid-cols-2">
+              {/* Left — client & domain details */}
+              <div className="card card-pad">
+                <h3 className="eyebrow mb-2.5 flex items-center gap-1.5"><Globe size={13} className="text-[var(--violet)]" /> Client &amp; domain</h3>
+                <div className="text-[12.5px]">
+                  <DRow label="Domain name" value={client.websiteDomain || "—"} />
+                  <DRow label="Contact person" value={client.pocName || "—"} />
+                  <DRow label="Phone" value={client.pocMobile || "—"} />
+                  <DRow label="Email" value={client.pocEmail || "—"} />
+                  <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] py-1.5">
+                    <span className="text-[12px] text-[var(--muted)]">Services</span>
+                    <span className="flex flex-wrap justify-end gap-1">
+                      {webServices.length ? webServices.map((s) => <span key={s} className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[11px] font-semibold text-[var(--ink-2)]">{s}</span>) : <span className="font-semibold">—</span>}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3 py-1.5">
+                    <span className="text-[12px] text-[var(--muted)]">SLA</span>
+                    {slaDoc
+                      ? <a href={slaDoc.fileUrl} download className="btn btn-violet btn-sm"><Download size={13} /> Download SLA</a>
+                      : <span className="font-semibold">—</span>}
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center justify-between gap-3 py-1.5">
-                <span className="text-[12px] text-[var(--muted)]">SLA</span>
-                {slaDoc
-                  ? <a href={slaDoc.fileUrl} download className="btn btn-violet btn-sm"><Download size={13} /> Download SLA</a>
-                  : <span className="font-semibold">—</span>}
+              {/* Right — registration & renewal */}
+              <div className="card card-pad">
+                <h3 className="eyebrow mb-2.5 flex items-center gap-1.5"><CalendarClock size={13} className="text-[var(--violet)]" /> Registration &amp; renewal</h3>
+                <div className="text-[12.5px]">
+                  <DRow label="Register date" value={fmtDate(client.websiteTakenDate)} />
+                  <DRow label="Expiry date" value={fmtDate(client.websiteExpiryDate)} />
+                  <DRow label="Domain amount" value={inr(client.domainAmount)} />
+                  <DRow label="Hosting amount" value={inr(client.hostingAmount)} />
+                  {client.designAmount > 0 && <DRow label="Website designing" value={inr(client.designAmount)} />}
+                  <div className="mt-1.5 flex items-center justify-between gap-3 rounded-[8px] px-2.5 py-2" style={{ background: "color-mix(in srgb, var(--violet) 6%, white)" }}>
+                    <span className="text-[12px] font-semibold text-[var(--muted)]">Renewal amount</span>
+                    <span className="text-[15px] font-extrabold tnum text-[var(--violet)]">{inr(client.websiteRenewAmount)}</span>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          {/* Right — registration & renewal */}
-          <div className="card card-pad">
-            <h3 className="eyebrow mb-2.5 flex items-center gap-1.5"><CalendarClock size={13} className="text-[var(--violet)]" /> Registration &amp; renewal</h3>
-            <div className="text-[12.5px]">
-              <DRow label="Register date" value={fmtDate(client.websiteTakenDate)} />
-              <DRow label="Expiry date" value={fmtDate(client.websiteExpiryDate)} />
-              <DRow label="Domain amount" value={inr(client.domainAmount)} />
-              <DRow label="Hosting amount" value={inr(client.hostingAmount)} />
-              {client.designAmount > 0 && <DRow label="Website designing" value={inr(client.designAmount)} />}
-              <div className="mt-1.5 flex items-center justify-between gap-3 rounded-[8px] px-2.5 py-2" style={{ background: "color-mix(in srgb, var(--violet) 6%, white)" }}>
-                <span className="text-[12px] font-semibold text-[var(--muted)]">Renewal amount</span>
-                <span className="text-[15px] font-extrabold tnum text-[var(--violet)]">{inr(client.websiteRenewAmount)}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+          )}
 
-      {isWebRoczClient && company !== "WEB_ROCZ_PVT" && <WebRoczClientCard client={client} services={dmServices} slaUrl={slaDoc?.fileUrl ?? ""} invoices={invoices} />}
-      {isWebRoczPvtClient && <WebRoczPvtClientCard client={client} services={dmServices} slaUrl={slaDoc?.fileUrl ?? ""} invoices={invoices} />}
+          {isWebRoczClient && company !== "WEB_ROCZ_PVT" && <WebRoczClientCard client={client} services={dmServices} slaUrl={slaDoc?.fileUrl ?? ""} invoices={invoices} />}
+          {isWebRoczPvtClient && <WebRoczPvtClientCard client={client} services={dmServices} slaUrl={slaDoc?.fileUrl ?? ""} invoices={invoices} />}
+        </div>
+        <ClientImportantNotes clientId={client.id} returnTo={`${backUrl}${company ? `?company=${company}` : ""}`} notes={parseImportantNotes(client.importantNotes)} />
+      </div>
 
       {pendingMonths.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 rounded-[10px] border border-[var(--line)] px-3 py-2.5" style={{ background: "color-mix(in srgb, var(--amber) 6%, white)" }}>
