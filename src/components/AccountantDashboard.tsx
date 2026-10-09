@@ -25,7 +25,9 @@ const clientHref = (r: Inv, pay = false) => r.clientId ? `/accounts/${r.clientId
 export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, employees, aging, userName }: { totals: any; invoiceRows: Inv[]; monthlyRows: MonthRow[]; employees: Emp[]; aging: Aging; userName: string }) {
   const [tab, setTab] = useState<"invoices" | "monthly" | "employees">("invoices");
   const [cat, setCat] = useState("ALL");
-  const [pay, setPay] = useState("ALL"); // ALL | pending | paid | overdue
+  // Starts on invoices with payment still pending; a fully paid invoice leaves this view (it is
+  // on the client's page, and under "Fully paid" / "All payments" here).
+  const [pay, setPay] = useState("pending"); // ALL | pending | paid | overdue
   const [sort, setSort] = useState("recent"); // recent | pending | overdue
   const [q, setQ] = useState("");
   const [addClient, setAddClient] = useState(false);

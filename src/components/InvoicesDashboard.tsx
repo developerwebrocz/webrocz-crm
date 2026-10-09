@@ -15,13 +15,15 @@ const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmtD = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
+// Default = invoices with payment pending. A fully paid invoice drops off this list and stays
+// on its client's page; "All invoices" / "Fully paid" bring them back here when needed.
 const STATUS = [
-  { k: "", label: "All" },
+  { k: "", label: "Payment pending" },
+  { k: "overdue", label: "Overdue" },
   { k: "pending_approval", label: "Pending approval" },
   { k: "approved", label: "Approved" },
-  { k: "unpaid", label: "Balance due" },
-  { k: "overdue", label: "Overdue" },
   { k: "paid", label: "Fully paid" },
+  { k: "all", label: "All invoices" },
 ];
 
 const COMPANY_TABS = [{ k: "", label: "All companies" }, ...COMPANY_KEYS.map((k) => ({ k, label: companyLabel(k) }))];
@@ -91,6 +93,14 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
         {(q || status) && <Link href={keepHub ? hubHref : company ? `/invoices?company=${company}` : "/invoices"} className="btn btn-ghost btn-sm">Clear</Link>}
       </form>
 
+      {/* fully paid invoices are not in the default list — say so, with a way to see them */}
+      {!status && totals.paidHidden > 0 && (
+        <p className="rounded-[10px] bg-[var(--surface-2)] px-3.5 py-2 text-[12.5px] text-[var(--muted)]">
+          Showing invoices with payment pending. <b className="text-[var(--ink-2)]">{totals.paidHidden} fully paid invoice{totals.paidHidden === 1 ? "" : "s"}</b> {totals.paidHidden === 1 ? "is" : "are"} on the client&apos;s page.{" "}
+          <Link href={`/invoices?${new URLSearchParams({ ...(company ? { company } : {}), ...(keepHub || (embedded && company) ? { hub: "1" } : {}), ...(q ? { q } : {}), status: "paid" }).toString()}`} className="font-semibold text-[var(--violet)] hover:underline">Show fully paid</Link>
+        </p>
+      )}
+
       {/* Web Rocz Pvt Ltd lists one row per client (click to see that client's invoices);
           every other company keeps the invoice-by-invoice table below. */}
       {company === "WEB_ROCZ_PVT" && <WebRoczPvtInvoiceGroups rows={rows} hideApproval={hideApproval} canDelete={canDelete} openAll={!!q} onFollowup={setFuInv} onDelete={setDelInv} />}
@@ -108,7 +118,7 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
                 <tr key={r.id} className="border-b border-[var(--line)] hover:bg-[var(--surface-2)]">
                   <td className="px-4 py-3 font-semibold">{r.number}</td>
                   <td className="px-4 py-3"><div className="text-[12px] font-semibold">{companyLabel(r.company)}</div><span className={`text-[10px] font-bold ${r.gst ? "text-[var(--violet)]" : "text-[var(--faint)]"}`}>{r.gst ? "GST" : "No GST"}</span></td>
-                  <td className="px-4 py-3">{r.clientId ? <Link href={`/accounts/${r.clientId}`} prefetch className="font-semibold text-[var(--violet)] hover:underline">{r.billTo}</Link> : r.billTo}<div className="text-[11.5px] text-[var(--faint)]">{r.phone || r.email || ""}</div></td>
+                  <td className="px-4 py-3">{r.clientId ? <Link href={`/accounts/${r.clientId}?company=${r.company}`} prefetch className="font-semibold text-[var(--violet)] hover:underline">{r.billTo}</Link> : r.billTo}<div className="text-[11.5px] text-[var(--faint)]">{r.phone || r.email || ""}</div></td>
                   <td className="px-4 py-3 text-[var(--ink-2)]">{r.issueDate}</td>
                   <td className="px-4 py-3 text-right tnum">{inr(r.total)}</td>
                   <td className="px-4 py-3 text-right tnum" style={{ color: r.balance > 0 ? "var(--amber)" : "var(--emerald)" }}>{inr(r.balance)}</td>

@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { recordPayment, createClientInvoice, generateInvoiceFromSla } from "@/app/sales-actions";
 import { updateClientFinance } from "@/app/actions";
 import { companyLabel } from "@/lib/domain";
@@ -15,8 +14,9 @@ import WebRoczPvtClientCard from "@/components/WebRoczPvtClientCard";
 import ClientFollowupChannels, { latestFollowup, followupWhen } from "@/components/ClientFollowupChannels";
 import ClientImportantNotes, { parseImportantNotes } from "@/components/ClientImportantNotes";
 import { todayIST } from "@/lib/india-date";
+import { BackButton } from "@/components/NavTrail";
 import AddWebRoczPvtInvoiceModal from "@/components/AddWebRoczPvtInvoiceModal";
-import { ReceiptText, Wallet, CheckCircle2, Clock, Phone, Mail, IndianRupee, X, ArrowLeft, Building2, Plus, Pencil, MessageSquarePlus, CalendarClock, Globe, FileSignature, FileText, Download } from "lucide-react";
+import { ReceiptText, Wallet, CheckCircle2, Clock, Phone, Mail, IndianRupee, X, Users, Building2, Plus, Pencil, MessageSquarePlus, CalendarClock, Globe, FileSignature, FileText, Download } from "lucide-react";
 
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
@@ -33,8 +33,9 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
   const [payInv, setPayInv] = useState<Inv | null>(() => invoices.find((i) => i.id === openPayId && i.balance > 0) ?? null);
   const [newInv, setNewInv] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const router = useRouter();
   const backUrl = `/accounts/${client.id}`;
+  // The clients list of the company this page is showing (All clients when none is chosen).
+  const hubHref = ({ WEB_SOLUTIONS: "/pipeline/web-solutions", WEB_ROCZ: "/pipeline/web-rocz", WEB_ROCZ_PVT: "/pipeline/web-rocz-pvt" } as Record<string, string>)[company || ""] ?? "/accounts";
   // A Web Solutions client → its "New invoice" uses the website form (services + amounts +
   // payment screenshot). Detected from the URL company context OR any Web Solutions invoice.
   const isWebSolClient = company === "WEB_SOLUTIONS" || invoices.some((i) => i.company === "WEB_SOLUTIONS");
@@ -132,11 +133,11 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {/* Web Rocz Pvt Ltd: straight back to the page this client was opened from (the
-                Pvt Ltd clients list or its invoices page); the hub if opened directly. */}
-            {isWebRoczPvtClient && <button onClick={() => (window.history.length > 1 ? router.back() : router.push("/pipeline/web-rocz-pvt"))} className="btn btn-ghost btn-sm"><ArrowLeft size={14} /> Back</button>}
+            {/* Back: to the page this client was opened from (clients list, invoices tab, Payments …).
+                "All clients": that company's own clients list, not the all-companies page. */}
+            <BackButton fallback={hubHref} />
             <button onClick={() => setEditOpen(true)} className="btn btn-ghost btn-sm"><Pencil size={14} /> Edit info</button>
-            <Link href="/accounts" prefetch className="btn btn-ghost btn-sm"><ArrowLeft size={14} /> All clients</Link>
+            <Link href={hubHref} prefetch className="btn btn-ghost btn-sm"><Users size={14} /> All clients</Link>
           </div>
         </div>
       </div>

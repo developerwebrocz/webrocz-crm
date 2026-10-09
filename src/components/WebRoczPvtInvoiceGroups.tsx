@@ -59,7 +59,9 @@ export default function WebRoczPvtInvoiceGroups({ rows, hideApproval, canDelete,
                       <div className="flex items-center gap-2">
                         <ChevronRight size={15} className={`flex-none text-[var(--muted)] transition-transform ${shown ? "rotate-90" : ""}`} />
                         <div>
-                          <div className="whitespace-nowrap font-bold text-[var(--ink)]">{g.name}</div>
+                          {g.clientId
+                            ? <Link href={`/accounts/${g.clientId}?company=WEB_ROCZ_PVT`} prefetch onClick={(e) => e.stopPropagation()} title="Open this client's page (all invoices, payments, notes)" className="whitespace-nowrap font-bold text-[var(--violet)] hover:underline">{g.name}</Link>
+                            : <div className="whitespace-nowrap font-bold text-[var(--ink)]">{g.name}</div>}
                           {g.sub && <div className="text-[11.5px] text-[var(--faint)]">{g.sub}</div>}
                         </div>
                       </div>

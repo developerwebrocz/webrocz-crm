@@ -4,6 +4,8 @@ import "./globals.css";
 import TopBar from "@/components/TopBar";
 import Sidebar from "@/components/Sidebar";
 import MobileNav from "@/components/MobileNav";
+import { Suspense } from "react";
+import { NavTrail } from "@/components/NavTrail";
 import { prisma } from "@/lib/prisma";
 import { getSearchIndex, getAlerts, getApprovalsCount, getMyOpenTaskCount, deptForRole, getDueReminderCount, getCreativeBoard } from "@/lib/queries";
 import { headers } from "next/headers";
@@ -62,6 +64,8 @@ async function AppShell({ user, userId, impersonatedBy, children }: { user: { na
           </form>
         </div>
       )}
+      {/* remembers the pages visited, so "Back" buttons return to where the user came from */}
+      <Suspense fallback={null}><NavTrail /></Suspense>
       <TopBar user={user} search={search} alerts={alerts} />
       <MobileNav role={user.role} />
       <div className="flex">

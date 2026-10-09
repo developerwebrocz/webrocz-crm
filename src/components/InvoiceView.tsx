@@ -6,9 +6,10 @@ import { SELLER } from "@/lib/domain";
 import InvoicePrintable from "@/components/InvoicePrintable";
 import { printInvoiceAs, invoiceFileName } from "@/lib/print-invoice";
 import { downloadInvoicePdf } from "@/lib/invoice-download";
+import { BackButton } from "@/components/NavTrail";
 import { buildInvoicePdf, greetingForNow } from "@/lib/invoice-pdf";
 import { sendInvoiceOnWhatsApp } from "@/app/whatsapp-actions";
-import { ArrowLeft, Download, Mail, Pencil, FileText, CheckCircle2, Lock, ShieldCheck, MessageCircle } from "lucide-react";
+import { Download, Mail, Pencil, FileText, CheckCircle2, Lock, ShieldCheck, MessageCircle } from "lucide-react";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -52,7 +53,7 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
   if (!invoice) {
     return (
       <div className="mx-auto max-w-[720px] space-y-5">
-        <a href={backHref} className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--muted)] hover:text-[var(--ink)]"><ArrowLeft size={15} /> Back</a>
+        <BackButton fallback={backHref} className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--muted)] hover:text-[var(--ink)]" />
         <div className="card card-pad text-center">
           <FileText size={30} className="mx-auto text-[var(--muted)]" />
           <h2 className="mt-3 text-[18px] font-bold">No invoice generated yet</h2>
@@ -148,7 +149,7 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
 
       {/* action bar */}
       <div className="no-print flex flex-wrap items-center gap-2">
-        <a href={backHref} className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--muted)] hover:text-[var(--ink)]"><ArrowLeft size={15} /> Back</a>
+        <BackButton fallback={invoice.company ? `/invoices?company=${invoice.company}&hub=1` : backHref} className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--muted)] hover:text-[var(--ink)]" />
         <div className="ml-auto flex flex-wrap items-center gap-2">
           {isSuperAdmin && !approvalOff && (
             <form action={approveInvoice}><input type="hidden" name="invoiceId" value={invoice.id} /><input type="hidden" name="leadId" value={leadId} /><input type="hidden" name="approve" value={invoice.approved ? "0" : "1"} />

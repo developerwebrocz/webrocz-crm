@@ -2654,7 +2654,12 @@ export async function getInvoices(opts: { q?: string; status?: string; company?:
     };
   });
   const q = (opts.q || "").toLowerCase().trim();
+  // A fully paid invoice (nothing left to collect on it).
+  const isPaid = (r: (typeof list)[number]) => r.total > 0 && r.balance <= 0;
   const matchStatus = (r: (typeof list)[number]) => {
+    // Default view: only invoices with payment still pending. A fully paid invoice leaves this
+    // list and stays on its client's page ("all" / "paid" still show them here when chosen).
+    if (!opts.status && isPaid(r)) return false;
     if (opts.status === "approved" && !r.approved) return false;
     if (opts.status === "pending_approval" && r.approved) return false;
     if (opts.status === "unpaid" && r.balance <= 0) return false;
@@ -2672,12 +2677,19 @@ export async function getInvoices(opts: { q?: string; status?: string; company?:
     companyCounts[key] = { count: g.length, billed: g.reduce((s, r) => s + r.total, 0) };
   }
   const filtered = scoped.filter((r) => !opts.company || opts.company === "ALL" || r.company === opts.company);
+  // The cards keep counting every invoice of the company (paid ones included) in the default
+  // view, so "Total billed" and "Received" stay the real figures; with a status chosen they
+  // follow that status.
+  const inScope = (r: (typeof list)[number]) => (!q || `${r.number} ${r.billTo} ${r.contact ?? ""} ${r.phone ?? ""}`.toLowerCase().includes(q)) && (!opts.company || opts.company === "ALL" || r.company === opts.company);
+  const forTotals = opts.status ? filtered : list.filter(inScope);
   const totals = {
-    count: filtered.length,
-    billed: filtered.reduce((s, r) => s + r.total, 0),
-    received: filtered.reduce((s, r) => s + r.received, 0),
-    balance: filtered.reduce((s, r) => s + r.balance, 0),
+    count: forTotals.length,
+    billed: forTotals.reduce((s, r) => s + r.total, 0),
+    received: forTotals.reduce((s, r) => s + r.received, 0),
+    balance: forTotals.reduce((s, r) => s + r.balance, 0),
     pendingApproval: list.filter((r) => !r.approved).length,
+    // fully paid invoices left out of the default list (shown on their client's page)
+    paidHidden: opts.status ? 0 : list.filter((r) => inScope(r) && isPaid(r)).length,
   };
   const clientNames = clients.map((c) => c.name).sort((a, b) => a.localeCompare(b));
   return { rows: filtered, totals, companyCounts, clientNames };
