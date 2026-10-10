@@ -15,9 +15,9 @@ export default function InvoicePrintable({ invoice }: { invoice: any }) {
     ? dmInvoiceLines(invoice.company, savedLines, invoice.subtotal, invoice.clientDmServices ?? [])
     : savedLines;
   // Web Rocz / Web Rocz Pvt Ltd with several services and one price for all of them: the
-  // services are listed one under the other and the price, GST and amount are shown once,
-  // beside the whole list (not against the first service). Lines with their own prices
-  // (itemized invoices) keep a price on each line.
+  // services are listed one under the other without a price, and the price, GST and amount
+  // for all of them together are shown once, in the Total row under the list. Lines with
+  // their own prices (itemized invoices) keep a price on each line.
   const dmCompany = invoice.company === "WEB_ROCZ" || invoice.company === "WEB_ROCZ_PVT";
   const combined = dmCompany && items.length > 1 && items.filter((x: any) => (x?.amount || 0) > 0).length <= 1;
   const balance = invoice.total - (invoice.received || 0);
@@ -89,19 +89,12 @@ export default function InvoicePrintable({ invoice }: { invoice: any }) {
             const gst = linesMatch && i === pricedIdx[pricedIdx.length - 1] ? invoice.taxAmount - before : lineGst(it);
             // A service listed without its own price (covered by another line) reads "Included".
             const included = items.length > 1 && !it.amount && !it.rate;
+            // listed together: just the service names here — the price for all of them is in the Total row
             if (combined) {
-              const span = "border-l border-[var(--line)] px-3 py-2.5 text-right align-middle tnum";
               return (
                 <tr key={i} className="border-b border-[var(--line)]">
                   <td className="px-3 py-2.5">{i + 1}</td>
-                  <td className="px-3 py-2.5 font-medium">{it.name}</td>
-                  {i === 0 && (
-                    <>
-                      <td rowSpan={items.length} className={span}>{inr(invoice.subtotal)}</td>
-                      {hasGst && <td rowSpan={items.length} className={span}>{inr(invoice.taxAmount)} ({invoice.taxPct}%)</td>}
-                      <td rowSpan={items.length} className={`${span} font-semibold`}>{inr(invoice.subtotal + (hasGst ? invoice.taxAmount : 0))}</td>
-                    </>
-                  )}
+                  <td className="px-3 py-2.5 font-medium" colSpan={hasGst ? 4 : 3}>{it.name}</td>
                 </tr>
               );
             }
@@ -116,8 +109,10 @@ export default function InvoicePrintable({ invoice }: { invoice: any }) {
             );
           })}
           <tr className="font-bold">
-            <td className="px-3 py-2.5" colSpan={3}>Total</td>
-            {hasGst && <td className="px-3 py-2.5 text-right tnum">{inr(invoice.taxAmount)}</td>}
+            {combined
+              ? <><td className="px-3 py-2.5" colSpan={2}>Total</td><td className="px-3 py-2.5 text-right tnum">{inr(invoice.subtotal)}</td></>
+              : <td className="px-3 py-2.5" colSpan={3}>Total</td>}
+            {hasGst && <td className="px-3 py-2.5 text-right tnum">{inr(invoice.taxAmount)}{combined ? ` (${invoice.taxPct}%)` : ""}</td>}
             <td className="px-3 py-2.5 text-right tnum">{inr(invoice.total)}</td>
           </tr>
         </tbody>
