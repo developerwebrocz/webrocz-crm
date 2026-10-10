@@ -1,9 +1,10 @@
 "use client";
 
 import { useActionState, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Upload, X, CheckCircle2, Crown, Save, Camera, TrendingUp, TrendingDown, CalendarDays, Trophy, Clock3, Film, PencilLine, Settings2, AlertTriangle } from "lucide-react";
+import { ChevronLeft, ChevronRight, Upload, X, CheckCircle2, Crown, Save, Camera, TrendingUp, TrendingDown, CalendarDays, Trophy, Clock3, Film, PencilLine, Settings2, AlertTriangle, Download, BellRing, BarChart3 } from "lucide-react";
 import type { EditCountBoardData } from "@/lib/edit-count-queries";
-import { saveEditCount, saveVideoTeamSettings, importEditCounts, type EditCountImportResult } from "@/app/edit-count-actions";
+import { saveEditCount, saveVideoTeamSettings, importEditCounts, remindEditCount, type EditCountImportResult } from "@/app/edit-count-actions";
+import CountStepper from "@/components/CountStepper";
 import AssignCreativeForm from "@/components/AssignCreativeForm";
 import { initials } from "@/lib/domain";
 
@@ -17,6 +18,8 @@ type ClientOpt = { id: string; name: string };
 const SAVED: Record<string, { text: string; ok: boolean }> = {
   "1": { text: "Saved.", ok: true },
   team: { text: "Video team settings saved.", ok: true },
+  reminded: { text: "Reminder sent to the editors who have not updated today.", ok: true },
+  noremind: { text: "No reminder needed — everyone has updated, or already has an unread reminder.", ok: true },
   baddate: { text: "Not saved — choose a date that is today or earlier.", ok: false },
   badcount: { text: "Not saved — the number of videos is not valid.", ok: false },
   noeditor: { text: "Not saved — choose a video editor.", ok: false },
@@ -60,6 +63,24 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
   const change = !d.isCurrentMonth && d.prevTotal > 0 ? Math.round(((d.grand - d.prevTotal) / d.prevTotal) * 100) : null;
   const shown = d.days.filter((x) => !x.future).reverse(); // newest day on top
   const hasData = Object.keys(d.cells).length > 0;
+  const notUpdated = d.isCurrentMonth ? activeEditors.filter((e) => e.today === null && e.id !== me.id) : [];
+  const histMax = Math.max(1, ...d.history.map((h) => h.total));
+
+  // the month on screen as a sheet (opens in Excel / Google Sheets)
+  const download = () => {
+    const q = (v: string | number) => `"${String(v).replace(/"/g, '""')}"`;
+    const rows: (string | number)[][] = [["Date", "Day", ...d.editors.map((e) => e.name), ...(d.seeAll ? ["Total"] : ["Note"])]];
+    for (const day of d.days.filter((x) => !x.future)) {
+      const [y, m, dd] = day.date.split("-");
+      rows.push([`${dd}-${m}-${y}`, day.weekday, ...d.editors.map((e) => d.cells[`${e.id}|${day.date}`]?.count ?? ""), d.seeAll ? (day.any ? day.total : "") : (d.cells[`${me.id}|${day.date}`]?.note ?? "")]);
+    }
+    rows.push(["Month total", "", ...d.perEditor.map((e) => e.total), d.seeAll ? d.grand : ""]);
+    const blob = new Blob(["\uFEFF" + rows.map((r) => r.map(q).join(",")).join("\r\n")], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = `Editing count - ${d.monthLabel}.csv`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  };
 
   // click a day (table / chart / card) → that day and editor are loaded in the update form
   const pick = (uid: string, day: string) => {
@@ -86,6 +107,7 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
               ? <a href={`/video-team?month=${d.nextMonth}`} className="grid h-9 w-9 place-items-center text-[var(--ink-2)] hover:bg-[var(--surface-2)]" title="Next month"><ChevronRight size={16} /></a>
               : <span className="grid h-9 w-9 place-items-center text-[var(--line-2)]"><ChevronRight size={16} /></span>}
           </div>
+          {hasData && <button type="button" onClick={download} className="btn btn-ghost" title="Download this month as a sheet (Excel)"><Download size={15} /> Download</button>}
           {d.seeAll && <button type="button" onClick={() => setImporting(true)} className="btn btn-ghost"><Upload size={15} /> Import sheet</button>}
           {d.seeAll && <AssignCreativeForm members={d.editors.filter((e) => e.active).map((e) => ({ id: e.id, name: e.name, role: "EDITOR" }))} clients={clients} from={`/video-team?month=${d.month}`} label="Assign work" />}
         </div>
@@ -164,6 +186,17 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
         </div>
       </div>
 
+      {/* who has not updated today → one click reminds them */}
+      {d.seeAll && notUpdated.length > 0 && (
+        <form action={remindEditCount} className="flex flex-wrap items-center justify-between gap-3 rounded-[12px] border px-4 py-3" style={{ background: tint("var(--amber)", 8), borderColor: tint("var(--amber)", 28) }}>
+          <div className="flex items-center gap-2.5 text-[13px]" style={{ color: "#7a4f08" }}>
+            <Clock3 size={16} className="flex-none" />
+            <span><b>{notUpdated.length} editor{notUpdated.length === 1 ? " has" : "s have"} not updated today:</b> {notUpdated.map((e) => e.name).join(", ")}</span>
+          </div>
+          <button type="submit" className="btn btn-sm" style={{ background: "#b45309", color: "white" }}><BellRing size={14} /> Send reminder</button>
+        </form>
+      )}
+
       {/* each editor */}
       {d.seeAll && d.perEditor.length > 0 && (
         <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(215px, 1fr))" }}>
@@ -216,7 +249,7 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
               {cell ? `Saved for ${fmtDay(date)}: ${cell.count}${cell.by ? ` · by ${cell.by}` : ""}` : `No entry for ${fmtDay(date)} yet`}
             </span>
           </div>
-          <form key={`${userId}|${date}|${cell?.count ?? ""}`} action={saveEditCount} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.1fr_1fr_.8fr_2fr_auto] lg:items-end">
+          <form key={`${userId}|${date}|${cell?.count ?? ""}`} action={saveEditCount} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.1fr_1fr_150px_2fr_auto] lg:items-end">
             {d.seeAll ? (
               <label className="block"><span className="eyebrow">Editor</span>
                 <select name="userId" value={userId} onChange={(e) => setUserId(e.target.value)} className="select mt-1.5">
@@ -227,7 +260,7 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
               <label className="block"><span className="eyebrow">Editor</span><input value={me.name} readOnly className="input mt-1.5 bg-[var(--surface-2)]" /></label>
             )}
             <label className="block"><span className="eyebrow">Date</span><input type="date" name="date" required value={date} min={`${d.month}-01`} max={maxDate} onChange={(e) => setDate(e.target.value)} className="input mt-1.5" /></label>
-            <label className="block"><span className="eyebrow">Videos edited</span><input type="number" name="count" min={0} max={500} step={1} defaultValue={cell?.count ?? ""} placeholder="0" className="input mt-1.5 text-[15px] font-bold tnum" /></label>
+            <label className="block"><span className="eyebrow">Videos edited</span><div className="mt-1.5"><CountStepper defaultValue={cell?.count ?? ""} /></div></label>
             <label className="block"><span className="eyebrow">Note (optional)</span><input name="note" maxLength={300} defaultValue={cell?.note ?? ""} placeholder="e.g. 2 reels for a client, half day…" className="input mt-1.5" /></label>
             <button type="submit" className="btn btn-violet"><Save size={15} /> Save</button>
           </form>
@@ -299,6 +332,48 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
           </table>
         </div>
       </div>
+
+      {/* month by month */}
+      {d.history.length > 0 && (
+        <div className="card !p-0 overflow-hidden">
+          <div className="flex items-center gap-2.5 border-b border-[var(--line)] px-5 py-3.5">
+            <span className="grid h-8 w-8 place-items-center rounded-[9px]" style={{ background: tint("var(--sky)", 12), color: "var(--sky)" }}><BarChart3 size={16} /></span>
+            <div>
+              <div className="text-[14px] font-bold">Month by month</div>
+              <div className="text-[11.5px] text-[var(--muted)]">Last 6 months · click a month to open it</div>
+            </div>
+          </div>
+          <div className="overflow-x-auto scroll-thin">
+            <table className="w-full min-w-[560px] text-[13px]">
+              <thead>
+                <tr className="border-b border-[var(--line)] bg-[var(--surface-2)] text-[11px] font-bold uppercase tracking-wide text-[var(--muted)]">
+                  <th className="px-5 py-2.5 text-left">Month</th>
+                  {d.seeAll && d.editors.map((e) => <th key={e.id} className="px-2 py-2.5 text-center">{e.name}</th>)}
+                  <th className="px-3 py-2.5 text-center">Days</th>
+                  <th className="px-3 py-2.5 text-center">Avg / day</th>
+                  <th className="w-[34%] px-5 py-2.5 text-left">{d.seeAll ? "Team total" : "Total"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {d.history.map((h) => (
+                  <tr key={h.month} className="border-b border-[var(--line)] last:border-0" style={h.month === d.month ? { background: tint("var(--violet)", 5) } : undefined}>
+                    <td className="whitespace-nowrap px-5 py-2.5"><a href={`/video-team?month=${h.month}`} className="font-bold hover:text-[var(--violet)] hover:underline">{h.label}</a></td>
+                    {d.seeAll && d.editors.map((e) => <td key={e.id} className="px-2 py-2.5 text-center font-semibold tnum">{h.byUser[e.id] ?? <span className="font-normal text-[var(--line-2)]">—</span>}</td>)}
+                    <td className="px-3 py-2.5 text-center text-[var(--ink-2)] tnum">{h.workingDays}</td>
+                    <td className="px-3 py-2.5 text-center text-[var(--ink-2)] tnum">{h.workingDays ? Math.round((h.total / h.workingDays) * 10) / 10 : 0}</td>
+                    <td className="px-5 py-2.5">
+                      <div className="flex items-center gap-3">
+                        <span className="w-10 flex-none text-[14px] font-extrabold tnum">{h.total}</span>
+                        <div className="h-2 flex-1 overflow-hidden rounded-full bg-[var(--surface-3)]"><div className="h-full rounded-full" style={{ width: `${(h.total / histMax) * 100}%`, background: "var(--grad)" }} /></div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* the team's assigned video work (lead / admin) */}
       {d.seeAll && (

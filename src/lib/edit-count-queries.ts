@@ -66,6 +66,25 @@ export async function getEditCountBoard(viewer: EditCountViewer, monthParam?: st
   // the month before, for the same people — to compare against
   const prev = await prisma.editCount.aggregate({ _sum: { count: true }, where: { date: { startsWith: shiftMonth(month, -1) }, ...(seeAll ? {} : { userId: viewer.id }) } });
 
+  // Month by month (the last 6 months that have counts) for the same people.
+  const histFrom = shiftMonth(today.slice(0, 7), -5);
+  const hist = await prisma.editCount.findMany({
+    where: { date: { gte: `${histFrom}-01` }, ...(seeAll ? {} : { userId: viewer.id }) },
+    select: { userId: true, date: true, count: true },
+  });
+  const byMonth = new Map<string, { total: number; byUser: Record<string, number>; dates: Set<string> }>();
+  for (const h of hist) {
+    const k = h.date.slice(0, 7);
+    const b = byMonth.get(k) ?? { total: 0, byUser: {}, dates: new Set<string>() };
+    b.total += h.count; b.byUser[h.userId] = (b.byUser[h.userId] ?? 0) + h.count;
+    if (h.count > 0) b.dates.add(h.date);
+    byMonth.set(k, b);
+  }
+  const history = [...byMonth.entries()].sort((a, b) => b[0].localeCompare(a[0])).map(([k, b]) => ({
+    month: k, total: b.total, byUser: b.byUser, workingDays: b.dates.size,
+    label: new Date(`${k}-01T00:00:00Z`).toLocaleDateString("en-IN", { month: "long", year: "numeric", timeZone: "UTC" }),
+  }));
+
   // The team's video work (lead / admin only): everything still open, and what was finished lately.
   const tasks = seeAll
     ? (await prisma.creativeTask.findMany({
@@ -91,7 +110,7 @@ export async function getEditCountBoard(viewer: EditCountViewer, monthParam?: st
     prevLabel: new Date(`${shiftMonth(month, -1)}-01T00:00:00Z`).toLocaleDateString("en-IN", { month: "long", timeZone: "UTC" }),
     isCurrentMonth: month === today.slice(0, 7),
     nextMonth: shiftMonth(month, 1) <= today.slice(0, 7) ? shiftMonth(month, 1) : "",
-    seeAll, editors, days, cells, perEditor, grand,
+    seeAll, editors, days, cells, perEditor, grand, history,
     todayTotal: perEditor.reduce((s, e) => s + (e.today ?? 0), 0),
     tasks,
   };

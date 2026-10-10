@@ -6,6 +6,7 @@ import RoleDashboard from "@/components/RoleDashboard";
 import SeoEmployeeOverview from "@/components/SeoEmployeeOverview";
 import AmOverview from "@/components/AmOverview";
 import MyShootsStrip from "@/components/MyShootsStrip";
+import TodayEditCount from "@/components/TodayEditCount";
 import CreativeBoard from "@/components/CreativeBoard";
 import ShootBoard from "@/components/ShootBoard";
 import { getSeoEmployeeBoard, getCreativeBoard, getSalesBoard, getAccountantDashboard, getShootBoard } from "@/lib/queries";
@@ -79,7 +80,8 @@ export default async function DashboardPage({ searchParams }: PageProps<"/">) {
     const d = await getCreativeBoard(user.id, user.role, "VIDEO");
     // A video editor can also be the shooter on a shoot (Studio X assigns it): those shoots
     // are shown on top of their own dashboard.
-    return <div className="space-y-5"><MyShootsStrip userId={user.id} /><CreativeBoard kind="VIDEO" chrome="embedded" rows={d.rows} counts={d.counts} clients={d.clients} types={d.types} progress={d.progress} today={d.today} clientOptions={d.clientOptions} userName={user.name} /></div>;
+    // Today's editing count is entered right here, on top of the dashboard.
+    return <div className="space-y-5"><TodayEditCount userId={user.id} /><MyShootsStrip userId={user.id} /><CreativeBoard kind="VIDEO" chrome="embedded" rows={d.rows} counts={d.counts} clients={d.clients} types={d.types} progress={d.progress} today={d.today} clientOptions={d.clientOptions} userName={user.name} /></div>;
   }
   // Studio X Head & Videographer land on the Shooting / Studio X board.
   if (user.role === "STUDIO_HEAD" || user.role === "VIDEOGRAPHER") {

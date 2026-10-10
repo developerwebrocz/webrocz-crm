@@ -20,7 +20,9 @@ export async function saveEditCount(fd: FormData) {
   if (!me || !canOpenEditCount(me)) redirect("/");
   const date = str(fd, "date");
   const today = todayIST();
-  const back: (flag: string) => never = (flag) => redirect(`/video-team?month=${(validDate(date) ? date : today).slice(0, 7)}&saved=${flag}`);
+  // `return=home`: saved from the card on the editor's own dashboard → stay there
+  const home = str(fd, "return") === "home";
+  const back: (flag: string) => never = (flag) => redirect(home ? "/" : `/video-team?month=${(validDate(date) ? date : today).slice(0, 7)}&saved=${flag}`);
   if (!validDate(date) || date > today) back("baddate");
 
   const userId = isVideoLead(me) ? str(fd, "userId") || me.id : me.id;
@@ -41,7 +43,27 @@ export async function saveEditCount(fd: FormData) {
     });
   }
   revalidatePath("/video-team");
+  revalidatePath("/");
   back("1");
+}
+
+// Team lead / admin: ping the editors who have not entered today's count yet.
+export async function remindEditCount() {
+  const me = await getCurrentUser();
+  if (!me || !isVideoLead(me)) redirect("/");
+  const today = todayIST();
+  const [editors, done] = await Promise.all([
+    prisma.user.findMany({ where: { role: "EDITOR", active: true, id: { not: me.id } }, select: { id: true } }),
+    prisma.editCount.findMany({ where: { date: today }, select: { userId: true } }),
+  ]);
+  const have = new Set(done.map((x) => x.userId));
+  const title = "Update today's editing count";
+  // no second ping while the first one is still unread
+  const pending = await prisma.notification.findMany({ where: { title, read: false, userId: { in: editors.map((e) => e.id) } }, select: { userId: true } });
+  const pinged = new Set(pending.map((p) => p.userId));
+  const to = editors.filter((e) => !have.has(e.id) && !pinged.has(e.id));
+  if (to.length) await prisma.notification.createMany({ data: to.map((e) => ({ userId: e.id, title, body: `${me.name} is waiting for your count — it takes 10 seconds.`, link: "/video-team", tone: "amber" })) });
+  redirect(`/video-team?saved=${to.length ? "reminded" : "noremind"}`);
 }
 
 // Super Admin / Sub Admin: who leads the video team (one editor, or nobody) and which editors
