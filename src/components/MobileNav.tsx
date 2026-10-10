@@ -44,6 +44,8 @@ function navFor(role: string): Item[] {
   if (role === "STUDIO_HEAD") return [{ href: "/", label: "Dashboard" }, { href: "/shoots", label: "Studiox Shoot" }, { href: "/tasks", label: "My Tasks" }, { href: "/approvals", label: "Approvals" }, { href: "/reports", label: "Reports" }];
   // Video editors: the same items as their sidebar.
   if (role === "EDITOR") return [{ href: "/", label: "Dashboard" }, { href: "/client-videos", label: "Client Videos" }, { href: "/videos", label: "My Videos" }, { href: "/video-team", label: "Editing Count" }, { href: "/tasks", label: "My Tasks" }, { href: "/updates", label: "Update Work" }, { href: "/reports", label: "Reports" }];
+  // Designers: the same items as their sidebar.
+  if (role === "DESIGNER") return [{ href: "/", label: "Dashboard" }, { href: "/designs", label: "My Designs" }, { href: "/design-postings", label: "Assigned Postings" }, { href: "/design-team", label: "Design Count" }, { href: "/tasks", label: "My Tasks" }, { href: "/updates", label: "Update Work" }, { href: "/reports", label: "Reports" }];
   // Super Admin: the Payments pipeline comes right after the Dashboard (same as the sidebar).
   if (role === "SUPER_ADMIN") return [ADMIN_NAV[0], { href: "/payments", label: "Payments" }, ...ADMIN_NAV.slice(1)];
   return ADMIN_NAV; // SUB_ADMIN and other management roles

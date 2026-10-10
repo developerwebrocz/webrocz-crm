@@ -1,4 +1,4 @@
-// Video team: set the team lead / shoot team and load the old Google Sheet, straight in the
+// Video team and design team: set the team lead / shoot team and load the old Google Sheets, straight in the
 // database — the same things the buttons in the CRM do (Editing Count → Video team settings,
 // "Import sheet" on Editing Count and Client Videos). Nothing is deleted; running it twice
 // replaces, never doubles. Names and files are given on the command line (not stored here):
@@ -6,11 +6,15 @@
 //   npx tsx prisma/video-team-setup.ts 'lead=Poorna' 'shoots=Poorna,Mallesh'
 //   npx tsx prisma/video-team-setup.ts 'counts=/tmp/editing-count.csv' 'clients=/tmp/client-videos.csv'
 //
+// Design team — add 'team=design' (lead= and counts= then mean the designers); postings= loads
+// the designers' "Assigned Postings" into the current week (or 'week=2026-10-05'):
+//   npx tsx prisma/video-team-setup.ts 'team=design' 'lead=Venkat' 'counts=/tmp/design-count.csv' 'postings=/tmp/design-postings.csv'
+//
 // Any of the four can be left out. Uses the same Prisma + SQLite adapter as the app.
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaClient } from "../src/generated/prisma/client.js";
 import { readFileSync } from "node:fs";
-import { matchPerson, planEditCounts, planVideoJobs } from "../src/lib/video-import-core";
+import { matchPerson, planEditCounts, planVideoJobs, planDesignPostings } from "../src/lib/video-import-core";
 
 (function loadEnv() {
   for (const p of [".env", "prisma/../.env"]) {
@@ -33,24 +37,27 @@ const args = new Map(process.argv.slice(2).map((a) => { const i = a.indexOf("=")
 const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
 
 async function main() {
-  const editors = await prisma.user.findMany({ where: { role: "EDITOR" }, select: { id: true, name: true, active: true } });
+  const design = (args.get("team") ?? "").toLowerCase().startsWith("design");
+  const ROLE = design ? "DESIGNER" : "EDITOR";
+  const LABEL = design ? "Designer" : "Video Editor";
+  const editors = await prisma.user.findMany({ where: { role: ROLE }, select: { id: true, name: true, active: true } });
   const names = editors.map((e) => e.name).join(", ") || "(none)";
-  console.log(`Video editors in Team: ${names}`);
+  console.log(`${LABEL}s in Team: ${names}`);
   const find = (name: string) => {
     const u = matchPerson(name, editors);
-    if (!u) console.log(`  ! No Video Editor matches "${name}" — add them in Team (role Video Editor), then run this again.`);
+    if (!u) console.log(`  ! No ${LABEL} matches "${name}" — add them in Team (role ${LABEL}), then run this again.`);
     return u;
   };
 
   if (args.has("lead")) {
     const u = find(args.get("lead")!);
     if (u) {
-      await prisma.user.updateMany({ where: { role: "EDITOR", teamLead: true, id: { not: u.id } }, data: { teamLead: false } });
+      await prisma.user.updateMany({ where: { role: ROLE, teamLead: true, id: { not: u.id } }, data: { teamLead: false } });
       await prisma.user.update({ where: { id: u.id }, data: { teamLead: true } });
-      console.log(`Team lead: ${u.name}`);
+      console.log(`${design ? "Design" : "Video"} team lead: ${u.name}`);
     }
   }
-  if (args.has("shoots")) {
+  if (args.has("shoots") && !design) {
     const picked = args.get("shoots")!.split(",").map((x) => x.trim()).filter(Boolean).map(find).filter((u): u is NonNullable<typeof u> => !!u);
     if (picked.length) {
       const ids = picked.map((u) => u.id);
@@ -68,9 +75,9 @@ async function main() {
         where: { userId_date: { userId: d.userId, date: d.date } },
         create: { ...d, updatedBy: "Sheet import" }, update: { count: d.count, updatedBy: "Sheet import" },
       })));
-      console.log(`Editing count: ${plan.data.length} day counts imported.`);
+      console.log(`${design ? "Design" : "Editing"} count: ${plan.data.length} day counts imported.`);
       for (const l of plan.perEditor) console.log(`  ${l}`);
-      if (plan.missing.length) console.log(`  ! NOT imported — no Video Editor with this name: ${plan.missing.join(", ")}`);
+      if (plan.missing.length) console.log(`  ! NOT imported — no ${LABEL} with this name: ${plan.missing.join(", ")}`);
     }
   }
   if (args.has("clients")) {
@@ -87,6 +94,27 @@ async function main() {
       console.log(`Client videos: ${plan.ops.length} client shoots imported (${plan.added} new, ${plan.replaced} replaced), ${plan.linked} linked to a CRM client.`);
       if (plan.noLogin.length) console.log(`  ! Editors without a login (kept as a name only): ${plan.noLogin.join(", ")}`);
       if (plan.badDates.length) console.log(`  ! Rows skipped (date): ${plan.badDates.slice(0, 5).join("; ")}`);
+    }
+  }
+  if (args.has("postings")) {
+    // Monday of the given week (or of today)
+    const base = /^\d{4}-\d{2}-\d{2}$/.test(args.get("week") ?? "") ? args.get("week")! : today;
+    const d0 = new Date(`${base}T00:00:00Z`);
+    const week = new Date(d0.getTime() - ((d0.getUTCDay() + 6) % 7) * 86400000).toISOString().slice(0, 10);
+    const [designers, clients, existing] = await Promise.all([
+      prisma.user.findMany({ where: { role: "DESIGNER" }, select: { id: true, name: true } }),
+      prisma.client.findMany({ select: { id: true, name: true } }),
+      prisma.designPosting.findMany({ where: { weekStart: week }, select: { id: true, userId: true, clientName: true } }),
+    ]);
+    const plan = planDesignPostings(readFileSync(args.get("postings")!, "utf8"), designers, clients, existing);
+    if ("error" in plan) console.log(`Assigned postings NOT imported: ${plan.error}`);
+    else {
+      await prisma.$transaction(plan.ops.map((o) => (o.id
+        ? prisma.designPosting.update({ where: { id: o.id }, data: { ...o.data, updatedBy: "Sheet import" } })
+        : prisma.designPosting.create({ data: { ...o.data, weekStart: week, updatedBy: "Sheet import" } }))));
+      console.log(`Assigned postings: ${plan.ops.length} client rows imported into the week starting ${week} (${plan.added} new, ${plan.replaced} replaced).`);
+      for (const l of plan.perDesigner) console.log(`  ${l}`);
+      if (plan.missing.length) console.log(`  ! NOT imported — no Designer with this name: ${plan.missing.join(", ")}`);
     }
   }
   console.log("VIDEO_SETUP_DONE");

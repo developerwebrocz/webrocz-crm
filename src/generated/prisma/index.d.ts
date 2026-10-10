@@ -213,6 +213,11 @@ export type Expense = $Result.DefaultSelection<Prisma.$ExpensePayload>
  * 
  */
 export type VideoJob = $Result.DefaultSelection<Prisma.$VideoJobPayload>
+/**
+ * Model DesignPosting
+ * 
+ */
+export type DesignPosting = $Result.DefaultSelection<Prisma.$DesignPostingPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -734,6 +739,16 @@ export class PrismaClient<
     * ```
     */
   get videoJob(): Prisma.VideoJobDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.designPosting`: Exposes CRUD operations for the **DesignPosting** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DesignPostings
+    * const designPostings = await prisma.designPosting.findMany()
+    * ```
+    */
+  get designPosting(): Prisma.DesignPostingDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1220,7 +1235,8 @@ export namespace Prisma {
     Reminder: 'Reminder',
     Meeting: 'Meeting',
     Expense: 'Expense',
-    VideoJob: 'VideoJob'
+    VideoJob: 'VideoJob',
+    DesignPosting: 'DesignPosting'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1236,7 +1252,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "editCount" | "task" | "timeSession" | "client" | "clientContact" | "clientService" | "deliverable" | "assignment" | "workUpdate" | "invoice" | "salesInvoice" | "payment" | "sla" | "candidate" | "campaignEntry" | "devProject" | "devTask" | "devActivity" | "socialPost" | "seoAnalytics" | "seoBlogSlot" | "seoKeyword" | "seoBacklink" | "gmbClient" | "seoReport" | "creativeTask" | "shoot" | "googleAdsCampaign" | "adsPerformance" | "notification" | "lead" | "leadActivity" | "followup" | "quotation" | "proposal" | "reminder" | "meeting" | "expense" | "videoJob"
+      modelProps: "user" | "editCount" | "task" | "timeSession" | "client" | "clientContact" | "clientService" | "deliverable" | "assignment" | "workUpdate" | "invoice" | "salesInvoice" | "payment" | "sla" | "candidate" | "campaignEntry" | "devProject" | "devTask" | "devActivity" | "socialPost" | "seoAnalytics" | "seoBlogSlot" | "seoKeyword" | "seoBacklink" | "gmbClient" | "seoReport" | "creativeTask" | "shoot" | "googleAdsCampaign" | "adsPerformance" | "notification" | "lead" | "leadActivity" | "followup" | "quotation" | "proposal" | "reminder" | "meeting" | "expense" | "videoJob" | "designPosting"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4200,6 +4216,80 @@ export namespace Prisma {
           }
         }
       }
+      DesignPosting: {
+        payload: Prisma.$DesignPostingPayload<ExtArgs>
+        fields: Prisma.DesignPostingFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DesignPostingFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DesignPostingPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DesignPostingFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DesignPostingPayload>
+          }
+          findFirst: {
+            args: Prisma.DesignPostingFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DesignPostingPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DesignPostingFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DesignPostingPayload>
+          }
+          findMany: {
+            args: Prisma.DesignPostingFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DesignPostingPayload>[]
+          }
+          create: {
+            args: Prisma.DesignPostingCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DesignPostingPayload>
+          }
+          createMany: {
+            args: Prisma.DesignPostingCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DesignPostingCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DesignPostingPayload>[]
+          }
+          delete: {
+            args: Prisma.DesignPostingDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DesignPostingPayload>
+          }
+          update: {
+            args: Prisma.DesignPostingUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DesignPostingPayload>
+          }
+          deleteMany: {
+            args: Prisma.DesignPostingDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DesignPostingUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DesignPostingUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DesignPostingPayload>[]
+          }
+          upsert: {
+            args: Prisma.DesignPostingUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DesignPostingPayload>
+          }
+          aggregate: {
+            args: Prisma.DesignPostingAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDesignPosting>
+          }
+          groupBy: {
+            args: Prisma.DesignPostingGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DesignPostingGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DesignPostingCountArgs<ExtArgs>
+            result: $Utils.Optional<DesignPostingCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -4363,6 +4453,7 @@ export namespace Prisma {
     meeting?: MeetingOmit
     expense?: ExpenseOmit
     videoJob?: VideoJobOmit
+    designPosting?: DesignPostingOmit
   }
 
   /* Types for Logging */
@@ -4456,6 +4547,7 @@ export namespace Prisma {
     shoots: number
     shootRequests: number
     editCounts: number
+    designPostings: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4472,6 +4564,7 @@ export namespace Prisma {
     shoots?: boolean | UserCountOutputTypeCountShootsArgs
     shootRequests?: boolean | UserCountOutputTypeCountShootRequestsArgs
     editCounts?: boolean | UserCountOutputTypeCountEditCountsArgs
+    designPostings?: boolean | UserCountOutputTypeCountDesignPostingsArgs
   }
 
   // Custom InputTypes
@@ -4576,6 +4669,13 @@ export namespace Prisma {
     where?: EditCountWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountDesignPostingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DesignPostingWhereInput
+  }
+
 
   /**
    * Count Type ClientCountOutputType
@@ -4605,6 +4705,7 @@ export namespace Prisma {
     seoReports: number
     shoots: number
     videoJobs: number
+    designPostings: number
   }
 
   export type ClientCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4631,6 +4732,7 @@ export namespace Prisma {
     seoReports?: boolean | ClientCountOutputTypeCountSeoReportsArgs
     shoots?: boolean | ClientCountOutputTypeCountShootsArgs
     videoJobs?: boolean | ClientCountOutputTypeCountVideoJobsArgs
+    designPostings?: boolean | ClientCountOutputTypeCountDesignPostingsArgs
   }
 
   // Custom InputTypes
@@ -4803,6 +4905,13 @@ export namespace Prisma {
    */
   export type ClientCountOutputTypeCountVideoJobsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: VideoJobWhereInput
+  }
+
+  /**
+   * ClientCountOutputType without action
+   */
+  export type ClientCountOutputTypeCountDesignPostingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DesignPostingWhereInput
   }
 
 
@@ -5174,6 +5283,7 @@ export namespace Prisma {
     shoots?: boolean | User$shootsArgs<ExtArgs>
     shootRequests?: boolean | User$shootRequestsArgs<ExtArgs>
     editCounts?: boolean | User$editCountsArgs<ExtArgs>
+    designPostings?: boolean | User$designPostingsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -5231,6 +5341,7 @@ export namespace Prisma {
     shoots?: boolean | User$shootsArgs<ExtArgs>
     shootRequests?: boolean | User$shootRequestsArgs<ExtArgs>
     editCounts?: boolean | User$editCountsArgs<ExtArgs>
+    designPostings?: boolean | User$designPostingsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5252,6 +5363,7 @@ export namespace Prisma {
       shoots: Prisma.$ShootPayload<ExtArgs>[]
       shootRequests: Prisma.$ShootPayload<ExtArgs>[]
       editCounts: Prisma.$EditCountPayload<ExtArgs>[]
+      designPostings: Prisma.$DesignPostingPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5671,6 +5783,7 @@ export namespace Prisma {
     shoots<T extends User$shootsArgs<ExtArgs> = {}>(args?: Subset<T, User$shootsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     shootRequests<T extends User$shootRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$shootRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     editCounts<T extends User$editCountsArgs<ExtArgs> = {}>(args?: Subset<T, User$editCountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EditCountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    designPostings<T extends User$designPostingsArgs<ExtArgs> = {}>(args?: Subset<T, User$designPostingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DesignPostingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6410,6 +6523,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: EditCountScalarFieldEnum | EditCountScalarFieldEnum[]
+  }
+
+  /**
+   * User.designPostings
+   */
+  export type User$designPostingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DesignPosting
+     */
+    select?: DesignPostingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DesignPosting
+     */
+    omit?: DesignPostingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DesignPostingInclude<ExtArgs> | null
+    where?: DesignPostingWhereInput
+    orderBy?: DesignPostingOrderByWithRelationInput | DesignPostingOrderByWithRelationInput[]
+    cursor?: DesignPostingWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DesignPostingScalarFieldEnum | DesignPostingScalarFieldEnum[]
   }
 
   /**
@@ -10459,6 +10596,7 @@ export namespace Prisma {
     seoReports?: boolean | Client$seoReportsArgs<ExtArgs>
     shoots?: boolean | Client$shootsArgs<ExtArgs>
     videoJobs?: boolean | Client$videoJobsArgs<ExtArgs>
+    designPostings?: boolean | Client$designPostingsArgs<ExtArgs>
     _count?: boolean | ClientCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["client"]>
 
@@ -10634,6 +10772,7 @@ export namespace Prisma {
     seoReports?: boolean | Client$seoReportsArgs<ExtArgs>
     shoots?: boolean | Client$shootsArgs<ExtArgs>
     videoJobs?: boolean | Client$videoJobsArgs<ExtArgs>
+    designPostings?: boolean | Client$designPostingsArgs<ExtArgs>
     _count?: boolean | ClientCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ClientIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10670,6 +10809,7 @@ export namespace Prisma {
       seoReports: Prisma.$SeoReportPayload<ExtArgs>[]
       shoots: Prisma.$ShootPayload<ExtArgs>[]
       videoJobs: Prisma.$VideoJobPayload<ExtArgs>[]
+      designPostings: Prisma.$DesignPostingPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -11135,6 +11275,7 @@ export namespace Prisma {
     seoReports<T extends Client$seoReportsArgs<ExtArgs> = {}>(args?: Subset<T, Client$seoReportsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeoReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     shoots<T extends Client$shootsArgs<ExtArgs> = {}>(args?: Subset<T, Client$shootsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     videoJobs<T extends Client$videoJobsArgs<ExtArgs> = {}>(args?: Subset<T, Client$videoJobsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VideoJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    designPostings<T extends Client$designPostingsArgs<ExtArgs> = {}>(args?: Subset<T, Client$designPostingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DesignPostingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -12176,6 +12317,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: VideoJobScalarFieldEnum | VideoJobScalarFieldEnum[]
+  }
+
+  /**
+   * Client.designPostings
+   */
+  export type Client$designPostingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DesignPosting
+     */
+    select?: DesignPostingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DesignPosting
+     */
+    omit?: DesignPostingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DesignPostingInclude<ExtArgs> | null
+    where?: DesignPostingWhereInput
+    orderBy?: DesignPostingOrderByWithRelationInput | DesignPostingOrderByWithRelationInput[]
+    cursor?: DesignPostingWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DesignPostingScalarFieldEnum | DesignPostingScalarFieldEnum[]
   }
 
   /**
@@ -54025,6 +54190,1227 @@ export namespace Prisma {
 
 
   /**
+   * Model DesignPosting
+   */
+
+  export type AggregateDesignPosting = {
+    _count: DesignPostingCountAggregateOutputType | null
+    _avg: DesignPostingAvgAggregateOutputType | null
+    _sum: DesignPostingSumAggregateOutputType | null
+    _min: DesignPostingMinAggregateOutputType | null
+    _max: DesignPostingMaxAggregateOutputType | null
+  }
+
+  export type DesignPostingAvgAggregateOutputType = {
+    monthlyPosts: number | null
+    target: number | null
+    done: number | null
+  }
+
+  export type DesignPostingSumAggregateOutputType = {
+    monthlyPosts: number | null
+    target: number | null
+    done: number | null
+  }
+
+  export type DesignPostingMinAggregateOutputType = {
+    id: string | null
+    weekStart: string | null
+    userId: string | null
+    clientId: string | null
+    clientName: string | null
+    monthlyPosts: number | null
+    target: number | null
+    done: number | null
+    note: string | null
+    updatedBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DesignPostingMaxAggregateOutputType = {
+    id: string | null
+    weekStart: string | null
+    userId: string | null
+    clientId: string | null
+    clientName: string | null
+    monthlyPosts: number | null
+    target: number | null
+    done: number | null
+    note: string | null
+    updatedBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DesignPostingCountAggregateOutputType = {
+    id: number
+    weekStart: number
+    userId: number
+    clientId: number
+    clientName: number
+    monthlyPosts: number
+    target: number
+    done: number
+    note: number
+    updatedBy: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type DesignPostingAvgAggregateInputType = {
+    monthlyPosts?: true
+    target?: true
+    done?: true
+  }
+
+  export type DesignPostingSumAggregateInputType = {
+    monthlyPosts?: true
+    target?: true
+    done?: true
+  }
+
+  export type DesignPostingMinAggregateInputType = {
+    id?: true
+    weekStart?: true
+    userId?: true
+    clientId?: true
+    clientName?: true
+    monthlyPosts?: true
+    target?: true
+    done?: true
+    note?: true
+    updatedBy?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DesignPostingMaxAggregateInputType = {
+    id?: true
+    weekStart?: true
+    userId?: true
+    clientId?: true
+    clientName?: true
+    monthlyPosts?: true
+    target?: true
+    done?: true
+    note?: true
+    updatedBy?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DesignPostingCountAggregateInputType = {
+    id?: true
+    weekStart?: true
+    userId?: true
+    clientId?: true
+    clientName?: true
+    monthlyPosts?: true
+    target?: true
+    done?: true
+    note?: true
+    updatedBy?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type DesignPostingAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DesignPosting to aggregate.
+     */
+    where?: DesignPostingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DesignPostings to fetch.
+     */
+    orderBy?: DesignPostingOrderByWithRelationInput | DesignPostingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DesignPostingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DesignPostings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DesignPostings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DesignPostings
+    **/
+    _count?: true | DesignPostingCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DesignPostingAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DesignPostingSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DesignPostingMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DesignPostingMaxAggregateInputType
+  }
+
+  export type GetDesignPostingAggregateType<T extends DesignPostingAggregateArgs> = {
+        [P in keyof T & keyof AggregateDesignPosting]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDesignPosting[P]>
+      : GetScalarType<T[P], AggregateDesignPosting[P]>
+  }
+
+
+
+
+  export type DesignPostingGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DesignPostingWhereInput
+    orderBy?: DesignPostingOrderByWithAggregationInput | DesignPostingOrderByWithAggregationInput[]
+    by: DesignPostingScalarFieldEnum[] | DesignPostingScalarFieldEnum
+    having?: DesignPostingScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DesignPostingCountAggregateInputType | true
+    _avg?: DesignPostingAvgAggregateInputType
+    _sum?: DesignPostingSumAggregateInputType
+    _min?: DesignPostingMinAggregateInputType
+    _max?: DesignPostingMaxAggregateInputType
+  }
+
+  export type DesignPostingGroupByOutputType = {
+    id: string
+    weekStart: string
+    userId: string
+    clientId: string | null
+    clientName: string
+    monthlyPosts: number
+    target: number
+    done: number
+    note: string
+    updatedBy: string
+    createdAt: Date
+    updatedAt: Date
+    _count: DesignPostingCountAggregateOutputType | null
+    _avg: DesignPostingAvgAggregateOutputType | null
+    _sum: DesignPostingSumAggregateOutputType | null
+    _min: DesignPostingMinAggregateOutputType | null
+    _max: DesignPostingMaxAggregateOutputType | null
+  }
+
+  type GetDesignPostingGroupByPayload<T extends DesignPostingGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DesignPostingGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DesignPostingGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DesignPostingGroupByOutputType[P]>
+            : GetScalarType<T[P], DesignPostingGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DesignPostingSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    weekStart?: boolean
+    userId?: boolean
+    clientId?: boolean
+    clientName?: boolean
+    monthlyPosts?: boolean
+    target?: boolean
+    done?: boolean
+    note?: boolean
+    updatedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    client?: boolean | DesignPosting$clientArgs<ExtArgs>
+  }, ExtArgs["result"]["designPosting"]>
+
+  export type DesignPostingSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    weekStart?: boolean
+    userId?: boolean
+    clientId?: boolean
+    clientName?: boolean
+    monthlyPosts?: boolean
+    target?: boolean
+    done?: boolean
+    note?: boolean
+    updatedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    client?: boolean | DesignPosting$clientArgs<ExtArgs>
+  }, ExtArgs["result"]["designPosting"]>
+
+  export type DesignPostingSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    weekStart?: boolean
+    userId?: boolean
+    clientId?: boolean
+    clientName?: boolean
+    monthlyPosts?: boolean
+    target?: boolean
+    done?: boolean
+    note?: boolean
+    updatedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    client?: boolean | DesignPosting$clientArgs<ExtArgs>
+  }, ExtArgs["result"]["designPosting"]>
+
+  export type DesignPostingSelectScalar = {
+    id?: boolean
+    weekStart?: boolean
+    userId?: boolean
+    clientId?: boolean
+    clientName?: boolean
+    monthlyPosts?: boolean
+    target?: boolean
+    done?: boolean
+    note?: boolean
+    updatedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type DesignPostingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "weekStart" | "userId" | "clientId" | "clientName" | "monthlyPosts" | "target" | "done" | "note" | "updatedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["designPosting"]>
+  export type DesignPostingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    client?: boolean | DesignPosting$clientArgs<ExtArgs>
+  }
+  export type DesignPostingIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    client?: boolean | DesignPosting$clientArgs<ExtArgs>
+  }
+  export type DesignPostingIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    client?: boolean | DesignPosting$clientArgs<ExtArgs>
+  }
+
+  export type $DesignPostingPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DesignPosting"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      client: Prisma.$ClientPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      weekStart: string
+      userId: string
+      clientId: string | null
+      clientName: string
+      monthlyPosts: number
+      target: number
+      done: number
+      note: string
+      updatedBy: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["designPosting"]>
+    composites: {}
+  }
+
+  type DesignPostingGetPayload<S extends boolean | null | undefined | DesignPostingDefaultArgs> = $Result.GetResult<Prisma.$DesignPostingPayload, S>
+
+  type DesignPostingCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DesignPostingFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DesignPostingCountAggregateInputType | true
+    }
+
+  export interface DesignPostingDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DesignPosting'], meta: { name: 'DesignPosting' } }
+    /**
+     * Find zero or one DesignPosting that matches the filter.
+     * @param {DesignPostingFindUniqueArgs} args - Arguments to find a DesignPosting
+     * @example
+     * // Get one DesignPosting
+     * const designPosting = await prisma.designPosting.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DesignPostingFindUniqueArgs>(args: SelectSubset<T, DesignPostingFindUniqueArgs<ExtArgs>>): Prisma__DesignPostingClient<$Result.GetResult<Prisma.$DesignPostingPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DesignPosting that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DesignPostingFindUniqueOrThrowArgs} args - Arguments to find a DesignPosting
+     * @example
+     * // Get one DesignPosting
+     * const designPosting = await prisma.designPosting.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DesignPostingFindUniqueOrThrowArgs>(args: SelectSubset<T, DesignPostingFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DesignPostingClient<$Result.GetResult<Prisma.$DesignPostingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DesignPosting that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DesignPostingFindFirstArgs} args - Arguments to find a DesignPosting
+     * @example
+     * // Get one DesignPosting
+     * const designPosting = await prisma.designPosting.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DesignPostingFindFirstArgs>(args?: SelectSubset<T, DesignPostingFindFirstArgs<ExtArgs>>): Prisma__DesignPostingClient<$Result.GetResult<Prisma.$DesignPostingPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DesignPosting that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DesignPostingFindFirstOrThrowArgs} args - Arguments to find a DesignPosting
+     * @example
+     * // Get one DesignPosting
+     * const designPosting = await prisma.designPosting.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DesignPostingFindFirstOrThrowArgs>(args?: SelectSubset<T, DesignPostingFindFirstOrThrowArgs<ExtArgs>>): Prisma__DesignPostingClient<$Result.GetResult<Prisma.$DesignPostingPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DesignPostings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DesignPostingFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DesignPostings
+     * const designPostings = await prisma.designPosting.findMany()
+     * 
+     * // Get first 10 DesignPostings
+     * const designPostings = await prisma.designPosting.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const designPostingWithIdOnly = await prisma.designPosting.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DesignPostingFindManyArgs>(args?: SelectSubset<T, DesignPostingFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DesignPostingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DesignPosting.
+     * @param {DesignPostingCreateArgs} args - Arguments to create a DesignPosting.
+     * @example
+     * // Create one DesignPosting
+     * const DesignPosting = await prisma.designPosting.create({
+     *   data: {
+     *     // ... data to create a DesignPosting
+     *   }
+     * })
+     * 
+     */
+    create<T extends DesignPostingCreateArgs>(args: SelectSubset<T, DesignPostingCreateArgs<ExtArgs>>): Prisma__DesignPostingClient<$Result.GetResult<Prisma.$DesignPostingPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DesignPostings.
+     * @param {DesignPostingCreateManyArgs} args - Arguments to create many DesignPostings.
+     * @example
+     * // Create many DesignPostings
+     * const designPosting = await prisma.designPosting.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DesignPostingCreateManyArgs>(args?: SelectSubset<T, DesignPostingCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DesignPostings and returns the data saved in the database.
+     * @param {DesignPostingCreateManyAndReturnArgs} args - Arguments to create many DesignPostings.
+     * @example
+     * // Create many DesignPostings
+     * const designPosting = await prisma.designPosting.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DesignPostings and only return the `id`
+     * const designPostingWithIdOnly = await prisma.designPosting.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DesignPostingCreateManyAndReturnArgs>(args?: SelectSubset<T, DesignPostingCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DesignPostingPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DesignPosting.
+     * @param {DesignPostingDeleteArgs} args - Arguments to delete one DesignPosting.
+     * @example
+     * // Delete one DesignPosting
+     * const DesignPosting = await prisma.designPosting.delete({
+     *   where: {
+     *     // ... filter to delete one DesignPosting
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DesignPostingDeleteArgs>(args: SelectSubset<T, DesignPostingDeleteArgs<ExtArgs>>): Prisma__DesignPostingClient<$Result.GetResult<Prisma.$DesignPostingPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DesignPosting.
+     * @param {DesignPostingUpdateArgs} args - Arguments to update one DesignPosting.
+     * @example
+     * // Update one DesignPosting
+     * const designPosting = await prisma.designPosting.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DesignPostingUpdateArgs>(args: SelectSubset<T, DesignPostingUpdateArgs<ExtArgs>>): Prisma__DesignPostingClient<$Result.GetResult<Prisma.$DesignPostingPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DesignPostings.
+     * @param {DesignPostingDeleteManyArgs} args - Arguments to filter DesignPostings to delete.
+     * @example
+     * // Delete a few DesignPostings
+     * const { count } = await prisma.designPosting.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DesignPostingDeleteManyArgs>(args?: SelectSubset<T, DesignPostingDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DesignPostings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DesignPostingUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DesignPostings
+     * const designPosting = await prisma.designPosting.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DesignPostingUpdateManyArgs>(args: SelectSubset<T, DesignPostingUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DesignPostings and returns the data updated in the database.
+     * @param {DesignPostingUpdateManyAndReturnArgs} args - Arguments to update many DesignPostings.
+     * @example
+     * // Update many DesignPostings
+     * const designPosting = await prisma.designPosting.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DesignPostings and only return the `id`
+     * const designPostingWithIdOnly = await prisma.designPosting.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DesignPostingUpdateManyAndReturnArgs>(args: SelectSubset<T, DesignPostingUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DesignPostingPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DesignPosting.
+     * @param {DesignPostingUpsertArgs} args - Arguments to update or create a DesignPosting.
+     * @example
+     * // Update or create a DesignPosting
+     * const designPosting = await prisma.designPosting.upsert({
+     *   create: {
+     *     // ... data to create a DesignPosting
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DesignPosting we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DesignPostingUpsertArgs>(args: SelectSubset<T, DesignPostingUpsertArgs<ExtArgs>>): Prisma__DesignPostingClient<$Result.GetResult<Prisma.$DesignPostingPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DesignPostings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DesignPostingCountArgs} args - Arguments to filter DesignPostings to count.
+     * @example
+     * // Count the number of DesignPostings
+     * const count = await prisma.designPosting.count({
+     *   where: {
+     *     // ... the filter for the DesignPostings we want to count
+     *   }
+     * })
+    **/
+    count<T extends DesignPostingCountArgs>(
+      args?: Subset<T, DesignPostingCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DesignPostingCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DesignPosting.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DesignPostingAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DesignPostingAggregateArgs>(args: Subset<T, DesignPostingAggregateArgs>): Prisma.PrismaPromise<GetDesignPostingAggregateType<T>>
+
+    /**
+     * Group by DesignPosting.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DesignPostingGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DesignPostingGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DesignPostingGroupByArgs['orderBy'] }
+        : { orderBy?: DesignPostingGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DesignPostingGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDesignPostingGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DesignPosting model
+   */
+  readonly fields: DesignPostingFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DesignPosting.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DesignPostingClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    client<T extends DesignPosting$clientArgs<ExtArgs> = {}>(args?: Subset<T, DesignPosting$clientArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DesignPosting model
+   */
+  interface DesignPostingFieldRefs {
+    readonly id: FieldRef<"DesignPosting", 'String'>
+    readonly weekStart: FieldRef<"DesignPosting", 'String'>
+    readonly userId: FieldRef<"DesignPosting", 'String'>
+    readonly clientId: FieldRef<"DesignPosting", 'String'>
+    readonly clientName: FieldRef<"DesignPosting", 'String'>
+    readonly monthlyPosts: FieldRef<"DesignPosting", 'Int'>
+    readonly target: FieldRef<"DesignPosting", 'Int'>
+    readonly done: FieldRef<"DesignPosting", 'Int'>
+    readonly note: FieldRef<"DesignPosting", 'String'>
+    readonly updatedBy: FieldRef<"DesignPosting", 'String'>
+    readonly createdAt: FieldRef<"DesignPosting", 'DateTime'>
+    readonly updatedAt: FieldRef<"DesignPosting", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DesignPosting findUnique
+   */
+  export type DesignPostingFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DesignPosting
+     */
+    select?: DesignPostingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DesignPosting
+     */
+    omit?: DesignPostingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DesignPostingInclude<ExtArgs> | null
+    /**
+     * Filter, which DesignPosting to fetch.
+     */
+    where: DesignPostingWhereUniqueInput
+  }
+
+  /**
+   * DesignPosting findUniqueOrThrow
+   */
+  export type DesignPostingFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DesignPosting
+     */
+    select?: DesignPostingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DesignPosting
+     */
+    omit?: DesignPostingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DesignPostingInclude<ExtArgs> | null
+    /**
+     * Filter, which DesignPosting to fetch.
+     */
+    where: DesignPostingWhereUniqueInput
+  }
+
+  /**
+   * DesignPosting findFirst
+   */
+  export type DesignPostingFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DesignPosting
+     */
+    select?: DesignPostingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DesignPosting
+     */
+    omit?: DesignPostingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DesignPostingInclude<ExtArgs> | null
+    /**
+     * Filter, which DesignPosting to fetch.
+     */
+    where?: DesignPostingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DesignPostings to fetch.
+     */
+    orderBy?: DesignPostingOrderByWithRelationInput | DesignPostingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DesignPostings.
+     */
+    cursor?: DesignPostingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DesignPostings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DesignPostings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DesignPostings.
+     */
+    distinct?: DesignPostingScalarFieldEnum | DesignPostingScalarFieldEnum[]
+  }
+
+  /**
+   * DesignPosting findFirstOrThrow
+   */
+  export type DesignPostingFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DesignPosting
+     */
+    select?: DesignPostingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DesignPosting
+     */
+    omit?: DesignPostingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DesignPostingInclude<ExtArgs> | null
+    /**
+     * Filter, which DesignPosting to fetch.
+     */
+    where?: DesignPostingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DesignPostings to fetch.
+     */
+    orderBy?: DesignPostingOrderByWithRelationInput | DesignPostingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DesignPostings.
+     */
+    cursor?: DesignPostingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DesignPostings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DesignPostings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DesignPostings.
+     */
+    distinct?: DesignPostingScalarFieldEnum | DesignPostingScalarFieldEnum[]
+  }
+
+  /**
+   * DesignPosting findMany
+   */
+  export type DesignPostingFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DesignPosting
+     */
+    select?: DesignPostingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DesignPosting
+     */
+    omit?: DesignPostingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DesignPostingInclude<ExtArgs> | null
+    /**
+     * Filter, which DesignPostings to fetch.
+     */
+    where?: DesignPostingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DesignPostings to fetch.
+     */
+    orderBy?: DesignPostingOrderByWithRelationInput | DesignPostingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DesignPostings.
+     */
+    cursor?: DesignPostingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DesignPostings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DesignPostings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DesignPostings.
+     */
+    distinct?: DesignPostingScalarFieldEnum | DesignPostingScalarFieldEnum[]
+  }
+
+  /**
+   * DesignPosting create
+   */
+  export type DesignPostingCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DesignPosting
+     */
+    select?: DesignPostingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DesignPosting
+     */
+    omit?: DesignPostingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DesignPostingInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DesignPosting.
+     */
+    data: XOR<DesignPostingCreateInput, DesignPostingUncheckedCreateInput>
+  }
+
+  /**
+   * DesignPosting createMany
+   */
+  export type DesignPostingCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DesignPostings.
+     */
+    data: DesignPostingCreateManyInput | DesignPostingCreateManyInput[]
+  }
+
+  /**
+   * DesignPosting createManyAndReturn
+   */
+  export type DesignPostingCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DesignPosting
+     */
+    select?: DesignPostingSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DesignPosting
+     */
+    omit?: DesignPostingOmit<ExtArgs> | null
+    /**
+     * The data used to create many DesignPostings.
+     */
+    data: DesignPostingCreateManyInput | DesignPostingCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DesignPostingIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DesignPosting update
+   */
+  export type DesignPostingUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DesignPosting
+     */
+    select?: DesignPostingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DesignPosting
+     */
+    omit?: DesignPostingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DesignPostingInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DesignPosting.
+     */
+    data: XOR<DesignPostingUpdateInput, DesignPostingUncheckedUpdateInput>
+    /**
+     * Choose, which DesignPosting to update.
+     */
+    where: DesignPostingWhereUniqueInput
+  }
+
+  /**
+   * DesignPosting updateMany
+   */
+  export type DesignPostingUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DesignPostings.
+     */
+    data: XOR<DesignPostingUpdateManyMutationInput, DesignPostingUncheckedUpdateManyInput>
+    /**
+     * Filter which DesignPostings to update
+     */
+    where?: DesignPostingWhereInput
+    /**
+     * Limit how many DesignPostings to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DesignPosting updateManyAndReturn
+   */
+  export type DesignPostingUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DesignPosting
+     */
+    select?: DesignPostingSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DesignPosting
+     */
+    omit?: DesignPostingOmit<ExtArgs> | null
+    /**
+     * The data used to update DesignPostings.
+     */
+    data: XOR<DesignPostingUpdateManyMutationInput, DesignPostingUncheckedUpdateManyInput>
+    /**
+     * Filter which DesignPostings to update
+     */
+    where?: DesignPostingWhereInput
+    /**
+     * Limit how many DesignPostings to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DesignPostingIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DesignPosting upsert
+   */
+  export type DesignPostingUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DesignPosting
+     */
+    select?: DesignPostingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DesignPosting
+     */
+    omit?: DesignPostingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DesignPostingInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DesignPosting to update in case it exists.
+     */
+    where: DesignPostingWhereUniqueInput
+    /**
+     * In case the DesignPosting found by the `where` argument doesn't exist, create a new DesignPosting with this data.
+     */
+    create: XOR<DesignPostingCreateInput, DesignPostingUncheckedCreateInput>
+    /**
+     * In case the DesignPosting was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DesignPostingUpdateInput, DesignPostingUncheckedUpdateInput>
+  }
+
+  /**
+   * DesignPosting delete
+   */
+  export type DesignPostingDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DesignPosting
+     */
+    select?: DesignPostingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DesignPosting
+     */
+    omit?: DesignPostingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DesignPostingInclude<ExtArgs> | null
+    /**
+     * Filter which DesignPosting to delete.
+     */
+    where: DesignPostingWhereUniqueInput
+  }
+
+  /**
+   * DesignPosting deleteMany
+   */
+  export type DesignPostingDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DesignPostings to delete
+     */
+    where?: DesignPostingWhereInput
+    /**
+     * Limit how many DesignPostings to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DesignPosting.client
+   */
+  export type DesignPosting$clientArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Client
+     */
+    select?: ClientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Client
+     */
+    omit?: ClientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientInclude<ExtArgs> | null
+    where?: ClientWhereInput
+  }
+
+  /**
+   * DesignPosting without action
+   */
+  export type DesignPostingDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DesignPosting
+     */
+    select?: DesignPostingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DesignPosting
+     */
+    omit?: DesignPostingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DesignPostingInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -54791,6 +56177,24 @@ export namespace Prisma {
   export type VideoJobScalarFieldEnum = (typeof VideoJobScalarFieldEnum)[keyof typeof VideoJobScalarFieldEnum]
 
 
+  export const DesignPostingScalarFieldEnum: {
+    id: 'id',
+    weekStart: 'weekStart',
+    userId: 'userId',
+    clientId: 'clientId',
+    clientName: 'clientName',
+    monthlyPosts: 'monthlyPosts',
+    target: 'target',
+    done: 'done',
+    note: 'note',
+    updatedBy: 'updatedBy',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type DesignPostingScalarFieldEnum = (typeof DesignPostingScalarFieldEnum)[keyof typeof DesignPostingScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -54877,6 +56281,7 @@ export namespace Prisma {
     shoots?: ShootListRelationFilter
     shootRequests?: ShootListRelationFilter
     editCounts?: EditCountListRelationFilter
+    designPostings?: DesignPostingListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -54903,6 +56308,7 @@ export namespace Prisma {
     shoots?: ShootOrderByRelationAggregateInput
     shootRequests?: ShootOrderByRelationAggregateInput
     editCounts?: EditCountOrderByRelationAggregateInput
+    designPostings?: DesignPostingOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -54932,6 +56338,7 @@ export namespace Prisma {
     shoots?: ShootListRelationFilter
     shootRequests?: ShootListRelationFilter
     editCounts?: EditCountListRelationFilter
+    designPostings?: DesignPostingListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -55275,6 +56682,7 @@ export namespace Prisma {
     seoReports?: SeoReportListRelationFilter
     shoots?: ShootListRelationFilter
     videoJobs?: VideoJobListRelationFilter
+    designPostings?: DesignPostingListRelationFilter
   }
 
   export type ClientOrderByWithRelationInput = {
@@ -55347,6 +56755,7 @@ export namespace Prisma {
     seoReports?: SeoReportOrderByRelationAggregateInput
     shoots?: ShootOrderByRelationAggregateInput
     videoJobs?: VideoJobOrderByRelationAggregateInput
+    designPostings?: DesignPostingOrderByRelationAggregateInput
   }
 
   export type ClientWhereUniqueInput = Prisma.AtLeast<{
@@ -55422,6 +56831,7 @@ export namespace Prisma {
     seoReports?: SeoReportListRelationFilter
     shoots?: ShootListRelationFilter
     videoJobs?: VideoJobListRelationFilter
+    designPostings?: DesignPostingListRelationFilter
   }, "id" | "code">
 
   export type ClientOrderByWithAggregationInput = {
@@ -58844,6 +60254,101 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"VideoJob"> | Date | string
   }
 
+  export type DesignPostingWhereInput = {
+    AND?: DesignPostingWhereInput | DesignPostingWhereInput[]
+    OR?: DesignPostingWhereInput[]
+    NOT?: DesignPostingWhereInput | DesignPostingWhereInput[]
+    id?: StringFilter<"DesignPosting"> | string
+    weekStart?: StringFilter<"DesignPosting"> | string
+    userId?: StringFilter<"DesignPosting"> | string
+    clientId?: StringNullableFilter<"DesignPosting"> | string | null
+    clientName?: StringFilter<"DesignPosting"> | string
+    monthlyPosts?: IntFilter<"DesignPosting"> | number
+    target?: IntFilter<"DesignPosting"> | number
+    done?: IntFilter<"DesignPosting"> | number
+    note?: StringFilter<"DesignPosting"> | string
+    updatedBy?: StringFilter<"DesignPosting"> | string
+    createdAt?: DateTimeFilter<"DesignPosting"> | Date | string
+    updatedAt?: DateTimeFilter<"DesignPosting"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
+  }
+
+  export type DesignPostingOrderByWithRelationInput = {
+    id?: SortOrder
+    weekStart?: SortOrder
+    userId?: SortOrder
+    clientId?: SortOrderInput | SortOrder
+    clientName?: SortOrder
+    monthlyPosts?: SortOrder
+    target?: SortOrder
+    done?: SortOrder
+    note?: SortOrder
+    updatedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    client?: ClientOrderByWithRelationInput
+  }
+
+  export type DesignPostingWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: DesignPostingWhereInput | DesignPostingWhereInput[]
+    OR?: DesignPostingWhereInput[]
+    NOT?: DesignPostingWhereInput | DesignPostingWhereInput[]
+    weekStart?: StringFilter<"DesignPosting"> | string
+    userId?: StringFilter<"DesignPosting"> | string
+    clientId?: StringNullableFilter<"DesignPosting"> | string | null
+    clientName?: StringFilter<"DesignPosting"> | string
+    monthlyPosts?: IntFilter<"DesignPosting"> | number
+    target?: IntFilter<"DesignPosting"> | number
+    done?: IntFilter<"DesignPosting"> | number
+    note?: StringFilter<"DesignPosting"> | string
+    updatedBy?: StringFilter<"DesignPosting"> | string
+    createdAt?: DateTimeFilter<"DesignPosting"> | Date | string
+    updatedAt?: DateTimeFilter<"DesignPosting"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
+  }, "id">
+
+  export type DesignPostingOrderByWithAggregationInput = {
+    id?: SortOrder
+    weekStart?: SortOrder
+    userId?: SortOrder
+    clientId?: SortOrderInput | SortOrder
+    clientName?: SortOrder
+    monthlyPosts?: SortOrder
+    target?: SortOrder
+    done?: SortOrder
+    note?: SortOrder
+    updatedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DesignPostingCountOrderByAggregateInput
+    _avg?: DesignPostingAvgOrderByAggregateInput
+    _max?: DesignPostingMaxOrderByAggregateInput
+    _min?: DesignPostingMinOrderByAggregateInput
+    _sum?: DesignPostingSumOrderByAggregateInput
+  }
+
+  export type DesignPostingScalarWhereWithAggregatesInput = {
+    AND?: DesignPostingScalarWhereWithAggregatesInput | DesignPostingScalarWhereWithAggregatesInput[]
+    OR?: DesignPostingScalarWhereWithAggregatesInput[]
+    NOT?: DesignPostingScalarWhereWithAggregatesInput | DesignPostingScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DesignPosting"> | string
+    weekStart?: StringWithAggregatesFilter<"DesignPosting"> | string
+    userId?: StringWithAggregatesFilter<"DesignPosting"> | string
+    clientId?: StringNullableWithAggregatesFilter<"DesignPosting"> | string | null
+    clientName?: StringWithAggregatesFilter<"DesignPosting"> | string
+    monthlyPosts?: IntWithAggregatesFilter<"DesignPosting"> | number
+    target?: IntWithAggregatesFilter<"DesignPosting"> | number
+    done?: IntWithAggregatesFilter<"DesignPosting"> | number
+    note?: StringWithAggregatesFilter<"DesignPosting"> | string
+    updatedBy?: StringWithAggregatesFilter<"DesignPosting"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"DesignPosting"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"DesignPosting"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     name: string
@@ -58868,6 +60373,7 @@ export namespace Prisma {
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -58894,6 +60400,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -58920,6 +60427,7 @@ export namespace Prisma {
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -58946,6 +60454,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -59303,6 +60812,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateInput = {
@@ -59374,6 +60884,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientUpdateInput = {
@@ -59445,6 +60956,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateInput = {
@@ -59516,6 +61028,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateManyInput = {
@@ -63431,6 +64944,109 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DesignPostingCreateInput = {
+    id?: string
+    weekStart: string
+    clientName: string
+    monthlyPosts?: number
+    target?: number
+    done?: number
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutDesignPostingsInput
+    client?: ClientCreateNestedOneWithoutDesignPostingsInput
+  }
+
+  export type DesignPostingUncheckedCreateInput = {
+    id?: string
+    weekStart: string
+    userId: string
+    clientId?: string | null
+    clientName: string
+    monthlyPosts?: number
+    target?: number
+    done?: number
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DesignPostingUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    weekStart?: StringFieldUpdateOperationsInput | string
+    clientName?: StringFieldUpdateOperationsInput | string
+    monthlyPosts?: IntFieldUpdateOperationsInput | number
+    target?: IntFieldUpdateOperationsInput | number
+    done?: IntFieldUpdateOperationsInput | number
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutDesignPostingsNestedInput
+    client?: ClientUpdateOneWithoutDesignPostingsNestedInput
+  }
+
+  export type DesignPostingUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    weekStart?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientName?: StringFieldUpdateOperationsInput | string
+    monthlyPosts?: IntFieldUpdateOperationsInput | number
+    target?: IntFieldUpdateOperationsInput | number
+    done?: IntFieldUpdateOperationsInput | number
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DesignPostingCreateManyInput = {
+    id?: string
+    weekStart: string
+    userId: string
+    clientId?: string | null
+    clientName: string
+    monthlyPosts?: number
+    target?: number
+    done?: number
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DesignPostingUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    weekStart?: StringFieldUpdateOperationsInput | string
+    clientName?: StringFieldUpdateOperationsInput | string
+    monthlyPosts?: IntFieldUpdateOperationsInput | number
+    target?: IntFieldUpdateOperationsInput | number
+    done?: IntFieldUpdateOperationsInput | number
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DesignPostingUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    weekStart?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientName?: StringFieldUpdateOperationsInput | string
+    monthlyPosts?: IntFieldUpdateOperationsInput | number
+    target?: IntFieldUpdateOperationsInput | number
+    done?: IntFieldUpdateOperationsInput | number
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[]
@@ -63535,6 +65151,12 @@ export namespace Prisma {
     none?: EditCountWhereInput
   }
 
+  export type DesignPostingListRelationFilter = {
+    every?: DesignPostingWhereInput
+    some?: DesignPostingWhereInput
+    none?: DesignPostingWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -63577,6 +65199,10 @@ export namespace Prisma {
   }
 
   export type EditCountOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DesignPostingOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -66316,6 +67942,63 @@ export namespace Prisma {
     edited?: SortOrder
   }
 
+  export type DesignPostingCountOrderByAggregateInput = {
+    id?: SortOrder
+    weekStart?: SortOrder
+    userId?: SortOrder
+    clientId?: SortOrder
+    clientName?: SortOrder
+    monthlyPosts?: SortOrder
+    target?: SortOrder
+    done?: SortOrder
+    note?: SortOrder
+    updatedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DesignPostingAvgOrderByAggregateInput = {
+    monthlyPosts?: SortOrder
+    target?: SortOrder
+    done?: SortOrder
+  }
+
+  export type DesignPostingMaxOrderByAggregateInput = {
+    id?: SortOrder
+    weekStart?: SortOrder
+    userId?: SortOrder
+    clientId?: SortOrder
+    clientName?: SortOrder
+    monthlyPosts?: SortOrder
+    target?: SortOrder
+    done?: SortOrder
+    note?: SortOrder
+    updatedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DesignPostingMinOrderByAggregateInput = {
+    id?: SortOrder
+    weekStart?: SortOrder
+    userId?: SortOrder
+    clientId?: SortOrder
+    clientName?: SortOrder
+    monthlyPosts?: SortOrder
+    target?: SortOrder
+    done?: SortOrder
+    note?: SortOrder
+    updatedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DesignPostingSumOrderByAggregateInput = {
+    monthlyPosts?: SortOrder
+    target?: SortOrder
+    done?: SortOrder
+  }
+
   export type ClientCreateNestedManyWithoutAccountManagerInput = {
     create?: XOR<ClientCreateWithoutAccountManagerInput, ClientUncheckedCreateWithoutAccountManagerInput> | ClientCreateWithoutAccountManagerInput[] | ClientUncheckedCreateWithoutAccountManagerInput[]
     connectOrCreate?: ClientCreateOrConnectWithoutAccountManagerInput | ClientCreateOrConnectWithoutAccountManagerInput[]
@@ -66407,6 +68090,13 @@ export namespace Prisma {
     connect?: EditCountWhereUniqueInput | EditCountWhereUniqueInput[]
   }
 
+  export type DesignPostingCreateNestedManyWithoutUserInput = {
+    create?: XOR<DesignPostingCreateWithoutUserInput, DesignPostingUncheckedCreateWithoutUserInput> | DesignPostingCreateWithoutUserInput[] | DesignPostingUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DesignPostingCreateOrConnectWithoutUserInput | DesignPostingCreateOrConnectWithoutUserInput[]
+    createMany?: DesignPostingCreateManyUserInputEnvelope
+    connect?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
+  }
+
   export type ClientUncheckedCreateNestedManyWithoutAccountManagerInput = {
     create?: XOR<ClientCreateWithoutAccountManagerInput, ClientUncheckedCreateWithoutAccountManagerInput> | ClientCreateWithoutAccountManagerInput[] | ClientUncheckedCreateWithoutAccountManagerInput[]
     connectOrCreate?: ClientCreateOrConnectWithoutAccountManagerInput | ClientCreateOrConnectWithoutAccountManagerInput[]
@@ -66496,6 +68186,13 @@ export namespace Prisma {
     connectOrCreate?: EditCountCreateOrConnectWithoutUserInput | EditCountCreateOrConnectWithoutUserInput[]
     createMany?: EditCountCreateManyUserInputEnvelope
     connect?: EditCountWhereUniqueInput | EditCountWhereUniqueInput[]
+  }
+
+  export type DesignPostingUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<DesignPostingCreateWithoutUserInput, DesignPostingUncheckedCreateWithoutUserInput> | DesignPostingCreateWithoutUserInput[] | DesignPostingUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DesignPostingCreateOrConnectWithoutUserInput | DesignPostingCreateOrConnectWithoutUserInput[]
+    createMany?: DesignPostingCreateManyUserInputEnvelope
+    connect?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -66696,6 +68393,20 @@ export namespace Prisma {
     deleteMany?: EditCountScalarWhereInput | EditCountScalarWhereInput[]
   }
 
+  export type DesignPostingUpdateManyWithoutUserNestedInput = {
+    create?: XOR<DesignPostingCreateWithoutUserInput, DesignPostingUncheckedCreateWithoutUserInput> | DesignPostingCreateWithoutUserInput[] | DesignPostingUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DesignPostingCreateOrConnectWithoutUserInput | DesignPostingCreateOrConnectWithoutUserInput[]
+    upsert?: DesignPostingUpsertWithWhereUniqueWithoutUserInput | DesignPostingUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: DesignPostingCreateManyUserInputEnvelope
+    set?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
+    disconnect?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
+    delete?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
+    connect?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
+    update?: DesignPostingUpdateWithWhereUniqueWithoutUserInput | DesignPostingUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: DesignPostingUpdateManyWithWhereWithoutUserInput | DesignPostingUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: DesignPostingScalarWhereInput | DesignPostingScalarWhereInput[]
+  }
+
   export type ClientUncheckedUpdateManyWithoutAccountManagerNestedInput = {
     create?: XOR<ClientCreateWithoutAccountManagerInput, ClientUncheckedCreateWithoutAccountManagerInput> | ClientCreateWithoutAccountManagerInput[] | ClientUncheckedCreateWithoutAccountManagerInput[]
     connectOrCreate?: ClientCreateOrConnectWithoutAccountManagerInput | ClientCreateOrConnectWithoutAccountManagerInput[]
@@ -66876,6 +68587,20 @@ export namespace Prisma {
     update?: EditCountUpdateWithWhereUniqueWithoutUserInput | EditCountUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: EditCountUpdateManyWithWhereWithoutUserInput | EditCountUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: EditCountScalarWhereInput | EditCountScalarWhereInput[]
+  }
+
+  export type DesignPostingUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<DesignPostingCreateWithoutUserInput, DesignPostingUncheckedCreateWithoutUserInput> | DesignPostingCreateWithoutUserInput[] | DesignPostingUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DesignPostingCreateOrConnectWithoutUserInput | DesignPostingCreateOrConnectWithoutUserInput[]
+    upsert?: DesignPostingUpsertWithWhereUniqueWithoutUserInput | DesignPostingUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: DesignPostingCreateManyUserInputEnvelope
+    set?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
+    disconnect?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
+    delete?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
+    connect?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
+    update?: DesignPostingUpdateWithWhereUniqueWithoutUserInput | DesignPostingUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: DesignPostingUpdateManyWithWhereWithoutUserInput | DesignPostingUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: DesignPostingScalarWhereInput | DesignPostingScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutEditCountsInput = {
@@ -67129,6 +68854,13 @@ export namespace Prisma {
     connect?: VideoJobWhereUniqueInput | VideoJobWhereUniqueInput[]
   }
 
+  export type DesignPostingCreateNestedManyWithoutClientInput = {
+    create?: XOR<DesignPostingCreateWithoutClientInput, DesignPostingUncheckedCreateWithoutClientInput> | DesignPostingCreateWithoutClientInput[] | DesignPostingUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: DesignPostingCreateOrConnectWithoutClientInput | DesignPostingCreateOrConnectWithoutClientInput[]
+    createMany?: DesignPostingCreateManyClientInputEnvelope
+    connect?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
+  }
+
   export type ClientServiceUncheckedCreateNestedManyWithoutClientInput = {
     create?: XOR<ClientServiceCreateWithoutClientInput, ClientServiceUncheckedCreateWithoutClientInput> | ClientServiceCreateWithoutClientInput[] | ClientServiceUncheckedCreateWithoutClientInput[]
     connectOrCreate?: ClientServiceCreateOrConnectWithoutClientInput | ClientServiceCreateOrConnectWithoutClientInput[]
@@ -67288,6 +69020,13 @@ export namespace Prisma {
     connectOrCreate?: VideoJobCreateOrConnectWithoutClientInput | VideoJobCreateOrConnectWithoutClientInput[]
     createMany?: VideoJobCreateManyClientInputEnvelope
     connect?: VideoJobWhereUniqueInput | VideoJobWhereUniqueInput[]
+  }
+
+  export type DesignPostingUncheckedCreateNestedManyWithoutClientInput = {
+    create?: XOR<DesignPostingCreateWithoutClientInput, DesignPostingUncheckedCreateWithoutClientInput> | DesignPostingCreateWithoutClientInput[] | DesignPostingUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: DesignPostingCreateOrConnectWithoutClientInput | DesignPostingCreateOrConnectWithoutClientInput[]
+    createMany?: DesignPostingCreateManyClientInputEnvelope
+    connect?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
   }
 
   export type UserUpdateOneWithoutManagedClientsNestedInput = {
@@ -67622,6 +69361,20 @@ export namespace Prisma {
     deleteMany?: VideoJobScalarWhereInput | VideoJobScalarWhereInput[]
   }
 
+  export type DesignPostingUpdateManyWithoutClientNestedInput = {
+    create?: XOR<DesignPostingCreateWithoutClientInput, DesignPostingUncheckedCreateWithoutClientInput> | DesignPostingCreateWithoutClientInput[] | DesignPostingUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: DesignPostingCreateOrConnectWithoutClientInput | DesignPostingCreateOrConnectWithoutClientInput[]
+    upsert?: DesignPostingUpsertWithWhereUniqueWithoutClientInput | DesignPostingUpsertWithWhereUniqueWithoutClientInput[]
+    createMany?: DesignPostingCreateManyClientInputEnvelope
+    set?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
+    disconnect?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
+    delete?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
+    connect?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
+    update?: DesignPostingUpdateWithWhereUniqueWithoutClientInput | DesignPostingUpdateWithWhereUniqueWithoutClientInput[]
+    updateMany?: DesignPostingUpdateManyWithWhereWithoutClientInput | DesignPostingUpdateManyWithWhereWithoutClientInput[]
+    deleteMany?: DesignPostingScalarWhereInput | DesignPostingScalarWhereInput[]
+  }
+
   export type ClientServiceUncheckedUpdateManyWithoutClientNestedInput = {
     create?: XOR<ClientServiceCreateWithoutClientInput, ClientServiceUncheckedCreateWithoutClientInput> | ClientServiceCreateWithoutClientInput[] | ClientServiceUncheckedCreateWithoutClientInput[]
     connectOrCreate?: ClientServiceCreateOrConnectWithoutClientInput | ClientServiceCreateOrConnectWithoutClientInput[]
@@ -67942,6 +69695,20 @@ export namespace Prisma {
     update?: VideoJobUpdateWithWhereUniqueWithoutClientInput | VideoJobUpdateWithWhereUniqueWithoutClientInput[]
     updateMany?: VideoJobUpdateManyWithWhereWithoutClientInput | VideoJobUpdateManyWithWhereWithoutClientInput[]
     deleteMany?: VideoJobScalarWhereInput | VideoJobScalarWhereInput[]
+  }
+
+  export type DesignPostingUncheckedUpdateManyWithoutClientNestedInput = {
+    create?: XOR<DesignPostingCreateWithoutClientInput, DesignPostingUncheckedCreateWithoutClientInput> | DesignPostingCreateWithoutClientInput[] | DesignPostingUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: DesignPostingCreateOrConnectWithoutClientInput | DesignPostingCreateOrConnectWithoutClientInput[]
+    upsert?: DesignPostingUpsertWithWhereUniqueWithoutClientInput | DesignPostingUpsertWithWhereUniqueWithoutClientInput[]
+    createMany?: DesignPostingCreateManyClientInputEnvelope
+    set?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
+    disconnect?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
+    delete?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
+    connect?: DesignPostingWhereUniqueInput | DesignPostingWhereUniqueInput[]
+    update?: DesignPostingUpdateWithWhereUniqueWithoutClientInput | DesignPostingUpdateWithWhereUniqueWithoutClientInput[]
+    updateMany?: DesignPostingUpdateManyWithWhereWithoutClientInput | DesignPostingUpdateManyWithWhereWithoutClientInput[]
+    deleteMany?: DesignPostingScalarWhereInput | DesignPostingScalarWhereInput[]
   }
 
   export type ClientCreateNestedOneWithoutContactsInput = {
@@ -68908,6 +70675,36 @@ export namespace Prisma {
     update?: XOR<XOR<ClientUpdateToOneWithWhereWithoutVideoJobsInput, ClientUpdateWithoutVideoJobsInput>, ClientUncheckedUpdateWithoutVideoJobsInput>
   }
 
+  export type UserCreateNestedOneWithoutDesignPostingsInput = {
+    create?: XOR<UserCreateWithoutDesignPostingsInput, UserUncheckedCreateWithoutDesignPostingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutDesignPostingsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type ClientCreateNestedOneWithoutDesignPostingsInput = {
+    create?: XOR<ClientCreateWithoutDesignPostingsInput, ClientUncheckedCreateWithoutDesignPostingsInput>
+    connectOrCreate?: ClientCreateOrConnectWithoutDesignPostingsInput
+    connect?: ClientWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutDesignPostingsNestedInput = {
+    create?: XOR<UserCreateWithoutDesignPostingsInput, UserUncheckedCreateWithoutDesignPostingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutDesignPostingsInput
+    upsert?: UserUpsertWithoutDesignPostingsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutDesignPostingsInput, UserUpdateWithoutDesignPostingsInput>, UserUncheckedUpdateWithoutDesignPostingsInput>
+  }
+
+  export type ClientUpdateOneWithoutDesignPostingsNestedInput = {
+    create?: XOR<ClientCreateWithoutDesignPostingsInput, ClientUncheckedCreateWithoutDesignPostingsInput>
+    connectOrCreate?: ClientCreateOrConnectWithoutDesignPostingsInput
+    upsert?: ClientUpsertWithoutDesignPostingsInput
+    disconnect?: ClientWhereInput | boolean
+    delete?: ClientWhereInput | boolean
+    connect?: ClientWhereUniqueInput
+    update?: XOR<XOR<ClientUpdateToOneWithWhereWithoutDesignPostingsInput, ClientUpdateWithoutDesignPostingsInput>, ClientUncheckedUpdateWithoutDesignPostingsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[]
@@ -69193,6 +70990,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutAccountManagerInput = {
@@ -69263,6 +71061,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutAccountManagerInput = {
@@ -69832,6 +71631,43 @@ export namespace Prisma {
     data: EditCountCreateManyUserInput | EditCountCreateManyUserInput[]
   }
 
+  export type DesignPostingCreateWithoutUserInput = {
+    id?: string
+    weekStart: string
+    clientName: string
+    monthlyPosts?: number
+    target?: number
+    done?: number
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    client?: ClientCreateNestedOneWithoutDesignPostingsInput
+  }
+
+  export type DesignPostingUncheckedCreateWithoutUserInput = {
+    id?: string
+    weekStart: string
+    clientId?: string | null
+    clientName: string
+    monthlyPosts?: number
+    target?: number
+    done?: number
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DesignPostingCreateOrConnectWithoutUserInput = {
+    where: DesignPostingWhereUniqueInput
+    create: XOR<DesignPostingCreateWithoutUserInput, DesignPostingUncheckedCreateWithoutUserInput>
+  }
+
+  export type DesignPostingCreateManyUserInputEnvelope = {
+    data: DesignPostingCreateManyUserInput | DesignPostingCreateManyUserInput[]
+  }
+
   export type ClientUpsertWithWhereUniqueWithoutAccountManagerInput = {
     where: ClientWhereUniqueInput
     update: XOR<ClientUpdateWithoutAccountManagerInput, ClientUncheckedUpdateWithoutAccountManagerInput>
@@ -70282,6 +72118,40 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"EditCount"> | Date | string
   }
 
+  export type DesignPostingUpsertWithWhereUniqueWithoutUserInput = {
+    where: DesignPostingWhereUniqueInput
+    update: XOR<DesignPostingUpdateWithoutUserInput, DesignPostingUncheckedUpdateWithoutUserInput>
+    create: XOR<DesignPostingCreateWithoutUserInput, DesignPostingUncheckedCreateWithoutUserInput>
+  }
+
+  export type DesignPostingUpdateWithWhereUniqueWithoutUserInput = {
+    where: DesignPostingWhereUniqueInput
+    data: XOR<DesignPostingUpdateWithoutUserInput, DesignPostingUncheckedUpdateWithoutUserInput>
+  }
+
+  export type DesignPostingUpdateManyWithWhereWithoutUserInput = {
+    where: DesignPostingScalarWhereInput
+    data: XOR<DesignPostingUpdateManyMutationInput, DesignPostingUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type DesignPostingScalarWhereInput = {
+    AND?: DesignPostingScalarWhereInput | DesignPostingScalarWhereInput[]
+    OR?: DesignPostingScalarWhereInput[]
+    NOT?: DesignPostingScalarWhereInput | DesignPostingScalarWhereInput[]
+    id?: StringFilter<"DesignPosting"> | string
+    weekStart?: StringFilter<"DesignPosting"> | string
+    userId?: StringFilter<"DesignPosting"> | string
+    clientId?: StringNullableFilter<"DesignPosting"> | string | null
+    clientName?: StringFilter<"DesignPosting"> | string
+    monthlyPosts?: IntFilter<"DesignPosting"> | number
+    target?: IntFilter<"DesignPosting"> | number
+    done?: IntFilter<"DesignPosting"> | number
+    note?: StringFilter<"DesignPosting"> | string
+    updatedBy?: StringFilter<"DesignPosting"> | string
+    createdAt?: DateTimeFilter<"DesignPosting"> | Date | string
+    updatedAt?: DateTimeFilter<"DesignPosting"> | Date | string
+  }
+
   export type UserCreateWithoutEditCountsInput = {
     id?: string
     name: string
@@ -70305,6 +72175,7 @@ export namespace Prisma {
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
+    designPostings?: DesignPostingCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEditCountsInput = {
@@ -70330,6 +72201,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEditCountsInput = {
@@ -70371,6 +72243,7 @@ export namespace Prisma {
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEditCountsInput = {
@@ -70396,6 +72269,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutTasksAssignedInput = {
@@ -70421,6 +72295,7 @@ export namespace Prisma {
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTasksAssignedInput = {
@@ -70446,6 +72321,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTasksAssignedInput = {
@@ -70476,6 +72352,7 @@ export namespace Prisma {
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTasksReceivedInput = {
@@ -70501,6 +72378,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTasksReceivedInput = {
@@ -70576,6 +72454,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutTasksInput = {
@@ -70646,6 +72525,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutTasksInput = {
@@ -70687,6 +72567,7 @@ export namespace Prisma {
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTasksAssignedInput = {
@@ -70712,6 +72593,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutTasksReceivedInput = {
@@ -70748,6 +72630,7 @@ export namespace Prisma {
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTasksReceivedInput = {
@@ -70773,6 +72656,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ClientUpsertWithoutTasksInput = {
@@ -70854,6 +72738,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutTasksInput = {
@@ -70924,6 +72809,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserCreateWithoutTimeSessionsInput = {
@@ -70949,6 +72835,7 @@ export namespace Prisma {
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTimeSessionsInput = {
@@ -70974,6 +72861,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTimeSessionsInput = {
@@ -71015,6 +72903,7 @@ export namespace Prisma {
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTimeSessionsInput = {
@@ -71040,6 +72929,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutManagedClientsInput = {
@@ -71065,6 +72955,7 @@ export namespace Prisma {
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutManagedClientsInput = {
@@ -71090,6 +72981,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutManagedClientsInput = {
@@ -72002,6 +73894,43 @@ export namespace Prisma {
     data: VideoJobCreateManyClientInput | VideoJobCreateManyClientInput[]
   }
 
+  export type DesignPostingCreateWithoutClientInput = {
+    id?: string
+    weekStart: string
+    clientName: string
+    monthlyPosts?: number
+    target?: number
+    done?: number
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutDesignPostingsInput
+  }
+
+  export type DesignPostingUncheckedCreateWithoutClientInput = {
+    id?: string
+    weekStart: string
+    userId: string
+    clientName: string
+    monthlyPosts?: number
+    target?: number
+    done?: number
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DesignPostingCreateOrConnectWithoutClientInput = {
+    where: DesignPostingWhereUniqueInput
+    create: XOR<DesignPostingCreateWithoutClientInput, DesignPostingUncheckedCreateWithoutClientInput>
+  }
+
+  export type DesignPostingCreateManyClientInputEnvelope = {
+    data: DesignPostingCreateManyClientInput | DesignPostingCreateManyClientInput[]
+  }
+
   export type UserUpsertWithoutManagedClientsInput = {
     update: XOR<UserUpdateWithoutManagedClientsInput, UserUncheckedUpdateWithoutManagedClientsInput>
     create: XOR<UserCreateWithoutManagedClientsInput, UserUncheckedCreateWithoutManagedClientsInput>
@@ -72036,6 +73965,7 @@ export namespace Prisma {
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutManagedClientsInput = {
@@ -72061,6 +73991,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ClientServiceUpsertWithWhereUniqueWithoutClientInput = {
@@ -72741,6 +74672,22 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"VideoJob"> | Date | string
   }
 
+  export type DesignPostingUpsertWithWhereUniqueWithoutClientInput = {
+    where: DesignPostingWhereUniqueInput
+    update: XOR<DesignPostingUpdateWithoutClientInput, DesignPostingUncheckedUpdateWithoutClientInput>
+    create: XOR<DesignPostingCreateWithoutClientInput, DesignPostingUncheckedCreateWithoutClientInput>
+  }
+
+  export type DesignPostingUpdateWithWhereUniqueWithoutClientInput = {
+    where: DesignPostingWhereUniqueInput
+    data: XOR<DesignPostingUpdateWithoutClientInput, DesignPostingUncheckedUpdateWithoutClientInput>
+  }
+
+  export type DesignPostingUpdateManyWithWhereWithoutClientInput = {
+    where: DesignPostingScalarWhereInput
+    data: XOR<DesignPostingUpdateManyMutationInput, DesignPostingUncheckedUpdateManyWithoutClientInput>
+  }
+
   export type ClientCreateWithoutContactsInput = {
     id?: string
     code: string
@@ -72809,6 +74756,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutContactsInput = {
@@ -72879,6 +74827,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutContactsInput = {
@@ -72965,6 +74914,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutContactsInput = {
@@ -73035,6 +74985,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutServicesInput = {
@@ -73105,6 +75056,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutServicesInput = {
@@ -73175,6 +75127,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutServicesInput = {
@@ -73261,6 +75214,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutServicesInput = {
@@ -73331,6 +75285,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutDeliverablesInput = {
@@ -73401,6 +75356,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutDeliverablesInput = {
@@ -73471,6 +75427,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutDeliverablesInput = {
@@ -73557,6 +75514,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutDeliverablesInput = {
@@ -73627,6 +75585,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutAssignmentsInput = {
@@ -73697,6 +75656,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutAssignmentsInput = {
@@ -73767,6 +75727,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutAssignmentsInput = {
@@ -73797,6 +75758,7 @@ export namespace Prisma {
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAssignmentsInput = {
@@ -73822,6 +75784,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAssignmentsInput = {
@@ -73908,6 +75871,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutAssignmentsInput = {
@@ -73978,6 +75942,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserUpsertWithoutAssignmentsInput = {
@@ -74014,6 +75979,7 @@ export namespace Prisma {
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignmentsInput = {
@@ -74039,6 +76005,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ClientCreateWithoutUpdatesInput = {
@@ -74109,6 +76076,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutUpdatesInput = {
@@ -74179,6 +76147,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutUpdatesInput = {
@@ -74209,6 +76178,7 @@ export namespace Prisma {
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUpdatesInput = {
@@ -74234,6 +76204,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUpdatesInput = {
@@ -74320,6 +76291,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutUpdatesInput = {
@@ -74390,6 +76362,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserUpsertWithoutUpdatesInput = {
@@ -74426,6 +76399,7 @@ export namespace Prisma {
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUpdatesInput = {
@@ -74451,6 +76425,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ClientCreateWithoutInvoicesInput = {
@@ -74521,6 +76496,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutInvoicesInput = {
@@ -74591,6 +76567,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutInvoicesInput = {
@@ -74677,6 +76654,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutInvoicesInput = {
@@ -74747,6 +76725,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type PaymentCreateWithoutInvoiceInput = {
@@ -74854,6 +76833,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSalesInvoicesInput = {
@@ -74924,6 +76904,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSalesInvoicesInput = {
@@ -75044,6 +77025,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSalesInvoicesInput = {
@@ -75114,6 +77096,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type SalesInvoiceCreateWithoutPaymentsInput = {
@@ -75364,6 +77347,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSlasInput = {
@@ -75434,6 +77418,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSlasInput = {
@@ -75520,6 +77505,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSlasInput = {
@@ -75590,6 +77576,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutCampaignsInput = {
@@ -75660,6 +77647,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutCampaignsInput = {
@@ -75730,6 +77718,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutCampaignsInput = {
@@ -75816,6 +77805,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutCampaignsInput = {
@@ -75886,6 +77876,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutDevProjectsInput = {
@@ -75956,6 +77947,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutDevProjectsInput = {
@@ -76026,6 +78018,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutDevProjectsInput = {
@@ -76056,6 +78049,7 @@ export namespace Prisma {
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDevProjectsInput = {
@@ -76081,6 +78075,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDevProjectsInput = {
@@ -76215,6 +78210,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutDevProjectsInput = {
@@ -76285,6 +78281,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserUpsertWithoutDevProjectsInput = {
@@ -76321,6 +78318,7 @@ export namespace Prisma {
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDevProjectsInput = {
@@ -76346,6 +78344,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DevTaskUpsertWithWhereUniqueWithoutProjectInput = {
@@ -76663,6 +78662,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSocialPostsInput = {
@@ -76733,6 +78733,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSocialPostsInput = {
@@ -76819,6 +78820,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSocialPostsInput = {
@@ -76889,6 +78891,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutSeoAnalyticsInput = {
@@ -76959,6 +78962,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSeoAnalyticsInput = {
@@ -77029,6 +79033,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSeoAnalyticsInput = {
@@ -77115,6 +79120,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSeoAnalyticsInput = {
@@ -77185,6 +79191,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutSeoBlogSlotsInput = {
@@ -77255,6 +79262,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSeoBlogSlotsInput = {
@@ -77325,6 +79333,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSeoBlogSlotsInput = {
@@ -77411,6 +79420,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSeoBlogSlotsInput = {
@@ -77481,6 +79491,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutSeoKeywordsInput = {
@@ -77551,6 +79562,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSeoKeywordsInput = {
@@ -77621,6 +79633,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSeoKeywordsInput = {
@@ -77707,6 +79720,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSeoKeywordsInput = {
@@ -77777,6 +79791,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutSeoBacklinksInput = {
@@ -77847,6 +79862,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSeoBacklinksInput = {
@@ -77917,6 +79933,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSeoBacklinksInput = {
@@ -78003,6 +80020,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSeoBacklinksInput = {
@@ -78073,6 +80091,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutGmbLocationsInput = {
@@ -78143,6 +80162,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutGmbLocationsInput = {
@@ -78213,6 +80233,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutGmbLocationsInput = {
@@ -78299,6 +80320,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutGmbLocationsInput = {
@@ -78369,6 +80391,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutSeoReportsInput = {
@@ -78439,6 +80462,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSeoReportsInput = {
@@ -78509,6 +80533,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSeoReportsInput = {
@@ -78595,6 +80620,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSeoReportsInput = {
@@ -78665,6 +80691,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutCreativeTasksInput = {
@@ -78735,6 +80762,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutCreativeTasksInput = {
@@ -78805,6 +80833,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutCreativeTasksInput = {
@@ -78835,6 +80864,7 @@ export namespace Prisma {
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCreativeTasksInput = {
@@ -78860,6 +80890,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCreativeTasksInput = {
@@ -78890,6 +80921,7 @@ export namespace Prisma {
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCreativeAssignedInput = {
@@ -78915,6 +80947,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCreativeAssignedInput = {
@@ -79001,6 +81034,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutCreativeTasksInput = {
@@ -79071,6 +81105,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserUpsertWithoutCreativeTasksInput = {
@@ -79107,6 +81142,7 @@ export namespace Prisma {
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreativeTasksInput = {
@@ -79132,6 +81168,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutCreativeAssignedInput = {
@@ -79168,6 +81205,7 @@ export namespace Prisma {
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreativeAssignedInput = {
@@ -79193,6 +81231,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ClientCreateWithoutShootsInput = {
@@ -79263,6 +81302,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutShootsInput = {
@@ -79333,6 +81373,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutShootsInput = {
@@ -79363,6 +81404,7 @@ export namespace Prisma {
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutShootsInput = {
@@ -79388,6 +81430,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutShootsInput = {
@@ -79418,6 +81461,7 @@ export namespace Prisma {
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     editCounts?: EditCountCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutShootRequestsInput = {
@@ -79443,6 +81487,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutShootRequestsInput = {
@@ -79529,6 +81574,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutShootsInput = {
@@ -79599,6 +81645,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserUpsertWithoutShootsInput = {
@@ -79635,6 +81682,7 @@ export namespace Prisma {
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutShootsInput = {
@@ -79660,6 +81708,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutShootRequestsInput = {
@@ -79696,6 +81745,7 @@ export namespace Prisma {
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     editCounts?: EditCountUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutShootRequestsInput = {
@@ -79721,6 +81771,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ClientCreateWithoutGoogleCampaignsInput = {
@@ -79791,6 +81842,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutGoogleCampaignsInput = {
@@ -79861,6 +81913,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutGoogleCampaignsInput = {
@@ -79947,6 +82000,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutGoogleCampaignsInput = {
@@ -80017,6 +82071,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutAdsMetricsInput = {
@@ -80087,6 +82142,7 @@ export namespace Prisma {
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutAdsMetricsInput = {
@@ -80157,6 +82213,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
     videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutAdsMetricsInput = {
@@ -80243,6 +82300,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutAdsMetricsInput = {
@@ -80313,6 +82371,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserCreateWithoutSalesLeadsInput = {
@@ -80338,6 +82397,7 @@ export namespace Prisma {
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSalesLeadsInput = {
@@ -80363,6 +82423,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
     editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSalesLeadsInput = {
@@ -80600,6 +82661,7 @@ export namespace Prisma {
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSalesLeadsInput = {
@@ -80625,6 +82687,7 @@ export namespace Prisma {
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
     editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type FollowupUpsertWithWhereUniqueWithoutLeadInput = {
@@ -81894,6 +83957,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutVideoJobsInput = {
@@ -81964,6 +84028,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    designPostings?: DesignPostingUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutVideoJobsInput = {
@@ -82050,6 +84115,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutVideoJobsInput = {
@@ -82120,6 +84186,427 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
+  }
+
+  export type UserCreateWithoutDesignPostingsInput = {
+    id?: string
+    name: string
+    role: string
+    email?: string | null
+    phone?: string | null
+    passwordHash?: string | null
+    active?: boolean
+    teamLead?: boolean
+    shootTeam?: boolean
+    createdAt?: Date | string
+    managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    assignments?: AssignmentCreateNestedManyWithoutUserInput
+    updates?: WorkUpdateCreateNestedManyWithoutUserInput
+    devProjects?: DevProjectCreateNestedManyWithoutAssignedToInput
+    timeSessions?: TimeSessionCreateNestedManyWithoutUserInput
+    tasksAssigned?: TaskCreateNestedManyWithoutAssignedByInput
+    tasksReceived?: TaskCreateNestedManyWithoutAssignedToInput
+    creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
+    salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutDesignPostingsInput = {
+    id?: string
+    name: string
+    role: string
+    email?: string | null
+    phone?: string | null
+    passwordHash?: string | null
+    active?: boolean
+    teamLead?: boolean
+    shootTeam?: boolean
+    createdAt?: Date | string
+    managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
+    updates?: WorkUpdateUncheckedCreateNestedManyWithoutUserInput
+    devProjects?: DevProjectUncheckedCreateNestedManyWithoutAssignedToInput
+    timeSessions?: TimeSessionUncheckedCreateNestedManyWithoutUserInput
+    tasksAssigned?: TaskUncheckedCreateNestedManyWithoutAssignedByInput
+    tasksReceived?: TaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
+    salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutDesignPostingsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutDesignPostingsInput, UserUncheckedCreateWithoutDesignPostingsInput>
+  }
+
+  export type ClientCreateWithoutDesignPostingsInput = {
+    id?: string
+    code: string
+    name: string
+    website?: string | null
+    industry?: string | null
+    monthlyRetainer?: number
+    googleBudget?: number
+    seoPriority?: string
+    seoScheduleDays?: string
+    blogTarget?: number
+    backlinkTarget?: number
+    keywordTarget?: number
+    gscLink?: string
+    gaLink?: string
+    domainAuthority?: number
+    pocName?: string | null
+    pocMobile?: string | null
+    pocEmail?: string | null
+    onboardDate?: Date | string
+    renewalDate?: string
+    status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
+    billingCompany?: string
+    billingDay?: number
+    paymentTerm?: string
+    importantNotes?: string
+    websiteName?: string
+    websiteDomain?: string
+    websiteServices?: string
+    domainTaken?: boolean
+    domainAmount?: number
+    hostingTaken?: boolean
+    hostingAmount?: number
+    designAmount?: number
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accountManager?: UserCreateNestedOneWithoutManagedClientsInput
+    services?: ClientServiceCreateNestedManyWithoutClientInput
+    deliverables?: DeliverableCreateNestedManyWithoutClientInput
+    assignments?: AssignmentCreateNestedManyWithoutClientInput
+    updates?: WorkUpdateCreateNestedManyWithoutClientInput
+    adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
+    invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
+    campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
+    socialPosts?: SocialPostCreateNestedManyWithoutClientInput
+    devProjects?: DevProjectCreateNestedManyWithoutClientInput
+    contacts?: ClientContactCreateNestedManyWithoutClientInput
+    tasks?: TaskCreateNestedManyWithoutClientInput
+    googleCampaigns?: GoogleAdsCampaignCreateNestedManyWithoutClientInput
+    creativeTasks?: CreativeTaskCreateNestedManyWithoutClientInput
+    seoAnalytics?: SeoAnalyticsCreateNestedManyWithoutClientInput
+    seoBlogSlots?: SeoBlogSlotCreateNestedManyWithoutClientInput
+    seoKeywords?: SeoKeywordCreateNestedManyWithoutClientInput
+    seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
+    gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
+    seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
+  }
+
+  export type ClientUncheckedCreateWithoutDesignPostingsInput = {
+    id?: string
+    code: string
+    name: string
+    website?: string | null
+    industry?: string | null
+    monthlyRetainer?: number
+    googleBudget?: number
+    seoPriority?: string
+    seoScheduleDays?: string
+    blogTarget?: number
+    backlinkTarget?: number
+    keywordTarget?: number
+    gscLink?: string
+    gaLink?: string
+    domainAuthority?: number
+    pocName?: string | null
+    pocMobile?: string | null
+    pocEmail?: string | null
+    onboardDate?: Date | string
+    renewalDate?: string
+    status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
+    billingCompany?: string
+    billingDay?: number
+    paymentTerm?: string
+    importantNotes?: string
+    websiteName?: string
+    websiteDomain?: string
+    websiteServices?: string
+    domainTaken?: boolean
+    domainAmount?: number
+    hostingTaken?: boolean
+    hostingAmount?: number
+    designAmount?: number
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accountManagerId?: string | null
+    services?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
+    deliverables?: DeliverableUncheckedCreateNestedManyWithoutClientInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutClientInput
+    updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
+    adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
+    campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
+    socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
+    devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
+    contacts?: ClientContactUncheckedCreateNestedManyWithoutClientInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutClientInput
+    googleCampaigns?: GoogleAdsCampaignUncheckedCreateNestedManyWithoutClientInput
+    creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutClientInput
+    seoAnalytics?: SeoAnalyticsUncheckedCreateNestedManyWithoutClientInput
+    seoBlogSlots?: SeoBlogSlotUncheckedCreateNestedManyWithoutClientInput
+    seoKeywords?: SeoKeywordUncheckedCreateNestedManyWithoutClientInput
+    seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
+    gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
+    seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
+  }
+
+  export type ClientCreateOrConnectWithoutDesignPostingsInput = {
+    where: ClientWhereUniqueInput
+    create: XOR<ClientCreateWithoutDesignPostingsInput, ClientUncheckedCreateWithoutDesignPostingsInput>
+  }
+
+  export type UserUpsertWithoutDesignPostingsInput = {
+    update: XOR<UserUpdateWithoutDesignPostingsInput, UserUncheckedUpdateWithoutDesignPostingsInput>
+    create: XOR<UserCreateWithoutDesignPostingsInput, UserUncheckedCreateWithoutDesignPostingsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutDesignPostingsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutDesignPostingsInput, UserUncheckedUpdateWithoutDesignPostingsInput>
+  }
+
+  export type UserUpdateWithoutDesignPostingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    assignments?: AssignmentUpdateManyWithoutUserNestedInput
+    updates?: WorkUpdateUpdateManyWithoutUserNestedInput
+    devProjects?: DevProjectUpdateManyWithoutAssignedToNestedInput
+    timeSessions?: TimeSessionUpdateManyWithoutUserNestedInput
+    tasksAssigned?: TaskUpdateManyWithoutAssignedByNestedInput
+    tasksReceived?: TaskUpdateManyWithoutAssignedToNestedInput
+    creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
+    salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutDesignPostingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
+    updates?: WorkUpdateUncheckedUpdateManyWithoutUserNestedInput
+    devProjects?: DevProjectUncheckedUpdateManyWithoutAssignedToNestedInput
+    timeSessions?: TimeSessionUncheckedUpdateManyWithoutUserNestedInput
+    tasksAssigned?: TaskUncheckedUpdateManyWithoutAssignedByNestedInput
+    tasksReceived?: TaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
+    salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ClientUpsertWithoutDesignPostingsInput = {
+    update: XOR<ClientUpdateWithoutDesignPostingsInput, ClientUncheckedUpdateWithoutDesignPostingsInput>
+    create: XOR<ClientCreateWithoutDesignPostingsInput, ClientUncheckedCreateWithoutDesignPostingsInput>
+    where?: ClientWhereInput
+  }
+
+  export type ClientUpdateToOneWithWhereWithoutDesignPostingsInput = {
+    where?: ClientWhereInput
+    data: XOR<ClientUpdateWithoutDesignPostingsInput, ClientUncheckedUpdateWithoutDesignPostingsInput>
+  }
+
+  export type ClientUpdateWithoutDesignPostingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    googleBudget?: IntFieldUpdateOperationsInput | number
+    seoPriority?: StringFieldUpdateOperationsInput | string
+    seoScheduleDays?: StringFieldUpdateOperationsInput | string
+    blogTarget?: IntFieldUpdateOperationsInput | number
+    backlinkTarget?: IntFieldUpdateOperationsInput | number
+    keywordTarget?: IntFieldUpdateOperationsInput | number
+    gscLink?: StringFieldUpdateOperationsInput | string
+    gaLink?: StringFieldUpdateOperationsInput | string
+    domainAuthority?: IntFieldUpdateOperationsInput | number
+    pocName?: NullableStringFieldUpdateOperationsInput | string | null
+    pocMobile?: NullableStringFieldUpdateOperationsInput | string | null
+    pocEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    renewalDate?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
+    billingCompany?: StringFieldUpdateOperationsInput | string
+    billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
+    importantNotes?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    websiteServices?: StringFieldUpdateOperationsInput | string
+    domainTaken?: BoolFieldUpdateOperationsInput | boolean
+    domainAmount?: IntFieldUpdateOperationsInput | number
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
+    designAmount?: IntFieldUpdateOperationsInput | number
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accountManager?: UserUpdateOneWithoutManagedClientsNestedInput
+    services?: ClientServiceUpdateManyWithoutClientNestedInput
+    deliverables?: DeliverableUpdateManyWithoutClientNestedInput
+    assignments?: AssignmentUpdateManyWithoutClientNestedInput
+    updates?: WorkUpdateUpdateManyWithoutClientNestedInput
+    adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
+    invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
+    campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
+    socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
+    devProjects?: DevProjectUpdateManyWithoutClientNestedInput
+    contacts?: ClientContactUpdateManyWithoutClientNestedInput
+    tasks?: TaskUpdateManyWithoutClientNestedInput
+    googleCampaigns?: GoogleAdsCampaignUpdateManyWithoutClientNestedInput
+    creativeTasks?: CreativeTaskUpdateManyWithoutClientNestedInput
+    seoAnalytics?: SeoAnalyticsUpdateManyWithoutClientNestedInput
+    seoBlogSlots?: SeoBlogSlotUpdateManyWithoutClientNestedInput
+    seoKeywords?: SeoKeywordUpdateManyWithoutClientNestedInput
+    seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
+    gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
+    seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+  }
+
+  export type ClientUncheckedUpdateWithoutDesignPostingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    googleBudget?: IntFieldUpdateOperationsInput | number
+    seoPriority?: StringFieldUpdateOperationsInput | string
+    seoScheduleDays?: StringFieldUpdateOperationsInput | string
+    blogTarget?: IntFieldUpdateOperationsInput | number
+    backlinkTarget?: IntFieldUpdateOperationsInput | number
+    keywordTarget?: IntFieldUpdateOperationsInput | number
+    gscLink?: StringFieldUpdateOperationsInput | string
+    gaLink?: StringFieldUpdateOperationsInput | string
+    domainAuthority?: IntFieldUpdateOperationsInput | number
+    pocName?: NullableStringFieldUpdateOperationsInput | string | null
+    pocMobile?: NullableStringFieldUpdateOperationsInput | string | null
+    pocEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    renewalDate?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
+    billingCompany?: StringFieldUpdateOperationsInput | string
+    billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
+    importantNotes?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    websiteServices?: StringFieldUpdateOperationsInput | string
+    domainTaken?: BoolFieldUpdateOperationsInput | boolean
+    domainAmount?: IntFieldUpdateOperationsInput | number
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
+    designAmount?: IntFieldUpdateOperationsInput | number
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    services?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
+    deliverables?: DeliverableUncheckedUpdateManyWithoutClientNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutClientNestedInput
+    updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
+    adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
+    campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
+    socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
+    devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
+    contacts?: ClientContactUncheckedUpdateManyWithoutClientNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutClientNestedInput
+    googleCampaigns?: GoogleAdsCampaignUncheckedUpdateManyWithoutClientNestedInput
+    creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutClientNestedInput
+    seoAnalytics?: SeoAnalyticsUncheckedUpdateManyWithoutClientNestedInput
+    seoBlogSlots?: SeoBlogSlotUncheckedUpdateManyWithoutClientNestedInput
+    seoKeywords?: SeoKeywordUncheckedUpdateManyWithoutClientNestedInput
+    seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
+    gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
+    seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateManyAccountManagerInput = {
@@ -82386,6 +84873,20 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type DesignPostingCreateManyUserInput = {
+    id?: string
+    weekStart: string
+    clientId?: string | null
+    clientName: string
+    monthlyPosts?: number
+    target?: number
+    done?: number
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type ClientUpdateWithoutAccountManagerInput = {
     id?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
@@ -82454,6 +84955,7 @@ export namespace Prisma {
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutAccountManagerInput = {
@@ -82524,6 +85026,7 @@ export namespace Prisma {
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
     videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
+    designPostings?: DesignPostingUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateManyWithoutAccountManagerInput = {
@@ -83240,6 +85743,48 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DesignPostingUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    weekStart?: StringFieldUpdateOperationsInput | string
+    clientName?: StringFieldUpdateOperationsInput | string
+    monthlyPosts?: IntFieldUpdateOperationsInput | number
+    target?: IntFieldUpdateOperationsInput | number
+    done?: IntFieldUpdateOperationsInput | number
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    client?: ClientUpdateOneWithoutDesignPostingsNestedInput
+  }
+
+  export type DesignPostingUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    weekStart?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientName?: StringFieldUpdateOperationsInput | string
+    monthlyPosts?: IntFieldUpdateOperationsInput | number
+    target?: IntFieldUpdateOperationsInput | number
+    done?: IntFieldUpdateOperationsInput | number
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DesignPostingUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    weekStart?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientName?: StringFieldUpdateOperationsInput | string
+    monthlyPosts?: IntFieldUpdateOperationsInput | number
+    target?: IntFieldUpdateOperationsInput | number
+    done?: IntFieldUpdateOperationsInput | number
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ClientServiceCreateManyClientInput = {
     id?: string
     service: string
@@ -83580,6 +86125,20 @@ export namespace Prisma {
     posting?: string
     verifiedBy?: string
     storage?: string
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DesignPostingCreateManyClientInput = {
+    id?: string
+    weekStart: string
+    userId: string
+    clientName: string
+    monthlyPosts?: number
+    target?: number
+    done?: number
     note?: string
     updatedBy?: string
     createdAt?: Date | string
@@ -84624,6 +87183,48 @@ export namespace Prisma {
     posting?: StringFieldUpdateOperationsInput | string
     verifiedBy?: StringFieldUpdateOperationsInput | string
     storage?: StringFieldUpdateOperationsInput | string
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DesignPostingUpdateWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    weekStart?: StringFieldUpdateOperationsInput | string
+    clientName?: StringFieldUpdateOperationsInput | string
+    monthlyPosts?: IntFieldUpdateOperationsInput | number
+    target?: IntFieldUpdateOperationsInput | number
+    done?: IntFieldUpdateOperationsInput | number
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutDesignPostingsNestedInput
+  }
+
+  export type DesignPostingUncheckedUpdateWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    weekStart?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    clientName?: StringFieldUpdateOperationsInput | string
+    monthlyPosts?: IntFieldUpdateOperationsInput | number
+    target?: IntFieldUpdateOperationsInput | number
+    done?: IntFieldUpdateOperationsInput | number
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DesignPostingUncheckedUpdateManyWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    weekStart?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    clientName?: StringFieldUpdateOperationsInput | string
+    monthlyPosts?: IntFieldUpdateOperationsInput | number
+    target?: IntFieldUpdateOperationsInput | number
+    done?: IntFieldUpdateOperationsInput | number
     note?: StringFieldUpdateOperationsInput | string
     updatedBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

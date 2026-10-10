@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { todayIST } from "@/lib/india-date";
 import { saveEditCount } from "@/app/edit-count-actions";
 import CountStepper from "@/components/CountStepper";
+import { TEAMS, cap, type TeamInfo } from "@/lib/team-kinds";
 import { Film, CheckCircle2, Clock3, ArrowRight, Save } from "lucide-react";
 
 // On top of a video editor's own dashboard: enter today's editing count right there (no need
@@ -10,7 +11,8 @@ import { Film, CheckCircle2, Clock3, ArrowRight, Save } from "lucide-react";
 
 const fmt = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-IN", { weekday: "long", day: "2-digit", month: "short", timeZone: "UTC" });
 
-export default async function TodayEditCount({ userId }: { userId: string }) {
+// `team`: the video editors by default, or the designers ("Design Count").
+export default async function TodayEditCount({ userId, team = TEAMS.VIDEO }: { userId: string; team?: TeamInfo }) {
   const today = todayIST();
   const month = today.slice(0, 7);
   const weekAgo = new Date(new Date(`${today}T00:00:00Z`).getTime() - 6 * 86400000).toISOString().slice(0, 10);
@@ -36,7 +38,7 @@ export default async function TodayEditCount({ userId }: { userId: string }) {
             <div className="flex items-center gap-2.5">
               <span className="grid h-10 w-10 place-items-center rounded-[11px] text-white" style={{ background: "var(--grad)" }}><Film size={18} /></span>
               <div>
-                <div className="text-[15px] font-bold">Today’s editing count</div>
+                <div className="text-[15px] font-bold">Today’s {team.title.toLowerCase()}</div>
                 <div className="text-[12px] text-[var(--muted)]">{fmt(today)}</div>
               </div>
             </div>
@@ -47,12 +49,13 @@ export default async function TodayEditCount({ userId }: { userId: string }) {
           <form action={saveEditCount} className="mt-4 space-y-3">
             <input type="hidden" name="date" value={today} />
             <input type="hidden" name="return" value="home" />
+            <input type="hidden" name="team" value={team.kind} />
             {/* count + save on one line, the note under it — reads well at any width */}
             <div className="flex flex-wrap items-end gap-3">
-              <label className="block w-[200px] max-w-full"><span className="eyebrow">Videos edited today</span><div className="mt-1.5"><CountStepper key={mine?.count ?? "new"} defaultValue={mine?.count ?? ""} big /></div></label>
+              <label className="block w-[200px] max-w-full"><span className="eyebrow">{cap(team.many)} {team.did} today</span><div className="mt-1.5"><CountStepper key={mine?.count ?? "new"} defaultValue={mine?.count ?? ""} big /></div></label>
               <button type="submit" className="btn btn-violet !h-12 px-6"><Save size={15} /> {mine ? "Update count" : "Save count"}</button>
             </div>
-            <label className="block"><span className="eyebrow">Note (optional)</span><input name="note" maxLength={300} defaultValue={mine?.note ?? ""} placeholder="What did you edit? e.g. 2 reels + 1 testimonial" className="input mt-1.5" /></label>
+            <label className="block"><span className="eyebrow">Note (optional)</span><input name="note" maxLength={300} defaultValue={mine?.note ?? ""} placeholder={team.kind === "DESIGN" ? "What did you design? e.g. 6 posts + 2 banners" : "What did you edit? e.g. 2 reels + 1 testimonial"} className="input mt-1.5" /></label>
           </form>
         </div>
         <div className="flex flex-col justify-between gap-4 border-t border-[var(--line)] bg-[var(--surface-2)] p-5 lg:border-l lg:border-t-0">
@@ -70,7 +73,7 @@ export default async function TodayEditCount({ userId }: { userId: string }) {
               ))}
             </div>
             <div className="mt-1 flex gap-1.5">{week.map((w) => <div key={w.date} className={`flex-1 text-center text-[10px] ${w.date === today ? "font-extrabold text-[var(--violet)]" : "text-[var(--faint)]"}`}>{w.letter}</div>)}</div>
-            <Link href="/video-team" className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-bold text-[var(--violet)] hover:underline">Open Editing Count <ArrowRight size={13} /></Link>
+            <Link href={team.path} className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-bold text-[var(--violet)] hover:underline">Open {team.title} <ArrowRight size={13} /></Link>
           </div>
         </div>
       </div>

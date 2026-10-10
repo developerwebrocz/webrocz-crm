@@ -24,19 +24,20 @@ model User {
   shootTeam    Boolean  @default(false) // a video editor who also goes on shoots: can be picked as the shooter, gets "My Shoots"
   createdAt    DateTime @default(now())
 
-  managedClients   Client[]       @relation("AccountManager")
+  managedClients   Client[]        @relation("AccountManager")
   assignments      Assignment[]
   updates          WorkUpdate[]
-  devProjects      DevProject[]   @relation("DevAssignee")
+  devProjects      DevProject[]    @relation("DevAssignee")
   timeSessions     TimeSession[]
-  tasksAssigned    Task[]         @relation("TaskAssigner")
-  tasksReceived    Task[]         @relation("TaskAssignee")
-  creativeTasks    CreativeTask[] @relation("CreativeAssignee")
-  creativeAssigned CreativeTask[] @relation("CreativeAssigner")
-  salesLeads       Lead[]         @relation("LeadOwner")
-  shoots           Shoot[]        @relation("ShootAssignee")
-  shootRequests    Shoot[]        @relation("ShootRequester")
+  tasksAssigned    Task[]          @relation("TaskAssigner")
+  tasksReceived    Task[]          @relation("TaskAssignee")
+  creativeTasks    CreativeTask[]  @relation("CreativeAssignee")
+  creativeAssigned CreativeTask[]  @relation("CreativeAssigner")
+  salesLeads       Lead[]          @relation("LeadOwner")
+  shoots           Shoot[]         @relation("ShootAssignee")
+  shootRequests    Shoot[]         @relation("ShootRequester")
   editCounts       EditCount[]
+  designPostings   DesignPosting[]
 }
 
 // Video team's daily "Editing Count" (kept in a Google Sheet before): how many videos an
@@ -170,6 +171,7 @@ model Client {
   seoReports      SeoReport[]
   shoots          Shoot[]
   videoJobs       VideoJob[]
+  designPostings  DesignPosting[]
 
   @@index([status])
   @@index([accountManagerId])
@@ -926,4 +928,27 @@ model VideoJob {
   @@index([date])
   @@index([clientId])
   @@index([editStatus])
+}
+
+// Design team "Assigned Postings" (kept in a Google Sheet before): for a week, which designer
+// does which client's posts — how many are planned for the week and how many are done.
+model DesignPosting {
+  id           String   @id @default(cuid())
+  weekStart    String // Monday of the week, "2026-10-05"
+  userId       String // the designer
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientId     String? // linked CRM client, when the name matches one
+  client       Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  clientName   String
+  monthlyPosts Int      @default(0) // posts agreed per month ("Star Homeopathy-20")
+  target       Int      @default(0) // posts to do this week ("Total Post")
+  done         Int      @default(0)
+  note         String   @default("")
+  updatedBy    String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([weekStart])
+  @@index([userId])
+  @@index([clientId])
 }

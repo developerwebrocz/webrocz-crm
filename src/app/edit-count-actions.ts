@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { todayIST } from "@/lib/india-date";
 import { planEditCounts } from "@/lib/video-import-core";
+import { teamOf } from "@/lib/team-kinds";
 import { canOpenEditCount, isVideoAdmin, isVideoLead } from "@/lib/edit-count-queries";
 
 // Video team "Editing Count" — saving a day's count, loading the old Google Sheet, and
@@ -18,17 +19,18 @@ const validDate = (d: string) => /^\d{4}-\d{2}-\d{2}$/.test(d) && !Number.isNaN(
 // An empty count removes that day's entry (it was entered by mistake).
 export async function saveEditCount(fd: FormData) {
   const me = await getCurrentUser();
-  if (!me || !canOpenEditCount(me)) redirect("/");
+  const team = teamOf(str(fd, "team")); // video editors by default; "DESIGN" for the designers
+  if (!me || !canOpenEditCount(me, team.kind)) redirect("/");
   const date = str(fd, "date");
   const today = todayIST();
   // `return=home`: saved from the card on the editor's own dashboard → stay there
   const home = str(fd, "return") === "home";
-  const back: (flag: string) => never = (flag) => redirect(home ? "/" : `/video-team?month=${(validDate(date) ? date : today).slice(0, 7)}&saved=${flag}`);
+  const back: (flag: string) => never = (flag) => redirect(home ? "/" : `${team.path}?month=${(validDate(date) ? date : today).slice(0, 7)}&saved=${flag}`);
   if (!validDate(date) || date > today) back("baddate");
 
-  const userId = isVideoLead(me) ? str(fd, "userId") || me.id : me.id;
+  const userId = isVideoLead(me, team.kind) ? str(fd, "userId") || me.id : me.id;
   const target = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, role: true } });
-  if (!target || target.role !== "EDITOR") back("noeditor");
+  if (!target || target.role !== team.role) back("noeditor");
 
   const raw = str(fd, "count");
   if (raw === "") {
@@ -43,28 +45,29 @@ export async function saveEditCount(fd: FormData) {
       update: { count, note, updatedBy: me.name },
     });
   }
-  revalidatePath("/video-team");
+  revalidatePath(team.path);
   revalidatePath("/");
   back("1");
 }
 
 // Team lead / admin: ping the editors who have not entered today's count yet.
-export async function remindEditCount() {
+export async function remindEditCount(fd: FormData) {
   const me = await getCurrentUser();
-  if (!me || !isVideoLead(me)) redirect("/");
+  const team = teamOf(str(fd, "team"));
+  if (!me || !isVideoLead(me, team.kind)) redirect("/");
   const today = todayIST();
   const [editors, done] = await Promise.all([
-    prisma.user.findMany({ where: { role: "EDITOR", active: true, id: { not: me.id } }, select: { id: true } }),
+    prisma.user.findMany({ where: { role: team.role, active: true, id: { not: me.id } }, select: { id: true } }),
     prisma.editCount.findMany({ where: { date: today }, select: { userId: true } }),
   ]);
   const have = new Set(done.map((x) => x.userId));
-  const title = "Update today's editing count";
+  const title = `Update today's ${team.title.toLowerCase()}`;
   // no second ping while the first one is still unread
   const pending = await prisma.notification.findMany({ where: { title, read: false, userId: { in: editors.map((e) => e.id) } }, select: { userId: true } });
   const pinged = new Set(pending.map((p) => p.userId));
   const to = editors.filter((e) => !have.has(e.id) && !pinged.has(e.id));
-  if (to.length) await prisma.notification.createMany({ data: to.map((e) => ({ userId: e.id, title, body: `${me.name} is waiting for your count — it takes 10 seconds.`, link: "/video-team", tone: "amber" })) });
-  redirect(`/video-team?saved=${to.length ? "reminded" : "noremind"}`);
+  if (to.length) await prisma.notification.createMany({ data: to.map((e) => ({ userId: e.id, title, body: `${me.name} is waiting for your count — it takes 10 seconds.`, link: team.path, tone: "amber" })) });
+  redirect(`${team.path}?saved=${to.length ? "reminded" : "noremind"}`);
 }
 
 // Super Admin / Sub Admin: who leads the video team (one editor, or nobody) and which editors
@@ -72,14 +75,15 @@ export async function remindEditCount() {
 export async function saveVideoTeamSettings(fd: FormData) {
   const me = await getCurrentUser();
   if (!me || !isVideoAdmin(me)) redirect("/");
-  const editors = await prisma.user.findMany({ where: { role: "EDITOR" }, select: { id: true } });
+  const team = teamOf(str(fd, "team"));
+  const editors = await prisma.user.findMany({ where: { role: team.role }, select: { id: true } });
   const ids = new Set(editors.map((e) => e.id));
   const leadId = ids.has(str(fd, "leadId")) ? str(fd, "leadId") : "";
   const shoot = new Set(fd.getAll("shootTeam").map(String).filter((id) => ids.has(id)));
-  await prisma.$transaction(editors.map((e) => prisma.user.update({ where: { id: e.id }, data: { teamLead: e.id === leadId, shootTeam: shoot.has(e.id) } })));
-  revalidatePath("/video-team");
+  await prisma.$transaction(editors.map((e) => prisma.user.update({ where: { id: e.id }, data: { teamLead: e.id === leadId, ...(team.kind === "VIDEO" ? { shootTeam: shoot.has(e.id) } : {}) } })));
+  revalidatePath(team.path);
   revalidatePath("/", "layout");
-  redirect(`/video-team?${str(fd, "month") ? `month=${str(fd, "month")}&` : ""}saved=team`);
+  redirect(`${team.path}?${str(fd, "month") ? `month=${str(fd, "month")}&` : ""}saved=team`);
 }
 
 // ---- load the old sheet (CSV): first column the date, then one column per editor ----
@@ -88,10 +92,11 @@ export type EditCountImportResult = { ok: boolean; message: string; details?: st
 
 export async function importEditCounts(_prev: EditCountImportResult, fd: FormData): Promise<EditCountImportResult> {
   const me = await getCurrentUser();
-  if (!me || !isVideoLead(me)) return { ok: false, message: "Only the video team lead or an admin can import the sheet." };
+  const team = teamOf(str(fd, "team"));
+  if (!me || !isVideoLead(me, team.kind)) return { ok: false, message: "Only the team lead or an admin can import the sheet." };
   const file = fd.get("file");
-  if (!file || typeof file === "string" || !(file as File).size) return { ok: false, message: "Choose the editing count CSV file first." };
-  const editors = await prisma.user.findMany({ where: { role: "EDITOR" }, select: { id: true, name: true } });
+  if (!file || typeof file === "string" || !(file as File).size) return { ok: false, message: "Choose the count CSV file first." };
+  const editors = await prisma.user.findMany({ where: { role: team.role }, select: { id: true, name: true } });
   const plan = planEditCounts(await (file as File).text(), editors, todayIST());
   if ("error" in plan) return { ok: false, message: plan.error ?? "That file could not be read." };
 
@@ -106,10 +111,10 @@ export async function importEditCounts(_prev: EditCountImportResult, fd: FormDat
     create: { ...d, updatedBy: by },
     update: { count: d.count, updatedBy: by },
   })));
-  revalidatePath("/video-team"); revalidatePath("/");
+  revalidatePath(team.path); revalidatePath("/");
 
   const details = [...plan.perEditor];
-  if (plan.missing.length) details.push(`NOT imported — no Video Editor with this name in Team: ${plan.missing.join(", ")}. Add them in Team (role Video Editor) and import the same file again.`);
+  if (plan.missing.length) details.push(`NOT imported — no ${team.member} with this name in Team: ${plan.missing.join(", ")}. Add them in Team (role ${team.member}) and import the same file again.`);
   if (plan.badDates.length) details.push(`Rows skipped, date not understood: ${plan.badDates.slice(0, 5).join(", ")}${plan.badDates.length > 5 ? "…" : ""}`);
   if (plan.badCells) details.push(`${plan.badCells} cell(s) skipped — not a number.`);
   if (plan.future) details.push(`${plan.future} row(s) skipped — date is in the future.`);

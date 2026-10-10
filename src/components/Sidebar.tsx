@@ -135,6 +135,8 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     ] });
     groups.push({ label: "Delivery", items: [
       { href: "/designs", label: "Design Studio", icon: Palette },
+      { href: "/design-postings", label: "Assigned Postings", icon: CalendarDays },
+      { href: "/design-team", label: "Design Count", icon: ListOrdered },
       { href: "/videos", label: "Video Studio", icon: Clapperboard },
       { href: "/client-videos", label: "Client Videos", icon: Film },
       { href: "/video-team", label: "Editing Count", icon: ListOrdered },
@@ -201,6 +203,10 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     const work: Item[] = [];
     if (isSeo) work.push({ href: "/seo", label: "SEO Performance", icon: Search });
     if (isDesigner) work.push({ href: "/designs", label: "My Designs", icon: Palette });
+    // the designers' week (clients → posts planned / done) and daily count (was a Google Sheet);
+    // the design team lead sees the whole team in both
+    if (isDesigner) work.push({ href: "/design-postings", label: "Assigned Postings", icon: CalendarDays });
+    if (isDesigner) work.push({ href: "/design-team", label: "Design Count", icon: ListOrdered });
     if (isEditor) work.push({ href: "/videos", label: "My Videos", icon: Clapperboard });
     // the video team's daily count (was a Google Sheet); the team lead sees the whole team there
     // client shoots and their editing / posting status (was the "Video Shoots Status" sheet)

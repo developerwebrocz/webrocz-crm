@@ -89,7 +89,7 @@ export function planEditCounts(csv: string, editors: Person[], today: string) {
   if (!data.length) return { error: "No counts found in that file." as const };
   const perEditor = matched.map((c) => {
     const mine = data.filter((d) => d.userId === c.user!.id);
-    return `${c.user!.name}${normText(c.user!.name) !== normText(c.name) ? ` (sheet: ${c.name})` : ""}: ${mine.length} days · ${mine.reduce((s, d) => s + d.count, 0)} videos`;
+    return `${c.user!.name}${normText(c.user!.name) !== normText(c.name) ? ` (sheet: ${c.name})` : ""}: ${mine.length} days · ${mine.reduce((s, d) => s + d.count, 0)} in total`;
   });
   return { data, perEditor, missing, badDates, badCells, future };
 }
@@ -160,4 +160,45 @@ export function planVideoJobs(csv: string, editors: Person[], clients: Person[],
   }
   if (!ops.length) return { error: "No client rows found in that file." as const };
   return { ops, added: ops.filter((o) => !o.id).length, replaced: ops.filter((o) => o.id).length, linked, badDates, noLogin: [...noLogin].map(([n, c]) => `${n} (${c})`) };
+}
+
+// ---- Designers' "Assigned Postings" sheet: Designer, Client, Monthly posts, Total post, Done, Note ----
+export type DesignPostingData = { userId: string; clientName: string; clientId: string | null; monthlyPosts: number; target: number; done: number; note: string };
+
+export function planDesignPostings(csv: string, designers: Person[], clients: Person[], existing: { id: string; userId: string; clientName: string }[]) {
+  const rows = parseCsv(csv);
+  if (rows.length < 2) return { error: "That file has no rows." as const };
+  const head = rows[0].map((h) => h.toLowerCase());
+  const col = (...keys: string[]) => head.findIndex((h) => keys.some((k) => h.includes(k)));
+  const C = { designer: col("designer", "employee"), client: col("client"), monthly: col("monthly"), total: col("total"), done: col("done"), note: col("note", "status") };
+  if (C.designer < 0 || C.client < 0) return { error: "The file needs a Designer column and a Client column." as const };
+  const get = (r: string[], i: number) => (i >= 0 ? r[i] ?? "" : "");
+  const num = (v: string) => { const m = v.match(/\d+/); return m ? Number(m[0]) : 0; };
+  const clientByName = (name: string) => { const hit = clients.filter((c) => normText(c.name) === normText(name)); return hit.length === 1 ? hit[0].id : null; };
+
+  // the same designer + client already in that week is replaced (1st with 1st, 2nd with 2nd …)
+  const have = new Map<string, string>(); const seenSaved = new Map<string, number>();
+  for (const e of existing) { const k = `${e.userId}|${normText(e.clientName)}`; const n = (seenSaved.get(k) ?? 0) + 1; seenSaved.set(k, n); have.set(`${k}#${n}`, e.id); }
+  const seenFile = new Map<string, number>();
+
+  const ops: { id: string | null; data: DesignPostingData }[] = [];
+  const missing = new Set<string>();
+  for (const r of rows.slice(1)) {
+    const clientName = get(r, C.client);
+    const who = get(r, C.designer);
+    if (!clientName || !who) continue;
+    const user = matchPerson(who, designers);
+    if (!user) { missing.add(who); continue; }
+    const monthlyPosts = num(get(r, C.monthly));
+    const totalRaw = get(r, C.total);
+    const key = `${user.id}|${normText(clientName)}`;
+    const nth = (seenFile.get(key) ?? 0) + 1; seenFile.set(key, nth);
+    ops.push({ id: have.get(`${key}#${nth}`) ?? null, data: { userId: user.id, clientName, clientId: clientByName(clientName), monthlyPosts, target: totalRaw === "" ? Math.ceil(monthlyPosts / 4) : num(totalRaw), done: num(get(r, C.done)), note: get(r, C.note) } });
+  }
+  if (!ops.length) return { error: missing.size ? `No row matches a Designer in Team. Names in the file: ${[...missing].join(", ")}.` : "No client rows found in that file." };
+  const perDesigner = designers.filter((d) => ops.some((o) => o.data.userId === d.id)).map((d) => {
+    const mine = ops.filter((o) => o.data.userId === d.id);
+    return `${d.name}: ${mine.length} clients · ${mine.reduce((s, o) => s + o.data.done, 0)} of ${mine.reduce((s, o) => s + o.data.target, 0)} posts done`;
+  });
+  return { ops, added: ops.filter((o) => !o.id).length, replaced: ops.filter((o) => o.id).length, missing: [...missing], perDesigner };
 }

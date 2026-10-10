@@ -7,8 +7,10 @@ import { saveEditCount, saveVideoTeamSettings, importEditCounts, remindEditCount
 import CountStepper from "@/components/CountStepper";
 import AssignCreativeForm from "@/components/AssignCreativeForm";
 import { initials } from "@/lib/domain";
+import { TEAMS, cap, type TeamInfo } from "@/lib/team-kinds";
 
-// Video team "Editing Count" — the month's videos-per-day for each editor (the old Google
+// A team's daily count — video editors ("Editing Count") or designers ("Design Count"): the
+// month's count-per-day for each member (the old Google
 // Sheet): summary, daily chart, each editor's card, the form to update a day, the day-by-day
 // table and, for the team lead / admins, the team's assigned work.
 
@@ -17,12 +19,12 @@ type ClientOpt = { id: string; name: string };
 
 const SAVED: Record<string, { text: string; ok: boolean }> = {
   "1": { text: "Saved.", ok: true },
-  team: { text: "Video team settings saved.", ok: true },
-  reminded: { text: "Reminder sent to the editors who have not updated today.", ok: true },
+  team: { text: "Team settings saved.", ok: true },
+  reminded: { text: "Reminder sent to those who have not updated today.", ok: true },
   noremind: { text: "No reminder needed — everyone has updated, or already has an unread reminder.", ok: true },
   baddate: { text: "Not saved — choose a date that is today or earlier.", ok: false },
-  badcount: { text: "Not saved — the number of videos is not valid.", ok: false },
-  noeditor: { text: "Not saved — choose a video editor.", ok: false },
+  badcount: { text: "Not saved — the number is not valid.", ok: false },
+  noeditor: { text: "Not saved — choose a team member.", ok: false },
 };
 const STATUS: Record<string, { label: string; tone: string }> = {
   PENDING: { label: "Pending", tone: "var(--muted)" },
@@ -35,7 +37,9 @@ const PALETTE = ["#6d28d9", "#0284c7", "#059669", "#d97706", "#e11d48", "#0d9488
 const fmtDay = (iso: string) => (iso ? new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-IN", { day: "2-digit", month: "short", timeZone: "UTC" }) : "—");
 const tint = (color: string, pct: number) => `color-mix(in srgb, ${color} ${pct}%, white)`;
 
-export default function EditCountBoard({ d, me, clients, saved }: { d: EditCountBoardData; me: Me; clients: ClientOpt[]; saved: string }) {
+// `team`: which team this page is for (video editors by default, or the designers).
+export default function EditCountBoard({ d, me, clients, saved, team = TEAMS.VIDEO }: { d: EditCountBoardData; me: Me; clients: ClientOpt[]; saved: string; team?: TeamInfo }) {
+  const tm = team;
   const first = d.editors.find((e) => e.id === me.id) ?? d.editors.find((e) => e.active) ?? d.editors[0];
   const [userId, setUserId] = useState(first?.id ?? "");
   const [date, setDate] = useState(d.isCurrentMonth ? d.today : `${d.month}-01`);
@@ -77,7 +81,7 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
     rows.push(["Month total", "", ...d.perEditor.map((e) => e.total), d.seeAll ? d.grand : ""]);
     const blob = new Blob(["\uFEFF" + rows.map((r) => r.map(q).join(",")).join("\r\n")], { type: "text/csv;charset=utf-8" });
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob); a.download = `Editing count - ${d.monthLabel}.csv`;
+    a.href = URL.createObjectURL(blob); a.download = `${tm.title} - ${d.monthLabel}.csv`;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   };
@@ -95,21 +99,21 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
       {/* header */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <div className="eyebrow">Video team</div>
-          <h1 className="mt-1.5 text-[26px] font-extrabold tracking-tight">Editing Count</h1>
-          <p className="mt-1 text-sm text-[var(--muted)]">{d.seeAll ? "Videos edited per day by every editor" : "Your videos edited per day"}</p>
+          <div className="eyebrow">{tm.eyebrow}</div>
+          <h1 className="mt-1.5 text-[26px] font-extrabold tracking-tight">{tm.title}</h1>
+          <p className="mt-1 text-sm text-[var(--muted)]">{d.seeAll ? `${cap(tm.many)} ${tm.did} per day by every ${tm.person}` : `Your ${tm.many} ${tm.did} per day`}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="inline-flex items-center overflow-hidden rounded-[10px] border border-[var(--line-2)] bg-[var(--surface)] shadow-[var(--shadow-xs)]">
-            <a href={`/video-team?month=${d.prevMonth}`} className="grid h-9 w-9 place-items-center text-[var(--ink-2)] hover:bg-[var(--surface-2)]" title="Previous month"><ChevronLeft size={16} /></a>
+            <a href={`${tm.path}?month=${d.prevMonth}`} className="grid h-9 w-9 place-items-center text-[var(--ink-2)] hover:bg-[var(--surface-2)]" title="Previous month"><ChevronLeft size={16} /></a>
             <span className="inline-flex min-w-[138px] items-center justify-center gap-1.5 px-2 text-[13px] font-bold"><CalendarDays size={14} className="text-[var(--violet)]" /> {d.monthLabel}</span>
             {d.nextMonth
-              ? <a href={`/video-team?month=${d.nextMonth}`} className="grid h-9 w-9 place-items-center text-[var(--ink-2)] hover:bg-[var(--surface-2)]" title="Next month"><ChevronRight size={16} /></a>
+              ? <a href={`${tm.path}?month=${d.nextMonth}`} className="grid h-9 w-9 place-items-center text-[var(--ink-2)] hover:bg-[var(--surface-2)]" title="Next month"><ChevronRight size={16} /></a>
               : <span className="grid h-9 w-9 place-items-center text-[var(--line-2)]"><ChevronRight size={16} /></span>}
           </div>
           {hasData && <button type="button" onClick={download} className="btn btn-ghost" title="Download this month as a sheet (Excel)"><Download size={15} /> Download</button>}
           {d.seeAll && <button type="button" onClick={() => setImporting(true)} className="btn btn-ghost"><Upload size={15} /> Import sheet</button>}
-          {d.seeAll && <AssignCreativeForm members={d.editors.filter((e) => e.active).map((e) => ({ id: e.id, name: e.name, role: "EDITOR" }))} clients={clients} from={`/video-team?month=${d.month}`} label="Assign work" />}
+          {d.seeAll && <AssignCreativeForm members={d.editors.filter((e) => e.active).map((e) => ({ id: e.id, name: e.name, role: tm.role }))} clients={clients} from={`${tm.path}?month=${d.month}`} label="Assign work" />}
         </div>
       </div>
 
@@ -131,20 +135,20 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
           <div className="pointer-events-none absolute -right-10 -top-12 h-44 w-44 rounded-full bg-white/10" />
           <div className="pointer-events-none absolute -bottom-16 right-10 h-40 w-40 rounded-full bg-white/[.06]" />
           <div className="relative">
-            <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[.08em] text-white/75"><Film size={14} /> {d.seeAll ? "Team videos" : "My videos"} · {d.monthLabel}</div>
+            <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[.08em] text-white/75"><Film size={14} /> {d.seeAll ? `Team ${tm.many}` : `My ${tm.many}`} · {d.monthLabel}</div>
             <div className="mt-3 flex items-end gap-3">
               <span className="text-[52px] font-extrabold leading-none tracking-tight tnum">{d.grand}</span>
-              <span className="pb-1.5 text-[13px] font-semibold text-white/75">videos edited</span>
+              <span className="pb-1.5 text-[13px] font-semibold text-white/75">{tm.many} {tm.did}</span>
             </div>
             <div className="mt-2 flex flex-wrap items-center gap-2 text-[12.5px] text-white/85">
               {change !== null && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 font-bold">{change >= 0 ? <TrendingUp size={13} /> : <TrendingDown size={13} />} {change >= 0 ? "+" : ""}{change}%</span>
               )}
-              <span>{d.prevLabel}: <b className="tnum">{d.prevTotal}</b> videos</span>
+              <span>{d.prevLabel}: <b className="tnum">{d.prevTotal}</b> {tm.many}</span>
             </div>
             <div className="mt-5 grid grid-cols-3 gap-2">
               {[
-                { icon: Clock3, label: d.isCurrentMonth ? "Today" : "Days worked", value: d.isCurrentMonth ? d.todayTotal : worked.length, sub: d.isCurrentMonth ? (d.seeAll ? `${updatedToday} of ${activeEditors.length} updated` : (d.perEditor[0]?.today === null ? "not updated yet" : "updated")) : "with videos" },
+                { icon: Clock3, label: d.isCurrentMonth ? "Today" : "Days worked", value: d.isCurrentMonth ? d.todayTotal : worked.length, sub: d.isCurrentMonth ? (d.seeAll ? `${updatedToday} of ${activeEditors.length} updated` : (d.perEditor[0]?.today === null ? "not updated yet" : "updated")) : `with ${tm.many}` },
                 { icon: TrendingUp, label: "Avg / day", value: avgDay, sub: `${worked.length} working day${worked.length === 1 ? "" : "s"}` },
                 { icon: Trophy, label: "Best day", value: bestDay ? bestDay.total : 0, sub: bestDay ? fmtDay(bestDay.date) : "—" },
               ].map((k) => (
@@ -162,7 +166,7 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <div className="text-[14px] font-bold">Daily output</div>
-              <div className="text-[11.5px] text-[var(--muted)]">Videos finished each day of {d.monthLabel}</div>
+              <div className="text-[11.5px] text-[var(--muted)]">{cap(tm.many)} finished each day of {d.monthLabel}</div>
             </div>
             {d.seeAll && (
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -174,7 +178,7 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
             <div className="mt-4 flex-1">
               <div className="flex h-[168px] items-end gap-[3px] border-b border-[var(--line-2)]">
                 {d.days.map((day) => (
-                  <div key={day.date} className="flex h-full min-w-0 flex-1 flex-col justify-end" title={`${fmtDay(day.date)} (${day.weekday}) · ${day.any ? `${day.total} videos` : "no entry"}`}>
+                  <div key={day.date} className="flex h-full min-w-0 flex-1 flex-col justify-end" title={`${fmtDay(day.date)} (${day.weekday}) · ${day.any ? `${day.total} ${tm.many}` : "no entry"}`}>
                     {day.total > 0 && <div className="mb-0.5 text-center text-[9.5px] font-bold leading-none text-[var(--ink-2)] tnum">{day.total}</div>}
                     <div className="flex w-full flex-col-reverse overflow-hidden rounded-t-[4px]" style={{ height: day.total > 0 ? `${Math.max(4, (day.total / maxDayTotal) * 86)}%` : day.any ? 3 : 0, background: day.total > 0 ? undefined : "var(--line-2)", outline: day.isToday ? "2px solid color-mix(in srgb, var(--violet) 35%, white)" : undefined }}>
                       {d.editors.map((e) => { const c = d.cells[`${e.id}|${day.date}`]?.count ?? 0; return c > 0 ? <div key={e.id} style={{ flex: c, background: color(e.id) }} /> : null; })}
@@ -197,8 +201,9 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
         <form action={remindEditCount} className="flex flex-wrap items-center justify-between gap-3 rounded-[12px] border px-4 py-3" style={{ background: tint("var(--amber)", 8), borderColor: tint("var(--amber)", 28) }}>
           <div className="flex items-center gap-2.5 text-[13px]" style={{ color: "#7a4f08" }}>
             <Clock3 size={16} className="flex-none" />
-            <span><b>{notUpdated.length} editor{notUpdated.length === 1 ? " has" : "s have"} not updated today:</b> {notUpdated.map((e) => e.name).join(", ")}</span>
+            <span><b>{notUpdated.length} {tm.person}{notUpdated.length === 1 ? " has" : "s have"} not updated today:</b> {notUpdated.map((e) => e.name).join(", ")}</span>
           </div>
+          <input type="hidden" name="team" value={tm.kind} />
           <button type="submit" className="btn btn-sm" style={{ background: "#b45309", color: "white" }}><BellRing size={14} /> Send reminder</button>
         </form>
       )}
@@ -210,18 +215,18 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
             const c = color(e.id);
             const rank = ranked.findIndex((r) => r.id === e.id) + 1;
             return (
-              <button key={e.id} type="button" onClick={() => pick(e.id, maxDate)} className="card card-pad group text-left transition hover:shadow-[var(--shadow-md)]" style={{ borderTop: `3px solid ${c}` }} title={e.active ? "Click to update this editor’s count" : ""}>
+              <button key={e.id} type="button" onClick={() => pick(e.id, maxDate)} className="card card-pad group text-left transition hover:shadow-[var(--shadow-md)]" style={{ borderTop: `3px solid ${c}` }} title={e.active ? "Click to update this count" : ""}>
                 <div className="flex items-center gap-2.5">
                   <span className="grid h-9 w-9 flex-none place-items-center rounded-[10px] text-[12.5px] font-extrabold" style={{ background: tint(c, 14), color: c }}>{initials(e.name)}</span>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5 truncate text-[14px] font-bold">{e.name}{e.lead && <span title="Team lead" className="flex-none text-[var(--amber)]"><Crown size={13} /></span>}{e.shoots && <span title="Also goes on shoots" className="flex-none text-[var(--muted)]"><Camera size={13} /></span>}</div>
-                    <div className="text-[11px] text-[var(--muted)]">{e.lead ? "Team lead" : e.active ? "Video editor" : "No longer in the team"}</div>
+                    <div className="text-[11px] text-[var(--muted)]">{e.lead ? "Team lead" : e.active ? tm.member : "No longer in the team"}</div>
                   </div>
                   {e.total > 0 && <span className="flex-none rounded-full px-2 py-0.5 text-[10.5px] font-extrabold" style={rank === 1 ? { background: tint("var(--amber)", 16), color: "#92600a" } : { background: "var(--surface-2)", color: "var(--muted)" }}>#{rank}</span>}
                 </div>
                 <div className="mt-3 flex items-end gap-1.5">
                   <span className="text-[30px] font-extrabold leading-none tracking-tight tnum">{e.total}</span>
-                  <span className="pb-0.5 text-[11.5px] text-[var(--muted)]">videos</span>
+                  <span className="pb-0.5 text-[11.5px] text-[var(--muted)]">{tm.many}</span>
                 </div>
                 <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[var(--surface-3)]"><div className="h-full rounded-full" style={{ width: `${(e.total / topTotal) * 100}%`, background: c }} /></div>
                 <div className="mt-3 grid grid-cols-3 gap-1 text-center">
@@ -231,7 +236,7 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
                 </div>
                 {d.isCurrentMonth && e.active && (
                   <div className="mt-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold" style={e.today !== null ? { background: tint("var(--emerald)", 11), color: "var(--emerald)" } : { background: tint("var(--amber)", 13), color: "#92600a" }}>
-                    {e.today !== null ? <><CheckCircle2 size={12} /> Today · {e.today} video{e.today === 1 ? "" : "s"}</> : <><Clock3 size={12} /> Not updated today</>}
+                    {e.today !== null ? <><CheckCircle2 size={12} /> Today · {e.today} {e.today === 1 ? tm.one : tm.many}</> : <><Clock3 size={12} /> Not updated today</>}
                   </div>
                 )}
               </button>
@@ -248,7 +253,7 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
               <span className="grid h-9 w-9 place-items-center rounded-[10px]" style={{ background: tint("var(--violet)", 12), color: "var(--violet)" }}><PencilLine size={17} /></span>
               <div>
                 <div className="text-[14px] font-bold">Update work</div>
-                <div className="text-[11.5px] text-[var(--muted)]">{d.seeAll ? "Add or correct the videos edited on a day" : "How many videos did you finish?"}</div>
+                <div className="text-[11.5px] text-[var(--muted)]">{d.seeAll ? `Add or correct the ${tm.many} ${tm.did} on a day` : `How many ${tm.many} did you finish?`}</div>
               </div>
             </div>
             <span className="rounded-full px-2.5 py-1 text-[11.5px] font-semibold" style={cell ? { background: tint("var(--emerald)", 10), color: "var(--emerald)" } : { background: "var(--surface-2)", color: "var(--muted)" }}>
@@ -256,21 +261,22 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
             </span>
           </div>
           <form key={`${userId}|${date}|${cell?.count ?? ""}`} action={saveEditCount} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.1fr_1fr_150px_2fr_auto] lg:items-end">
+            <input type="hidden" name="team" value={tm.kind} />
             {d.seeAll ? (
-              <label className="block"><span className="eyebrow">Editor</span>
+              <label className="block"><span className="eyebrow">{cap(tm.person)}</span>
                 <select name="userId" value={userId} onChange={(e) => setUserId(e.target.value)} className="select mt-1.5">
                   {d.editors.filter((e) => e.active).map((e) => <option key={e.id} value={e.id}>{e.name}{e.id === me.id ? " (me)" : ""}</option>)}
                 </select>
               </label>
             ) : (
-              <label className="block"><span className="eyebrow">Editor</span><input value={me.name} readOnly className="input mt-1.5 bg-[var(--surface-2)]" /></label>
+              <label className="block"><span className="eyebrow">{cap(tm.person)}</span><input value={me.name} readOnly className="input mt-1.5 bg-[var(--surface-2)]" /></label>
             )}
             <label className="block"><span className="eyebrow">Date</span><input type="date" name="date" required value={date} min={`${d.month}-01`} max={maxDate} onChange={(e) => setDate(e.target.value)} className="input mt-1.5" /></label>
-            <label className="block"><span className="eyebrow">Videos edited</span><div className="mt-1.5"><CountStepper defaultValue={cell?.count ?? ""} /></div></label>
-            <label className="block"><span className="eyebrow">Note (optional)</span><input name="note" maxLength={300} defaultValue={cell?.note ?? ""} placeholder="e.g. 2 reels for a client, half day…" className="input mt-1.5" /></label>
+            <label className="block"><span className="eyebrow">{cap(tm.many)} {tm.did}</span><div className="mt-1.5"><CountStepper defaultValue={cell?.count ?? ""} /></div></label>
+            <label className="block"><span className="eyebrow">Note (optional)</span><input name="note" maxLength={300} defaultValue={cell?.note ?? ""} placeholder={tm.kind === "DESIGN" ? "e.g. 6 posts + 2 banners, half day…" : "e.g. 2 reels for a client, half day…"} className="input mt-1.5" /></label>
             <button type="submit" className="btn btn-violet"><Save size={15} /> Save</button>
           </form>
-          <p className="mt-2.5 text-[11.5px] text-[var(--muted)]">Click a day in the table below to load it here. Leave “Videos edited” empty and save to remove a wrong entry.</p>
+          <p className="mt-2.5 text-[11.5px] text-[var(--muted)]">Click a day in the table below to load it here. Leave the number empty and save to remove a wrong entry.</p>
         </div>
       )}
 
@@ -279,7 +285,7 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--line)] px-5 py-3.5">
           <div>
             <div className="text-[14px] font-bold">Day by day · {d.monthLabel}</div>
-            <div className="text-[11.5px] text-[var(--muted)]">Latest day on top · darker = more videos · “—” = no entry (leave / holiday)</div>
+            <div className="text-[11.5px] text-[var(--muted)]">Latest day on top · darker = more {tm.many} · “—” = no entry (leave / holiday)</div>
           </div>
           <span className="pill">{worked.length} working day{worked.length === 1 ? "" : "s"}</span>
         </div>
@@ -288,7 +294,7 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
             <thead>
               <tr className="border-b border-[var(--line)] bg-[var(--surface-2)] text-[11px] font-bold uppercase tracking-wide text-[var(--muted)]">
                 <th className="w-[150px] px-5 py-2.5 text-left">Date</th>
-                {d.editors.map((e) => <th key={e.id} className="px-2 py-2.5 text-center"><span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full" style={{ background: color(e.id) }} />{d.seeAll ? e.name : "Videos"}</span></th>)}
+                {d.editors.map((e) => <th key={e.id} className="px-2 py-2.5 text-center"><span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full" style={{ background: color(e.id) }} />{d.seeAll ? e.name : cap(tm.many)}</span></th>)}
                 {d.seeAll ? <th className="w-[110px] px-5 py-2.5 text-right">Team total</th> : <th className="px-5 py-2.5 text-left">Note</th>}
               </tr>
             </thead>
@@ -363,7 +369,7 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
               <tbody>
                 {d.history.map((h) => (
                   <tr key={h.month} className="border-b border-[var(--line)] last:border-0" style={h.month === d.month ? { background: tint("var(--violet)", 5) } : undefined}>
-                    <td className="whitespace-nowrap px-5 py-2.5"><a href={`/video-team?month=${h.month}`} className="font-bold hover:text-[var(--violet)] hover:underline">{h.label}</a></td>
+                    <td className="whitespace-nowrap px-5 py-2.5"><a href={`${tm.path}?month=${h.month}`} className="font-bold hover:text-[var(--violet)] hover:underline">{h.label}</a></td>
                     {d.seeAll && d.editors.map((e) => <td key={e.id} className="px-2 py-2.5 text-center font-semibold tnum">{h.byUser[e.id] ?? <span className="font-normal text-[var(--line-2)]">—</span>}</td>)}
                     <td className="px-3 py-2.5 text-center text-[var(--ink-2)] tnum">{h.workingDays}</td>
                     <td className="px-3 py-2.5 text-center text-[var(--ink-2)] tnum">{h.workingDays ? Math.round((h.total / h.workingDays) * 10) / 10 : 0}</td>
@@ -386,7 +392,7 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
         <div className="card !p-0 overflow-hidden">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--line)] px-5 py-3.5">
             <div>
-              <div className="text-[14px] font-bold">Team work · assigned videos</div>
+              <div className="text-[14px] font-bold">Team work · assigned {tm.many}</div>
               <div className="text-[11.5px] text-[var(--muted)]">Everything still open, and what was completed in the last 14 days.</div>
             </div>
             <div className="flex items-center gap-1.5">
@@ -398,9 +404,9 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
             <table className="w-full min-w-[760px] text-[13px]">
               <thead className="sticky top-0 z-10">
                 <tr className="border-b border-[var(--line)] bg-[var(--surface-2)] text-[11px] font-bold uppercase tracking-wide text-[var(--muted)]">
-                  <th className="px-5 py-2.5 text-left">Video</th>
+                  <th className="px-5 py-2.5 text-left">{cap(tm.one)}</th>
                   <th className="px-3 py-2.5 text-left">Client</th>
-                  <th className="px-3 py-2.5 text-left">Editor</th>
+                  <th className="px-3 py-2.5 text-left">{cap(tm.person)}</th>
                   <th className="px-3 py-2.5 text-left">Assigned by</th>
                   <th className="px-3 py-2.5 text-left">Due</th>
                   <th className="px-5 py-2.5 text-left">Status</th>
@@ -420,7 +426,7 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
                     </tr>
                   );
                 })}
-                {d.tasks.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No video work assigned yet. Use “Assign work” to give a video to an editor.</td></tr>}
+                {d.tasks.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No work assigned yet. Use “Assign work” to give a {tm.one} to a {tm.person}.</td></tr>}
               </tbody>
             </table>
           </div>
@@ -431,7 +437,8 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
       {me.isAdmin && (
         <form id="video-team-settings" action={saveVideoTeamSettings} className="card card-pad scroll-mt-24">
           <input type="hidden" name="month" value={d.month} />
-          <div className="flex items-center gap-2 text-[14px] font-bold"><Settings2 size={16} className="text-[var(--muted)]" /> Video team settings</div>
+          <input type="hidden" name="team" value={tm.kind} />
+          <div className="flex items-center gap-2 text-[14px] font-bold"><Settings2 size={16} className="text-[var(--muted)]" /> {tm.eyebrow} settings</div>
           <div className="mt-3 grid gap-5 lg:grid-cols-[260px_1fr_auto] lg:items-end">
             <label className="block"><span className="eyebrow">Team lead</span>
               <select name="leadId" defaultValue={leadId} className="select mt-1.5">
@@ -439,39 +446,41 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
                 {d.editors.filter((e) => e.active).map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
               </select>
             </label>
-            <div>
-              <span className="eyebrow">Goes on shoots (gets “My Shoots”)</span>
-              <div className="mt-1.5 flex flex-wrap gap-2">
-                {d.editors.filter((e) => e.active).map((e) => (
-                  <label key={e.id} className="inline-flex cursor-pointer items-center gap-2 rounded-[10px] border border-[var(--line-2)] bg-[var(--surface)] px-3 py-2 text-[13px] font-semibold has-[:checked]:border-[var(--violet)] has-[:checked]:bg-[color-mix(in_srgb,var(--violet)_7%,white)]">
-                    <input type="checkbox" name="shootTeam" value={e.id} defaultChecked={e.shoots} className="h-4 w-4 accent-[var(--violet)]" /> {e.name}
-                  </label>
-                ))}
+            {tm.kind === "VIDEO" ? (
+              <div>
+                <span className="eyebrow">Goes on shoots (gets “My Shoots”)</span>
+                <div className="mt-1.5 flex flex-wrap gap-2">
+                  {d.editors.filter((e) => e.active).map((e) => (
+                    <label key={e.id} className="inline-flex cursor-pointer items-center gap-2 rounded-[10px] border border-[var(--line-2)] bg-[var(--surface)] px-3 py-2 text-[13px] font-semibold has-[:checked]:border-[var(--violet)] has-[:checked]:bg-[color-mix(in_srgb,var(--violet)_7%,white)]">
+                      <input type="checkbox" name="shootTeam" value={e.id} defaultChecked={e.shoots} className="h-4 w-4 accent-[var(--violet)]" /> {e.name}
+                    </label>
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : <div />}
             <button type="submit" className="btn btn-violet"><Save size={15} /> Save settings</button>
           </div>
           <p className="mt-3 text-[11.5px] leading-relaxed text-[var(--muted)]">
-            <b>Team lead</b> sees every editor’s count and work here, assigns videos to the team and can import the sheet — other editors see only their own.<br />
-            <b>Goes on shoots</b>: only the ticked editors can be chosen as the shooter in Studiox Shoot and have “My Shoots” in their menu.
+            <b>Team lead</b> sees every {tm.person}’s count and work here, assigns {tm.many} to the team and can import the sheet — other {tm.person}s see only their own.
+            {tm.kind === "VIDEO" && <><br /><b>Goes on shoots</b>: only the ticked editors can be chosen as the shooter in Studiox Shoot and have “My Shoots” in their menu.</>}
           </p>
         </form>
       )}
 
-      {importing && <ImportModal close={() => setImporting(false)} />}
+      {importing && <ImportModal tm={tm} close={() => setImporting(false)} />}
     </div>
   );
 }
 
-function ImportModal({ close }: { close: () => void }) {
+function ImportModal({ close, tm }: { close: () => void; tm: TeamInfo }) {
   const [result, action, pending] = useActionState<EditCountImportResult, FormData>(importEditCounts, null);
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
       <div className="flex w-full max-w-[520px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg">
         <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
           <div>
-            <h2 className="text-[16px] font-bold">Import editing count sheet</h2>
-            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">Loads the old Google Sheet counts against each editor.</p>
+            <h2 className="text-[16px] font-bold">Import {tm.title.toLowerCase()} sheet</h2>
+            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">Loads the old Google Sheet counts against each {tm.person}.</p>
           </div>
           <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
         </div>
@@ -483,12 +492,13 @@ function ImportModal({ close }: { close: () => void }) {
           </div>
         ) : (
           <form action={action} className="space-y-3 px-6 py-5">
+            <input type="hidden" name="team" value={tm.kind} />
             <label className="block">
-              <span className="eyebrow">Editing count file (CSV)</span>
+              <span className="eyebrow">{tm.title} file (CSV)</span>
               <input name="file" type="file" accept=".csv,text/csv" required className="input mt-1 !py-1.5 text-[12px]" />
             </label>
             <div className="rounded-[10px] bg-[var(--surface-2)] px-3 py-2.5 text-[11.5px] leading-relaxed text-[var(--muted)]">
-              First column <b>Date</b> (01-08-2026), then one column per editor with the editor’s name as in Team (<b>Poorna, Madhu, …</b>).<br />
+              First column <b>Date</b> (01-08-2026), then one column per {tm.person} with the name as in Team.<br />
               An empty cell is skipped. A day already in the CRM is replaced, so the same file can be imported again safely.
             </div>
             {result && !result.ok && <p className="rounded-[10px] px-3 py-2 text-[12.5px] font-semibold text-[var(--rose)]" style={{ background: tint("var(--rose)", 8) }}>{result.message}</p>}

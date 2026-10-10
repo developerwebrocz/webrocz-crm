@@ -501,13 +501,16 @@ export async function assignCreativeTask(fd: FormData) {
   const me = await getCurrentUser();
   // the video team lead (a Video Editor marked as lead) assigns video work to their own team
   const videoLead = !!me && me.role === "EDITOR" && me.teamLead;
-  if (!me || !(CREATIVE_ASSIGNER.includes(me.role) || videoLead)) redirect("/");
+  // … and the design team lead (a Designer marked as lead) assigns design work to the designers
+  const designLead = !!me && me.role === "DESIGNER" && me.teamLead;
+  if (!me || !(CREATIVE_ASSIGNER.includes(me.role) || videoLead || designLead)) redirect("/");
   const assignedToId = s(fd, "assignedToId");
   const title = s(fd, "title");
   if (!assignedToId || !title) redirect("/");
   const assignee = await prisma.user.findUnique({ where: { id: assignedToId } });
   if (!assignee || (assignee.role !== "DESIGNER" && assignee.role !== "EDITOR")) redirect("/");
   if (videoLead && assignee.role !== "EDITOR") redirect("/");
+  if (designLead && assignee.role !== "DESIGNER") redirect("/");
   const kind = assignee.role === "EDITOR" ? "VIDEO" : "DESIGN";
   const prefix = kind === "VIDEO" ? "VID" : "DSG";
   const count = await prisma.creativeTask.count({ where: { assignedToId, kind } });

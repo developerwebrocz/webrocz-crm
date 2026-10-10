@@ -6,6 +6,9 @@ import RoleDashboard from "@/components/RoleDashboard";
 import SeoEmployeeOverview from "@/components/SeoEmployeeOverview";
 import AmOverview from "@/components/AmOverview";
 import VideoEditorDashboard from "@/components/VideoEditorDashboard";
+import TodayEditCount from "@/components/TodayEditCount";
+import DesignTeamLeadBoard, { MyDesignWeekStrip } from "@/components/DesignTeamLeadBoard";
+import { TEAMS } from "@/lib/team-kinds";
 import CreativeBoard from "@/components/CreativeBoard";
 import ShootBoard from "@/components/ShootBoard";
 import { getSeoEmployeeBoard, getCreativeBoard, getSalesBoard, getAccountantDashboard, getShootBoard } from "@/lib/queries";
@@ -73,7 +76,16 @@ export default async function DashboardPage({ searchParams }: PageProps<"/">) {
   // other role (shared sidebar / top bar / logout) — rendered with the embedded chrome.
   if (DESIGN_ROLES.includes(user.role)) {
     const d = await getCreativeBoard(user.id, user.role, "DESIGN");
-    return <CreativeBoard kind="DESIGN" chrome="embedded" rows={d.rows} counts={d.counts} clients={d.clients} types={d.types} progress={d.progress} today={d.today} clientOptions={d.clientOptions} userName={user.name} />;
+    // On top of the designer's board: today's design count and this week's client postings.
+    // The design team lead also gets the team board (everyone's work + assign).
+    return (
+      <div className="space-y-5">
+        {user.teamLead && <DesignTeamLeadBoard meId={user.id} />}
+        <TodayEditCount userId={user.id} team={TEAMS.DESIGN} />
+        <MyDesignWeekStrip userId={user.id} />
+        <CreativeBoard kind="DESIGN" chrome="embedded" rows={d.rows} counts={d.counts} clients={d.clients} types={d.types} progress={d.progress} today={d.today} clientOptions={d.clientOptions} userName={user.name} />
+      </div>
+    );
   }
   if (VIDEO_ROLES.includes(user.role)) {
     const d = await getCreativeBoard(user.id, user.role, "VIDEO");

@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "./prisma";
 import { todayIST } from "./india-date";
+import { TEAMS, type TeamKind } from "./team-kinds";
 
 // Video team "Editing Count": how many videos each editor finished per day (this replaced the
 // team's Google Sheet). An editor sees and updates their own count; the video team lead and
@@ -10,8 +11,9 @@ export type EditCountViewer = { id: string; role: string; teamLead?: boolean | n
 
 export const isVideoAdmin = (u: EditCountViewer) => u.role === "SUPER_ADMIN" || u.role === "SUB_ADMIN";
 // sees the whole team (lead = a Video Editor marked as team lead)
-export const isVideoLead = (u: EditCountViewer) => isVideoAdmin(u) || (u.role === "EDITOR" && !!u.teamLead);
-export const canOpenEditCount = (u: EditCountViewer) => isVideoAdmin(u) || u.role === "EDITOR";
+// (`kind`: which team — the video editors by default, or the designers)
+export const isVideoLead = (u: EditCountViewer, kind: TeamKind = "VIDEO") => isVideoAdmin(u) || (u.role === TEAMS[kind].role && !!u.teamLead);
+export const canOpenEditCount = (u: EditCountViewer, kind: TeamKind = "VIDEO") => isVideoAdmin(u) || u.role === TEAMS[kind].role;
 
 const pad = (n: number) => String(n).padStart(2, "0");
 const shiftMonth = (month: string, by: number) => {
@@ -20,25 +22,28 @@ const shiftMonth = (month: string, by: number) => {
   return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}`;
 };
 
-export async function getEditCountBoard(viewer: EditCountViewer, monthParam?: string) {
+export async function getEditCountBoard(viewer: EditCountViewer, monthParam?: string, kind: TeamKind = "VIDEO") {
+  const ROLE = TEAMS[kind].role;
+  // the whole team's rows = the counts of people in this team's role (both teams share the table)
+  const scope = (all: boolean) => (all ? { user: { role: ROLE } } : { userId: viewer.id });
   const today = todayIST();
   const month = monthParam && /^\d{4}-(0[1-9]|1[0-2])$/.test(monthParam) ? monthParam : today.slice(0, 7);
-  const seeAll = isVideoLead(viewer);
+  const seeAll = isVideoLead(viewer, kind);
   const [y, m] = month.split("-").map(Number);
   const dayCount = new Date(Date.UTC(y, m, 0)).getUTCDate();
 
   const entries = await prisma.editCount.findMany({
-    where: { date: { startsWith: month }, ...(seeAll ? {} : { userId: viewer.id }) },
+    where: { date: { startsWith: month }, ...scope(seeAll) },
     select: { userId: true, date: true, count: true, note: true, updatedBy: true },
   });
   // Columns: the active video editors, plus anyone (since left or moved) who has a count this month.
   const withEntry = [...new Set(entries.map((e) => e.userId))];
   const people = await prisma.user.findMany({
-    where: seeAll ? { OR: [{ role: "EDITOR", active: true }, { id: { in: withEntry } }] } : { id: viewer.id },
+    where: seeAll ? { OR: [{ role: ROLE, active: true }, { id: { in: withEntry } }] } : { id: viewer.id },
     select: { id: true, name: true, teamLead: true, shootTeam: true, role: true, active: true },
   });
   const editors = people
-    .map((p) => ({ id: p.id, name: p.name, lead: p.role === "EDITOR" && p.teamLead, shoots: p.role === "EDITOR" && p.shootTeam, active: p.active && p.role === "EDITOR" }))
+    .map((p) => ({ id: p.id, name: p.name, lead: p.role === ROLE && p.teamLead, shoots: p.role === "EDITOR" && p.shootTeam, active: p.active && p.role === ROLE }))
     .sort((a, b) => Number(b.lead) - Number(a.lead) || a.name.localeCompare(b.name));
 
   const cells: Record<string, { count: number; note: string; by: string }> = {};
@@ -64,12 +69,12 @@ export async function getEditCountBoard(viewer: EditCountViewer, monthParam?: st
   });
   const grand = perEditor.reduce((s, e) => s + e.total, 0);
   // the month before, for the same people — to compare against
-  const prev = await prisma.editCount.aggregate({ _sum: { count: true }, where: { date: { startsWith: shiftMonth(month, -1) }, ...(seeAll ? {} : { userId: viewer.id }) } });
+  const prev = await prisma.editCount.aggregate({ _sum: { count: true }, where: { date: { startsWith: shiftMonth(month, -1) }, ...scope(seeAll) } });
 
   // Month by month (the last 6 months that have counts) for the same people.
   const histFrom = shiftMonth(today.slice(0, 7), -5);
   const hist = await prisma.editCount.findMany({
-    where: { date: { gte: `${histFrom}-01` }, ...(seeAll ? {} : { userId: viewer.id }) },
+    where: { date: { gte: `${histFrom}-01` }, ...scope(seeAll) },
     select: { userId: true, date: true, count: true },
   });
   const byMonth = new Map<string, { total: number; byUser: Record<string, number>; dates: Set<string> }>();
@@ -88,7 +93,7 @@ export async function getEditCountBoard(viewer: EditCountViewer, monthParam?: st
   // The team's video work (lead / admin only): everything still open, and what was finished lately.
   const tasks = seeAll
     ? (await prisma.creativeTask.findMany({
-        where: { kind: "VIDEO", OR: [{ status: { not: "COMPLETED" } }, { updatedAt: { gte: new Date(Date.now() - 14 * 86400000) } }] },
+        where: { kind, OR: [{ status: { not: "COMPLETED" } }, { updatedAt: { gte: new Date(Date.now() - 14 * 86400000) } }] },
         include: { client: { select: { name: true } }, assignedTo: { select: { name: true } }, assignedByUser: { select: { name: true } } },
         orderBy: [{ dueDate: "asc" }, { createdAt: "desc" }],
         take: 200,
