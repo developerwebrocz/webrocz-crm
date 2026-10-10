@@ -37,3 +37,37 @@ export default async function InvoiceReceipts({ invoiceId }: { invoiceId: string
     </div>
   );
 }
+
+// Above a paid / part-paid invoice: before payment the client is sent the INVOICE; once they
+// have paid, what goes to them is the RECEIPT. This says so and opens the receipt to send.
+export async function InvoiceReceiptNotice({ invoiceId, total, received }: { invoiceId: string; total: number; received: number }) {
+  if (!(received > 0)) return null;
+  const rows = await getInvoiceReceipts(invoiceId);
+  if (!rows.length) return null;
+  const pending = rows.filter((r) => !r.sent);
+  const target = pending[pending.length - 1] ?? rows[0]; // oldest one still to send, else the latest
+  const paid = total > 0 && received >= total;
+  const tone = pending.length ? "var(--emerald)" : "var(--muted)";
+  return (
+    <div className="no-print mx-auto mb-4 flex w-full max-w-[900px] flex-wrap items-center justify-between gap-3 rounded-[12px] border px-4 py-3" style={{ background: `color-mix(in srgb, ${tone} 7%, white)`, borderColor: `color-mix(in srgb, ${tone} 28%, white)` }}>
+      <div className="flex items-start gap-2.5">
+        <span className="mt-0.5 grid h-8 w-8 flex-none place-items-center rounded-[9px] text-white" style={{ background: pending.length ? "var(--emerald)" : "var(--muted)" }}><ReceiptText size={16} /></span>
+        <div>
+          <div className="text-[13.5px] font-bold">
+            {paid ? "Paid in full" : `${inr(received)} received · ${inr(Math.max(0, total - received))} still due`}
+            {pending.length ? ` — send the receipt to the client` : " — receipt sent"}
+          </div>
+          <div className="text-[12px] text-[var(--muted)]">
+            {paid
+              ? "The invoice goes to the client before payment. After payment, the client gets the receipt."
+              : "Send the receipt for the amount received. The invoice still stands for the balance."}
+            {pending.length > 1 ? ` ${pending.length} receipts are waiting.` : ""}
+          </div>
+        </div>
+      </div>
+      <Link href={`/receipts/${target.id}`} className={pending.length ? "btn text-white" : "btn btn-ghost"} style={pending.length ? { background: "var(--emerald)" } : undefined}>
+        <ReceiptText size={15} /> {pending.length ? "Send receipt" : "View receipt"} <ArrowRight size={14} />
+      </Link>
+    </div>
+  );
+}
