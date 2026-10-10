@@ -116,6 +116,8 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
       ...(isAdmin ? [{ href: "/profit-loss", label: "Profit & Loss", icon: PieChart }] : []),
       { href: "/gst", label: "GST Report", icon: Landmark },
       { href: "/invoices", label: "Invoices", icon: ReceiptText },
+      // a receipt for every payment received, to send to the client
+      { href: "/receipts", label: "Payment Receipts", icon: FileText },
     ] },
   ];
   if (isAccountant) groups.push(...financeGroups);

@@ -515,7 +515,7 @@ export async function recordPayment(fd: FormData) {
   if (amount <= 0) redirect(back);
   const mode = PAY_MODES.includes(s(fd, "mode")) ? s(fd, "mode") : "BANK";
   const date = s(fd, "date") || todayIST();
-  await prisma.payment.create({
+  const payment = await prisma.payment.create({
     data: { invoiceId: invId, amount, date, mode, ref: s(fd, "ref"), note: s(fd, "note"), by: me.name },
   });
   // The invoice's received amount goes up by exactly this payment (capped at the total).
@@ -527,6 +527,15 @@ export async function recordPayment(fd: FormData) {
   await notifyRole("SUPER_ADMIN", `Payment recorded: ${inv.number}`, `${me.name} · ₹${amount.toLocaleString("en-IN")} (${mode})`, invoiceReturn(inv.leadId ?? "", invId), "emerald");
   revalidatePath("/");
   revalidatePath(invoiceReturn(inv.leadId ?? "", invId));
+  // Accounts: straight to the payment receipt, so it is sent to the client right after the
+  // payment is recorded (Back returns to where the payment was entered). Sales stay where they were.
+  if (["ACCOUNTANT", "SUPER_ADMIN", "SUB_ADMIN"].includes(me.role)) {
+    const { ensureReceiptNumbers } = await import("@/lib/receipts");
+    // (any earlier payment without a receipt number is numbered first, oldest first, so the series stays in date order)
+    await ensureReceiptNumbers().catch(() => { /* numbered when the receipt is opened */ });
+    revalidatePath("/receipts");
+    redirect(`/receipts/${payment.id}?new=1`);
+  }
   redirect(back);
 }
 

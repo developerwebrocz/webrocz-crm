@@ -2,6 +2,7 @@ import { getInvoiceById } from "@/lib/queries";
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import InvoiceView from "@/components/InvoiceView";
+import InvoiceReceipts from "@/components/InvoiceReceipts";
 
 export const dynamic = "force-dynamic";
 
@@ -22,5 +23,11 @@ export default async function InvoiceByIdPage({ params, searchParams }: { params
   const pipeline = (d.invoice as { pipeline?: string } | null)?.pipeline;
   const lead = d.lead ? { id: d.lead.id, startDate: d.lead.startDate, pipeline } : { id: "", pipeline };
   const approvalOff = user.role === "ACCOUNTANT"; // accountant CRM has no approval gate
-  return <InvoiceView lead={lead} invoice={d.invoice} canManage={canManage} isSuperAdmin={isSuperAdmin} approvalOff={approvalOff} sent={sent} backHref="/invoices" />;
+  return (
+    <>
+      <InvoiceView lead={lead} invoice={d.invoice} canManage={canManage} isSuperAdmin={isSuperAdmin} approvalOff={approvalOff} sent={sent} backHref="/invoices" />
+      {/* payments received on this invoice, each with its receipt to send */}
+      <InvoiceReceipts invoiceId={id} />
+    </>
+  );
 }

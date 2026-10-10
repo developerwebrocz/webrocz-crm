@@ -340,6 +340,10 @@ model Payment {
   ref       String       @default("") // txn id / cheque no / UTR
   note      String       @default("")
   by        String       @default("") // who recorded it
+  // Payment receipt given to the client for this payment
+  receiptNo     String    @default("") // "RCPT/2026-27/0001" — set when the payment is recorded (or first opened)
+  receiptSentAt DateTime? // when the receipt was sent to the client
+  receiptSentBy String    @default("")
   createdAt DateTime     @default(now())
 
   @@index([invoiceId])

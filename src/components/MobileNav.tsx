@@ -15,6 +15,7 @@ const FINANCE_NAV: Item[] = [
   { href: "/gst", label: "GST" },
   { href: "/statements", label: "Reports" },
   { href: "/invoices", label: "Invoices" },
+  { href: "/receipts", label: "Receipts" },
 ];
 const SALES_NAV: Item[] = [
   { href: "/", label: "Dashboard" },

@@ -20450,6 +20450,9 @@ export namespace Prisma {
     ref: string | null
     note: string | null
     by: string | null
+    receiptNo: string | null
+    receiptSentAt: Date | null
+    receiptSentBy: string | null
     createdAt: Date | null
   }
 
@@ -20462,6 +20465,9 @@ export namespace Prisma {
     ref: string | null
     note: string | null
     by: string | null
+    receiptNo: string | null
+    receiptSentAt: Date | null
+    receiptSentBy: string | null
     createdAt: Date | null
   }
 
@@ -20474,6 +20480,9 @@ export namespace Prisma {
     ref: number
     note: number
     by: number
+    receiptNo: number
+    receiptSentAt: number
+    receiptSentBy: number
     createdAt: number
     _all: number
   }
@@ -20496,6 +20505,9 @@ export namespace Prisma {
     ref?: true
     note?: true
     by?: true
+    receiptNo?: true
+    receiptSentAt?: true
+    receiptSentBy?: true
     createdAt?: true
   }
 
@@ -20508,6 +20520,9 @@ export namespace Prisma {
     ref?: true
     note?: true
     by?: true
+    receiptNo?: true
+    receiptSentAt?: true
+    receiptSentBy?: true
     createdAt?: true
   }
 
@@ -20520,6 +20535,9 @@ export namespace Prisma {
     ref?: true
     note?: true
     by?: true
+    receiptNo?: true
+    receiptSentAt?: true
+    receiptSentBy?: true
     createdAt?: true
     _all?: true
   }
@@ -20619,6 +20637,9 @@ export namespace Prisma {
     ref: string
     note: string
     by: string
+    receiptNo: string
+    receiptSentAt: Date | null
+    receiptSentBy: string
     createdAt: Date
     _count: PaymentCountAggregateOutputType | null
     _avg: PaymentAvgAggregateOutputType | null
@@ -20650,6 +20671,9 @@ export namespace Prisma {
     ref?: boolean
     note?: boolean
     by?: boolean
+    receiptNo?: boolean
+    receiptSentAt?: boolean
+    receiptSentBy?: boolean
     createdAt?: boolean
     invoice?: boolean | SalesInvoiceDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
@@ -20663,6 +20687,9 @@ export namespace Prisma {
     ref?: boolean
     note?: boolean
     by?: boolean
+    receiptNo?: boolean
+    receiptSentAt?: boolean
+    receiptSentBy?: boolean
     createdAt?: boolean
     invoice?: boolean | SalesInvoiceDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
@@ -20676,6 +20703,9 @@ export namespace Prisma {
     ref?: boolean
     note?: boolean
     by?: boolean
+    receiptNo?: boolean
+    receiptSentAt?: boolean
+    receiptSentBy?: boolean
     createdAt?: boolean
     invoice?: boolean | SalesInvoiceDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
@@ -20689,10 +20719,13 @@ export namespace Prisma {
     ref?: boolean
     note?: boolean
     by?: boolean
+    receiptNo?: boolean
+    receiptSentAt?: boolean
+    receiptSentBy?: boolean
     createdAt?: boolean
   }
 
-  export type PaymentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "invoiceId" | "amount" | "date" | "mode" | "ref" | "note" | "by" | "createdAt", ExtArgs["result"]["payment"]>
+  export type PaymentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "invoiceId" | "amount" | "date" | "mode" | "ref" | "note" | "by" | "receiptNo" | "receiptSentAt" | "receiptSentBy" | "createdAt", ExtArgs["result"]["payment"]>
   export type PaymentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     invoice?: boolean | SalesInvoiceDefaultArgs<ExtArgs>
   }
@@ -20717,6 +20750,9 @@ export namespace Prisma {
       ref: string
       note: string
       by: string
+      receiptNo: string
+      receiptSentAt: Date | null
+      receiptSentBy: string
       createdAt: Date
     }, ExtArgs["result"]["payment"]>
     composites: {}
@@ -21150,6 +21186,9 @@ export namespace Prisma {
     readonly ref: FieldRef<"Payment", 'String'>
     readonly note: FieldRef<"Payment", 'String'>
     readonly by: FieldRef<"Payment", 'String'>
+    readonly receiptNo: FieldRef<"Payment", 'String'>
+    readonly receiptSentAt: FieldRef<"Payment", 'DateTime'>
+    readonly receiptSentBy: FieldRef<"Payment", 'String'>
     readonly createdAt: FieldRef<"Payment", 'DateTime'>
   }
     
@@ -54199,6 +54238,9 @@ export namespace Prisma {
     ref: 'ref',
     note: 'note',
     by: 'by',
+    receiptNo: 'receiptNo',
+    receiptSentAt: 'receiptSentAt',
+    receiptSentBy: 'receiptSentBy',
     createdAt: 'createdAt'
   };
 
@@ -56082,6 +56124,9 @@ export namespace Prisma {
     ref?: StringFilter<"Payment"> | string
     note?: StringFilter<"Payment"> | string
     by?: StringFilter<"Payment"> | string
+    receiptNo?: StringFilter<"Payment"> | string
+    receiptSentAt?: DateTimeNullableFilter<"Payment"> | Date | string | null
+    receiptSentBy?: StringFilter<"Payment"> | string
     createdAt?: DateTimeFilter<"Payment"> | Date | string
     invoice?: XOR<SalesInvoiceScalarRelationFilter, SalesInvoiceWhereInput>
   }
@@ -56095,6 +56140,9 @@ export namespace Prisma {
     ref?: SortOrder
     note?: SortOrder
     by?: SortOrder
+    receiptNo?: SortOrder
+    receiptSentAt?: SortOrderInput | SortOrder
+    receiptSentBy?: SortOrder
     createdAt?: SortOrder
     invoice?: SalesInvoiceOrderByWithRelationInput
   }
@@ -56111,6 +56159,9 @@ export namespace Prisma {
     ref?: StringFilter<"Payment"> | string
     note?: StringFilter<"Payment"> | string
     by?: StringFilter<"Payment"> | string
+    receiptNo?: StringFilter<"Payment"> | string
+    receiptSentAt?: DateTimeNullableFilter<"Payment"> | Date | string | null
+    receiptSentBy?: StringFilter<"Payment"> | string
     createdAt?: DateTimeFilter<"Payment"> | Date | string
     invoice?: XOR<SalesInvoiceScalarRelationFilter, SalesInvoiceWhereInput>
   }, "id">
@@ -56124,6 +56175,9 @@ export namespace Prisma {
     ref?: SortOrder
     note?: SortOrder
     by?: SortOrder
+    receiptNo?: SortOrder
+    receiptSentAt?: SortOrderInput | SortOrder
+    receiptSentBy?: SortOrder
     createdAt?: SortOrder
     _count?: PaymentCountOrderByAggregateInput
     _avg?: PaymentAvgOrderByAggregateInput
@@ -56144,6 +56198,9 @@ export namespace Prisma {
     ref?: StringWithAggregatesFilter<"Payment"> | string
     note?: StringWithAggregatesFilter<"Payment"> | string
     by?: StringWithAggregatesFilter<"Payment"> | string
+    receiptNo?: StringWithAggregatesFilter<"Payment"> | string
+    receiptSentAt?: DateTimeNullableWithAggregatesFilter<"Payment"> | Date | string | null
+    receiptSentBy?: StringWithAggregatesFilter<"Payment"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
   }
 
@@ -60250,6 +60307,9 @@ export namespace Prisma {
     ref?: string
     note?: string
     by?: string
+    receiptNo?: string
+    receiptSentAt?: Date | string | null
+    receiptSentBy?: string
     createdAt?: Date | string
     invoice: SalesInvoiceCreateNestedOneWithoutPaymentsInput
   }
@@ -60263,6 +60323,9 @@ export namespace Prisma {
     ref?: string
     note?: string
     by?: string
+    receiptNo?: string
+    receiptSentAt?: Date | string | null
+    receiptSentBy?: string
     createdAt?: Date | string
   }
 
@@ -60274,6 +60337,9 @@ export namespace Prisma {
     ref?: StringFieldUpdateOperationsInput | string
     note?: StringFieldUpdateOperationsInput | string
     by?: StringFieldUpdateOperationsInput | string
+    receiptNo?: StringFieldUpdateOperationsInput | string
+    receiptSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptSentBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     invoice?: SalesInvoiceUpdateOneRequiredWithoutPaymentsNestedInput
   }
@@ -60287,6 +60353,9 @@ export namespace Prisma {
     ref?: StringFieldUpdateOperationsInput | string
     note?: StringFieldUpdateOperationsInput | string
     by?: StringFieldUpdateOperationsInput | string
+    receiptNo?: StringFieldUpdateOperationsInput | string
+    receiptSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptSentBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -60299,6 +60368,9 @@ export namespace Prisma {
     ref?: string
     note?: string
     by?: string
+    receiptNo?: string
+    receiptSentAt?: Date | string | null
+    receiptSentBy?: string
     createdAt?: Date | string
   }
 
@@ -60310,6 +60382,9 @@ export namespace Prisma {
     ref?: StringFieldUpdateOperationsInput | string
     note?: StringFieldUpdateOperationsInput | string
     by?: StringFieldUpdateOperationsInput | string
+    receiptNo?: StringFieldUpdateOperationsInput | string
+    receiptSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptSentBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -60322,6 +60397,9 @@ export namespace Prisma {
     ref?: StringFieldUpdateOperationsInput | string
     note?: StringFieldUpdateOperationsInput | string
     by?: StringFieldUpdateOperationsInput | string
+    receiptNo?: StringFieldUpdateOperationsInput | string
+    receiptSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptSentBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -64481,6 +64559,9 @@ export namespace Prisma {
     ref?: SortOrder
     note?: SortOrder
     by?: SortOrder
+    receiptNo?: SortOrder
+    receiptSentAt?: SortOrder
+    receiptSentBy?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -64497,6 +64578,9 @@ export namespace Prisma {
     ref?: SortOrder
     note?: SortOrder
     by?: SortOrder
+    receiptNo?: SortOrder
+    receiptSentAt?: SortOrder
+    receiptSentBy?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -64509,6 +64593,9 @@ export namespace Prisma {
     ref?: SortOrder
     note?: SortOrder
     by?: SortOrder
+    receiptNo?: SortOrder
+    receiptSentAt?: SortOrder
+    receiptSentBy?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -74574,6 +74661,9 @@ export namespace Prisma {
     ref?: string
     note?: string
     by?: string
+    receiptNo?: string
+    receiptSentAt?: Date | string | null
+    receiptSentBy?: string
     createdAt?: Date | string
   }
 
@@ -74585,6 +74675,9 @@ export namespace Prisma {
     ref?: string
     note?: string
     by?: string
+    receiptNo?: string
+    receiptSentAt?: Date | string | null
+    receiptSentBy?: string
     createdAt?: Date | string
   }
 
@@ -74770,6 +74863,9 @@ export namespace Prisma {
     ref?: StringFilter<"Payment"> | string
     note?: StringFilter<"Payment"> | string
     by?: StringFilter<"Payment"> | string
+    receiptNo?: StringFilter<"Payment"> | string
+    receiptSentAt?: DateTimeNullableFilter<"Payment"> | Date | string | null
+    receiptSentBy?: StringFilter<"Payment"> | string
     createdAt?: DateTimeFilter<"Payment"> | Date | string
   }
 
@@ -84422,6 +84518,9 @@ export namespace Prisma {
     ref?: string
     note?: string
     by?: string
+    receiptNo?: string
+    receiptSentAt?: Date | string | null
+    receiptSentBy?: string
     createdAt?: Date | string
   }
 
@@ -84433,6 +84532,9 @@ export namespace Prisma {
     ref?: StringFieldUpdateOperationsInput | string
     note?: StringFieldUpdateOperationsInput | string
     by?: StringFieldUpdateOperationsInput | string
+    receiptNo?: StringFieldUpdateOperationsInput | string
+    receiptSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptSentBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -84444,6 +84546,9 @@ export namespace Prisma {
     ref?: StringFieldUpdateOperationsInput | string
     note?: StringFieldUpdateOperationsInput | string
     by?: StringFieldUpdateOperationsInput | string
+    receiptNo?: StringFieldUpdateOperationsInput | string
+    receiptSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptSentBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -84455,6 +84560,9 @@ export namespace Prisma {
     ref?: StringFieldUpdateOperationsInput | string
     note?: StringFieldUpdateOperationsInput | string
     by?: StringFieldUpdateOperationsInput | string
+    receiptNo?: StringFieldUpdateOperationsInput | string
+    receiptSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptSentBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

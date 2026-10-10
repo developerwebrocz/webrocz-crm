@@ -323,6 +323,9 @@ exports.Prisma.PaymentScalarFieldEnum = {
   ref: 'ref',
   note: 'note',
   by: 'by',
+  receiptNo: 'receiptNo',
+  receiptSentAt: 'receiptSentAt',
+  receiptSentBy: 'receiptSentBy',
   createdAt: 'createdAt'
 };
 
