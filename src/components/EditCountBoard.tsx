@@ -1,19 +1,22 @@
 "use client";
 
 import { useActionState, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Upload, X, CheckCircle2, Clapperboard, Crown, Save } from "lucide-react";
+import { ChevronLeft, ChevronRight, Upload, X, CheckCircle2, Crown, Save, Camera, TrendingUp, TrendingDown, CalendarDays, Trophy, Clock3, Film, PencilLine, Settings2, AlertTriangle } from "lucide-react";
 import type { EditCountBoardData } from "@/lib/edit-count-queries";
-import { saveEditCount, setVideoTeamLead, importEditCounts, type EditCountImportResult } from "@/app/edit-count-actions";
+import { saveEditCount, saveVideoTeamSettings, importEditCounts, type EditCountImportResult } from "@/app/edit-count-actions";
 import AssignCreativeForm from "@/components/AssignCreativeForm";
+import { initials } from "@/lib/domain";
 
 // Video team "Editing Count" — the month's videos-per-day for each editor (the old Google
-// Sheet), the form to update a day, and for the team lead / admins the team's assigned work.
+// Sheet): summary, daily chart, each editor's card, the form to update a day, the day-by-day
+// table and, for the team lead / admins, the team's assigned work.
 
 type Me = { id: string; name: string; isEditor: boolean; isAdmin: boolean };
 type ClientOpt = { id: string; name: string };
 
 const SAVED: Record<string, { text: string; ok: boolean }> = {
   "1": { text: "Saved.", ok: true },
+  team: { text: "Video team settings saved.", ok: true },
   baddate: { text: "Not saved — choose a date that is today or earlier.", ok: false },
   badcount: { text: "Not saved — the number of videos is not valid.", ok: false },
   noeditor: { text: "Not saved — choose a video editor.", ok: false },
@@ -24,12 +27,15 @@ const STATUS: Record<string, { label: string; tone: string }> = {
   REVIEW: { label: "Review", tone: "var(--violet)" },
   COMPLETED: { label: "Completed", tone: "var(--emerald)" },
 };
+// one colour per editor, the same in the cards, the chart and the table
+const PALETTE = ["#6d28d9", "#0284c7", "#059669", "#d97706", "#e11d48", "#0d9488", "#840a92", "#4f46e5"];
 const fmtDay = (iso: string) => (iso ? new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-IN", { day: "2-digit", month: "short", timeZone: "UTC" }) : "—");
+const tint = (color: string, pct: number) => `color-mix(in srgb, ${color} ${pct}%, white)`;
 
 export default function EditCountBoard({ d, me, clients, saved }: { d: EditCountBoardData; me: Me; clients: ClientOpt[]; saved: string }) {
   const first = d.editors.find((e) => e.id === me.id) ?? d.editors.find((e) => e.active) ?? d.editors[0];
   const [userId, setUserId] = useState(first?.id ?? "");
-  const [date, setDate] = useState(d.month === d.today.slice(0, 7) ? d.today : `${d.month}-01`);
+  const [date, setDate] = useState(d.isCurrentMonth ? d.today : `${d.month}-01`);
   const cell = d.cells[`${userId}|${date}`];
   const [importing, setImporting] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
@@ -39,8 +45,23 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
   // the form works inside the month on screen (its saved values are what is loaded here)
   const lastDay = d.days[d.days.length - 1].date;
   const maxDate = lastDay < d.today ? lastDay : d.today;
+  const color = (id: string) => PALETTE[Math.max(0, d.editors.findIndex((e) => e.id === id)) % PALETTE.length];
 
-  // click a day in the table → that day (and editor) is loaded in the update form
+  // figures for the summary
+  const worked = d.days.filter((x) => x.total > 0);
+  const avgDay = worked.length ? Math.round((d.grand / worked.length) * 10) / 10 : 0;
+  const bestDay = worked.reduce<(typeof worked)[number] | null>((b, x) => (!b || x.total > b.total ? x : b), null);
+  const maxDayTotal = Math.max(1, ...d.days.map((x) => x.total));
+  const maxCell = Math.max(1, ...Object.values(d.cells).map((c) => c.count));
+  const topTotal = Math.max(1, ...d.perEditor.map((e) => e.total));
+  const ranked = [...d.perEditor].sort((a, b) => b.total - a.total);
+  const activeEditors = d.perEditor.filter((e) => e.active);
+  const updatedToday = activeEditors.filter((e) => e.today !== null).length;
+  const change = !d.isCurrentMonth && d.prevTotal > 0 ? Math.round(((d.grand - d.prevTotal) / d.prevTotal) * 100) : null;
+  const shown = d.days.filter((x) => !x.future).reverse(); // newest day on top
+  const hasData = Object.keys(d.cells).length > 0;
+
+  // click a day (table / chart / card) → that day and editor are loaded in the update form
   const pick = (uid: string, day: string) => {
     if (!canUpdate || day > d.today) return;
     if (d.seeAll) { if (!d.editors.find((e) => e.id === uid)?.active) return; setUserId(uid); } else if (uid !== me.id) return;
@@ -55,12 +76,12 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
         <div>
           <div className="eyebrow">Video team</div>
           <h1 className="mt-1.5 text-[26px] font-extrabold tracking-tight">Editing Count</h1>
-          <p className="mt-1 text-sm text-[var(--muted)]">{d.seeAll ? "Videos edited per day by every editor" : "Your videos edited per day"} · {d.monthLabel}</p>
+          <p className="mt-1 text-sm text-[var(--muted)]">{d.seeAll ? "Videos edited per day by every editor" : "Your videos edited per day"}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <div className="inline-flex items-center overflow-hidden rounded-[10px] border border-[var(--line-2)] bg-[var(--surface)]">
+          <div className="inline-flex items-center overflow-hidden rounded-[10px] border border-[var(--line-2)] bg-[var(--surface)] shadow-[var(--shadow-xs)]">
             <a href={`/video-team?month=${d.prevMonth}`} className="grid h-9 w-9 place-items-center text-[var(--ink-2)] hover:bg-[var(--surface-2)]" title="Previous month"><ChevronLeft size={16} /></a>
-            <span className="min-w-[124px] px-2 text-center text-[13px] font-bold">{d.monthLabel}</span>
+            <span className="inline-flex min-w-[138px] items-center justify-center gap-1.5 px-2 text-[13px] font-bold"><CalendarDays size={14} className="text-[var(--violet)]" /> {d.monthLabel}</span>
             {d.nextMonth
               ? <a href={`/video-team?month=${d.nextMonth}`} className="grid h-9 w-9 place-items-center text-[var(--ink-2)] hover:bg-[var(--surface-2)]" title="Next month"><ChevronRight size={16} /></a>
               : <span className="grid h-9 w-9 place-items-center text-[var(--line-2)]"><ChevronRight size={16} /></span>}
@@ -71,38 +92,131 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
       </div>
 
       {flash && (
-        <p className="rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold" style={{ background: `color-mix(in srgb, ${flash.ok ? "var(--emerald)" : "var(--rose)"} 9%, white)`, color: flash.ok ? "var(--emerald)" : "var(--rose)" }}>{flash.text}</p>
+        <p className="flex items-center gap-2 rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold" style={{ background: tint(flash.ok ? "var(--emerald)" : "var(--rose)", 9), color: flash.ok ? "var(--emerald)" : "var(--rose)" }}>
+          {flash.ok ? <CheckCircle2 size={15} /> : <AlertTriangle size={15} />} {flash.text}
+        </p>
       )}
 
-      {/* month totals */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {d.seeAll && (
-          <div className="card card-pad" style={{ background: "var(--ink)", color: "white" }}>
-            <div className="text-[11px] font-bold uppercase tracking-wide opacity-70">Team · {d.monthLabel.split(" ")[0]}</div>
-            <div className="mt-2 text-[28px] font-extrabold leading-none tracking-tight tnum">{d.grand}</div>
-            <div className="mt-1.5 text-[11.5px] opacity-70">videos · today {d.todayTotal}</div>
-          </div>
-        )}
-        {d.perEditor.map((e) => (
-          <div key={e.id} className="card card-pad">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-[var(--muted)]">
-              <span className="truncate">{d.seeAll ? e.name : "This month"}</span>
-              {e.lead && <span title="Team lead" className="flex-none text-[var(--amber)]"><Crown size={12} /></span>}
+      {/* summary + daily chart */}
+      <div className="grid gap-4 xl:grid-cols-[minmax(300px,1fr)_2.2fr]">
+        <div className="relative overflow-hidden rounded-[16px] p-6 text-white shadow-[var(--shadow-md)]" style={{ background: "var(--grad)" }}>
+          <div className="pointer-events-none absolute -right-10 -top-12 h-44 w-44 rounded-full bg-white/10" />
+          <div className="pointer-events-none absolute -bottom-16 right-10 h-40 w-40 rounded-full bg-white/[.06]" />
+          <div className="relative">
+            <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[.08em] text-white/75"><Film size={14} /> {d.seeAll ? "Team videos" : "My videos"} · {d.monthLabel}</div>
+            <div className="mt-3 flex items-end gap-3">
+              <span className="text-[52px] font-extrabold leading-none tracking-tight tnum">{d.grand}</span>
+              <span className="pb-1.5 text-[13px] font-semibold text-white/75">videos edited</span>
             </div>
-            <div className="mt-2 text-[28px] font-extrabold leading-none tracking-tight tnum">{e.total}</div>
-            <div className="mt-1.5 text-[11.5px] text-[var(--muted)]">{e.worked} day{e.worked === 1 ? "" : "s"} · avg {e.avg}/day{e.today !== null ? ` · today ${e.today}` : ""}</div>
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-[12.5px] text-white/85">
+              {change !== null && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 font-bold">{change >= 0 ? <TrendingUp size={13} /> : <TrendingDown size={13} />} {change >= 0 ? "+" : ""}{change}%</span>
+              )}
+              <span>{d.prevLabel}: <b className="tnum">{d.prevTotal}</b> videos</span>
+            </div>
+            <div className="mt-5 grid grid-cols-3 gap-2">
+              {[
+                { icon: Clock3, label: d.isCurrentMonth ? "Today" : "Days worked", value: d.isCurrentMonth ? d.todayTotal : worked.length, sub: d.isCurrentMonth ? (d.seeAll ? `${updatedToday} of ${activeEditors.length} updated` : (d.perEditor[0]?.today === null ? "not updated yet" : "updated")) : "with videos" },
+                { icon: TrendingUp, label: "Avg / day", value: avgDay, sub: `${worked.length} working day${worked.length === 1 ? "" : "s"}` },
+                { icon: Trophy, label: "Best day", value: bestDay ? bestDay.total : 0, sub: bestDay ? fmtDay(bestDay.date) : "—" },
+              ].map((k) => (
+                <div key={k.label} className="rounded-[12px] bg-white/[.12] px-3 py-2.5 backdrop-blur-sm">
+                  <div className="flex items-center gap-1 text-[10.5px] font-bold uppercase tracking-wide text-white/70"><k.icon size={12} /> {k.label}</div>
+                  <div className="mt-1 text-[22px] font-extrabold leading-none tnum">{k.value}</div>
+                  <div className="mt-1 truncate text-[10.5px] text-white/70">{k.sub}</div>
+                </div>
+              ))}
+            </div>
           </div>
-        ))}
+        </div>
+
+        <div className="card card-pad flex min-w-0 flex-col">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <div className="text-[14px] font-bold">Daily output</div>
+              <div className="text-[11.5px] text-[var(--muted)]">Videos finished each day of {d.monthLabel}</div>
+            </div>
+            {d.seeAll && (
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                {d.editors.map((e) => <span key={e.id} className="inline-flex items-center gap-1.5 text-[11.5px] font-semibold text-[var(--ink-2)]"><span className="h-2.5 w-2.5 rounded-[3px]" style={{ background: color(e.id) }} /> {e.name}</span>)}
+              </div>
+            )}
+          </div>
+          {hasData ? (
+            <div className="mt-4 flex-1">
+              <div className="flex h-[168px] items-end gap-[3px] border-b border-[var(--line-2)]">
+                {d.days.map((day) => (
+                  <div key={day.date} className="flex h-full min-w-0 flex-1 flex-col justify-end" title={`${fmtDay(day.date)} (${day.weekday}) · ${day.any ? `${day.total} videos` : "no entry"}`}>
+                    {day.total > 0 && <div className="mb-0.5 text-center text-[9.5px] font-bold leading-none text-[var(--ink-2)] tnum">{day.total}</div>}
+                    <div className="flex w-full flex-col-reverse overflow-hidden rounded-t-[4px]" style={{ height: day.total > 0 ? `${Math.max(4, (day.total / maxDayTotal) * 86)}%` : day.any ? 3 : 0, background: day.total > 0 ? undefined : "var(--line-2)", outline: day.isToday ? "2px solid color-mix(in srgb, var(--violet) 35%, white)" : undefined }}>
+                      {d.editors.map((e) => { const c = d.cells[`${e.id}|${day.date}`]?.count ?? 0; return c > 0 ? <div key={e.id} style={{ flex: c, background: color(e.id) }} /> : null; })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-1.5 flex gap-[3px]">
+                {d.days.map((day) => <div key={day.date} className={`min-w-0 flex-1 text-center text-[9.5px] tnum ${day.isToday ? "font-extrabold text-[var(--violet)]" : day.sunday ? "font-semibold text-[var(--rose)]" : "text-[var(--faint)]"}`}>{day.day}</div>)}
+              </div>
+            </div>
+          ) : (
+            <div className="grid flex-1 place-items-center py-10 text-center text-[13px] text-[var(--muted)]">No counts for {d.monthLabel} yet.{canUpdate ? " Add today’s count below." : ""}</div>
+          )}
+        </div>
       </div>
+
+      {/* each editor */}
+      {d.seeAll && d.perEditor.length > 0 && (
+        <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(215px, 1fr))" }}>
+          {d.perEditor.map((e) => {
+            const c = color(e.id);
+            const rank = ranked.findIndex((r) => r.id === e.id) + 1;
+            return (
+              <button key={e.id} type="button" onClick={() => pick(e.id, maxDate)} className="card card-pad group text-left transition hover:shadow-[var(--shadow-md)]" style={{ borderTop: `3px solid ${c}` }} title={e.active ? "Click to update this editor’s count" : ""}>
+                <div className="flex items-center gap-2.5">
+                  <span className="grid h-9 w-9 flex-none place-items-center rounded-[10px] text-[12.5px] font-extrabold" style={{ background: tint(c, 14), color: c }}>{initials(e.name)}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5 truncate text-[14px] font-bold">{e.name}{e.lead && <span title="Team lead" className="flex-none text-[var(--amber)]"><Crown size={13} /></span>}{e.shoots && <span title="Also goes on shoots" className="flex-none text-[var(--muted)]"><Camera size={13} /></span>}</div>
+                    <div className="text-[11px] text-[var(--muted)]">{e.lead ? "Team lead" : e.active ? "Video editor" : "No longer in the team"}</div>
+                  </div>
+                  {e.total > 0 && <span className="flex-none rounded-full px-2 py-0.5 text-[10.5px] font-extrabold" style={rank === 1 ? { background: tint("var(--amber)", 16), color: "#92600a" } : { background: "var(--surface-2)", color: "var(--muted)" }}>#{rank}</span>}
+                </div>
+                <div className="mt-3 flex items-end gap-1.5">
+                  <span className="text-[30px] font-extrabold leading-none tracking-tight tnum">{e.total}</span>
+                  <span className="pb-0.5 text-[11.5px] text-[var(--muted)]">videos</span>
+                </div>
+                <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[var(--surface-3)]"><div className="h-full rounded-full" style={{ width: `${(e.total / topTotal) * 100}%`, background: c }} /></div>
+                <div className="mt-3 grid grid-cols-3 gap-1 text-center">
+                  {[["Days", e.worked], ["Avg/day", e.avg], ["Best", e.best]].map(([l, v]) => (
+                    <div key={l} className="rounded-[8px] bg-[var(--surface-2)] px-1 py-1.5"><div className="text-[13px] font-bold tnum">{v}</div><div className="text-[9.5px] font-semibold uppercase tracking-wide text-[var(--muted)]">{l}</div></div>
+                  ))}
+                </div>
+                {d.isCurrentMonth && e.active && (
+                  <div className="mt-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold" style={e.today !== null ? { background: tint("var(--emerald)", 11), color: "var(--emerald)" } : { background: tint("var(--amber)", 13), color: "#92600a" }}>
+                    {e.today !== null ? <><CheckCircle2 size={12} /> Today · {e.today} video{e.today === 1 ? "" : "s"}</> : <><Clock3 size={12} /> Not updated today</>}
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* update a day */}
       {canUpdate && (
-        <div ref={formRef} className="card card-pad">
+        <div ref={formRef} className="card card-pad" style={{ borderLeft: "3px solid var(--violet)" }}>
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2 text-[14px] font-bold"><Clapperboard size={16} className="text-[var(--rose)]" /> Update work</div>
-            <span className="text-[11.5px] text-[var(--muted)]">{cell ? `Saved for this day: ${cell.count}${cell.by ? ` · by ${cell.by}` : ""}` : "No entry for this day yet"}</span>
+            <div className="flex items-center gap-2.5">
+              <span className="grid h-9 w-9 place-items-center rounded-[10px]" style={{ background: tint("var(--violet)", 12), color: "var(--violet)" }}><PencilLine size={17} /></span>
+              <div>
+                <div className="text-[14px] font-bold">Update work</div>
+                <div className="text-[11.5px] text-[var(--muted)]">{d.seeAll ? "Add or correct the videos edited on a day" : "How many videos did you finish?"}</div>
+              </div>
+            </div>
+            <span className="rounded-full px-2.5 py-1 text-[11.5px] font-semibold" style={cell ? { background: tint("var(--emerald)", 10), color: "var(--emerald)" } : { background: "var(--surface-2)", color: "var(--muted)" }}>
+              {cell ? `Saved for ${fmtDay(date)}: ${cell.count}${cell.by ? ` · by ${cell.by}` : ""}` : `No entry for ${fmtDay(date)} yet`}
+            </span>
           </div>
-          <form key={`${userId}|${date}|${cell?.count ?? ""}`} action={saveEditCount} className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.1fr_1fr_.8fr_2fr_auto] lg:items-end">
+          <form key={`${userId}|${date}|${cell?.count ?? ""}`} action={saveEditCount} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.1fr_1fr_.8fr_2fr_auto] lg:items-end">
             {d.seeAll ? (
               <label className="block"><span className="eyebrow">Editor</span>
                 <select name="userId" value={userId} onChange={(e) => setUserId(e.target.value)} className="select mt-1.5">
@@ -113,58 +227,73 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
               <label className="block"><span className="eyebrow">Editor</span><input value={me.name} readOnly className="input mt-1.5 bg-[var(--surface-2)]" /></label>
             )}
             <label className="block"><span className="eyebrow">Date</span><input type="date" name="date" required value={date} min={`${d.month}-01`} max={maxDate} onChange={(e) => setDate(e.target.value)} className="input mt-1.5" /></label>
-            <label className="block"><span className="eyebrow">Videos edited</span><input type="number" name="count" min={0} max={500} step={1} defaultValue={cell?.count ?? ""} placeholder="0" className="input mt-1.5 tnum" /></label>
+            <label className="block"><span className="eyebrow">Videos edited</span><input type="number" name="count" min={0} max={500} step={1} defaultValue={cell?.count ?? ""} placeholder="0" className="input mt-1.5 text-[15px] font-bold tnum" /></label>
             <label className="block"><span className="eyebrow">Note (optional)</span><input name="note" maxLength={300} defaultValue={cell?.note ?? ""} placeholder="e.g. 2 reels for a client, half day…" className="input mt-1.5" /></label>
             <button type="submit" className="btn btn-violet"><Save size={15} /> Save</button>
           </form>
-          <p className="mt-2 text-[11.5px] text-[var(--muted)]">Click any day in the table to load it here. Leave “Videos edited” empty and save to remove a wrong entry.</p>
+          <p className="mt-2.5 text-[11.5px] text-[var(--muted)]">Click a day in the table below to load it here. Leave “Videos edited” empty and save to remove a wrong entry.</p>
         </div>
       )}
 
       {/* the month, day by day */}
       <div className="card !p-0 overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--line)] px-5 py-3.5">
-          <div className="text-[14px] font-bold">{d.monthLabel} · day by day</div>
-          <div className="text-[11.5px] text-[var(--muted)]">“—” = no entry (leave / holiday)</div>
+          <div>
+            <div className="text-[14px] font-bold">Day by day · {d.monthLabel}</div>
+            <div className="text-[11.5px] text-[var(--muted)]">Latest day on top · darker = more videos · “—” = no entry (leave / holiday)</div>
+          </div>
+          <span className="pill">{worked.length} working day{worked.length === 1 ? "" : "s"}</span>
         </div>
         <div className="overflow-x-auto scroll-thin">
-          <table className="w-full min-w-[560px] text-[13px]">
+          <table className="w-full min-w-[520px] text-[13px]">
             <thead>
               <tr className="border-b border-[var(--line)] bg-[var(--surface-2)] text-[11px] font-bold uppercase tracking-wide text-[var(--muted)]">
-                <th className="px-5 py-2.5 text-left">Date</th>
-                <th className="px-3 py-2.5 text-left">Day</th>
-                {d.editors.map((e) => <th key={e.id} className="px-3 py-2.5 text-center">{e.name}</th>)}
-                {d.seeAll && <th className="px-5 py-2.5 text-right">Total</th>}
+                <th className="w-[150px] px-5 py-2.5 text-left">Date</th>
+                {d.editors.map((e) => <th key={e.id} className="px-2 py-2.5 text-center"><span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full" style={{ background: color(e.id) }} />{d.seeAll ? e.name : "Videos"}</span></th>)}
+                {d.seeAll ? <th className="w-[110px] px-5 py-2.5 text-right">Team total</th> : <th className="px-5 py-2.5 text-left">Note</th>}
               </tr>
             </thead>
             <tbody>
-              {d.days.map((day) => (
-                <tr key={day.date} className="border-b border-[var(--line)] last:border-0" style={day.isToday ? { background: "color-mix(in srgb, var(--violet) 6%, white)" } : day.sunday ? { background: "var(--surface-2)" } : undefined}>
-                  <td className="whitespace-nowrap px-5 py-2 font-semibold tnum">{fmtDay(day.date)}{day.isToday && <span className="ml-2 rounded-full px-1.5 py-0.5 text-[10px] font-bold text-[var(--violet)]" style={{ background: "color-mix(in srgb, var(--violet) 12%, white)" }}>Today</span>}</td>
-                  <td className={`px-3 py-2 ${day.sunday ? "font-semibold text-[var(--rose)]" : "text-[var(--muted)]"}`}>{day.weekday}</td>
+              {shown.map((day) => (
+                <tr key={day.date} className="border-b border-[var(--line)] last:border-0" style={day.isToday ? { background: tint("var(--violet)", 5) } : day.sunday && !day.any ? { background: "var(--surface-2)" } : undefined}>
+                  <td className="whitespace-nowrap px-5 py-1.5">
+                    <span className="font-semibold tnum">{fmtDay(day.date)}</span>
+                    <span className={`ml-2 text-[11.5px] ${day.sunday ? "font-semibold text-[var(--rose)]" : "text-[var(--muted)]"}`}>{day.weekday}</span>
+                    {day.isToday && <span className="ml-2 rounded-full px-1.5 py-0.5 text-[10px] font-bold text-[var(--violet)]" style={{ background: tint("var(--violet)", 13) }}>Today</span>}
+                  </td>
                   {d.editors.map((e) => {
                     const c = d.cells[`${e.id}|${day.date}`];
-                    const clickable = canUpdate && !day.future && (d.seeAll ? e.active : e.id === me.id);
+                    const clickable = canUpdate && (d.seeAll ? e.active : e.id === me.id);
                     const on = userId === e.id && date === day.date;
+                    const col = color(e.id);
                     return (
                       <td key={e.id} className="px-1.5 py-1 text-center">
                         <button type="button" disabled={!clickable} onClick={() => pick(e.id, day.date)} title={c?.note || (clickable ? "Click to update" : "")}
-                          className={`mx-auto grid h-8 min-w-[44px] place-items-center rounded-[8px] px-2 tnum ${clickable ? "hover:bg-[var(--surface-3)]" : "cursor-default"} ${c ? (c.count > 0 ? "font-bold text-[var(--ink)]" : "text-[var(--muted)]") : "text-[var(--line-2)]"}`}
-                          style={on ? { outline: "2px solid var(--violet)", outlineOffset: -2 } : undefined}>
-                          {c ? c.count : "—"}{c?.note ? <span className="ml-0.5 text-[9px] text-[var(--amber)]">●</span> : null}
+                          className={`relative mx-auto grid h-8 w-full max-w-[84px] min-w-[44px] place-items-center rounded-[8px] px-2 tnum transition ${clickable ? "hover:brightness-95" : "cursor-default"}`}
+                          style={{
+                            background: c && c.count > 0 ? tint(col, 9 + Math.round((c.count / maxCell) * 30)) : c ? "var(--surface-2)" : "transparent",
+                            color: c && c.count > 0 ? "var(--ink)" : c ? "var(--muted)" : "var(--line-2)",
+                            fontWeight: c && c.count > 0 ? 700 : 400,
+                            outline: on ? "2px solid var(--violet)" : undefined, outlineOffset: on ? -2 : undefined,
+                          }}>
+                          {c ? c.count : "—"}
+                          {c?.note && d.seeAll ? <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-[var(--amber)]" /> : null}
                         </button>
                       </td>
                     );
                   })}
-                  {d.seeAll && <td className="px-5 py-2 text-right font-bold tnum">{day.any ? day.total : <span className="font-normal text-[var(--line-2)]">—</span>}</td>}
+                  {d.seeAll
+                    ? <td className="px-5 py-1.5 text-right">{day.any ? <span className="text-[14px] font-extrabold tnum">{day.total}</span> : <span className="text-[11.5px] text-[var(--faint)]">{day.sunday ? "Sunday" : "No entry"}</span>}</td>
+                    : <td className="px-5 py-1.5 text-[12.5px] text-[var(--ink-2)]">{d.cells[`${me.id}|${day.date}`]?.note || <span className="text-[var(--faint)]">{d.cells[`${me.id}|${day.date}`] ? "" : day.sunday ? "Sunday" : "No entry"}</span>}</td>}
                 </tr>
               ))}
+              {shown.length === 0 && <tr><td colSpan={d.editors.length + 2} className="px-5 py-10 text-center text-sm text-[var(--muted)]">This month has not started yet.</td></tr>}
             </tbody>
             <tfoot>
-              <tr className="border-t-2 border-[var(--line-2)] bg-[var(--surface-2)] font-extrabold">
-                <td className="px-5 py-3" colSpan={2}>Month total</td>
-                {d.perEditor.map((e) => <td key={e.id} className="px-3 py-3 text-center tnum">{e.total}</td>)}
-                {d.seeAll && <td className="px-5 py-3 text-right tnum">{d.grand}</td>}
+              <tr className="border-t-2 border-[var(--line-2)] bg-[var(--surface-2)]">
+                <td className="px-5 py-3 text-[12px] font-extrabold uppercase tracking-wide">Month total</td>
+                {d.perEditor.map((e) => <td key={e.id} className="px-2 py-3 text-center text-[15px] font-extrabold tnum" style={{ color: color(e.id) }}>{e.total}</td>)}
+                {d.seeAll ? <td className="px-5 py-3 text-right text-[16px] font-extrabold tnum">{d.grand}</td> : <td />}
               </tr>
             </tfoot>
           </table>
@@ -179,11 +308,14 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
               <div className="text-[14px] font-bold">Team work · assigned videos</div>
               <div className="text-[11.5px] text-[var(--muted)]">Everything still open, and what was completed in the last 14 days.</div>
             </div>
-            <span className="pill">{d.tasks.filter((t) => t.status !== "COMPLETED").length} open</span>
+            <div className="flex items-center gap-1.5">
+              <span className="pill">{d.tasks.filter((t) => !t.done).length} open</span>
+              {d.tasks.some((t) => t.overdue) && <span className="rounded-full px-2.5 py-1 text-[11.5px] font-bold text-[var(--rose)]" style={{ background: tint("var(--rose)", 10) }}>{d.tasks.filter((t) => t.overdue).length} overdue</span>}
+            </div>
           </div>
-          <div className="overflow-x-auto scroll-thin">
+          <div className="max-h-[520px] overflow-auto scroll-thin">
             <table className="w-full min-w-[760px] text-[13px]">
-              <thead>
+              <thead className="sticky top-0 z-10">
                 <tr className="border-b border-[var(--line)] bg-[var(--surface-2)] text-[11px] font-bold uppercase tracking-wide text-[var(--muted)]">
                   <th className="px-5 py-2.5 text-left">Video</th>
                   <th className="px-3 py-2.5 text-left">Client</th>
@@ -203,7 +335,7 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
                       <td className="px-3 py-2.5 font-semibold">{t.editor}</td>
                       <td className="px-3 py-2.5 text-[var(--muted)]">{t.by || "—"}</td>
                       <td className={`whitespace-nowrap px-3 py-2.5 tnum ${t.overdue ? "font-bold text-[var(--rose)]" : ""}`}>{fmtDay(t.dueDate)}{t.overdue ? " · overdue" : ""}</td>
-                      <td className="px-5 py-2.5"><span className="inline-flex rounded-full px-2.5 py-1 text-[11.5px] font-semibold" style={{ background: `color-mix(in srgb, ${st.tone} 12%, white)`, color: st.tone }}>{st.label}</span></td>
+                      <td className="px-5 py-2.5"><span className="inline-flex rounded-full px-2.5 py-1 text-[11.5px] font-semibold" style={{ background: tint(st.tone, 12), color: st.tone }}>{st.label}</span></td>
                     </tr>
                   );
                 })}
@@ -214,18 +346,34 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
         </div>
       )}
 
-      {/* admins choose the team lead */}
+      {/* admins: team lead + who goes on shoots */}
       {me.isAdmin && (
-        <form action={setVideoTeamLead} className="card card-pad flex flex-wrap items-end gap-3">
+        <form action={saveVideoTeamSettings} className="card card-pad">
           <input type="hidden" name="month" value={d.month} />
-          <label className="block min-w-[220px]"><span className="eyebrow">Video team lead</span>
-            <select name="userId" defaultValue={leadId} className="select mt-1.5">
-              <option value="">— No team lead —</option>
-              {d.editors.filter((e) => e.active).map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
-            </select>
-          </label>
-          <button type="submit" className="btn btn-ghost">Save team lead</button>
-          <p className="basis-full text-[11.5px] text-[var(--muted)]">The team lead sees every editor’s count and work here, assigns videos to the team and can import the sheet. Other editors see only their own.</p>
+          <div className="flex items-center gap-2 text-[14px] font-bold"><Settings2 size={16} className="text-[var(--muted)]" /> Video team settings</div>
+          <div className="mt-3 grid gap-5 lg:grid-cols-[260px_1fr_auto] lg:items-end">
+            <label className="block"><span className="eyebrow">Team lead</span>
+              <select name="leadId" defaultValue={leadId} className="select mt-1.5">
+                <option value="">— No team lead —</option>
+                {d.editors.filter((e) => e.active).map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
+              </select>
+            </label>
+            <div>
+              <span className="eyebrow">Goes on shoots (gets “My Shoots”)</span>
+              <div className="mt-1.5 flex flex-wrap gap-2">
+                {d.editors.filter((e) => e.active).map((e) => (
+                  <label key={e.id} className="inline-flex cursor-pointer items-center gap-2 rounded-[10px] border border-[var(--line-2)] bg-[var(--surface)] px-3 py-2 text-[13px] font-semibold has-[:checked]:border-[var(--violet)] has-[:checked]:bg-[color-mix(in_srgb,var(--violet)_7%,white)]">
+                    <input type="checkbox" name="shootTeam" value={e.id} defaultChecked={e.shoots} className="h-4 w-4 accent-[var(--violet)]" /> {e.name}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <button type="submit" className="btn btn-violet"><Save size={15} /> Save settings</button>
+          </div>
+          <p className="mt-3 text-[11.5px] leading-relaxed text-[var(--muted)]">
+            <b>Team lead</b> sees every editor’s count and work here, assigns videos to the team and can import the sheet — other editors see only their own.<br />
+            <b>Goes on shoots</b>: only the ticked editors can be chosen as the shooter in Studiox Shoot and have “My Shoots” in their menu.
+          </p>
         </form>
       )}
 
@@ -248,7 +396,7 @@ function ImportModal({ close }: { close: () => void }) {
         </div>
         {result?.ok ? (
           <div className="space-y-3 px-6 py-5">
-            <p className="flex items-start gap-2 rounded-[10px] px-3 py-2.5 text-[13px] font-semibold text-[var(--emerald)]" style={{ background: "color-mix(in srgb, var(--emerald) 8%, white)" }}><CheckCircle2 size={16} className="mt-0.5 flex-none" /> {result.message}</p>
+            <p className="flex items-start gap-2 rounded-[10px] px-3 py-2.5 text-[13px] font-semibold text-[var(--emerald)]" style={{ background: tint("var(--emerald)", 8) }}><CheckCircle2 size={16} className="mt-0.5 flex-none" /> {result.message}</p>
             <ul className="space-y-1 text-[12.5px] text-[var(--ink-2)]">{(result.details ?? []).map((x) => <li key={x}>• {x}</li>)}</ul>
             <div className="flex justify-end"><button type="button" onClick={() => { close(); window.location.reload(); }} className="btn btn-violet">Done</button></div>
           </div>
@@ -262,7 +410,7 @@ function ImportModal({ close }: { close: () => void }) {
               First column <b>Date</b> (01-08-2026), then one column per editor with the editor’s name as in Team (<b>Poorna, Madhu, …</b>).<br />
               An empty cell is skipped. A day already in the CRM is replaced, so the same file can be imported again safely.
             </div>
-            {result && !result.ok && <p className="rounded-[10px] px-3 py-2 text-[12.5px] font-semibold text-[var(--rose)]" style={{ background: "color-mix(in srgb, var(--rose) 8%, white)" }}>{result.message}</p>}
+            {result && !result.ok && <p className="rounded-[10px] px-3 py-2 text-[12.5px] font-semibold text-[var(--rose)]" style={{ background: tint("var(--rose)", 8) }}>{result.message}</p>}
             <div className="flex justify-end gap-2 pt-1">
               <button type="button" onClick={close} className="btn btn-ghost">Cancel</button>
               <button type="submit" disabled={pending} className="btn btn-violet disabled:opacity-60"><Upload size={15} /> {pending ? "Importing…" : "Import"}</button>

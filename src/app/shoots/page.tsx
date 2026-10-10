@@ -1,17 +1,19 @@
 import { getShootBoard } from "@/lib/queries";
 import { getCurrentUser } from "@/lib/auth";
+import { editorHasShoots } from "@/lib/shoot-team";
 import { redirect } from "next/navigation";
 import ShootBoard from "@/components/ShootBoard";
 
 export const dynamic = "force-dynamic";
 
-// EDITOR: video editors can be picked as the shooter, so they see the shoots assigned to them.
+// EDITOR: only the editors on the shoot team (or with a shoot assigned to them) — see lib/shoot-team.
 const ALLOWED = ["STUDIO_HEAD", "VIDEOGRAPHER", "EDITOR", "SUPER_ADMIN", "SUB_ADMIN"];
 
 export default async function ShootsPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   if (!ALLOWED.includes(user.role)) redirect("/");
+  if (user.role === "EDITOR" && !(await editorHasShoots(user))) redirect("/");
   const d = await getShootBoard(user.id, user.role);
   return (
     <ShootBoard

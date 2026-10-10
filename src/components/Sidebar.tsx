@@ -16,7 +16,7 @@ type Item = { href: string; label: string; icon: React.ElementType; badge?: numb
 type Group = { label?: string; items: Item[] };
 
 type Pipeline = { total: number; dueToday: number; inProgress: number; review: number; completed: number; overdue: number };
-export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0, reminderCount = 0, pipeline, user }: { clientCount: number; approvalsCount?: number; taskCount?: number; reminderCount?: number; pipeline?: Pipeline; user: { name: string; role: string } }) {
+export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0, reminderCount = 0, pipeline, user, myShoots = false }: { clientCount: number; approvalsCount?: number; taskCount?: number; reminderCount?: number; pipeline?: Pipeline; user: { name: string; role: string }; myShoots?: boolean }) {
   const path = usePathname();
   const sp = useSearchParams();
   const curStage = sp.get("stage") ?? "";
@@ -165,8 +165,8 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     // the video team's daily count (was a Google Sheet); the team lead sees the whole team there
     if (isEditor) work.push({ href: "/video-team", label: "Editing Count", icon: ListOrdered });
     if (isStudioHead) work.push({ href: "/shoots", label: "Studiox Shoot", icon: Camera });
-    // video editors can be assigned as the shooter too, so they get the same link
-    if (isShooter || isEditor) work.push({ href: "/shoots", label: "My Shoots", icon: Camera });
+    // only the video editors on the shoot team (they are assigned as the shooter) get the same link
+    if (isShooter || (isEditor && myShoots)) work.push({ href: "/shoots", label: "My Shoots", icon: Camera });
     if (isDev) work.push({ href: "/projects", label: "Developer Team", icon: Code2 });
     work.push({ href: "/tasks", label: "My Tasks", icon: ListChecks, badge: taskCount || undefined });
     // SEO team log their work inside SEO Performance, so no separate "Update Work"/"Approvals" clutter.

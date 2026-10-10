@@ -126,6 +126,7 @@ exports.Prisma.UserScalarFieldEnum = {
   passwordHash: 'passwordHash',
   active: 'active',
   teamLead: 'teamLead',
+  shootTeam: 'shootTeam',
   createdAt: 'createdAt'
 };
 

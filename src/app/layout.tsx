@@ -7,6 +7,7 @@ import MobileNav from "@/components/MobileNav";
 import { Suspense } from "react";
 import { NavTrail } from "@/components/NavTrail";
 import { prisma } from "@/lib/prisma";
+import { editorHasShoots } from "@/lib/shoot-team";
 import { getSearchIndex, getAlerts, getApprovalsCount, getMyOpenTaskCount, deptForRole, getDueReminderCount, getCreativeBoard } from "@/lib/queries";
 import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/auth";
@@ -40,7 +41,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   );
 }
 
-async function AppShell({ user, userId, impersonatedBy, children }: { user: { name: string; role: string }; userId: string; impersonatedBy?: string | null; children: React.ReactNode }) {
+async function AppShell({ user, userId, impersonatedBy, children }: { user: { name: string; role: string; shootTeam?: boolean }; userId: string; impersonatedBy?: string | null; children: React.ReactNode }) {
   const [clientCount, search, alerts, approvalsCount, taskCount, reminderCount] = await Promise.all([
     prisma.client.count().catch(() => 0),
     getSearchIndex().catch(() => ({ clients: [], projects: [], team: [] })),
@@ -54,6 +55,8 @@ async function AppShell({ user, userId, impersonatedBy, children }: { user: { na
   const pipeline = (user.role === "DESIGNER" || user.role === "EDITOR")
     ? await getCreativeBoard(userId, user.role, user.role === "EDITOR" ? "VIDEO" : "DESIGN").then((d) => d.counts).catch(() => undefined)
     : undefined;
+  // "My Shoots" is only for the video editors who actually go on shoots.
+  const myShoots = user.role === "EDITOR" ? await editorHasShoots({ id: userId, shootTeam: user.shootTeam }).catch(() => false) : false;
   return (
     <>
       {impersonatedBy && (
@@ -69,7 +72,7 @@ async function AppShell({ user, userId, impersonatedBy, children }: { user: { na
       <TopBar user={user} search={search} alerts={alerts} />
       <MobileNav role={user.role} />
       <div className="flex">
-        <Sidebar clientCount={clientCount} approvalsCount={approvalsCount} taskCount={taskCount} reminderCount={reminderCount} pipeline={pipeline} user={user} />
+        <Sidebar clientCount={clientCount} approvalsCount={approvalsCount} taskCount={taskCount} reminderCount={reminderCount} pipeline={pipeline} user={user} myShoots={myShoots} />
         <main className="min-w-0 flex-1 px-5 py-7 sm:px-8">
           <div className="mx-auto w-full max-w-[1600px]">{children}</div>
         </main>

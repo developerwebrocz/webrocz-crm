@@ -21,6 +21,7 @@ model User {
   passwordHash String?
   active       Boolean  @default(true)
   teamLead     Boolean  @default(false) // video team lead: sees the whole team's work and assigns it
+  shootTeam    Boolean  @default(false) // a video editor who also goes on shoots: can be picked as the shooter, gets "My Shoots"
   createdAt    DateTime @default(now())
 
   managedClients   Client[]       @relation("AccountManager")

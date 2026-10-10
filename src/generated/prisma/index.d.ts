@@ -4876,6 +4876,7 @@ export namespace Prisma {
     passwordHash: string | null
     active: boolean | null
     teamLead: boolean | null
+    shootTeam: boolean | null
     createdAt: Date | null
   }
 
@@ -4888,6 +4889,7 @@ export namespace Prisma {
     passwordHash: string | null
     active: boolean | null
     teamLead: boolean | null
+    shootTeam: boolean | null
     createdAt: Date | null
   }
 
@@ -4900,6 +4902,7 @@ export namespace Prisma {
     passwordHash: number
     active: number
     teamLead: number
+    shootTeam: number
     createdAt: number
     _all: number
   }
@@ -4914,6 +4917,7 @@ export namespace Prisma {
     passwordHash?: true
     active?: true
     teamLead?: true
+    shootTeam?: true
     createdAt?: true
   }
 
@@ -4926,6 +4930,7 @@ export namespace Prisma {
     passwordHash?: true
     active?: true
     teamLead?: true
+    shootTeam?: true
     createdAt?: true
   }
 
@@ -4938,6 +4943,7 @@ export namespace Prisma {
     passwordHash?: true
     active?: true
     teamLead?: true
+    shootTeam?: true
     createdAt?: true
     _all?: true
   }
@@ -5023,6 +5029,7 @@ export namespace Prisma {
     passwordHash: string | null
     active: boolean
     teamLead: boolean
+    shootTeam: boolean
     createdAt: Date
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
@@ -5052,6 +5059,7 @@ export namespace Prisma {
     passwordHash?: boolean
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: boolean
     managedClients?: boolean | User$managedClientsArgs<ExtArgs>
     assignments?: boolean | User$assignmentsArgs<ExtArgs>
@@ -5078,6 +5086,7 @@ export namespace Prisma {
     passwordHash?: boolean
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["user"]>
 
@@ -5090,6 +5099,7 @@ export namespace Prisma {
     passwordHash?: boolean
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["user"]>
 
@@ -5102,10 +5112,11 @@ export namespace Prisma {
     passwordHash?: boolean
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "role" | "email" | "phone" | "passwordHash" | "active" | "teamLead" | "createdAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "role" | "email" | "phone" | "passwordHash" | "active" | "teamLead" | "shootTeam" | "createdAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     managedClients?: boolean | User$managedClientsArgs<ExtArgs>
     assignments?: boolean | User$assignmentsArgs<ExtArgs>
@@ -5151,6 +5162,7 @@ export namespace Prisma {
       passwordHash: string | null
       active: boolean
       teamLead: boolean
+      shootTeam: boolean
       createdAt: Date
     }, ExtArgs["result"]["user"]>
     composites: {}
@@ -5596,6 +5608,7 @@ export namespace Prisma {
     readonly passwordHash: FieldRef<"User", 'String'>
     readonly active: FieldRef<"User", 'Boolean'>
     readonly teamLead: FieldRef<"User", 'Boolean'>
+    readonly shootTeam: FieldRef<"User", 'Boolean'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
   }
     
@@ -52538,6 +52551,7 @@ export namespace Prisma {
     passwordHash: 'passwordHash',
     active: 'active',
     teamLead: 'teamLead',
+    shootTeam: 'shootTeam',
     createdAt: 'createdAt'
   };
 
@@ -53325,6 +53339,7 @@ export namespace Prisma {
     passwordHash?: StringNullableFilter<"User"> | string | null
     active?: BoolFilter<"User"> | boolean
     teamLead?: BoolFilter<"User"> | boolean
+    shootTeam?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     managedClients?: ClientListRelationFilter
     assignments?: AssignmentListRelationFilter
@@ -53350,6 +53365,7 @@ export namespace Prisma {
     passwordHash?: SortOrderInput | SortOrder
     active?: SortOrder
     teamLead?: SortOrder
+    shootTeam?: SortOrder
     createdAt?: SortOrder
     managedClients?: ClientOrderByRelationAggregateInput
     assignments?: AssignmentOrderByRelationAggregateInput
@@ -53378,6 +53394,7 @@ export namespace Prisma {
     passwordHash?: StringNullableFilter<"User"> | string | null
     active?: BoolFilter<"User"> | boolean
     teamLead?: BoolFilter<"User"> | boolean
+    shootTeam?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     managedClients?: ClientListRelationFilter
     assignments?: AssignmentListRelationFilter
@@ -53403,6 +53420,7 @@ export namespace Prisma {
     passwordHash?: SortOrderInput | SortOrder
     active?: SortOrder
     teamLead?: SortOrder
+    shootTeam?: SortOrder
     createdAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -53421,6 +53439,7 @@ export namespace Prisma {
     passwordHash?: StringNullableWithAggregatesFilter<"User"> | string | null
     active?: BoolWithAggregatesFilter<"User"> | boolean
     teamLead?: BoolWithAggregatesFilter<"User"> | boolean
+    shootTeam?: BoolWithAggregatesFilter<"User"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
 
@@ -57156,6 +57175,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -57181,6 +57201,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -57206,6 +57227,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -57231,6 +57253,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -57256,6 +57279,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
   }
 
@@ -57268,6 +57292,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -57280,6 +57305,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -61693,6 +61719,7 @@ export namespace Prisma {
     passwordHash?: SortOrder
     active?: SortOrder
     teamLead?: SortOrder
+    shootTeam?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -61705,6 +61732,7 @@ export namespace Prisma {
     passwordHash?: SortOrder
     active?: SortOrder
     teamLead?: SortOrder
+    shootTeam?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -61717,6 +61745,7 @@ export namespace Prisma {
     passwordHash?: SortOrder
     active?: SortOrder
     teamLead?: SortOrder
+    shootTeam?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -68231,6 +68260,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -68255,6 +68285,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -68295,6 +68326,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -68319,6 +68351,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -68343,6 +68376,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -68367,6 +68401,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -68396,6 +68431,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -68420,6 +68456,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -68603,6 +68640,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -68627,6 +68665,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -68662,6 +68701,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -68686,6 +68726,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -68859,6 +68900,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -68883,6 +68925,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -68923,6 +68966,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -68947,6 +68991,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -68971,6 +69016,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     assignments?: AssignmentCreateNestedManyWithoutUserInput
     updates?: WorkUpdateCreateNestedManyWithoutUserInput
@@ -68995,6 +69041,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutUserInput
@@ -69885,6 +69932,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
     updates?: WorkUpdateUpdateManyWithoutUserNestedInput
@@ -69909,6 +69957,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
     updates?: WorkUpdateUncheckedUpdateManyWithoutUserNestedInput
@@ -71587,6 +71636,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     updates?: WorkUpdateCreateNestedManyWithoutUserInput
@@ -71611,6 +71661,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutUserInput
@@ -71800,6 +71851,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     updates?: WorkUpdateUpdateManyWithoutUserNestedInput
@@ -71824,6 +71876,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     updates?: WorkUpdateUncheckedUpdateManyWithoutUserNestedInput
@@ -71991,6 +72044,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -72015,6 +72069,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -72204,6 +72259,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -72228,6 +72284,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -73793,6 +73850,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -73817,6 +73875,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -74054,6 +74113,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -74078,6 +74138,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -76536,6 +76597,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -76560,6 +76622,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -76589,6 +76652,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -76613,6 +76677,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -76802,6 +76867,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -76826,6 +76892,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -76861,6 +76928,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -76885,6 +76953,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -77052,6 +77121,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -77076,6 +77146,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -77105,6 +77176,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -77129,6 +77201,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -77318,6 +77391,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -77342,6 +77416,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -77377,6 +77452,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -77401,6 +77477,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -78009,6 +78086,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -78033,6 +78111,7 @@ export namespace Prisma {
     passwordHash?: string | null
     active?: boolean
     teamLead?: boolean
+    shootTeam?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -78269,6 +78348,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -78293,6 +78373,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     teamLead?: BoolFieldUpdateOperationsInput | boolean
+    shootTeam?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput

@@ -873,7 +873,7 @@ export async function getShootBoard(userId: string, role: string) {
     ? await prisma.client.findMany({ where: { status: { not: "UPCOMING" } }, select: { id: true, name: true }, orderBy: { name: "asc" } })
     : [];
   const shooters = canAdd
-    ? await prisma.user.findMany({ where: { active: true, role: { in: ["VIDEOGRAPHER", "EDITOR"] } }, select: { id: true, name: true, role: true }, orderBy: { name: "asc" } })
+    ? await prisma.user.findMany({ where: { active: true, role: { in: ["VIDEOGRAPHER", "EDITOR"] } }, select: { id: true, name: true, role: true, shootTeam: true }, orderBy: { name: "asc" } })
     : [];
 
   return { rows, kpis, clientOptions, shooters, canManage, canAdd, selfId: userId, today };

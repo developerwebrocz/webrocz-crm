@@ -22,7 +22,7 @@ type Row = {
 };
 type Kpis = { todayShoots: number; upcoming: number; rentalsThisMonth: number; rentalRevenue: number; rentalUnpaid: number; webroczCount: number; rentCount: number; completed: number; conflicts: number; requests: number };
 type Opt = { id: string; name: string };
-type Shooter = { id: string; name: string; role: string };
+type Shooter = { id: string; name: string; role: string; shootTeam?: boolean };
 
 const TONE: Record<string, string> = { violet: "var(--violet)", amber: "var(--amber)", sky: "var(--sky)", emerald: "var(--emerald)", rose: "var(--rose)", muted: "var(--muted)" };
 function fmtDate(d: string) { return d ? new Date(d + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short" }) : "—"; }
@@ -217,7 +217,7 @@ function ShootModal({ row, clientOptions, shooters, today, defaultAssignee = "",
           </div>
 
           <label className="block"><span className="eyebrow">Assign shooter</span>
-            <select name="assignedToId" defaultValue={row?.assignedToId ?? defaultAssignee} className="select mt-1.5"><option value="">— Unassigned —</option>{shooters.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}</select>
+            <select name="assignedToId" defaultValue={row?.assignedToId ?? defaultAssignee} className="select mt-1.5"><option value="">— Unassigned —</option>{shooters.filter((m) => m.role !== "EDITOR" || m.shootTeam || m.id === row?.assignedToId || m.id === defaultAssignee).map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}</select>
           </label>
 
           {isRent && (

@@ -35,10 +35,10 @@ export async function getEditCountBoard(viewer: EditCountViewer, monthParam?: st
   const withEntry = [...new Set(entries.map((e) => e.userId))];
   const people = await prisma.user.findMany({
     where: seeAll ? { OR: [{ role: "EDITOR", active: true }, { id: { in: withEntry } }] } : { id: viewer.id },
-    select: { id: true, name: true, teamLead: true, role: true, active: true },
+    select: { id: true, name: true, teamLead: true, shootTeam: true, role: true, active: true },
   });
   const editors = people
-    .map((p) => ({ id: p.id, name: p.name, lead: p.role === "EDITOR" && p.teamLead, active: p.active && p.role === "EDITOR" }))
+    .map((p) => ({ id: p.id, name: p.name, lead: p.role === "EDITOR" && p.teamLead, shoots: p.role === "EDITOR" && p.shootTeam, active: p.active && p.role === "EDITOR" }))
     .sort((a, b) => Number(b.lead) - Number(a.lead) || a.name.localeCompare(b.name));
 
   const cells: Record<string, { count: number; note: string; by: string }> = {};
@@ -60,9 +60,11 @@ export async function getEditCountBoard(viewer: EditCountViewer, monthParam?: st
     const mine = entries.filter((e) => e.userId === ed.id);
     const total = mine.reduce((s, e) => s + e.count, 0);
     const worked = mine.filter((e) => e.count > 0).length;
-    return { ...ed, total, entries: mine.length, worked, avg: worked ? Math.round((total / worked) * 10) / 10 : 0, today: cells[`${ed.id}|${today}`]?.count ?? null };
+    return { ...ed, total, entries: mine.length, worked, best: mine.reduce((mx, e) => Math.max(mx, e.count), 0), avg: worked ? Math.round((total / worked) * 10) / 10 : 0, today: cells[`${ed.id}|${today}`]?.count ?? null };
   });
   const grand = perEditor.reduce((s, e) => s + e.total, 0);
+  // the month before, for the same people — to compare against
+  const prev = await prisma.editCount.aggregate({ _sum: { count: true }, where: { date: { startsWith: shiftMonth(month, -1) }, ...(seeAll ? {} : { userId: viewer.id }) } });
 
   // The team's video work (lead / admin only): everything still open, and what was finished lately.
   const tasks = seeAll
@@ -85,6 +87,9 @@ export async function getEditCountBoard(viewer: EditCountViewer, monthParam?: st
     month, today,
     monthLabel: new Date(`${month}-01T00:00:00Z`).toLocaleDateString("en-IN", { month: "long", year: "numeric", timeZone: "UTC" }),
     prevMonth: shiftMonth(month, -1),
+    prevTotal: prev._sum.count ?? 0,
+    prevLabel: new Date(`${shiftMonth(month, -1)}-01T00:00:00Z`).toLocaleDateString("en-IN", { month: "long", timeZone: "UTC" }),
+    isCurrentMonth: month === today.slice(0, 7),
     nextMonth: shiftMonth(month, 1) <= today.slice(0, 7) ? shiftMonth(month, 1) : "",
     seeAll, editors, days, cells, perEditor, grand,
     todayTotal: perEditor.reduce((s, e) => s + (e.today ?? 0), 0),

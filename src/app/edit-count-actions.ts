@@ -44,19 +44,19 @@ export async function saveEditCount(fd: FormData) {
   back("1");
 }
 
-// Super Admin / Sub Admin choose who leads the video team (one editor, or nobody).
-export async function setVideoTeamLead(fd: FormData) {
+// Super Admin / Sub Admin: who leads the video team (one editor, or nobody) and which editors
+// also go on shoots (only they can be picked as the shooter and get "My Shoots").
+export async function saveVideoTeamSettings(fd: FormData) {
   const me = await getCurrentUser();
   if (!me || !isVideoAdmin(me)) redirect("/");
-  const userId = str(fd, "userId");
-  if (userId) {
-    const u = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-    if (!u || u.role !== "EDITOR") redirect("/video-team");
-  }
-  await prisma.user.updateMany({ where: { role: "EDITOR", teamLead: true, ...(userId ? { id: { not: userId } } : {}) }, data: { teamLead: false } });
-  if (userId) await prisma.user.update({ where: { id: userId }, data: { teamLead: true } });
+  const editors = await prisma.user.findMany({ where: { role: "EDITOR" }, select: { id: true } });
+  const ids = new Set(editors.map((e) => e.id));
+  const leadId = ids.has(str(fd, "leadId")) ? str(fd, "leadId") : "";
+  const shoot = new Set(fd.getAll("shootTeam").map(String).filter((id) => ids.has(id)));
+  await prisma.$transaction(editors.map((e) => prisma.user.update({ where: { id: e.id }, data: { teamLead: e.id === leadId, shootTeam: shoot.has(e.id) } })));
   revalidatePath("/video-team");
-  redirect(`/video-team${str(fd, "month") ? `?month=${str(fd, "month")}` : ""}`);
+  revalidatePath("/", "layout");
+  redirect(`/video-team?${str(fd, "month") ? `month=${str(fd, "month")}&` : ""}saved=team`);
 }
 
 // ---- load the old sheet (CSV): first column the date, then one column per editor ----

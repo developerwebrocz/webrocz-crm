@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { prisma } from "./prisma";
 import { SESSION_COOKIE, IMPERSONATE_COOKIE, verifySession, verifyImpersonation } from "./session";
 
-const USER_SELECT = { id: true, name: true, role: true, email: true, active: true, teamLead: true } as const;
+const USER_SELECT = { id: true, name: true, role: true, email: true, active: true, teamLead: true, shootTeam: true } as const;
 
 // ---- password hashing (scrypt, no native deps) ----
 export function hashPassword(password: string) {
