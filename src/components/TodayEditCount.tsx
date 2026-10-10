@@ -44,12 +44,15 @@ export default async function TodayEditCount({ userId }: { userId: string }) {
               {mine ? <><CheckCircle2 size={13} /> Updated · {mine.count} video{mine.count === 1 ? "" : "s"}</> : <><Clock3 size={13} /> Not updated yet</>}
             </span>
           </div>
-          <form action={saveEditCount} className="mt-4 grid gap-3 sm:grid-cols-[170px_1fr_auto] sm:items-end">
+          <form action={saveEditCount} className="mt-4 space-y-3">
             <input type="hidden" name="date" value={today} />
             <input type="hidden" name="return" value="home" />
-            <label className="block"><span className="eyebrow">Videos edited today</span><div className="mt-1.5"><CountStepper key={mine?.count ?? "new"} defaultValue={mine?.count ?? ""} big /></div></label>
-            <label className="block"><span className="eyebrow">Note (optional)</span><input name="note" maxLength={300} defaultValue={mine?.note ?? ""} placeholder="e.g. 2 reels + 1 testimonial" className="input mt-1.5 !h-12" /></label>
-            <button type="submit" className="btn btn-violet !h-12"><Save size={15} /> {mine ? "Update" : "Save"}</button>
+            {/* count + save on one line, the note under it — reads well at any width */}
+            <div className="flex flex-wrap items-end gap-3">
+              <label className="block w-[200px] max-w-full"><span className="eyebrow">Videos edited today</span><div className="mt-1.5"><CountStepper key={mine?.count ?? "new"} defaultValue={mine?.count ?? ""} big /></div></label>
+              <button type="submit" className="btn btn-violet !h-12 px-6"><Save size={15} /> {mine ? "Update count" : "Save count"}</button>
+            </div>
+            <label className="block"><span className="eyebrow">Note (optional)</span><input name="note" maxLength={300} defaultValue={mine?.note ?? ""} placeholder="What did you edit? e.g. 2 reels + 1 testimonial" className="input mt-1.5" /></label>
           </form>
         </div>
         <div className="flex flex-col justify-between gap-4 border-t border-[var(--line)] bg-[var(--surface-2)] p-5 lg:border-l lg:border-t-0">

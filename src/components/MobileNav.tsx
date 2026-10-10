@@ -41,8 +41,8 @@ function navFor(role: string): Item[] {
   if (role === "SALES_HEAD" || role === "SALES_EXEC") return SALES_NAV;
   // Studio X head: the same items as their sidebar (no "Update Work").
   if (role === "STUDIO_HEAD") return [{ href: "/", label: "Dashboard" }, { href: "/shoots", label: "Studiox Shoot" }, { href: "/tasks", label: "My Tasks" }, { href: "/approvals", label: "Approvals" }, { href: "/reports", label: "Reports" }];
-  // Video editors: their daily editing count right after the Dashboard.
-  if (role === "EDITOR") return [ADMIN_NAV[0], { href: "/video-team", label: "Editing Count" }, ...ADMIN_NAV.slice(1)];
+  // Video editors: the same items as their sidebar.
+  if (role === "EDITOR") return [{ href: "/", label: "Dashboard" }, { href: "/videos", label: "My Videos" }, { href: "/video-team", label: "Editing Count" }, { href: "/tasks", label: "My Tasks" }, { href: "/updates", label: "Update Work" }, { href: "/reports", label: "Reports" }];
   // Super Admin: the Payments pipeline comes right after the Dashboard (same as the sidebar).
   if (role === "SUPER_ADMIN") return [ADMIN_NAV[0], { href: "/payments", label: "Payments" }, ...ADMIN_NAV.slice(1)];
   return ADMIN_NAV; // SUB_ADMIN and other management roles
