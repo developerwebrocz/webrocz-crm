@@ -16,7 +16,7 @@ type Item = { href: string; label: string; icon: React.ElementType; badge?: numb
 type Group = { label?: string; items: Item[] };
 
 type Pipeline = { total: number; dueToday: number; inProgress: number; review: number; completed: number; overdue: number };
-export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0, reminderCount = 0, pipeline, user, myShoots = false, videoPipe }: { clientCount: number; approvalsCount?: number; taskCount?: number; reminderCount?: number; pipeline?: Pipeline; user: { name: string; role: string }; myShoots?: boolean; videoPipe?: { toEdit: number; editing: number; done: number; notPosted: number; team: boolean } }) {
+export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0, reminderCount = 0, pipeline, user, myShoots = false, videoPipe }: { clientCount: number; approvalsCount?: number; taskCount?: number; reminderCount?: number; pipeline?: Pipeline; user: { name: string; role: string }; myShoots?: boolean; videoPipe?: { toEdit: number; editing: number; done: number; notPosted: number; team: boolean; members?: { id: string; name: string; open: number }[] } }) {
   const path = usePathname();
   const sp = useSearchParams();
   const curStage = sp.get("stage") ?? "";
@@ -162,10 +162,11 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     // moves (to edit → editing → completed → posted), then everything else.
     const vp = videoPipe ?? { toEdit: 0, editing: 0, done: 0, notPosted: 0, team: false };
     const tabParam = sp.get("tab") ?? "";
+    const editorParam = sp.get("editor") ?? "";
     const onCv = path.startsWith("/client-videos");
     const openTasks = pipeline ? Math.max(0, pipeline.total - pipeline.completed) : 0;
     groups.push({ label: "Video Work", items: [
-      { href: "/client-videos", label: "Client Videos", icon: Film, forceActive: onCv && tabParam === "" },
+      { href: "/client-videos", label: "Client Videos", icon: Film, forceActive: onCv && tabParam === "" && editorParam === "" },
       { href: "/video-team", label: "Editing Count", icon: ListOrdered },
       { href: "/videos", label: "My Videos", icon: Clapperboard, badge: openTasks || undefined },
       ...(myShoots ? [{ href: "/shoots", label: "My Shoots", icon: Camera }] : []),
@@ -180,6 +181,12 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
       href: `/client-videos?tab=${x.key}`, label: x.label, icon: x.icon, iconColor: x.color,
       badge: x.n, badgeBg: x.bg, badgeFg: x.fg, showZero: true,
       forceActive: onCv && tabParam === x.key,
+    })) });
+    // team lead: each editor's open client shoots — click a name to see that editor's clients
+    if (vp.members?.length) groups.push({ label: "Team Members", items: vp.members.map((m) => ({
+      href: `/client-videos?editor=${m.id}`, label: m.name, icon: UsersRound, iconColor: "#A5B4FC",
+      badge: m.open, badgeBg: "rgba(129,140,248,.22)", badgeFg: "#C7D2FE", showZero: true,
+      forceActive: onCv && editorParam === m.id,
     })) });
     groups.push({ label: "More", items: [
       { href: "/tasks", label: "My Tasks", icon: ListChecks, badge: taskCount || undefined },

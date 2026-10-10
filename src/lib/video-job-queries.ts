@@ -98,7 +98,17 @@ export async function getVideoJobPipeline(viewer: VideoJobViewer) {
     prisma.videoJob.count({ where: { ...scope, editStatus: "COMPLETED", date: { startsWith: month } } }),
     prisma.videoJob.count({ where: { ...scope, editStatus: "COMPLETED", date: { startsWith: month }, posting: { not: "POSTED" } } }),
   ]);
-  return { toEdit, editing, done, notPosted, team: all };
+  let members: { id: string; name: string; open: number }[] = [];
+  if (viewer.role === "EDITOR" && viewer.teamLead) {
+    const [editors, open] = await Promise.all([
+      prisma.user.findMany({ where: { role: "EDITOR", active: true }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
+      prisma.videoJob.findMany({ where: { editStatus: { in: OPEN_STATUSES } }, select: { editorIds: true } }),
+    ]);
+    const n = new Map<string, number>();
+    for (const j of open) for (const id of parseIds(j.editorIds)) n.set(id, (n.get(id) ?? 0) + 1);
+    members = editors.map((e) => ({ id: e.id, name: e.id === viewer.id ? `${e.name} (me)` : e.name, open: n.get(e.id) ?? 0 }));
+  }
+  return { toEdit, editing, done, notPosted, team: all, members };
 }
 
 // Team lead's dashboard: every editor's day and open work, and the client shoots nobody edits yet.

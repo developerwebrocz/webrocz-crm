@@ -35,10 +35,11 @@ const isOpen = (r: VideoJobRow) => r.editStatus === "PENDING" || r.editStatus ==
 const TAB_KEYS = ["ALL", "OPEN", "PENDING", "IN_PROGRESS", "COMPLETED", "POST", "NO_EDIT"];
 
 // `initialTab`: the pipeline step picked in the sidebar. `openAdd`: start on the "Add client shoot" form.
-export default function ClientVideosBoard({ d, meId, saved, initialTab = "", openAdd = false }: { d: VideoJobBoardData; meId: string; saved: string; initialTab?: string; openAdd?: boolean }) {
+export default function ClientVideosBoard({ d, meId, saved, initialTab = "", openAdd = false, initialEditor = "" }: { d: VideoJobBoardData; meId: string; saved: string; initialTab?: string; openAdd?: boolean; initialEditor?: string }) {
   const [q, setQ] = useState("");
   const [tab, setTab] = useState(TAB_KEYS.includes(initialTab) ? initialTab : "ALL");
-  const [editor, setEditor] = useState("");
+  // `initialEditor`: one editor picked in the sidebar ("Team Members")
+  const [editor, setEditor] = useState(d.seeAll && d.editors.some((e) => e.id === initialEditor) ? initialEditor : "");
   const [edit, setEdit] = useState<VideoJobRow | "new" | null>(openAdd && d.canManage ? "new" : null);
   const [importing, setImporting] = useState(false);
   const flash = SAVED[saved];

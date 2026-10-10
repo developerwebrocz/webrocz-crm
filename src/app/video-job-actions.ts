@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { todayIST } from "@/lib/india-date";
+import { planVideoJobs } from "@/lib/video-import-core";
 import { canOpenVideoJobs, canManageVideoJobs, canSeeAllVideoJobs, parseIds } from "@/lib/video-job-queries";
 
 // Video team "Client Videos" tracker — add / update a client shoot, update the editing
@@ -158,110 +159,26 @@ export async function deleteVideoJob(fd: FormData) {
 
 export type VideoJobImportResult = { ok: boolean; message: string; details?: string[] } | null;
 
-function parseCsv(text: string): string[][] {
-  const rows: string[][] = []; let row: string[] = []; let cur = ""; let q = false;
-  const src = text.replace(/^﻿/, "").replace(/\r/g, "");
-  for (let i = 0; i < src.length; i++) {
-    const ch = src[i];
-    if (q) { if (ch === '"') { if (src[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += ch; }
-    else if (ch === '"') q = true;
-    else if (ch === ",") { row.push(cur); cur = ""; }
-    else if (ch === "\n") { row.push(cur); rows.push(row); row = []; cur = ""; }
-    else cur += ch;
-  }
-  if (cur !== "" || row.length) { row.push(cur); rows.push(row); }
-  return rows.map((r) => r.map((c) => c.replace(/\s+/g, " ").trim()));
-}
-
-const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
-// "01 / Aug / 26" · 01-08-2026 · 01/08/26 · 2026-08-01 → "2026-08-01"
-function sheetDate(v: string): string {
-  const p = v.replace(/\s+/g, "").split(/[-/.]/);
-  if (p.length !== 3) return "";
-  let y: number, m: number, d: number;
-  if (/^\d{4}$/.test(p[0])) { y = +p[0]; m = +p[1]; d = +p[2]; }
-  else { d = +p[0]; m = /^\d+$/.test(p[1]) ? +p[1] : MONTHS.indexOf(p[1].slice(0, 3).toLowerCase()) + 1; y = +p[2]; if (y < 100) y += 2000; }
-  if (!y || !m || !d || m > 12 || d > 31) return "";
-  const iso = `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-  return new Date(`${iso}T00:00:00Z`).getUTCDate() === d ? iso : "";
-}
-
 export async function importVideoJobs(_prev: VideoJobImportResult, fd: FormData): Promise<VideoJobImportResult> {
   const me = await getCurrentUser();
   if (!me || !canSeeAllVideoJobs(me)) return { ok: false, message: "Only the video team lead or an admin can import the sheet." };
   const file = fd.get("file");
   if (!file || typeof file === "string" || !(file as File).size) return { ok: false, message: "Choose the client videos CSV file first." };
-  const rows = parseCsv(await (file as File).text()).filter((r) => r.some((c) => c));
-  if (rows.length < 2) return { ok: false, message: "That file has no rows." };
-
-  const head = rows[0].map((h) => h.toLowerCase());
-  const col = (...keys: string[]) => head.findIndex((h) => keys.some((k) => h.includes(k)));
-  const C = {
-    date: head.findIndex((h, i) => h.includes("date") || (i === 0 && h === "")),
-    shotBy: col("employee", "shot by", "shooter"), client: col("client"), shot: col("shoot", "shot"),
-    status: col("editing status", "edit status", "status"), editors: col("editor"), informed: col("informed"),
-    posting: col("posting"), verified: col("verified"), storage: col("storage"),
-  };
-  if (C.client < 0 || C.date < 0) return { ok: false, message: "The file needs a Date column and a Client column." };
-
   const [editors, clients, existing] = await Promise.all([
     prisma.user.findMany({ where: { role: "EDITOR" }, select: { id: true, name: true } }),
     prisma.client.findMany({ select: { id: true, name: true } }),
     prisma.videoJob.findMany({ select: { id: true, date: true, clientName: true }, orderBy: { createdAt: "asc" } }),
   ]);
-  const editorByFirst = (name: string) => { const n = norm(name); const hit = editors.filter((e) => norm(e.name) === n || norm(e.name).split(" ")[0] === n); return hit.length === 1 ? hit[0] : null; };
-  const clientByName = (name: string) => { const hit = clients.filter((c) => norm(c.name) === norm(name)); return hit.length === 1 ? hit[0].id : null; };
-  // The same client can have two shoots on one day: the 1st row in the file replaces the 1st
-  // saved one, the 2nd the 2nd … so importing the same file again never doubles anything.
-  const have = new Map<string, string>(); const seenSaved = new Map<string, number>();
-  for (const j of existing) { const k = `${j.date}|${norm(j.clientName)}`; const n = (seenSaved.get(k) ?? 0) + 1; seenSaved.set(k, n); have.set(`${k}#${n}`, j.id); }
-  const seenFile = new Map<string, number>();
-  const get = (r: string[], i: number) => (i >= 0 ? r[i] ?? "" : "");
-
-  const today = todayIST();
-  let added = 0, replaced = 0, linked = 0;
-  const badDates: string[] = []; const noLogin = new Map<string, number>();
-  const ops = [];
-  for (const r of rows.slice(1)) {
-    const clientName = get(r, C.client);
-    if (!clientName || /^x+$/i.test(clientName)) continue; // the sheet's sample row
-    const date = sheetDate(get(r, C.date));
-    if (!date || date > today) { badDates.push(`${get(r, C.date) || "(no date)"} · ${clientName}`); continue; }
-    const st = get(r, C.status);
-    const noEdit = /no\s*need/i.test(st);
-    const num = (st.match(/\d+/) || [])[0];
-    const edited = noEdit ? 0 : num ? Number(num) : 0;
-    const videosShot = Number((get(r, C.shot).match(/\d+/) || [])[0] ?? 0);
-    const editStatus = noEdit ? "NO_EDIT" : /complet|done/i.test(st) ? "COMPLETED" : edited > 0 ? "IN_PROGRESS" : "PENDING";
-    const ids: string[] = []; const others: string[] = [];
-    for (const name of get(r, C.editors).split(/[,&/]|\band\b/i).map((x) => x.trim()).filter(Boolean)) {
-      const u = editorByFirst(name);
-      if (u) { if (!ids.includes(u.id)) ids.push(u.id); } else { others.push(name); noLogin.set(name, (noLogin.get(name) ?? 0) + 1); }
-    }
-    const posting = get(r, C.posting);
-    // a drive size typed in the "Verified By" column ("8TB") is the storage, not a person
-    const verified = get(r, C.verified);
-    const driveInVerified = /^d+s*tb$/i.test(verified);
-    const clientId = clientByName(clientName);
-    if (clientId) linked++;
-    const data = {
-      date, clientName, clientId, shotBy: get(r, C.shotBy).split(",").map((x) => x.trim()).filter(Boolean).join(", "),
-      videosShot, edited, editStatus, editorIds: JSON.stringify(ids), editorNames: others.join(", "),
-      informedAM: /^y/i.test(get(r, C.informed)), posting: /posted/i.test(posting) ? "POSTED" : /pending/i.test(posting) ? "PENDING" : "",
-      verifiedBy: driveInVerified ? "" : verified, storage: get(r, C.storage) || (driveInVerified ? verified : ""), updatedBy: `${me.name} (sheet import)`,
-    };
-    const key = `${date}|${norm(clientName)}`;
-    const nth = (seenFile.get(key) ?? 0) + 1; seenFile.set(key, nth);
-    const id = have.get(`${key}#${nth}`);
-    if (id) { replaced++; ops.push(prisma.videoJob.update({ where: { id }, data })); }
-    else { added++; ops.push(prisma.videoJob.create({ data })); }
-  }
-  if (!ops.length) return { ok: false, message: "No client rows found in that file." };
-  await prisma.$transaction(ops);
+  const plan = planVideoJobs(await (file as File).text(), editors, clients, existing, todayIST());
+  if ("error" in plan) return { ok: false, message: plan.error ?? "That file could not be read." };
+  const by = `${me.name} (sheet import)`;
+  await prisma.$transaction(plan.ops.map((o) => (o.id
+    ? prisma.videoJob.update({ where: { id: o.id }, data: { ...o.data, updatedBy: by } })
+    : prisma.videoJob.create({ data: { ...o.data, updatedBy: by } }))));
   revalidatePath("/client-videos"); revalidatePath("/");
 
-  const details = [`${linked} of ${added + replaced} rows matched a client in the CRM by name (the rest keep the name from the sheet).`];
-  if (noLogin.size) details.push(`Editors without a Video Editor login (kept as a name only): ${[...noLogin].map(([n, c]) => `${n} (${c})`).join(", ")}. Add them in Team and import the same file again to link them.`);
-  if (badDates.length) details.push(`Rows skipped, date not understood: ${badDates.slice(0, 5).join("; ")}${badDates.length > 5 ? "…" : ""}`);
-  return { ok: true, message: `Imported ${added + replaced} client shoots (${added} new, ${replaced} replaced).`, details };
+  const details = [`${plan.linked} of ${plan.ops.length} rows matched a client in the CRM by name (the rest keep the name from the sheet).`];
+  if (plan.noLogin.length) details.push(`Editors without a Video Editor login (kept as a name only): ${plan.noLogin.join(", ")}. Add them in Team and import the same file again to link them.`);
+  if (plan.badDates.length) details.push(`Rows skipped, date not understood: ${plan.badDates.slice(0, 5).join("; ")}${plan.badDates.length > 5 ? "…" : ""}`);
+  return { ok: true, message: `Imported ${plan.ops.length} client shoots (${plan.added} new, ${plan.replaced} replaced).`, details };
 }

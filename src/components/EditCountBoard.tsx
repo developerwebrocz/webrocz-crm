@@ -113,6 +113,12 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
         </div>
       </div>
 
+      {me.isAdmin && !leadId && (
+        <a href="#video-team-settings" className="flex flex-wrap items-center gap-2 rounded-[10px] border px-3.5 py-2.5 text-[13px] font-semibold" style={{ background: tint("var(--amber)", 9), borderColor: tint("var(--amber)", 30), color: "#7a4f08" }}>
+          <AlertTriangle size={15} /> No team lead is chosen yet — the lead cannot see the whole team or assign work until you pick one. <span className="underline">Choose the team lead ↓</span>
+        </a>
+      )}
+
       {flash && (
         <p className="flex items-center gap-2 rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold" style={{ background: tint(flash.ok ? "var(--emerald)" : "var(--rose)", 9), color: flash.ok ? "var(--emerald)" : "var(--rose)" }}>
           {flash.ok ? <CheckCircle2 size={15} /> : <AlertTriangle size={15} />} {flash.text}
@@ -423,7 +429,7 @@ export default function EditCountBoard({ d, me, clients, saved }: { d: EditCount
 
       {/* admins: team lead + who goes on shoots */}
       {me.isAdmin && (
-        <form action={saveVideoTeamSettings} className="card card-pad">
+        <form id="video-team-settings" action={saveVideoTeamSettings} className="card card-pad scroll-mt-24">
           <input type="hidden" name="month" value={d.month} />
           <div className="flex items-center gap-2 text-[14px] font-bold"><Settings2 size={16} className="text-[var(--muted)]" /> Video team settings</div>
           <div className="mt-3 grid gap-5 lg:grid-cols-[260px_1fr_auto] lg:items-end">

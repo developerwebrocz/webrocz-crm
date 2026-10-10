@@ -14,6 +14,7 @@ export default async function ClientVideosPage({ searchParams }: { searchParams:
   const sp = await searchParams;
   const d = await getVideoJobBoard(user, typeof sp.month === "string" ? sp.month : undefined);
   const tab = typeof sp.tab === "string" ? sp.tab : "";
-  // keyed by the tab so picking another pipeline step in the sidebar shows it straight away
-  return <ClientVideosBoard key={tab} d={d} meId={user.id} saved={typeof sp.saved === "string" ? sp.saved : ""} initialTab={tab} openAdd={sp.add === "1"} />;
+  // keyed by the tab / editor so picking another one in the sidebar shows it straight away
+  const editor = typeof sp.editor === "string" ? sp.editor : "";
+  return <ClientVideosBoard key={`${tab}|${editor}`} d={d} meId={user.id} saved={typeof sp.saved === "string" ? sp.saved : ""} initialTab={tab} initialEditor={editor} openAdd={sp.add === "1"} />;
 }
