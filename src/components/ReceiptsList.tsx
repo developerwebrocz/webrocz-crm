@@ -8,16 +8,17 @@ import { COMPANIES } from "@/lib/domain";
 // Payment receipts — every payment received, with whether its receipt has been sent to the
 // client. "To send" is the list to clear after payments are recorded.
 
-type Row = { id: string; receiptNo: string; date: string; amount: number; mode: string; ref: string; by: string; sentAt: string; sentBy: string; invoiceId: string; invoiceNumber: string; client: string; company: string; phone: string; earlier: boolean };
+type Row = { id: string; receiptNo: string; date: string; amount: number; mode: string; ref: string; by: string; sentAt: string; sentBy: string; invoiceId: string; invoiceNumber: string; client: string; company: string; phone: string };
 
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmt = (iso: string) => { const [y, m, d] = (iso || "").split("-"); return d ? `${d}-${m}-${y}` : iso || "—"; };
 const tint = (c: string, pct: number) => `color-mix(in srgb, ${c} ${pct}%, white)`;
 
-export default function ReceiptsList({ rows, since }: { rows: Row[]; since: string }) {
+// `company`: opened from one company's menu (Web Solutions / Web Rocz / Web Rocz Pvt Ltd).
+export default function ReceiptsList({ rows, company = "" }: { rows: Row[]; company?: string }) {
   const [tab, setTab] = useState("TODO");
   const [q, setQ] = useState("");
-  const todo = rows.filter((r) => !r.sentAt && !r.earlier);
+  const todo = rows.filter((r) => !r.sentAt);
   const sent = rows.filter((r) => r.sentAt);
   const shown = useMemo(() => {
     const n = q.trim().toLowerCase();
@@ -27,16 +28,16 @@ export default function ReceiptsList({ rows, since }: { rows: Row[]; since: stri
   const tiles = [
     { label: "Receipts to send", value: todo.length, sub: todo.length ? inr(todo.reduce((s, r) => s + r.amount, 0)) + " received" : "all sent", icon: Clock3, tone: todo.length ? "var(--amber)" : "var(--emerald)" },
     { label: "Receipts sent", value: sent.length, sub: "to clients", icon: CheckCircle2, tone: "var(--emerald)" },
-    { label: "Payments received", value: rows.length, sub: inr(rows.reduce((s, r) => s + r.amount, 0)), icon: Wallet, tone: "var(--violet)" },
+    { label: "All receipts", value: rows.length, sub: inr(rows.reduce((s, r) => s + r.amount, 0)) + " received", icon: Wallet, tone: "var(--violet)" },
   ];
-  const tabs = [{ key: "TODO", label: "To send", n: todo.length }, { key: "SENT", label: "Sent", n: sent.length }, { key: "ALL", label: "All payments", n: rows.length }];
+  const tabs = [{ key: "TODO", label: "To send", n: todo.length }, { key: "SENT", label: "Sent", n: sent.length }, { key: "ALL", label: "All receipts", n: rows.length }];
 
   return (
     <div className="space-y-5">
       <div>
-        <div className="eyebrow">Accounts</div>
-        <h1 className="mt-1.5 text-[26px] font-extrabold tracking-tight">Payment Receipts</h1>
-        <p className="mt-1 text-sm text-[var(--muted)]">A receipt for every payment received — send it to the client after the payment is recorded.</p>
+        <div className="eyebrow">{COMPANIES[company]?.label ?? "Accounts"}</div>
+        <h1 className="mt-1.5 text-[26px] font-extrabold tracking-tight">Receipts</h1>
+        <p className="mt-1 text-sm text-[var(--muted)]">A receipt for every amount received{COMPANIES[company] ? ` by ${COMPANIES[company].label}` : ""} — old invoices too. Send it to the client and it moves to “Sent”.</p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">
@@ -84,15 +85,13 @@ export default function ReceiptsList({ rows, since }: { rows: Row[]; since: stri
                   <td className="max-w-[240px] px-3 py-2.5"><div className="truncate font-bold" title={r.client}>{r.client}</div><div className="text-[11px] text-[var(--muted)]">{COMPANIES[r.company]?.label ?? ""}</div></td>
                   <td className="whitespace-nowrap px-3 py-2.5"><Link href={`/invoices/${r.invoiceId}`} className="font-semibold hover:text-[var(--violet)] hover:underline">{r.invoiceNumber}</Link></td>
                   <td className="whitespace-nowrap px-3 py-2.5 text-right font-extrabold text-[var(--emerald)] tnum">{inr(r.amount)}</td>
-                  <td className="px-3 py-2.5"><span className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[10.5px] font-bold text-[var(--ink-2)]">{r.mode}</span></td>
+                  <td className="px-3 py-2.5">{r.mode ? <span className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[10.5px] font-bold text-[var(--ink-2)]">{r.mode}</span> : <span className="text-[var(--line-2)]">—</span>}</td>
                   <td className="px-3 py-2.5">
                     {r.sentAt
                       ? <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold text-[var(--emerald)]" style={{ background: tint("var(--emerald)", 11) }}><CheckCircle2 size={11} /> Sent</span>
-                      : r.earlier
-                        ? <span className="text-[11.5px] text-[var(--faint)]" title={`Paid before receipts started (${fmt(since)})`}>Earlier payment</span>
-                        : <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: tint("var(--amber)", 14), color: "#92600a" }}><Clock3 size={11} /> To send</span>}
+                      : <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: tint("var(--amber)", 14), color: "#92600a" }}><Clock3 size={11} /> To send</span>}
                   </td>
-                  <td className="px-5 py-2.5 text-right"><Link href={`/receipts/${r.id}`} className="inline-flex h-8 items-center gap-1.5 rounded-[9px] border border-[var(--line-2)] bg-[var(--surface)] px-2.5 text-[12px] font-bold hover:bg-[var(--surface-3)]"><ReceiptText size={13} /> {r.sentAt || r.earlier ? "Receipt" : "Send receipt"} <ArrowRight size={12} /></Link></td>
+                  <td className="px-5 py-2.5 text-right"><Link href={`/receipts/${r.id}`} className="inline-flex h-8 items-center gap-1.5 rounded-[9px] border border-[var(--line-2)] bg-[var(--surface)] px-2.5 text-[12px] font-bold hover:bg-[var(--surface-3)]"><ReceiptText size={13} /> {r.sentAt ? "Receipt" : "Send receipt"} <ArrowRight size={12} /></Link></td>
                 </tr>
               ))}
               {shown.length === 0 && (

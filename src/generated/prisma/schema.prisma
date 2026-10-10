@@ -276,48 +276,53 @@ model Invoice {
 // One-time sales invoice generated when a lead is onboarded (printable + emailable).
 // Scalar refs only (no FK relations) to stay fully additive on db push.
 model SalesInvoice {
-  id            String    @id @default(cuid())
-  number        String    @unique // WR-INV-2026-0001
-  leadId        String?
-  clientId      String?
-  pipeline      String    @default("WEBROCZ")
+  id                String    @id @default(cuid())
+  number            String    @unique // WR-INV-2026-0001
+  leadId            String?
+  clientId          String?
+  pipeline          String    @default("WEBROCZ")
   // Billing entity this invoice belongs to: WEB_SOLUTIONS | WEB_ROCZ | WEB_ROCZ_PVT
   // (derived from GST + service at creation; drives the serial series & reports)
-  company       String    @default("")
-  billTo        String // client / company name
-  contact       String?
-  phone         String?
-  email         String?
-  items         String    @default("[]") // JSON: [{ name, qty, rate, amount }]
-  subtotal      Int       @default(0)
-  taxPct        Int       @default(18)
-  taxAmount     Int       @default(0)
-  total         Int       @default(0)
-  received      Int       @default(0)
-  paymentStatus String    @default("Pending")
-  paymentProof  String    @default("") // uploaded payment screenshot (Web Solutions new-invoice flow)
-  invoiceDoc    String    @default("") // uploaded signed/printed invoice document (PDF/image)
+  company           String    @default("")
+  billTo            String // client / company name
+  contact           String?
+  phone             String?
+  email             String?
+  items             String    @default("[]") // JSON: [{ name, qty, rate, amount }]
+  // Receipt for money already marked as received on the invoice without a payment entry
+  // (invoices entered / imported as paid): its number and whether it was sent to the client.
+  openReceiptNo     String    @default("")
+  openReceiptSentAt DateTime?
+  openReceiptSentBy String    @default("")
+  subtotal          Int       @default(0)
+  taxPct            Int       @default(18)
+  taxAmount         Int       @default(0)
+  total             Int       @default(0)
+  received          Int       @default(0)
+  paymentStatus     String    @default("Pending")
+  paymentProof      String    @default("") // uploaded payment screenshot (Web Solutions new-invoice flow)
+  invoiceDoc        String    @default("") // uploaded signed/printed invoice document (PDF/image)
   // Web Rocz Pvt Ltd invoice form: the date the project started, and whether the client pays
   // before the work (PREPAID) or after it (POSTPAID). "" = not set.
-  projectDate   String    @default("") // "2026-02-05"
-  paymentTerm   String    @default("") // PREPAID | POSTPAID
-  notes         String?
-  issueDate     String // "2026-09-18"
-  dueDate       String    @default("") // "2026-10-03" — payment due date (Net-15 from issue by default)
+  projectDate       String    @default("") // "2026-02-05"
+  paymentTerm       String    @default("") // PREPAID | POSTPAID
+  notes             String?
+  issueDate         String // "2026-09-18"
+  dueDate           String    @default("") // "2026-10-03" — payment due date (Net-15 from issue by default)
   // GST / client billing details (match the tax-invoice format)
-  clientGstin   String?
-  clientState   String?   @default("36-Telangana")
-  clientAddress String?
-  placeOfSupply String?   @default("36-Telangana")
+  clientGstin       String?
+  clientState       String?   @default("36-Telangana")
+  clientAddress     String?
+  placeOfSupply     String?   @default("36-Telangana")
   // Super Admin approval gate — download only allowed once approved
-  approved      Boolean   @default(false)
-  approvedBy    String?
-  approvedAt    DateTime?
+  approved          Boolean   @default(false)
+  approvedBy        String?
+  approvedAt        DateTime?
   // Accountant follow-up log (visible to Super Admin): JSON [{ date, by, note }]
-  notesLog      String    @default("[]")
-  nextFollowup  String?
-  emailedAt     DateTime?
-  createdAt     DateTime  @default(now())
+  notesLog          String    @default("[]")
+  nextFollowup      String?
+  emailedAt         DateTime?
+  createdAt         DateTime  @default(now())
 
   payments Payment[]
   // Client link: deleting a client removes its sales invoices (payments cascade in turn),

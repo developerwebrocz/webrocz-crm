@@ -289,6 +289,11 @@ model SalesInvoice {
   phone         String?
   email         String?
   items         String   @default("[]") // JSON: [{ name, qty, rate, amount }]
+  // Receipt for money already marked as received on the invoice without a payment entry
+  // (invoices entered / imported as paid): its number and whether it was sent to the client.
+  openReceiptNo     String    @default("")
+  openReceiptSentAt DateTime?
+  openReceiptSentBy String    @default("")
   subtotal      Int      @default(0)
   taxPct        Int      @default(18)
   taxAmount     Int      @default(0)

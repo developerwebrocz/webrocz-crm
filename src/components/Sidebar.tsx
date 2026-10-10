@@ -91,7 +91,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
   const activeCoKey = (() => {
     const byPipe = companyMeta.find((c) => path === `/pipeline/${c.slug}`);
     if (byPipe) return byPipe.key;
-    if (path.startsWith("/invoices")) { const c = companyMeta.find((c) => c.key === companyParam); if (c) return c.key; }
+    if (path.startsWith("/invoices") || path.startsWith("/receipts")) { const c = companyMeta.find((c) => c.key === companyParam); if (c) return c.key; }
     if (path.startsWith("/renewals")) { const c = companyMeta.find((c) => c.slug === companyParam); if (c) return c.key; }
     return null;
   })();
@@ -100,6 +100,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     const subItems: Item[] = activeCo ? [
       { href: `/pipeline/${c.slug}`, label: c.clientsLabel, icon: Users, forceActive: path === `/pipeline/${c.slug}` },
       { href: `/invoices?company=${c.key}&hub=1`, label: "Invoices", icon: ReceiptText, forceActive: path.startsWith("/invoices") && companyParam === c.key },
+      { href: `/receipts?company=${c.key}`, label: "Receipts", icon: FileText, forceActive: path.startsWith("/receipts") && companyParam === c.key },
       ...(c.renewals ? [{ href: `/renewals?company=${c.slug}`, label: "Website renewals", icon: Repeat, forceActive: path.startsWith("/renewals") && companyParam === c.slug }] : []),
     ] : [];
     return { href: `/pipeline/${c.slug}`, label: c.label, icon: c.icon, forceActive: activeCo, subItems };
@@ -117,7 +118,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
       { href: "/gst", label: "GST Report", icon: Landmark },
       { href: "/invoices", label: "Invoices", icon: ReceiptText },
       // a receipt for every payment received, to send to the client
-      { href: "/receipts", label: "Payment Receipts", icon: FileText },
+      { href: "/receipts", label: "Receipts", icon: FileText, forceActive: path.startsWith("/receipts") && !companyParam },
     ] },
   ];
   if (isAccountant) groups.push(...financeGroups);

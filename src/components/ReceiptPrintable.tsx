@@ -63,7 +63,7 @@ export default function ReceiptPrintable({ r }: { r: Receipt }) {
         <tbody>
           <tr className="border-b border-[var(--line)]">
             <td className="px-3 py-3 font-medium">Payment received against invoice {r.invoiceNumber}</td>
-            <td className="px-3 py-3">{MODE[r.mode] ?? r.mode}</td>
+            <td className="px-3 py-3">{MODE[r.mode] ?? (r.mode || "—")}</td>
             <td className="px-3 py-3">{r.ref || "—"}</td>
             <td className="px-3 py-3 text-right text-[13px] font-bold tnum">{inr(r.amount)}</td>
           </tr>

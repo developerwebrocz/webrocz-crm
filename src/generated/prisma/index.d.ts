@@ -18911,6 +18911,9 @@ export namespace Prisma {
     phone: string | null
     email: string | null
     items: string | null
+    openReceiptNo: string | null
+    openReceiptSentAt: Date | null
+    openReceiptSentBy: string | null
     subtotal: number | null
     taxPct: number | null
     taxAmount: number | null
@@ -18949,6 +18952,9 @@ export namespace Prisma {
     phone: string | null
     email: string | null
     items: string | null
+    openReceiptNo: string | null
+    openReceiptSentAt: Date | null
+    openReceiptSentBy: string | null
     subtotal: number | null
     taxPct: number | null
     taxAmount: number | null
@@ -18987,6 +18993,9 @@ export namespace Prisma {
     phone: number
     email: number
     items: number
+    openReceiptNo: number
+    openReceiptSentAt: number
+    openReceiptSentBy: number
     subtotal: number
     taxPct: number
     taxAmount: number
@@ -19043,6 +19052,9 @@ export namespace Prisma {
     phone?: true
     email?: true
     items?: true
+    openReceiptNo?: true
+    openReceiptSentAt?: true
+    openReceiptSentBy?: true
     subtotal?: true
     taxPct?: true
     taxAmount?: true
@@ -19081,6 +19093,9 @@ export namespace Prisma {
     phone?: true
     email?: true
     items?: true
+    openReceiptNo?: true
+    openReceiptSentAt?: true
+    openReceiptSentBy?: true
     subtotal?: true
     taxPct?: true
     taxAmount?: true
@@ -19119,6 +19134,9 @@ export namespace Prisma {
     phone?: true
     email?: true
     items?: true
+    openReceiptNo?: true
+    openReceiptSentAt?: true
+    openReceiptSentBy?: true
     subtotal?: true
     taxPct?: true
     taxAmount?: true
@@ -19244,6 +19262,9 @@ export namespace Prisma {
     phone: string | null
     email: string | null
     items: string
+    openReceiptNo: string
+    openReceiptSentAt: Date | null
+    openReceiptSentBy: string
     subtotal: number
     taxPct: number
     taxAmount: number
@@ -19301,6 +19322,9 @@ export namespace Prisma {
     phone?: boolean
     email?: boolean
     items?: boolean
+    openReceiptNo?: boolean
+    openReceiptSentAt?: boolean
+    openReceiptSentBy?: boolean
     subtotal?: boolean
     taxPct?: boolean
     taxAmount?: boolean
@@ -19342,6 +19366,9 @@ export namespace Prisma {
     phone?: boolean
     email?: boolean
     items?: boolean
+    openReceiptNo?: boolean
+    openReceiptSentAt?: boolean
+    openReceiptSentBy?: boolean
     subtotal?: boolean
     taxPct?: boolean
     taxAmount?: boolean
@@ -19381,6 +19408,9 @@ export namespace Prisma {
     phone?: boolean
     email?: boolean
     items?: boolean
+    openReceiptNo?: boolean
+    openReceiptSentAt?: boolean
+    openReceiptSentBy?: boolean
     subtotal?: boolean
     taxPct?: boolean
     taxAmount?: boolean
@@ -19420,6 +19450,9 @@ export namespace Prisma {
     phone?: boolean
     email?: boolean
     items?: boolean
+    openReceiptNo?: boolean
+    openReceiptSentAt?: boolean
+    openReceiptSentBy?: boolean
     subtotal?: boolean
     taxPct?: boolean
     taxAmount?: boolean
@@ -19446,7 +19479,7 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type SalesInvoiceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "number" | "leadId" | "clientId" | "pipeline" | "company" | "billTo" | "contact" | "phone" | "email" | "items" | "subtotal" | "taxPct" | "taxAmount" | "total" | "received" | "paymentStatus" | "paymentProof" | "invoiceDoc" | "projectDate" | "paymentTerm" | "notes" | "issueDate" | "dueDate" | "clientGstin" | "clientState" | "clientAddress" | "placeOfSupply" | "approved" | "approvedBy" | "approvedAt" | "notesLog" | "nextFollowup" | "emailedAt" | "createdAt", ExtArgs["result"]["salesInvoice"]>
+  export type SalesInvoiceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "number" | "leadId" | "clientId" | "pipeline" | "company" | "billTo" | "contact" | "phone" | "email" | "items" | "openReceiptNo" | "openReceiptSentAt" | "openReceiptSentBy" | "subtotal" | "taxPct" | "taxAmount" | "total" | "received" | "paymentStatus" | "paymentProof" | "invoiceDoc" | "projectDate" | "paymentTerm" | "notes" | "issueDate" | "dueDate" | "clientGstin" | "clientState" | "clientAddress" | "placeOfSupply" | "approved" | "approvedBy" | "approvedAt" | "notesLog" | "nextFollowup" | "emailedAt" | "createdAt", ExtArgs["result"]["salesInvoice"]>
   export type SalesInvoiceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     payments?: boolean | SalesInvoice$paymentsArgs<ExtArgs>
     client?: boolean | SalesInvoice$clientArgs<ExtArgs>
@@ -19477,6 +19510,9 @@ export namespace Prisma {
       phone: string | null
       email: string | null
       items: string
+      openReceiptNo: string
+      openReceiptSentAt: Date | null
+      openReceiptSentBy: string
       subtotal: number
       taxPct: number
       taxAmount: number
@@ -19937,6 +19973,9 @@ export namespace Prisma {
     readonly phone: FieldRef<"SalesInvoice", 'String'>
     readonly email: FieldRef<"SalesInvoice", 'String'>
     readonly items: FieldRef<"SalesInvoice", 'String'>
+    readonly openReceiptNo: FieldRef<"SalesInvoice", 'String'>
+    readonly openReceiptSentAt: FieldRef<"SalesInvoice", 'DateTime'>
+    readonly openReceiptSentBy: FieldRef<"SalesInvoice", 'String'>
     readonly subtotal: FieldRef<"SalesInvoice", 'Int'>
     readonly taxPct: FieldRef<"SalesInvoice", 'Int'>
     readonly taxAmount: FieldRef<"SalesInvoice", 'Int'>
@@ -54200,6 +54239,9 @@ export namespace Prisma {
     phone: 'phone',
     email: 'email',
     items: 'items',
+    openReceiptNo: 'openReceiptNo',
+    openReceiptSentAt: 'openReceiptSentAt',
+    openReceiptSentBy: 'openReceiptSentBy',
     subtotal: 'subtotal',
     taxPct: 'taxPct',
     taxAmount: 'taxAmount',
@@ -55917,6 +55959,9 @@ export namespace Prisma {
     phone?: StringNullableFilter<"SalesInvoice"> | string | null
     email?: StringNullableFilter<"SalesInvoice"> | string | null
     items?: StringFilter<"SalesInvoice"> | string
+    openReceiptNo?: StringFilter<"SalesInvoice"> | string
+    openReceiptSentAt?: DateTimeNullableFilter<"SalesInvoice"> | Date | string | null
+    openReceiptSentBy?: StringFilter<"SalesInvoice"> | string
     subtotal?: IntFilter<"SalesInvoice"> | number
     taxPct?: IntFilter<"SalesInvoice"> | number
     taxAmount?: IntFilter<"SalesInvoice"> | number
@@ -55957,6 +56002,9 @@ export namespace Prisma {
     phone?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
     items?: SortOrder
+    openReceiptNo?: SortOrder
+    openReceiptSentAt?: SortOrderInput | SortOrder
+    openReceiptSentBy?: SortOrder
     subtotal?: SortOrder
     taxPct?: SortOrder
     taxAmount?: SortOrder
@@ -56000,6 +56048,9 @@ export namespace Prisma {
     phone?: StringNullableFilter<"SalesInvoice"> | string | null
     email?: StringNullableFilter<"SalesInvoice"> | string | null
     items?: StringFilter<"SalesInvoice"> | string
+    openReceiptNo?: StringFilter<"SalesInvoice"> | string
+    openReceiptSentAt?: DateTimeNullableFilter<"SalesInvoice"> | Date | string | null
+    openReceiptSentBy?: StringFilter<"SalesInvoice"> | string
     subtotal?: IntFilter<"SalesInvoice"> | number
     taxPct?: IntFilter<"SalesInvoice"> | number
     taxAmount?: IntFilter<"SalesInvoice"> | number
@@ -56040,6 +56091,9 @@ export namespace Prisma {
     phone?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
     items?: SortOrder
+    openReceiptNo?: SortOrder
+    openReceiptSentAt?: SortOrderInput | SortOrder
+    openReceiptSentBy?: SortOrder
     subtotal?: SortOrder
     taxPct?: SortOrder
     taxAmount?: SortOrder
@@ -56086,6 +56140,9 @@ export namespace Prisma {
     phone?: StringNullableWithAggregatesFilter<"SalesInvoice"> | string | null
     email?: StringNullableWithAggregatesFilter<"SalesInvoice"> | string | null
     items?: StringWithAggregatesFilter<"SalesInvoice"> | string
+    openReceiptNo?: StringWithAggregatesFilter<"SalesInvoice"> | string
+    openReceiptSentAt?: DateTimeNullableWithAggregatesFilter<"SalesInvoice"> | Date | string | null
+    openReceiptSentBy?: StringWithAggregatesFilter<"SalesInvoice"> | string
     subtotal?: IntWithAggregatesFilter<"SalesInvoice"> | number
     taxPct?: IntWithAggregatesFilter<"SalesInvoice"> | number
     taxAmount?: IntWithAggregatesFilter<"SalesInvoice"> | number
@@ -60041,6 +60098,9 @@ export namespace Prisma {
     phone?: string | null
     email?: string | null
     items?: string
+    openReceiptNo?: string
+    openReceiptSentAt?: Date | string | null
+    openReceiptSentBy?: string
     subtotal?: number
     taxPct?: number
     taxAmount?: number
@@ -60081,6 +60141,9 @@ export namespace Prisma {
     phone?: string | null
     email?: string | null
     items?: string
+    openReceiptNo?: string
+    openReceiptSentAt?: Date | string | null
+    openReceiptSentBy?: string
     subtotal?: number
     taxPct?: number
     taxAmount?: number
@@ -60119,6 +60182,9 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     items?: StringFieldUpdateOperationsInput | string
+    openReceiptNo?: StringFieldUpdateOperationsInput | string
+    openReceiptSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openReceiptSentBy?: StringFieldUpdateOperationsInput | string
     subtotal?: IntFieldUpdateOperationsInput | number
     taxPct?: IntFieldUpdateOperationsInput | number
     taxAmount?: IntFieldUpdateOperationsInput | number
@@ -60159,6 +60225,9 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     items?: StringFieldUpdateOperationsInput | string
+    openReceiptNo?: StringFieldUpdateOperationsInput | string
+    openReceiptSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openReceiptSentBy?: StringFieldUpdateOperationsInput | string
     subtotal?: IntFieldUpdateOperationsInput | number
     taxPct?: IntFieldUpdateOperationsInput | number
     taxAmount?: IntFieldUpdateOperationsInput | number
@@ -60198,6 +60267,9 @@ export namespace Prisma {
     phone?: string | null
     email?: string | null
     items?: string
+    openReceiptNo?: string
+    openReceiptSentAt?: Date | string | null
+    openReceiptSentBy?: string
     subtotal?: number
     taxPct?: number
     taxAmount?: number
@@ -60235,6 +60307,9 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     items?: StringFieldUpdateOperationsInput | string
+    openReceiptNo?: StringFieldUpdateOperationsInput | string
+    openReceiptSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openReceiptSentBy?: StringFieldUpdateOperationsInput | string
     subtotal?: IntFieldUpdateOperationsInput | number
     taxPct?: IntFieldUpdateOperationsInput | number
     taxAmount?: IntFieldUpdateOperationsInput | number
@@ -60273,6 +60348,9 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     items?: StringFieldUpdateOperationsInput | string
+    openReceiptNo?: StringFieldUpdateOperationsInput | string
+    openReceiptSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openReceiptSentBy?: StringFieldUpdateOperationsInput | string
     subtotal?: IntFieldUpdateOperationsInput | number
     taxPct?: IntFieldUpdateOperationsInput | number
     taxAmount?: IntFieldUpdateOperationsInput | number
@@ -64427,6 +64505,9 @@ export namespace Prisma {
     phone?: SortOrder
     email?: SortOrder
     items?: SortOrder
+    openReceiptNo?: SortOrder
+    openReceiptSentAt?: SortOrder
+    openReceiptSentBy?: SortOrder
     subtotal?: SortOrder
     taxPct?: SortOrder
     taxAmount?: SortOrder
@@ -64473,6 +64554,9 @@ export namespace Prisma {
     phone?: SortOrder
     email?: SortOrder
     items?: SortOrder
+    openReceiptNo?: SortOrder
+    openReceiptSentAt?: SortOrder
+    openReceiptSentBy?: SortOrder
     subtotal?: SortOrder
     taxPct?: SortOrder
     taxAmount?: SortOrder
@@ -64511,6 +64595,9 @@ export namespace Prisma {
     phone?: SortOrder
     email?: SortOrder
     items?: SortOrder
+    openReceiptNo?: SortOrder
+    openReceiptSentAt?: SortOrder
+    openReceiptSentBy?: SortOrder
     subtotal?: SortOrder
     taxPct?: SortOrder
     taxAmount?: SortOrder
@@ -71195,6 +71282,9 @@ export namespace Prisma {
     phone?: string | null
     email?: string | null
     items?: string
+    openReceiptNo?: string
+    openReceiptSentAt?: Date | string | null
+    openReceiptSentBy?: string
     subtotal?: number
     taxPct?: number
     taxAmount?: number
@@ -71233,6 +71323,9 @@ export namespace Prisma {
     phone?: string | null
     email?: string | null
     items?: string
+    openReceiptNo?: string
+    openReceiptSentAt?: Date | string | null
+    openReceiptSentBy?: string
     subtotal?: number
     taxPct?: number
     taxAmount?: number
@@ -72149,6 +72242,9 @@ export namespace Prisma {
     phone?: StringNullableFilter<"SalesInvoice"> | string | null
     email?: StringNullableFilter<"SalesInvoice"> | string | null
     items?: StringFilter<"SalesInvoice"> | string
+    openReceiptNo?: StringFilter<"SalesInvoice"> | string
+    openReceiptSentAt?: DateTimeNullableFilter<"SalesInvoice"> | Date | string | null
+    openReceiptSentBy?: StringFilter<"SalesInvoice"> | string
     subtotal?: IntFilter<"SalesInvoice"> | number
     taxPct?: IntFilter<"SalesInvoice"> | number
     taxAmount?: IntFilter<"SalesInvoice"> | number
@@ -75031,6 +75127,9 @@ export namespace Prisma {
     phone?: string | null
     email?: string | null
     items?: string
+    openReceiptNo?: string
+    openReceiptSentAt?: Date | string | null
+    openReceiptSentBy?: string
     subtotal?: number
     taxPct?: number
     taxAmount?: number
@@ -75070,6 +75169,9 @@ export namespace Prisma {
     phone?: string | null
     email?: string | null
     items?: string
+    openReceiptNo?: string
+    openReceiptSentAt?: Date | string | null
+    openReceiptSentBy?: string
     subtotal?: number
     taxPct?: number
     taxAmount?: number
@@ -75123,6 +75225,9 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     items?: StringFieldUpdateOperationsInput | string
+    openReceiptNo?: StringFieldUpdateOperationsInput | string
+    openReceiptSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openReceiptSentBy?: StringFieldUpdateOperationsInput | string
     subtotal?: IntFieldUpdateOperationsInput | number
     taxPct?: IntFieldUpdateOperationsInput | number
     taxAmount?: IntFieldUpdateOperationsInput | number
@@ -75162,6 +75267,9 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     items?: StringFieldUpdateOperationsInput | string
+    openReceiptNo?: StringFieldUpdateOperationsInput | string
+    openReceiptSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openReceiptSentBy?: StringFieldUpdateOperationsInput | string
     subtotal?: IntFieldUpdateOperationsInput | number
     taxPct?: IntFieldUpdateOperationsInput | number
     taxAmount?: IntFieldUpdateOperationsInput | number
@@ -83203,6 +83311,9 @@ export namespace Prisma {
     phone?: string | null
     email?: string | null
     items?: string
+    openReceiptNo?: string
+    openReceiptSentAt?: Date | string | null
+    openReceiptSentBy?: string
     subtotal?: number
     taxPct?: number
     taxAmount?: number
@@ -83666,6 +83777,9 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     items?: StringFieldUpdateOperationsInput | string
+    openReceiptNo?: StringFieldUpdateOperationsInput | string
+    openReceiptSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openReceiptSentBy?: StringFieldUpdateOperationsInput | string
     subtotal?: IntFieldUpdateOperationsInput | number
     taxPct?: IntFieldUpdateOperationsInput | number
     taxAmount?: IntFieldUpdateOperationsInput | number
@@ -83704,6 +83818,9 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     items?: StringFieldUpdateOperationsInput | string
+    openReceiptNo?: StringFieldUpdateOperationsInput | string
+    openReceiptSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openReceiptSentBy?: StringFieldUpdateOperationsInput | string
     subtotal?: IntFieldUpdateOperationsInput | number
     taxPct?: IntFieldUpdateOperationsInput | number
     taxAmount?: IntFieldUpdateOperationsInput | number
@@ -83742,6 +83859,9 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     items?: StringFieldUpdateOperationsInput | string
+    openReceiptNo?: StringFieldUpdateOperationsInput | string
+    openReceiptSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openReceiptSentBy?: StringFieldUpdateOperationsInput | string
     subtotal?: IntFieldUpdateOperationsInput | number
     taxPct?: IntFieldUpdateOperationsInput | number
     taxAmount?: IntFieldUpdateOperationsInput | number
