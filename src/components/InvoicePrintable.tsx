@@ -14,6 +14,12 @@ export default function InvoicePrintable({ invoice }: { invoice: any }) {
   const items = invoice.company === "WEB_ROCZ" || invoice.company === "WEB_ROCZ_PVT"
     ? dmInvoiceLines(invoice.company, savedLines, invoice.subtotal, invoice.clientDmServices ?? [])
     : savedLines;
+  // Web Rocz / Web Rocz Pvt Ltd with several services and one price for all of them: the
+  // services are listed one under the other and the price, GST and amount are shown once,
+  // beside the whole list (not against the first service). Lines with their own prices
+  // (itemized invoices) keep a price on each line.
+  const dmCompany = invoice.company === "WEB_ROCZ" || invoice.company === "WEB_ROCZ_PVT";
+  const combined = dmCompany && items.length > 1 && items.filter((x: any) => (x?.amount || 0) > 0).length <= 1;
   const balance = invoice.total - (invoice.received || 0);
   // The billing entity (company) that issued this invoice drives the seller block details.
   const seller = companySeller(invoice.company || "");
@@ -83,6 +89,22 @@ export default function InvoicePrintable({ invoice }: { invoice: any }) {
             const gst = linesMatch && i === pricedIdx[pricedIdx.length - 1] ? invoice.taxAmount - before : lineGst(it);
             // A service listed without its own price (covered by another line) reads "Included".
             const included = items.length > 1 && !it.amount && !it.rate;
+            if (combined) {
+              const span = "border-l border-[var(--line)] px-3 py-2.5 text-right align-middle tnum";
+              return (
+                <tr key={i} className="border-b border-[var(--line)]">
+                  <td className="px-3 py-2.5">{i + 1}</td>
+                  <td className="px-3 py-2.5 font-medium">{it.name}</td>
+                  {i === 0 && (
+                    <>
+                      <td rowSpan={items.length} className={span}>{inr(invoice.subtotal)}</td>
+                      {hasGst && <td rowSpan={items.length} className={span}>{inr(invoice.taxAmount)} ({invoice.taxPct}%)</td>}
+                      <td rowSpan={items.length} className={`${span} font-semibold`}>{inr(invoice.subtotal + (hasGst ? invoice.taxAmount : 0))}</td>
+                    </>
+                  )}
+                </tr>
+              );
+            }
             return (
               <tr key={i} className="border-b border-[var(--line)]">
                 <td className="px-3 py-2.5">{i + 1}</td>
