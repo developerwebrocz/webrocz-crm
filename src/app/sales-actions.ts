@@ -450,10 +450,11 @@ export async function saveInvoice(fd: FormData) {
   // edited — so fixing e.g. the phone or "received" does not collapse Domain + Hosting +
   // Designing into a single line. If only the amount changed, the new amount is spread over
   // the priced lines in the same proportion ("Included" lines stay as they are).
-  let prevItems: { name?: string; qty?: number; rate?: number; amount?: number }[] = [];
+  let prevItems: { name?: string; qty?: number; rate?: number; amount?: number; picked?: boolean }[] = [];
   try { const a = JSON.parse(inv.items || "[]"); if (Array.isArray(a)) prevItems = a; } catch { /* ignore */ }
   const sameDesc = prevItems.length > 1 && svcLine === String(prevItems[0]?.name ?? "");
-  let itemsJson = JSON.stringify([{ name: svcLine, qty: 1, rate: base, amount: base }]);
+  // (a Web Rocz line marked as "chosen on the form" stays marked after an edit)
+  let itemsJson = JSON.stringify([{ name: svcLine, qty: 1, rate: base, amount: base, ...(prevItems[0]?.picked ? { picked: true } : {}) }]);
   if (sameDesc && base === inv.subtotal) itemsJson = inv.items;
   else if (sameDesc && inv.subtotal > 0) {
     const lastPriced = prevItems.map((it) => (it.amount ?? 0) > 0).lastIndexOf(true);
@@ -597,10 +598,10 @@ export async function addInvoice(fd: FormData) {
   const desc = services.length ? services.join(", ") : (description || serviceLabel);
   const gst = s(fd, "gst") === "1";
   // Web Solutions submits per-service line items (name + amount as JSON); else a single line.
-  let invoiceItems: { name: string; qty: number; rate: number; amount: number }[] = [];
+  let invoiceItems: { name: string; qty: number; rate: number; amount: number; picked?: boolean }[] = [];
   try {
     const parsed = JSON.parse(s(fd, "items") || "[]");
-    if (Array.isArray(parsed)) invoiceItems = parsed.filter((it) => it && it.name).map((it) => ({ name: String(it.name), qty: Number(it.qty) || 1, rate: Number(it.rate) || 0, amount: Number(it.amount) || 0 }));
+    if (Array.isArray(parsed)) invoiceItems = parsed.filter((it) => it && it.name).map((it) => ({ name: String(it.name), qty: Number(it.qty) || 1, rate: Number(it.rate) || 0, amount: Number(it.amount) || 0, ...(it.picked === true ? { picked: true } : {}) })); // `picked`: Web Rocz — the lines are exactly the services chosen on the form
   } catch { /* ignore */ }
   // Uploaded payment screenshot (proof), if any.
   const proofUrl = await saveUpload(fd.get("paymentProof"), "payments");

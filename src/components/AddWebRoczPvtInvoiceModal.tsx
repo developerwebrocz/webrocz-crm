@@ -4,7 +4,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { todayIST } from "@/lib/india-date";
 import { X, Plus } from "lucide-react";
 import { addWebRoczPvtInvoice, getWebRoczPvtInvoiceDefaults, getWebRoczPvtNextInvoiceNumber, type PvtInvoiceResult, type WebRoczPvtInvoiceDefaults } from "@/app/webrocz-pvt-actions";
-import { WEB_ROCZ_CLIENT_SERVICES, invoiceExtraLines } from "@/lib/webrocz-services";
+import { WEB_ROCZ_CLIENT_SERVICES, invoiceServiceNames, DM_LINE } from "@/lib/webrocz-services";
 
 // Web Rocz Pvt Ltd (digital marketing, GST 18%) invoice — works like the Web Rocz invoice
 // form (tick the services, one invoice amount, a known company ticks its saved services) but
@@ -65,8 +65,9 @@ export default function AddWebRoczPvtInvoiceModal({ clientNames, close, returnTo
   const tick = (sv: string, v: boolean) => { svcEdited.current = true; setOn((p) => ({ ...p, [sv]: v })); };
   const editCustoms = (fn: (cs: string[]) => string[]) => { svcEdited.current = true; setCustoms(fn); };
 
-  // The invoice itself carries one "Digital Marketing" line for the amount (GST is added on
-  // top by the save action); the ticks only show which services this client takes.
+  // The invoice lists the services ticked / added here (first line carries the amount, GST is
+  // added on top by the save action); with nothing chosen it carries one "Digital Marketing
+  // Services" line.
   const picked = [...PVT_SERVICES.filter((k) => on[k]), ...customs.map((c) => c.trim()).filter(Boolean)];
   // Two linked boxes: type the amount before GST, or type the total with GST — the other one
   // follows. The total is what gets saved on the invoice, exactly as shown.
@@ -92,8 +93,6 @@ export default function AddWebRoczPvtInvoiceModal({ clientNames, close, returnTo
         </div>
         <form action={save} className="space-y-3 overflow-y-auto scroll-thin px-6 py-4">
           {picked.map((sv, i) => <input key={i} type="hidden" name="services" value={sv} />)}
-          {/* services typed with "+ Add service" → their own lines on the invoice */}
-          {invoiceExtraLines(customs).map((sv, i) => <input key={`x${i}`} type="hidden" name="extraLines" value={sv} />)}
           <datalist id="webrocz-pvt-inv-client-names">{clientNames.map((nm) => <option key={nm} value={nm} />)}</datalist>
 
           <div className="grid grid-cols-2 gap-3">
@@ -123,6 +122,7 @@ export default function AddWebRoczPvtInvoiceModal({ clientNames, close, returnTo
               ))}
               <button type="button" onClick={() => editCustoms((cs) => [...cs, ""])} className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--violet)] hover:underline"><Plus size={13} /> Add service</button>
             </div>
+            <p className="mt-1.5 text-[11.5px] text-[var(--muted)]">On the invoice: <b className="text-[var(--ink-2)]">{invoiceServiceNames(picked).join(", ") || DM_LINE}</b>{invoiceServiceNames(picked).length ? "" : " (nothing selected)"}</p>
           </div>
 
           <div className="rounded-[12px] border border-[var(--line-2)] px-4 py-3" style={{ background: "color-mix(in srgb, var(--violet) 6%, white)" }}>

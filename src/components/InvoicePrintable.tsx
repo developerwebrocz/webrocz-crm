@@ -1,4 +1,5 @@
 import { SELLER, amountInWords, companySeller } from "@/lib/domain";
+import { dmInvoiceLines } from "@/lib/webrocz-services";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const inr = (v: number) => "₨ " + (v || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -6,20 +7,13 @@ const inr = (v: number) => "₨ " + (v || 0).toLocaleString("en-IN", { minimumFr
 // The printable GST/Non-GST tax invoice — shared by the in-app invoice page and the
 // public share link so both render identically. Pure markup (no hooks), server-safe.
 export default function InvoicePrintable({ invoice }: { invoice: any }) {
-  // Web Rocz bills digital marketing as one service: its invoice always prints a single
-  // "Digital Marketing Services" line for the full amount, whatever services were ticked
-  // (SEO, SMO, …). Web Rocz Pvt Ltd prints its saved lines, with the older "Digital Marketing"
-  // wording shown as "Digital Marketing Services" too — so invoices saved earlier match the
-  // new ones. Web Solutions prints its saved lines as they are.
-  const DM_LINE = "Digital Marketing Services";
+  // Web Rocz and Web Rocz Pvt Ltd (digital marketing): the invoice lists the services that
+  // were ticked / added for it, or one "Digital Marketing Services" line when none was chosen
+  // (rule in lib/webrocz-services). Web Solutions prints its saved lines as they are.
   const savedLines: any[] = invoice.itemsArr ?? [];
-  // Lines added with "+ Add service" (saved without a price) are printed under the main line.
-  const addedLines = savedLines.filter((it, i) => i > 0 && it?.name && !it.amount && !it.rate);
-  const items = invoice.company === "WEB_ROCZ"
-    ? [{ name: DM_LINE, qty: 1, rate: invoice.subtotal, amount: invoice.subtotal }, ...addedLines]
-    : invoice.company === "WEB_ROCZ_PVT"
-      ? savedLines.map((it) => (String(it?.name ?? "").trim().toLowerCase() === "digital marketing" ? { ...it, name: DM_LINE } : it))
-      : savedLines;
+  const items = invoice.company === "WEB_ROCZ" || invoice.company === "WEB_ROCZ_PVT"
+    ? dmInvoiceLines(invoice.company, savedLines, invoice.subtotal, invoice.clientDmServices ?? [])
+    : savedLines;
   const balance = invoice.total - (invoice.received || 0);
   // The billing entity (company) that issued this invoice drives the seller block details.
   const seller = companySeller(invoice.company || "");

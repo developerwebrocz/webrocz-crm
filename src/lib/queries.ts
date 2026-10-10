@@ -2035,11 +2035,24 @@ function hydrateInvoice(invoice: Record<string, unknown> | null) {
   try { const a = JSON.parse((invoice.notesLog as string) || "[]"); if (Array.isArray(a)) notesLog = a; } catch { /* ignore */ }
   return { ...invoice, itemsArr: items, notesArr: notesLog };
 }
+// Web Rocz / Web Rocz Pvt Ltd invoices: the client's saved digital-marketing services, in the
+// order of the invoice form — used to print the service lines of invoices that were saved
+// before the ticked services were recorded on the invoice itself.
+async function withDmServices<T extends Record<string, unknown>>(invoice: T | null): Promise<T | null> {
+  if (!invoice || (invoice.company !== "WEB_ROCZ" && invoice.company !== "WEB_ROCZ_PVT") || !invoice.clientId) return invoice;
+  const { getWebRoczClientServices } = await import("./webrocz-queries");
+  const { WEB_ROCZ_CLIENT_SERVICES } = await import("./webrocz-services");
+  const names = (await getWebRoczClientServices(String(invoice.clientId)).catch(() => [])).map((x) => x.service);
+  const order = WEB_ROCZ_CLIENT_SERVICES.map((x) => x.name);
+  const rank = (n: string) => { const i = order.indexOf(n); return i < 0 ? order.length : i; };
+  return { ...invoice, clientDmServices: [...names].sort((a, b) => rank(a) - rank(b)) };
+}
+
 export async function getLeadInvoice(leadId: string) {
   const lead = await prisma.lead.findUnique({ where: { id: leadId }, select: { id: true, code: true, name: true, company: true, contactPerson: true, phone: true, email: true, stage: true, value: true, finalAmount: true, paymentStatus: true, pipeline: true, startDate: true, services: true } });
   if (!lead) return null;
   const invoice = await prisma.salesInvoice.findFirst({ where: { leadId }, orderBy: { createdAt: "desc" } });
-  return { lead, invoice: hydrateInvoice(invoice as unknown as Record<string, unknown> | null) };
+  return { lead, invoice: await withDmServices(hydrateInvoice(invoice as unknown as Record<string, unknown> | null)) };
 }
 
 // One invoice by its own id (accountant dashboard route).
@@ -2050,7 +2063,7 @@ export async function getInvoiceById(id: string) {
     invoice.leadId ? prisma.lead.findUnique({ where: { id: invoice.leadId }, select: { id: true, code: true, startDate: true } }) : Promise.resolve(null),
     prisma.payment.findMany({ where: { invoiceId: id }, orderBy: { date: "desc" } }),
   ]);
-  return { invoice: hydrateInvoice(invoice as unknown as Record<string, unknown>), lead, payments };
+  return { invoice: await withDmServices(hydrateInvoice(invoice as unknown as Record<string, unknown>)), lead, payments };
 }
 
 // Public (no-auth) invoice fetch for the /share/invoice/[id] link sent to clients.
@@ -2058,7 +2071,7 @@ export async function getInvoiceById(id: string) {
 export async function getPublicInvoice(id: string) {
   const invoice = await prisma.salesInvoice.findUnique({ where: { id } });
   if (!invoice) return null;
-  return hydrateInvoice(invoice as unknown as Record<string, unknown>);
+  return withDmServices(hydrateInvoice(invoice as unknown as Record<string, unknown>));
 }
 
 // Recruitment / hiring pipeline — all candidates with stage counts.

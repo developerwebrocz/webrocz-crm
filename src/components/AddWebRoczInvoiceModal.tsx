@@ -5,7 +5,7 @@ import { todayIST } from "@/lib/india-date";
 import { X, Plus } from "lucide-react";
 import { addInvoice } from "@/app/sales-actions";
 import { getWebRoczInvoiceDefaults, type WebRoczInvoiceDefaults } from "@/app/webrocz-actions";
-import { WEB_ROCZ_CLIENT_SERVICES, invoiceExtraLines } from "@/lib/webrocz-services";
+import { WEB_ROCZ_CLIENT_SERVICES, buildDmInvoiceItems, invoiceServiceNames, DM_LINE } from "@/lib/webrocz-services";
 
 // Web Rocz (digital marketing, non-GST) invoice — billed monthly: tick the services and enter
 // one invoice amount. Picking a known company ticks the services chosen for it in Add / Edit
@@ -47,8 +47,8 @@ export default function AddWebRoczInvoiceModal({ clientNames, close, returnTo = 
   const tick = (sv: string, v: boolean) => { svcEdited.current = true; setOn((p) => ({ ...p, [sv]: v })); };
   const editCustoms = (fn: (cs: string[]) => string[]) => { svcEdited.current = true; setCustoms(fn); };
 
-  // The invoice itself always carries one "Digital Marketing" line for the full amount; the
-  // ticks only show which services this client takes.
+  // The invoice lists the services ticked / added here (first line carries the amount); with
+  // nothing chosen it carries one "Digital Marketing Services" line.
   const picked = [...WEB_ROCZ_SERVICES.filter((k) => on[k]), ...customs.map((c) => c.trim()).filter(Boolean)];
   const total = Math.max(0, Number(amount) || 0);
   const [err, setErr] = useState("");
@@ -69,8 +69,8 @@ export default function AddWebRoczInvoiceModal({ clientNames, close, returnTo = 
           <input type="hidden" name="return" value={returnTo} />
           <input type="hidden" name="category" value="DM" />
           <input type="hidden" name="gst" value="0" />
-          {/* line 1 carries the amount; every service typed with "+ Add service" follows as its own line */}
-          <input type="hidden" name="items" value={JSON.stringify([{ name: "Digital Marketing Services", qty: 1, rate: total, amount: total }, ...invoiceExtraLines(customs).map((name) => ({ name, qty: 1, rate: 0, amount: 0 }))])} />
+          {/* the chosen services, one line each (line 1 carries the amount) — or the default line */}
+          <input type="hidden" name="items" value={JSON.stringify(buildDmInvoiceItems(picked, total))} />
           {picked.map((sv, i) => <input key={i} type="hidden" name="services" value={sv} />)}
           <datalist id="webrocz-inv-client-names">{clientNames.map((nm) => <option key={nm} value={nm} />)}</datalist>
 
@@ -96,6 +96,7 @@ export default function AddWebRoczInvoiceModal({ clientNames, close, returnTo = 
               ))}
               <button type="button" onClick={() => editCustoms((cs) => [...cs, ""])} className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--violet)] hover:underline"><Plus size={13} /> Add service</button>
             </div>
+            <p className="mt-1.5 text-[11.5px] text-[var(--muted)]">On the invoice: <b className="text-[var(--ink-2)]">{invoiceServiceNames(picked).join(", ") || DM_LINE}</b>{invoiceServiceNames(picked).length ? "" : " (nothing selected)"}</p>
           </div>
 
           <label className="block rounded-[12px] border border-[var(--line-2)] px-4 py-3" style={{ background: "color-mix(in srgb, var(--violet) 6%, white)" }}>

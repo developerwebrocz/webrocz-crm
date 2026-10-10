@@ -42,3 +42,50 @@ export function invoiceExtraLines(customs: string[]): string[] {
     return true;
   });
 }
+
+// ---- What a Web Rocz / Web Rocz Pvt Ltd invoice prints as its service lines ----
+// • services ticked and / or typed with "+ Add service" → exactly those, one line each
+//   (the first line carries the invoice amount, the others read "Included");
+// • nothing ticked and nothing added → one line, "Digital Marketing Services".
+export const DM_LINE = "Digital Marketing Services";
+// another way of saying the default line ("Digital Marketing", "All DM") is not a service of its own
+const isGenericDm = (name: string) => /^(all\s*)?(dm|digital\s+marketing(\s+services?)?)$/i.test(name.trim());
+
+// Clean list of service names for the invoice: trimmed, no repeats, no "Digital Marketing".
+export function invoiceServiceNames(names: string[]): string[] {
+  const seen = new Set<string>();
+  return names.map((c) => String(c ?? "").trim().replace(/\s+/g, " ")).filter((c) => {
+    const k = c.toLowerCase();
+    if (!c || seen.has(k) || isGenericDm(c)) return false;
+    seen.add(k);
+    return true;
+  });
+}
+
+export type DmInvoiceItem = { name: string; qty: number; rate: number; amount: number; picked?: boolean };
+// Lines saved with a new invoice. `picked` on the first line says: these are exactly what was
+// chosen on the form (so an invoice saved with nothing chosen keeps "Digital Marketing Services").
+export function buildDmInvoiceItems(names: string[], amount: number): DmInvoiceItem[] {
+  const list = invoiceServiceNames(names);
+  return (list.length ? list : [DM_LINE]).map((name, i) => ({ name, qty: 1, rate: i === 0 ? amount : 0, amount: i === 0 ? amount : 0, ...(i === 0 ? { picked: true } : {}) }));
+}
+
+// Lines to print. New invoices print what was saved. Invoices saved before this rule did not
+// record the ticked services, so for those: the services named in the saved line, else the
+// services saved on the client (what the form had ticked), plus any "+ Add service" lines —
+// and "Digital Marketing Services" when there is none. An invoice with its own priced lines
+// (itemized / imported) and a Pvt Ltd invoice with a typed description print as saved.
+export function dmInvoiceLines(company: string, saved: Partial<DmInvoiceItem>[], subtotal: number, clientServices: string[]): Partial<DmInvoiceItem>[] {
+  const rename = (it: Partial<DmInvoiceItem>) => (isGenericDm(String(it?.name ?? "")) ? { ...it, name: DM_LINE } : it);
+  if (!saved.length) return [{ name: DM_LINE, qty: 1, rate: subtotal, amount: subtotal }];
+  if (saved[0]?.picked) return saved.map(rename);
+  const others = saved.slice(1);
+  if (others.some((it) => (it?.amount || 0) > 0 || (it?.rate || 0) > 0)) return saved.map(rename);
+  const line1 = String(saved[0]?.name ?? "").trim();
+  const standard = new Set(WEB_ROCZ_CLIENT_SERVICES.map((x) => x.name.toLowerCase()));
+  const parts = line1.split(",").map((x) => x.trim()).filter(Boolean);
+  const fromLine = parts.some((x) => standard.has(x.toLowerCase())) ? parts : [];
+  if (company === "WEB_ROCZ_PVT" && line1 && !isGenericDm(line1) && !fromLine.length) return saved;
+  const names = invoiceServiceNames([...(fromLine.length ? fromLine : clientServices), ...others.map((it) => String(it?.name ?? ""))]);
+  return (names.length ? names : [DM_LINE]).map((name, i) => ({ name, qty: 1, rate: i === 0 ? subtotal : 0, amount: i === 0 ? subtotal : 0 }));
+}
