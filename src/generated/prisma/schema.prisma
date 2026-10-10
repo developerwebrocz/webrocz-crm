@@ -169,6 +169,7 @@ model Client {
   gmbLocations    GmbClient[]
   seoReports      SeoReport[]
   shoots          Shoot[]
+  videoJobs       VideoJob[]
 
   @@index([status])
   @@index([accountManagerId])
@@ -887,4 +888,33 @@ model Expense {
 
   @@index([company])
   @@index([date])
+}
+
+// Video team "Client Videos" tracker (kept in a Google Sheet before): one row per client shoot —
+// how many videos were shot, who edits them, how many are edited, whether the account manager
+// was told and whether they are posted.
+model VideoJob {
+  id          String   @id @default(cuid())
+  date        String // shoot date "2026-08-01" (India date)
+  clientId    String? // linked CRM client, when the name matches one
+  client      Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  clientName  String // as typed (also for people who are not CRM clients)
+  shotBy      String   @default("") // names, "Mallesh, Poorna"
+  videosShot  Int      @default(0)
+  edited      Int      @default(0)
+  editStatus  String   @default("PENDING") // PENDING | IN_PROGRESS | COMPLETED | NO_EDIT
+  editorIds   String   @default("[]") // JSON array of User ids (the editors)
+  editorNames String   @default("") // editors named in the sheet who have no login
+  informedAM  Boolean  @default(false)
+  posting     String   @default("") // "" | PENDING | POSTED
+  verifiedBy  String   @default("")
+  storage     String   @default("") // e.g. "8TB"
+  note        String   @default("")
+  updatedBy   String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([date])
+  @@index([clientId])
+  @@index([editStatus])
 }

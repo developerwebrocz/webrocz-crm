@@ -9,7 +9,7 @@ import {
   FileBarChart, Search, UsersRound, Wallet, Images, Code2,
   CalendarDays, ClipboardCheck, ListChecks, Target, Palette, Clapperboard,
   Contact, CalendarClock, ReceiptText, FileText, CheckCircle2, XCircle, UserPlus, Repeat, Landmark, Building2, Globe, FileSignature, ChevronDown, PieChart,
-  Loader, Eye, AlertTriangle, LayoutGrid, Camera, ListOrdered,
+  Loader, Eye, AlertTriangle, LayoutGrid, Camera, ListOrdered, Film,
 } from "lucide-react";
 
 type Item = { href: string; label: string; icon: React.ElementType; badge?: number; badgeTone?: "red"; forceActive?: boolean; subItems?: Item[]; iconColor?: string; badgeBg?: string; badgeFg?: string; showZero?: boolean };
@@ -133,6 +133,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     groups.push({ label: "Delivery", items: [
       { href: "/designs", label: "Design Studio", icon: Palette },
       { href: "/videos", label: "Video Studio", icon: Clapperboard },
+      { href: "/client-videos", label: "Client Videos", icon: Film },
       { href: "/video-team", label: "Editing Count", icon: ListOrdered },
       { href: "/shoots", label: "Studio X", icon: Camera },
       { href: "/reports/creative", label: "Creative Report", icon: FileBarChart },
@@ -163,6 +164,8 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     if (isDesigner) work.push({ href: "/designs", label: "My Designs", icon: Palette });
     if (isEditor) work.push({ href: "/videos", label: "My Videos", icon: Clapperboard });
     // the video team's daily count (was a Google Sheet); the team lead sees the whole team there
+    // client shoots and their editing / posting status (was the "Video Shoots Status" sheet)
+    if (isEditor) work.push({ href: "/client-videos", label: "Client Videos", icon: Film });
     if (isEditor) work.push({ href: "/video-team", label: "Editing Count", icon: ListOrdered });
     if (isStudioHead) work.push({ href: "/shoots", label: "Studiox Shoot", icon: Camera });
     // only the video editors on the shoot team (they are assigned as the shooter) get the same link

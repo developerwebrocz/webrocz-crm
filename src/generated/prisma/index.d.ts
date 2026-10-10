@@ -208,6 +208,11 @@ export type Meeting = $Result.DefaultSelection<Prisma.$MeetingPayload>
  * 
  */
 export type Expense = $Result.DefaultSelection<Prisma.$ExpensePayload>
+/**
+ * Model VideoJob
+ * 
+ */
+export type VideoJob = $Result.DefaultSelection<Prisma.$VideoJobPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -719,6 +724,16 @@ export class PrismaClient<
     * ```
     */
   get expense(): Prisma.ExpenseDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.videoJob`: Exposes CRUD operations for the **VideoJob** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more VideoJobs
+    * const videoJobs = await prisma.videoJob.findMany()
+    * ```
+    */
+  get videoJob(): Prisma.VideoJobDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1204,7 +1219,8 @@ export namespace Prisma {
     Proposal: 'Proposal',
     Reminder: 'Reminder',
     Meeting: 'Meeting',
-    Expense: 'Expense'
+    Expense: 'Expense',
+    VideoJob: 'VideoJob'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1220,7 +1236,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "editCount" | "task" | "timeSession" | "client" | "clientContact" | "clientService" | "deliverable" | "assignment" | "workUpdate" | "invoice" | "salesInvoice" | "payment" | "sla" | "candidate" | "campaignEntry" | "devProject" | "devTask" | "devActivity" | "socialPost" | "seoAnalytics" | "seoBlogSlot" | "seoKeyword" | "seoBacklink" | "gmbClient" | "seoReport" | "creativeTask" | "shoot" | "googleAdsCampaign" | "adsPerformance" | "notification" | "lead" | "leadActivity" | "followup" | "quotation" | "proposal" | "reminder" | "meeting" | "expense"
+      modelProps: "user" | "editCount" | "task" | "timeSession" | "client" | "clientContact" | "clientService" | "deliverable" | "assignment" | "workUpdate" | "invoice" | "salesInvoice" | "payment" | "sla" | "candidate" | "campaignEntry" | "devProject" | "devTask" | "devActivity" | "socialPost" | "seoAnalytics" | "seoBlogSlot" | "seoKeyword" | "seoBacklink" | "gmbClient" | "seoReport" | "creativeTask" | "shoot" | "googleAdsCampaign" | "adsPerformance" | "notification" | "lead" | "leadActivity" | "followup" | "quotation" | "proposal" | "reminder" | "meeting" | "expense" | "videoJob"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4110,6 +4126,80 @@ export namespace Prisma {
           }
         }
       }
+      VideoJob: {
+        payload: Prisma.$VideoJobPayload<ExtArgs>
+        fields: Prisma.VideoJobFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.VideoJobFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VideoJobPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.VideoJobFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VideoJobPayload>
+          }
+          findFirst: {
+            args: Prisma.VideoJobFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VideoJobPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.VideoJobFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VideoJobPayload>
+          }
+          findMany: {
+            args: Prisma.VideoJobFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VideoJobPayload>[]
+          }
+          create: {
+            args: Prisma.VideoJobCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VideoJobPayload>
+          }
+          createMany: {
+            args: Prisma.VideoJobCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.VideoJobCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VideoJobPayload>[]
+          }
+          delete: {
+            args: Prisma.VideoJobDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VideoJobPayload>
+          }
+          update: {
+            args: Prisma.VideoJobUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VideoJobPayload>
+          }
+          deleteMany: {
+            args: Prisma.VideoJobDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.VideoJobUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.VideoJobUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VideoJobPayload>[]
+          }
+          upsert: {
+            args: Prisma.VideoJobUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VideoJobPayload>
+          }
+          aggregate: {
+            args: Prisma.VideoJobAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateVideoJob>
+          }
+          groupBy: {
+            args: Prisma.VideoJobGroupByArgs<ExtArgs>
+            result: $Utils.Optional<VideoJobGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.VideoJobCountArgs<ExtArgs>
+            result: $Utils.Optional<VideoJobCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -4272,6 +4362,7 @@ export namespace Prisma {
     reminder?: ReminderOmit
     meeting?: MeetingOmit
     expense?: ExpenseOmit
+    videoJob?: VideoJobOmit
   }
 
   /* Types for Logging */
@@ -4513,6 +4604,7 @@ export namespace Prisma {
     gmbLocations: number
     seoReports: number
     shoots: number
+    videoJobs: number
   }
 
   export type ClientCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4538,6 +4630,7 @@ export namespace Prisma {
     gmbLocations?: boolean | ClientCountOutputTypeCountGmbLocationsArgs
     seoReports?: boolean | ClientCountOutputTypeCountSeoReportsArgs
     shoots?: boolean | ClientCountOutputTypeCountShootsArgs
+    videoJobs?: boolean | ClientCountOutputTypeCountVideoJobsArgs
   }
 
   // Custom InputTypes
@@ -4703,6 +4796,13 @@ export namespace Prisma {
    */
   export type ClientCountOutputTypeCountShootsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ShootWhereInput
+  }
+
+  /**
+   * ClientCountOutputType without action
+   */
+  export type ClientCountOutputTypeCountVideoJobsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: VideoJobWhereInput
   }
 
 
@@ -10358,6 +10458,7 @@ export namespace Prisma {
     gmbLocations?: boolean | Client$gmbLocationsArgs<ExtArgs>
     seoReports?: boolean | Client$seoReportsArgs<ExtArgs>
     shoots?: boolean | Client$shootsArgs<ExtArgs>
+    videoJobs?: boolean | Client$videoJobsArgs<ExtArgs>
     _count?: boolean | ClientCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["client"]>
 
@@ -10532,6 +10633,7 @@ export namespace Prisma {
     gmbLocations?: boolean | Client$gmbLocationsArgs<ExtArgs>
     seoReports?: boolean | Client$seoReportsArgs<ExtArgs>
     shoots?: boolean | Client$shootsArgs<ExtArgs>
+    videoJobs?: boolean | Client$videoJobsArgs<ExtArgs>
     _count?: boolean | ClientCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ClientIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10567,6 +10669,7 @@ export namespace Prisma {
       gmbLocations: Prisma.$GmbClientPayload<ExtArgs>[]
       seoReports: Prisma.$SeoReportPayload<ExtArgs>[]
       shoots: Prisma.$ShootPayload<ExtArgs>[]
+      videoJobs: Prisma.$VideoJobPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -11031,6 +11134,7 @@ export namespace Prisma {
     gmbLocations<T extends Client$gmbLocationsArgs<ExtArgs> = {}>(args?: Subset<T, Client$gmbLocationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GmbClientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     seoReports<T extends Client$seoReportsArgs<ExtArgs> = {}>(args?: Subset<T, Client$seoReportsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeoReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     shoots<T extends Client$shootsArgs<ExtArgs> = {}>(args?: Subset<T, Client$shootsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    videoJobs<T extends Client$videoJobsArgs<ExtArgs> = {}>(args?: Subset<T, Client$videoJobsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VideoJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -12048,6 +12152,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ShootScalarFieldEnum | ShootScalarFieldEnum[]
+  }
+
+  /**
+   * Client.videoJobs
+   */
+  export type Client$videoJobsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VideoJob
+     */
+    select?: VideoJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VideoJob
+     */
+    omit?: VideoJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VideoJobInclude<ExtArgs> | null
+    where?: VideoJobWhereInput
+    orderBy?: VideoJobOrderByWithRelationInput | VideoJobOrderByWithRelationInput[]
+    cursor?: VideoJobWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: VideoJobScalarFieldEnum | VideoJobScalarFieldEnum[]
   }
 
   /**
@@ -52532,6 +52660,1293 @@ export namespace Prisma {
 
 
   /**
+   * Model VideoJob
+   */
+
+  export type AggregateVideoJob = {
+    _count: VideoJobCountAggregateOutputType | null
+    _avg: VideoJobAvgAggregateOutputType | null
+    _sum: VideoJobSumAggregateOutputType | null
+    _min: VideoJobMinAggregateOutputType | null
+    _max: VideoJobMaxAggregateOutputType | null
+  }
+
+  export type VideoJobAvgAggregateOutputType = {
+    videosShot: number | null
+    edited: number | null
+  }
+
+  export type VideoJobSumAggregateOutputType = {
+    videosShot: number | null
+    edited: number | null
+  }
+
+  export type VideoJobMinAggregateOutputType = {
+    id: string | null
+    date: string | null
+    clientId: string | null
+    clientName: string | null
+    shotBy: string | null
+    videosShot: number | null
+    edited: number | null
+    editStatus: string | null
+    editorIds: string | null
+    editorNames: string | null
+    informedAM: boolean | null
+    posting: string | null
+    verifiedBy: string | null
+    storage: string | null
+    note: string | null
+    updatedBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type VideoJobMaxAggregateOutputType = {
+    id: string | null
+    date: string | null
+    clientId: string | null
+    clientName: string | null
+    shotBy: string | null
+    videosShot: number | null
+    edited: number | null
+    editStatus: string | null
+    editorIds: string | null
+    editorNames: string | null
+    informedAM: boolean | null
+    posting: string | null
+    verifiedBy: string | null
+    storage: string | null
+    note: string | null
+    updatedBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type VideoJobCountAggregateOutputType = {
+    id: number
+    date: number
+    clientId: number
+    clientName: number
+    shotBy: number
+    videosShot: number
+    edited: number
+    editStatus: number
+    editorIds: number
+    editorNames: number
+    informedAM: number
+    posting: number
+    verifiedBy: number
+    storage: number
+    note: number
+    updatedBy: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type VideoJobAvgAggregateInputType = {
+    videosShot?: true
+    edited?: true
+  }
+
+  export type VideoJobSumAggregateInputType = {
+    videosShot?: true
+    edited?: true
+  }
+
+  export type VideoJobMinAggregateInputType = {
+    id?: true
+    date?: true
+    clientId?: true
+    clientName?: true
+    shotBy?: true
+    videosShot?: true
+    edited?: true
+    editStatus?: true
+    editorIds?: true
+    editorNames?: true
+    informedAM?: true
+    posting?: true
+    verifiedBy?: true
+    storage?: true
+    note?: true
+    updatedBy?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type VideoJobMaxAggregateInputType = {
+    id?: true
+    date?: true
+    clientId?: true
+    clientName?: true
+    shotBy?: true
+    videosShot?: true
+    edited?: true
+    editStatus?: true
+    editorIds?: true
+    editorNames?: true
+    informedAM?: true
+    posting?: true
+    verifiedBy?: true
+    storage?: true
+    note?: true
+    updatedBy?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type VideoJobCountAggregateInputType = {
+    id?: true
+    date?: true
+    clientId?: true
+    clientName?: true
+    shotBy?: true
+    videosShot?: true
+    edited?: true
+    editStatus?: true
+    editorIds?: true
+    editorNames?: true
+    informedAM?: true
+    posting?: true
+    verifiedBy?: true
+    storage?: true
+    note?: true
+    updatedBy?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type VideoJobAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which VideoJob to aggregate.
+     */
+    where?: VideoJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VideoJobs to fetch.
+     */
+    orderBy?: VideoJobOrderByWithRelationInput | VideoJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: VideoJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VideoJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VideoJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned VideoJobs
+    **/
+    _count?: true | VideoJobCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: VideoJobAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: VideoJobSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: VideoJobMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: VideoJobMaxAggregateInputType
+  }
+
+  export type GetVideoJobAggregateType<T extends VideoJobAggregateArgs> = {
+        [P in keyof T & keyof AggregateVideoJob]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateVideoJob[P]>
+      : GetScalarType<T[P], AggregateVideoJob[P]>
+  }
+
+
+
+
+  export type VideoJobGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: VideoJobWhereInput
+    orderBy?: VideoJobOrderByWithAggregationInput | VideoJobOrderByWithAggregationInput[]
+    by: VideoJobScalarFieldEnum[] | VideoJobScalarFieldEnum
+    having?: VideoJobScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: VideoJobCountAggregateInputType | true
+    _avg?: VideoJobAvgAggregateInputType
+    _sum?: VideoJobSumAggregateInputType
+    _min?: VideoJobMinAggregateInputType
+    _max?: VideoJobMaxAggregateInputType
+  }
+
+  export type VideoJobGroupByOutputType = {
+    id: string
+    date: string
+    clientId: string | null
+    clientName: string
+    shotBy: string
+    videosShot: number
+    edited: number
+    editStatus: string
+    editorIds: string
+    editorNames: string
+    informedAM: boolean
+    posting: string
+    verifiedBy: string
+    storage: string
+    note: string
+    updatedBy: string
+    createdAt: Date
+    updatedAt: Date
+    _count: VideoJobCountAggregateOutputType | null
+    _avg: VideoJobAvgAggregateOutputType | null
+    _sum: VideoJobSumAggregateOutputType | null
+    _min: VideoJobMinAggregateOutputType | null
+    _max: VideoJobMaxAggregateOutputType | null
+  }
+
+  type GetVideoJobGroupByPayload<T extends VideoJobGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<VideoJobGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof VideoJobGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], VideoJobGroupByOutputType[P]>
+            : GetScalarType<T[P], VideoJobGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type VideoJobSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    clientId?: boolean
+    clientName?: boolean
+    shotBy?: boolean
+    videosShot?: boolean
+    edited?: boolean
+    editStatus?: boolean
+    editorIds?: boolean
+    editorNames?: boolean
+    informedAM?: boolean
+    posting?: boolean
+    verifiedBy?: boolean
+    storage?: boolean
+    note?: boolean
+    updatedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    client?: boolean | VideoJob$clientArgs<ExtArgs>
+  }, ExtArgs["result"]["videoJob"]>
+
+  export type VideoJobSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    clientId?: boolean
+    clientName?: boolean
+    shotBy?: boolean
+    videosShot?: boolean
+    edited?: boolean
+    editStatus?: boolean
+    editorIds?: boolean
+    editorNames?: boolean
+    informedAM?: boolean
+    posting?: boolean
+    verifiedBy?: boolean
+    storage?: boolean
+    note?: boolean
+    updatedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    client?: boolean | VideoJob$clientArgs<ExtArgs>
+  }, ExtArgs["result"]["videoJob"]>
+
+  export type VideoJobSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    clientId?: boolean
+    clientName?: boolean
+    shotBy?: boolean
+    videosShot?: boolean
+    edited?: boolean
+    editStatus?: boolean
+    editorIds?: boolean
+    editorNames?: boolean
+    informedAM?: boolean
+    posting?: boolean
+    verifiedBy?: boolean
+    storage?: boolean
+    note?: boolean
+    updatedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    client?: boolean | VideoJob$clientArgs<ExtArgs>
+  }, ExtArgs["result"]["videoJob"]>
+
+  export type VideoJobSelectScalar = {
+    id?: boolean
+    date?: boolean
+    clientId?: boolean
+    clientName?: boolean
+    shotBy?: boolean
+    videosShot?: boolean
+    edited?: boolean
+    editStatus?: boolean
+    editorIds?: boolean
+    editorNames?: boolean
+    informedAM?: boolean
+    posting?: boolean
+    verifiedBy?: boolean
+    storage?: boolean
+    note?: boolean
+    updatedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type VideoJobOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "date" | "clientId" | "clientName" | "shotBy" | "videosShot" | "edited" | "editStatus" | "editorIds" | "editorNames" | "informedAM" | "posting" | "verifiedBy" | "storage" | "note" | "updatedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["videoJob"]>
+  export type VideoJobInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    client?: boolean | VideoJob$clientArgs<ExtArgs>
+  }
+  export type VideoJobIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    client?: boolean | VideoJob$clientArgs<ExtArgs>
+  }
+  export type VideoJobIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    client?: boolean | VideoJob$clientArgs<ExtArgs>
+  }
+
+  export type $VideoJobPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "VideoJob"
+    objects: {
+      client: Prisma.$ClientPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      date: string
+      clientId: string | null
+      clientName: string
+      shotBy: string
+      videosShot: number
+      edited: number
+      editStatus: string
+      editorIds: string
+      editorNames: string
+      informedAM: boolean
+      posting: string
+      verifiedBy: string
+      storage: string
+      note: string
+      updatedBy: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["videoJob"]>
+    composites: {}
+  }
+
+  type VideoJobGetPayload<S extends boolean | null | undefined | VideoJobDefaultArgs> = $Result.GetResult<Prisma.$VideoJobPayload, S>
+
+  type VideoJobCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<VideoJobFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: VideoJobCountAggregateInputType | true
+    }
+
+  export interface VideoJobDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['VideoJob'], meta: { name: 'VideoJob' } }
+    /**
+     * Find zero or one VideoJob that matches the filter.
+     * @param {VideoJobFindUniqueArgs} args - Arguments to find a VideoJob
+     * @example
+     * // Get one VideoJob
+     * const videoJob = await prisma.videoJob.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends VideoJobFindUniqueArgs>(args: SelectSubset<T, VideoJobFindUniqueArgs<ExtArgs>>): Prisma__VideoJobClient<$Result.GetResult<Prisma.$VideoJobPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one VideoJob that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {VideoJobFindUniqueOrThrowArgs} args - Arguments to find a VideoJob
+     * @example
+     * // Get one VideoJob
+     * const videoJob = await prisma.videoJob.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends VideoJobFindUniqueOrThrowArgs>(args: SelectSubset<T, VideoJobFindUniqueOrThrowArgs<ExtArgs>>): Prisma__VideoJobClient<$Result.GetResult<Prisma.$VideoJobPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first VideoJob that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VideoJobFindFirstArgs} args - Arguments to find a VideoJob
+     * @example
+     * // Get one VideoJob
+     * const videoJob = await prisma.videoJob.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends VideoJobFindFirstArgs>(args?: SelectSubset<T, VideoJobFindFirstArgs<ExtArgs>>): Prisma__VideoJobClient<$Result.GetResult<Prisma.$VideoJobPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first VideoJob that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VideoJobFindFirstOrThrowArgs} args - Arguments to find a VideoJob
+     * @example
+     * // Get one VideoJob
+     * const videoJob = await prisma.videoJob.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends VideoJobFindFirstOrThrowArgs>(args?: SelectSubset<T, VideoJobFindFirstOrThrowArgs<ExtArgs>>): Prisma__VideoJobClient<$Result.GetResult<Prisma.$VideoJobPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more VideoJobs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VideoJobFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all VideoJobs
+     * const videoJobs = await prisma.videoJob.findMany()
+     * 
+     * // Get first 10 VideoJobs
+     * const videoJobs = await prisma.videoJob.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const videoJobWithIdOnly = await prisma.videoJob.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends VideoJobFindManyArgs>(args?: SelectSubset<T, VideoJobFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VideoJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a VideoJob.
+     * @param {VideoJobCreateArgs} args - Arguments to create a VideoJob.
+     * @example
+     * // Create one VideoJob
+     * const VideoJob = await prisma.videoJob.create({
+     *   data: {
+     *     // ... data to create a VideoJob
+     *   }
+     * })
+     * 
+     */
+    create<T extends VideoJobCreateArgs>(args: SelectSubset<T, VideoJobCreateArgs<ExtArgs>>): Prisma__VideoJobClient<$Result.GetResult<Prisma.$VideoJobPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many VideoJobs.
+     * @param {VideoJobCreateManyArgs} args - Arguments to create many VideoJobs.
+     * @example
+     * // Create many VideoJobs
+     * const videoJob = await prisma.videoJob.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends VideoJobCreateManyArgs>(args?: SelectSubset<T, VideoJobCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many VideoJobs and returns the data saved in the database.
+     * @param {VideoJobCreateManyAndReturnArgs} args - Arguments to create many VideoJobs.
+     * @example
+     * // Create many VideoJobs
+     * const videoJob = await prisma.videoJob.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many VideoJobs and only return the `id`
+     * const videoJobWithIdOnly = await prisma.videoJob.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends VideoJobCreateManyAndReturnArgs>(args?: SelectSubset<T, VideoJobCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VideoJobPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a VideoJob.
+     * @param {VideoJobDeleteArgs} args - Arguments to delete one VideoJob.
+     * @example
+     * // Delete one VideoJob
+     * const VideoJob = await prisma.videoJob.delete({
+     *   where: {
+     *     // ... filter to delete one VideoJob
+     *   }
+     * })
+     * 
+     */
+    delete<T extends VideoJobDeleteArgs>(args: SelectSubset<T, VideoJobDeleteArgs<ExtArgs>>): Prisma__VideoJobClient<$Result.GetResult<Prisma.$VideoJobPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one VideoJob.
+     * @param {VideoJobUpdateArgs} args - Arguments to update one VideoJob.
+     * @example
+     * // Update one VideoJob
+     * const videoJob = await prisma.videoJob.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends VideoJobUpdateArgs>(args: SelectSubset<T, VideoJobUpdateArgs<ExtArgs>>): Prisma__VideoJobClient<$Result.GetResult<Prisma.$VideoJobPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more VideoJobs.
+     * @param {VideoJobDeleteManyArgs} args - Arguments to filter VideoJobs to delete.
+     * @example
+     * // Delete a few VideoJobs
+     * const { count } = await prisma.videoJob.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends VideoJobDeleteManyArgs>(args?: SelectSubset<T, VideoJobDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more VideoJobs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VideoJobUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many VideoJobs
+     * const videoJob = await prisma.videoJob.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends VideoJobUpdateManyArgs>(args: SelectSubset<T, VideoJobUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more VideoJobs and returns the data updated in the database.
+     * @param {VideoJobUpdateManyAndReturnArgs} args - Arguments to update many VideoJobs.
+     * @example
+     * // Update many VideoJobs
+     * const videoJob = await prisma.videoJob.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more VideoJobs and only return the `id`
+     * const videoJobWithIdOnly = await prisma.videoJob.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends VideoJobUpdateManyAndReturnArgs>(args: SelectSubset<T, VideoJobUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VideoJobPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one VideoJob.
+     * @param {VideoJobUpsertArgs} args - Arguments to update or create a VideoJob.
+     * @example
+     * // Update or create a VideoJob
+     * const videoJob = await prisma.videoJob.upsert({
+     *   create: {
+     *     // ... data to create a VideoJob
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the VideoJob we want to update
+     *   }
+     * })
+     */
+    upsert<T extends VideoJobUpsertArgs>(args: SelectSubset<T, VideoJobUpsertArgs<ExtArgs>>): Prisma__VideoJobClient<$Result.GetResult<Prisma.$VideoJobPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of VideoJobs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VideoJobCountArgs} args - Arguments to filter VideoJobs to count.
+     * @example
+     * // Count the number of VideoJobs
+     * const count = await prisma.videoJob.count({
+     *   where: {
+     *     // ... the filter for the VideoJobs we want to count
+     *   }
+     * })
+    **/
+    count<T extends VideoJobCountArgs>(
+      args?: Subset<T, VideoJobCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], VideoJobCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a VideoJob.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VideoJobAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends VideoJobAggregateArgs>(args: Subset<T, VideoJobAggregateArgs>): Prisma.PrismaPromise<GetVideoJobAggregateType<T>>
+
+    /**
+     * Group by VideoJob.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VideoJobGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends VideoJobGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: VideoJobGroupByArgs['orderBy'] }
+        : { orderBy?: VideoJobGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, VideoJobGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetVideoJobGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the VideoJob model
+   */
+  readonly fields: VideoJobFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for VideoJob.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__VideoJobClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    client<T extends VideoJob$clientArgs<ExtArgs> = {}>(args?: Subset<T, VideoJob$clientArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the VideoJob model
+   */
+  interface VideoJobFieldRefs {
+    readonly id: FieldRef<"VideoJob", 'String'>
+    readonly date: FieldRef<"VideoJob", 'String'>
+    readonly clientId: FieldRef<"VideoJob", 'String'>
+    readonly clientName: FieldRef<"VideoJob", 'String'>
+    readonly shotBy: FieldRef<"VideoJob", 'String'>
+    readonly videosShot: FieldRef<"VideoJob", 'Int'>
+    readonly edited: FieldRef<"VideoJob", 'Int'>
+    readonly editStatus: FieldRef<"VideoJob", 'String'>
+    readonly editorIds: FieldRef<"VideoJob", 'String'>
+    readonly editorNames: FieldRef<"VideoJob", 'String'>
+    readonly informedAM: FieldRef<"VideoJob", 'Boolean'>
+    readonly posting: FieldRef<"VideoJob", 'String'>
+    readonly verifiedBy: FieldRef<"VideoJob", 'String'>
+    readonly storage: FieldRef<"VideoJob", 'String'>
+    readonly note: FieldRef<"VideoJob", 'String'>
+    readonly updatedBy: FieldRef<"VideoJob", 'String'>
+    readonly createdAt: FieldRef<"VideoJob", 'DateTime'>
+    readonly updatedAt: FieldRef<"VideoJob", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * VideoJob findUnique
+   */
+  export type VideoJobFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VideoJob
+     */
+    select?: VideoJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VideoJob
+     */
+    omit?: VideoJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VideoJobInclude<ExtArgs> | null
+    /**
+     * Filter, which VideoJob to fetch.
+     */
+    where: VideoJobWhereUniqueInput
+  }
+
+  /**
+   * VideoJob findUniqueOrThrow
+   */
+  export type VideoJobFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VideoJob
+     */
+    select?: VideoJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VideoJob
+     */
+    omit?: VideoJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VideoJobInclude<ExtArgs> | null
+    /**
+     * Filter, which VideoJob to fetch.
+     */
+    where: VideoJobWhereUniqueInput
+  }
+
+  /**
+   * VideoJob findFirst
+   */
+  export type VideoJobFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VideoJob
+     */
+    select?: VideoJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VideoJob
+     */
+    omit?: VideoJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VideoJobInclude<ExtArgs> | null
+    /**
+     * Filter, which VideoJob to fetch.
+     */
+    where?: VideoJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VideoJobs to fetch.
+     */
+    orderBy?: VideoJobOrderByWithRelationInput | VideoJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for VideoJobs.
+     */
+    cursor?: VideoJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VideoJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VideoJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of VideoJobs.
+     */
+    distinct?: VideoJobScalarFieldEnum | VideoJobScalarFieldEnum[]
+  }
+
+  /**
+   * VideoJob findFirstOrThrow
+   */
+  export type VideoJobFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VideoJob
+     */
+    select?: VideoJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VideoJob
+     */
+    omit?: VideoJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VideoJobInclude<ExtArgs> | null
+    /**
+     * Filter, which VideoJob to fetch.
+     */
+    where?: VideoJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VideoJobs to fetch.
+     */
+    orderBy?: VideoJobOrderByWithRelationInput | VideoJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for VideoJobs.
+     */
+    cursor?: VideoJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VideoJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VideoJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of VideoJobs.
+     */
+    distinct?: VideoJobScalarFieldEnum | VideoJobScalarFieldEnum[]
+  }
+
+  /**
+   * VideoJob findMany
+   */
+  export type VideoJobFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VideoJob
+     */
+    select?: VideoJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VideoJob
+     */
+    omit?: VideoJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VideoJobInclude<ExtArgs> | null
+    /**
+     * Filter, which VideoJobs to fetch.
+     */
+    where?: VideoJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VideoJobs to fetch.
+     */
+    orderBy?: VideoJobOrderByWithRelationInput | VideoJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing VideoJobs.
+     */
+    cursor?: VideoJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VideoJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VideoJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of VideoJobs.
+     */
+    distinct?: VideoJobScalarFieldEnum | VideoJobScalarFieldEnum[]
+  }
+
+  /**
+   * VideoJob create
+   */
+  export type VideoJobCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VideoJob
+     */
+    select?: VideoJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VideoJob
+     */
+    omit?: VideoJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VideoJobInclude<ExtArgs> | null
+    /**
+     * The data needed to create a VideoJob.
+     */
+    data: XOR<VideoJobCreateInput, VideoJobUncheckedCreateInput>
+  }
+
+  /**
+   * VideoJob createMany
+   */
+  export type VideoJobCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many VideoJobs.
+     */
+    data: VideoJobCreateManyInput | VideoJobCreateManyInput[]
+  }
+
+  /**
+   * VideoJob createManyAndReturn
+   */
+  export type VideoJobCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VideoJob
+     */
+    select?: VideoJobSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the VideoJob
+     */
+    omit?: VideoJobOmit<ExtArgs> | null
+    /**
+     * The data used to create many VideoJobs.
+     */
+    data: VideoJobCreateManyInput | VideoJobCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VideoJobIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * VideoJob update
+   */
+  export type VideoJobUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VideoJob
+     */
+    select?: VideoJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VideoJob
+     */
+    omit?: VideoJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VideoJobInclude<ExtArgs> | null
+    /**
+     * The data needed to update a VideoJob.
+     */
+    data: XOR<VideoJobUpdateInput, VideoJobUncheckedUpdateInput>
+    /**
+     * Choose, which VideoJob to update.
+     */
+    where: VideoJobWhereUniqueInput
+  }
+
+  /**
+   * VideoJob updateMany
+   */
+  export type VideoJobUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update VideoJobs.
+     */
+    data: XOR<VideoJobUpdateManyMutationInput, VideoJobUncheckedUpdateManyInput>
+    /**
+     * Filter which VideoJobs to update
+     */
+    where?: VideoJobWhereInput
+    /**
+     * Limit how many VideoJobs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * VideoJob updateManyAndReturn
+   */
+  export type VideoJobUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VideoJob
+     */
+    select?: VideoJobSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the VideoJob
+     */
+    omit?: VideoJobOmit<ExtArgs> | null
+    /**
+     * The data used to update VideoJobs.
+     */
+    data: XOR<VideoJobUpdateManyMutationInput, VideoJobUncheckedUpdateManyInput>
+    /**
+     * Filter which VideoJobs to update
+     */
+    where?: VideoJobWhereInput
+    /**
+     * Limit how many VideoJobs to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VideoJobIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * VideoJob upsert
+   */
+  export type VideoJobUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VideoJob
+     */
+    select?: VideoJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VideoJob
+     */
+    omit?: VideoJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VideoJobInclude<ExtArgs> | null
+    /**
+     * The filter to search for the VideoJob to update in case it exists.
+     */
+    where: VideoJobWhereUniqueInput
+    /**
+     * In case the VideoJob found by the `where` argument doesn't exist, create a new VideoJob with this data.
+     */
+    create: XOR<VideoJobCreateInput, VideoJobUncheckedCreateInput>
+    /**
+     * In case the VideoJob was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<VideoJobUpdateInput, VideoJobUncheckedUpdateInput>
+  }
+
+  /**
+   * VideoJob delete
+   */
+  export type VideoJobDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VideoJob
+     */
+    select?: VideoJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VideoJob
+     */
+    omit?: VideoJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VideoJobInclude<ExtArgs> | null
+    /**
+     * Filter which VideoJob to delete.
+     */
+    where: VideoJobWhereUniqueInput
+  }
+
+  /**
+   * VideoJob deleteMany
+   */
+  export type VideoJobDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which VideoJobs to delete
+     */
+    where?: VideoJobWhereInput
+    /**
+     * Limit how many VideoJobs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * VideoJob.client
+   */
+  export type VideoJob$clientArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Client
+     */
+    select?: ClientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Client
+     */
+    omit?: ClientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientInclude<ExtArgs> | null
+    where?: ClientWhereInput
+  }
+
+  /**
+   * VideoJob without action
+   */
+  export type VideoJobDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VideoJob
+     */
+    select?: VideoJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VideoJob
+     */
+    omit?: VideoJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VideoJobInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -53268,6 +54683,30 @@ export namespace Prisma {
   export type ExpenseScalarFieldEnum = (typeof ExpenseScalarFieldEnum)[keyof typeof ExpenseScalarFieldEnum]
 
 
+  export const VideoJobScalarFieldEnum: {
+    id: 'id',
+    date: 'date',
+    clientId: 'clientId',
+    clientName: 'clientName',
+    shotBy: 'shotBy',
+    videosShot: 'videosShot',
+    edited: 'edited',
+    editStatus: 'editStatus',
+    editorIds: 'editorIds',
+    editorNames: 'editorNames',
+    informedAM: 'informedAM',
+    posting: 'posting',
+    verifiedBy: 'verifiedBy',
+    storage: 'storage',
+    note: 'note',
+    updatedBy: 'updatedBy',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type VideoJobScalarFieldEnum = (typeof VideoJobScalarFieldEnum)[keyof typeof VideoJobScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -53751,6 +55190,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientListRelationFilter
     seoReports?: SeoReportListRelationFilter
     shoots?: ShootListRelationFilter
+    videoJobs?: VideoJobListRelationFilter
   }
 
   export type ClientOrderByWithRelationInput = {
@@ -53822,6 +55262,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientOrderByRelationAggregateInput
     seoReports?: SeoReportOrderByRelationAggregateInput
     shoots?: ShootOrderByRelationAggregateInput
+    videoJobs?: VideoJobOrderByRelationAggregateInput
   }
 
   export type ClientWhereUniqueInput = Prisma.AtLeast<{
@@ -53896,6 +55337,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientListRelationFilter
     seoReports?: SeoReportListRelationFilter
     shoots?: ShootListRelationFilter
+    videoJobs?: VideoJobListRelationFilter
   }, "id" | "code">
 
   export type ClientOrderByWithAggregationInput = {
@@ -57166,6 +58608,128 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Expense"> | Date | string
   }
 
+  export type VideoJobWhereInput = {
+    AND?: VideoJobWhereInput | VideoJobWhereInput[]
+    OR?: VideoJobWhereInput[]
+    NOT?: VideoJobWhereInput | VideoJobWhereInput[]
+    id?: StringFilter<"VideoJob"> | string
+    date?: StringFilter<"VideoJob"> | string
+    clientId?: StringNullableFilter<"VideoJob"> | string | null
+    clientName?: StringFilter<"VideoJob"> | string
+    shotBy?: StringFilter<"VideoJob"> | string
+    videosShot?: IntFilter<"VideoJob"> | number
+    edited?: IntFilter<"VideoJob"> | number
+    editStatus?: StringFilter<"VideoJob"> | string
+    editorIds?: StringFilter<"VideoJob"> | string
+    editorNames?: StringFilter<"VideoJob"> | string
+    informedAM?: BoolFilter<"VideoJob"> | boolean
+    posting?: StringFilter<"VideoJob"> | string
+    verifiedBy?: StringFilter<"VideoJob"> | string
+    storage?: StringFilter<"VideoJob"> | string
+    note?: StringFilter<"VideoJob"> | string
+    updatedBy?: StringFilter<"VideoJob"> | string
+    createdAt?: DateTimeFilter<"VideoJob"> | Date | string
+    updatedAt?: DateTimeFilter<"VideoJob"> | Date | string
+    client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
+  }
+
+  export type VideoJobOrderByWithRelationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    clientId?: SortOrderInput | SortOrder
+    clientName?: SortOrder
+    shotBy?: SortOrder
+    videosShot?: SortOrder
+    edited?: SortOrder
+    editStatus?: SortOrder
+    editorIds?: SortOrder
+    editorNames?: SortOrder
+    informedAM?: SortOrder
+    posting?: SortOrder
+    verifiedBy?: SortOrder
+    storage?: SortOrder
+    note?: SortOrder
+    updatedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    client?: ClientOrderByWithRelationInput
+  }
+
+  export type VideoJobWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: VideoJobWhereInput | VideoJobWhereInput[]
+    OR?: VideoJobWhereInput[]
+    NOT?: VideoJobWhereInput | VideoJobWhereInput[]
+    date?: StringFilter<"VideoJob"> | string
+    clientId?: StringNullableFilter<"VideoJob"> | string | null
+    clientName?: StringFilter<"VideoJob"> | string
+    shotBy?: StringFilter<"VideoJob"> | string
+    videosShot?: IntFilter<"VideoJob"> | number
+    edited?: IntFilter<"VideoJob"> | number
+    editStatus?: StringFilter<"VideoJob"> | string
+    editorIds?: StringFilter<"VideoJob"> | string
+    editorNames?: StringFilter<"VideoJob"> | string
+    informedAM?: BoolFilter<"VideoJob"> | boolean
+    posting?: StringFilter<"VideoJob"> | string
+    verifiedBy?: StringFilter<"VideoJob"> | string
+    storage?: StringFilter<"VideoJob"> | string
+    note?: StringFilter<"VideoJob"> | string
+    updatedBy?: StringFilter<"VideoJob"> | string
+    createdAt?: DateTimeFilter<"VideoJob"> | Date | string
+    updatedAt?: DateTimeFilter<"VideoJob"> | Date | string
+    client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
+  }, "id">
+
+  export type VideoJobOrderByWithAggregationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    clientId?: SortOrderInput | SortOrder
+    clientName?: SortOrder
+    shotBy?: SortOrder
+    videosShot?: SortOrder
+    edited?: SortOrder
+    editStatus?: SortOrder
+    editorIds?: SortOrder
+    editorNames?: SortOrder
+    informedAM?: SortOrder
+    posting?: SortOrder
+    verifiedBy?: SortOrder
+    storage?: SortOrder
+    note?: SortOrder
+    updatedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: VideoJobCountOrderByAggregateInput
+    _avg?: VideoJobAvgOrderByAggregateInput
+    _max?: VideoJobMaxOrderByAggregateInput
+    _min?: VideoJobMinOrderByAggregateInput
+    _sum?: VideoJobSumOrderByAggregateInput
+  }
+
+  export type VideoJobScalarWhereWithAggregatesInput = {
+    AND?: VideoJobScalarWhereWithAggregatesInput | VideoJobScalarWhereWithAggregatesInput[]
+    OR?: VideoJobScalarWhereWithAggregatesInput[]
+    NOT?: VideoJobScalarWhereWithAggregatesInput | VideoJobScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"VideoJob"> | string
+    date?: StringWithAggregatesFilter<"VideoJob"> | string
+    clientId?: StringNullableWithAggregatesFilter<"VideoJob"> | string | null
+    clientName?: StringWithAggregatesFilter<"VideoJob"> | string
+    shotBy?: StringWithAggregatesFilter<"VideoJob"> | string
+    videosShot?: IntWithAggregatesFilter<"VideoJob"> | number
+    edited?: IntWithAggregatesFilter<"VideoJob"> | number
+    editStatus?: StringWithAggregatesFilter<"VideoJob"> | string
+    editorIds?: StringWithAggregatesFilter<"VideoJob"> | string
+    editorNames?: StringWithAggregatesFilter<"VideoJob"> | string
+    informedAM?: BoolWithAggregatesFilter<"VideoJob"> | boolean
+    posting?: StringWithAggregatesFilter<"VideoJob"> | string
+    verifiedBy?: StringWithAggregatesFilter<"VideoJob"> | string
+    storage?: StringWithAggregatesFilter<"VideoJob"> | string
+    note?: StringWithAggregatesFilter<"VideoJob"> | string
+    updatedBy?: StringWithAggregatesFilter<"VideoJob"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"VideoJob"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"VideoJob"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     name: string
@@ -57624,6 +59188,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateInput = {
@@ -57694,6 +59259,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientUpdateInput = {
@@ -57764,6 +59330,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateInput = {
@@ -57834,6 +59401,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateManyInput = {
@@ -61561,6 +63129,152 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type VideoJobCreateInput = {
+    id?: string
+    date: string
+    clientName: string
+    shotBy?: string
+    videosShot?: number
+    edited?: number
+    editStatus?: string
+    editorIds?: string
+    editorNames?: string
+    informedAM?: boolean
+    posting?: string
+    verifiedBy?: string
+    storage?: string
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    client?: ClientCreateNestedOneWithoutVideoJobsInput
+  }
+
+  export type VideoJobUncheckedCreateInput = {
+    id?: string
+    date: string
+    clientId?: string | null
+    clientName: string
+    shotBy?: string
+    videosShot?: number
+    edited?: number
+    editStatus?: string
+    editorIds?: string
+    editorNames?: string
+    informedAM?: boolean
+    posting?: string
+    verifiedBy?: string
+    storage?: string
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type VideoJobUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    clientName?: StringFieldUpdateOperationsInput | string
+    shotBy?: StringFieldUpdateOperationsInput | string
+    videosShot?: IntFieldUpdateOperationsInput | number
+    edited?: IntFieldUpdateOperationsInput | number
+    editStatus?: StringFieldUpdateOperationsInput | string
+    editorIds?: StringFieldUpdateOperationsInput | string
+    editorNames?: StringFieldUpdateOperationsInput | string
+    informedAM?: BoolFieldUpdateOperationsInput | boolean
+    posting?: StringFieldUpdateOperationsInput | string
+    verifiedBy?: StringFieldUpdateOperationsInput | string
+    storage?: StringFieldUpdateOperationsInput | string
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    client?: ClientUpdateOneWithoutVideoJobsNestedInput
+  }
+
+  export type VideoJobUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientName?: StringFieldUpdateOperationsInput | string
+    shotBy?: StringFieldUpdateOperationsInput | string
+    videosShot?: IntFieldUpdateOperationsInput | number
+    edited?: IntFieldUpdateOperationsInput | number
+    editStatus?: StringFieldUpdateOperationsInput | string
+    editorIds?: StringFieldUpdateOperationsInput | string
+    editorNames?: StringFieldUpdateOperationsInput | string
+    informedAM?: BoolFieldUpdateOperationsInput | boolean
+    posting?: StringFieldUpdateOperationsInput | string
+    verifiedBy?: StringFieldUpdateOperationsInput | string
+    storage?: StringFieldUpdateOperationsInput | string
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VideoJobCreateManyInput = {
+    id?: string
+    date: string
+    clientId?: string | null
+    clientName: string
+    shotBy?: string
+    videosShot?: number
+    edited?: number
+    editStatus?: string
+    editorIds?: string
+    editorNames?: string
+    informedAM?: boolean
+    posting?: string
+    verifiedBy?: string
+    storage?: string
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type VideoJobUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    clientName?: StringFieldUpdateOperationsInput | string
+    shotBy?: StringFieldUpdateOperationsInput | string
+    videosShot?: IntFieldUpdateOperationsInput | number
+    edited?: IntFieldUpdateOperationsInput | number
+    editStatus?: StringFieldUpdateOperationsInput | string
+    editorIds?: StringFieldUpdateOperationsInput | string
+    editorNames?: StringFieldUpdateOperationsInput | string
+    informedAM?: BoolFieldUpdateOperationsInput | boolean
+    posting?: StringFieldUpdateOperationsInput | string
+    verifiedBy?: StringFieldUpdateOperationsInput | string
+    storage?: StringFieldUpdateOperationsInput | string
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VideoJobUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientName?: StringFieldUpdateOperationsInput | string
+    shotBy?: StringFieldUpdateOperationsInput | string
+    videosShot?: IntFieldUpdateOperationsInput | number
+    edited?: IntFieldUpdateOperationsInput | number
+    editStatus?: StringFieldUpdateOperationsInput | string
+    editorIds?: StringFieldUpdateOperationsInput | string
+    editorNames?: StringFieldUpdateOperationsInput | string
+    informedAM?: BoolFieldUpdateOperationsInput | boolean
+    posting?: StringFieldUpdateOperationsInput | string
+    verifiedBy?: StringFieldUpdateOperationsInput | string
+    storage?: StringFieldUpdateOperationsInput | string
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[]
@@ -62097,6 +63811,12 @@ export namespace Prisma {
     none?: SeoReportWhereInput
   }
 
+  export type VideoJobListRelationFilter = {
+    every?: VideoJobWhereInput
+    some?: VideoJobWhereInput
+    none?: VideoJobWhereInput
+  }
+
   export type ClientServiceOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -62158,6 +63878,10 @@ export namespace Prisma {
   }
 
   export type SeoReportOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type VideoJobOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -64345,6 +66069,79 @@ export namespace Prisma {
     amount?: SortOrder
   }
 
+  export type VideoJobCountOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    clientId?: SortOrder
+    clientName?: SortOrder
+    shotBy?: SortOrder
+    videosShot?: SortOrder
+    edited?: SortOrder
+    editStatus?: SortOrder
+    editorIds?: SortOrder
+    editorNames?: SortOrder
+    informedAM?: SortOrder
+    posting?: SortOrder
+    verifiedBy?: SortOrder
+    storage?: SortOrder
+    note?: SortOrder
+    updatedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type VideoJobAvgOrderByAggregateInput = {
+    videosShot?: SortOrder
+    edited?: SortOrder
+  }
+
+  export type VideoJobMaxOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    clientId?: SortOrder
+    clientName?: SortOrder
+    shotBy?: SortOrder
+    videosShot?: SortOrder
+    edited?: SortOrder
+    editStatus?: SortOrder
+    editorIds?: SortOrder
+    editorNames?: SortOrder
+    informedAM?: SortOrder
+    posting?: SortOrder
+    verifiedBy?: SortOrder
+    storage?: SortOrder
+    note?: SortOrder
+    updatedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type VideoJobMinOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    clientId?: SortOrder
+    clientName?: SortOrder
+    shotBy?: SortOrder
+    videosShot?: SortOrder
+    edited?: SortOrder
+    editStatus?: SortOrder
+    editorIds?: SortOrder
+    editorNames?: SortOrder
+    informedAM?: SortOrder
+    posting?: SortOrder
+    verifiedBy?: SortOrder
+    storage?: SortOrder
+    note?: SortOrder
+    updatedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type VideoJobSumOrderByAggregateInput = {
+    videosShot?: SortOrder
+    edited?: SortOrder
+  }
+
   export type ClientCreateNestedManyWithoutAccountManagerInput = {
     create?: XOR<ClientCreateWithoutAccountManagerInput, ClientUncheckedCreateWithoutAccountManagerInput> | ClientCreateWithoutAccountManagerInput[] | ClientUncheckedCreateWithoutAccountManagerInput[]
     connectOrCreate?: ClientCreateOrConnectWithoutAccountManagerInput | ClientCreateOrConnectWithoutAccountManagerInput[]
@@ -65151,6 +66948,13 @@ export namespace Prisma {
     connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
   }
 
+  export type VideoJobCreateNestedManyWithoutClientInput = {
+    create?: XOR<VideoJobCreateWithoutClientInput, VideoJobUncheckedCreateWithoutClientInput> | VideoJobCreateWithoutClientInput[] | VideoJobUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: VideoJobCreateOrConnectWithoutClientInput | VideoJobCreateOrConnectWithoutClientInput[]
+    createMany?: VideoJobCreateManyClientInputEnvelope
+    connect?: VideoJobWhereUniqueInput | VideoJobWhereUniqueInput[]
+  }
+
   export type ClientServiceUncheckedCreateNestedManyWithoutClientInput = {
     create?: XOR<ClientServiceCreateWithoutClientInput, ClientServiceUncheckedCreateWithoutClientInput> | ClientServiceCreateWithoutClientInput[] | ClientServiceUncheckedCreateWithoutClientInput[]
     connectOrCreate?: ClientServiceCreateOrConnectWithoutClientInput | ClientServiceCreateOrConnectWithoutClientInput[]
@@ -65303,6 +67107,13 @@ export namespace Prisma {
     connectOrCreate?: ShootCreateOrConnectWithoutClientInput | ShootCreateOrConnectWithoutClientInput[]
     createMany?: ShootCreateManyClientInputEnvelope
     connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+  }
+
+  export type VideoJobUncheckedCreateNestedManyWithoutClientInput = {
+    create?: XOR<VideoJobCreateWithoutClientInput, VideoJobUncheckedCreateWithoutClientInput> | VideoJobCreateWithoutClientInput[] | VideoJobUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: VideoJobCreateOrConnectWithoutClientInput | VideoJobCreateOrConnectWithoutClientInput[]
+    createMany?: VideoJobCreateManyClientInputEnvelope
+    connect?: VideoJobWhereUniqueInput | VideoJobWhereUniqueInput[]
   }
 
   export type UserUpdateOneWithoutManagedClientsNestedInput = {
@@ -65623,6 +67434,20 @@ export namespace Prisma {
     deleteMany?: ShootScalarWhereInput | ShootScalarWhereInput[]
   }
 
+  export type VideoJobUpdateManyWithoutClientNestedInput = {
+    create?: XOR<VideoJobCreateWithoutClientInput, VideoJobUncheckedCreateWithoutClientInput> | VideoJobCreateWithoutClientInput[] | VideoJobUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: VideoJobCreateOrConnectWithoutClientInput | VideoJobCreateOrConnectWithoutClientInput[]
+    upsert?: VideoJobUpsertWithWhereUniqueWithoutClientInput | VideoJobUpsertWithWhereUniqueWithoutClientInput[]
+    createMany?: VideoJobCreateManyClientInputEnvelope
+    set?: VideoJobWhereUniqueInput | VideoJobWhereUniqueInput[]
+    disconnect?: VideoJobWhereUniqueInput | VideoJobWhereUniqueInput[]
+    delete?: VideoJobWhereUniqueInput | VideoJobWhereUniqueInput[]
+    connect?: VideoJobWhereUniqueInput | VideoJobWhereUniqueInput[]
+    update?: VideoJobUpdateWithWhereUniqueWithoutClientInput | VideoJobUpdateWithWhereUniqueWithoutClientInput[]
+    updateMany?: VideoJobUpdateManyWithWhereWithoutClientInput | VideoJobUpdateManyWithWhereWithoutClientInput[]
+    deleteMany?: VideoJobScalarWhereInput | VideoJobScalarWhereInput[]
+  }
+
   export type ClientServiceUncheckedUpdateManyWithoutClientNestedInput = {
     create?: XOR<ClientServiceCreateWithoutClientInput, ClientServiceUncheckedCreateWithoutClientInput> | ClientServiceCreateWithoutClientInput[] | ClientServiceUncheckedCreateWithoutClientInput[]
     connectOrCreate?: ClientServiceCreateOrConnectWithoutClientInput | ClientServiceCreateOrConnectWithoutClientInput[]
@@ -65929,6 +67754,20 @@ export namespace Prisma {
     update?: ShootUpdateWithWhereUniqueWithoutClientInput | ShootUpdateWithWhereUniqueWithoutClientInput[]
     updateMany?: ShootUpdateManyWithWhereWithoutClientInput | ShootUpdateManyWithWhereWithoutClientInput[]
     deleteMany?: ShootScalarWhereInput | ShootScalarWhereInput[]
+  }
+
+  export type VideoJobUncheckedUpdateManyWithoutClientNestedInput = {
+    create?: XOR<VideoJobCreateWithoutClientInput, VideoJobUncheckedCreateWithoutClientInput> | VideoJobCreateWithoutClientInput[] | VideoJobUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: VideoJobCreateOrConnectWithoutClientInput | VideoJobCreateOrConnectWithoutClientInput[]
+    upsert?: VideoJobUpsertWithWhereUniqueWithoutClientInput | VideoJobUpsertWithWhereUniqueWithoutClientInput[]
+    createMany?: VideoJobCreateManyClientInputEnvelope
+    set?: VideoJobWhereUniqueInput | VideoJobWhereUniqueInput[]
+    disconnect?: VideoJobWhereUniqueInput | VideoJobWhereUniqueInput[]
+    delete?: VideoJobWhereUniqueInput | VideoJobWhereUniqueInput[]
+    connect?: VideoJobWhereUniqueInput | VideoJobWhereUniqueInput[]
+    update?: VideoJobUpdateWithWhereUniqueWithoutClientInput | VideoJobUpdateWithWhereUniqueWithoutClientInput[]
+    updateMany?: VideoJobUpdateManyWithWhereWithoutClientInput | VideoJobUpdateManyWithWhereWithoutClientInput[]
+    deleteMany?: VideoJobScalarWhereInput | VideoJobScalarWhereInput[]
   }
 
   export type ClientCreateNestedOneWithoutContactsInput = {
@@ -66879,6 +68718,22 @@ export namespace Prisma {
     update?: XOR<XOR<LeadUpdateToOneWithWhereWithoutMeetingsInput, LeadUpdateWithoutMeetingsInput>, LeadUncheckedUpdateWithoutMeetingsInput>
   }
 
+  export type ClientCreateNestedOneWithoutVideoJobsInput = {
+    create?: XOR<ClientCreateWithoutVideoJobsInput, ClientUncheckedCreateWithoutVideoJobsInput>
+    connectOrCreate?: ClientCreateOrConnectWithoutVideoJobsInput
+    connect?: ClientWhereUniqueInput
+  }
+
+  export type ClientUpdateOneWithoutVideoJobsNestedInput = {
+    create?: XOR<ClientCreateWithoutVideoJobsInput, ClientUncheckedCreateWithoutVideoJobsInput>
+    connectOrCreate?: ClientCreateOrConnectWithoutVideoJobsInput
+    upsert?: ClientUpsertWithoutVideoJobsInput
+    disconnect?: ClientWhereInput | boolean
+    delete?: ClientWhereInput | boolean
+    connect?: ClientWhereUniqueInput
+    update?: XOR<XOR<ClientUpdateToOneWithWhereWithoutVideoJobsInput, ClientUpdateWithoutVideoJobsInput>, ClientUncheckedUpdateWithoutVideoJobsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[]
@@ -67163,6 +69018,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutAccountManagerInput = {
@@ -67232,6 +69088,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutAccountManagerInput = {
@@ -68544,6 +70401,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutTasksInput = {
@@ -68613,6 +70471,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutTasksInput = {
@@ -68820,6 +70679,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutTasksInput = {
@@ -68889,6 +70749,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserCreateWithoutTimeSessionsInput = {
@@ -69912,6 +71773,55 @@ export namespace Prisma {
     data: ShootCreateManyClientInput | ShootCreateManyClientInput[]
   }
 
+  export type VideoJobCreateWithoutClientInput = {
+    id?: string
+    date: string
+    clientName: string
+    shotBy?: string
+    videosShot?: number
+    edited?: number
+    editStatus?: string
+    editorIds?: string
+    editorNames?: string
+    informedAM?: boolean
+    posting?: string
+    verifiedBy?: string
+    storage?: string
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type VideoJobUncheckedCreateWithoutClientInput = {
+    id?: string
+    date: string
+    clientName: string
+    shotBy?: string
+    videosShot?: number
+    edited?: number
+    editStatus?: string
+    editorIds?: string
+    editorNames?: string
+    informedAM?: boolean
+    posting?: string
+    verifiedBy?: string
+    storage?: string
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type VideoJobCreateOrConnectWithoutClientInput = {
+    where: VideoJobWhereUniqueInput
+    create: XOR<VideoJobCreateWithoutClientInput, VideoJobUncheckedCreateWithoutClientInput>
+  }
+
+  export type VideoJobCreateManyClientInputEnvelope = {
+    data: VideoJobCreateManyClientInput | VideoJobCreateManyClientInput[]
+  }
+
   export type UserUpsertWithoutManagedClientsInput = {
     update: XOR<UserUpdateWithoutManagedClientsInput, UserUncheckedUpdateWithoutManagedClientsInput>
     create: XOR<UserCreateWithoutManagedClientsInput, UserUncheckedCreateWithoutManagedClientsInput>
@@ -70608,6 +72518,46 @@ export namespace Prisma {
     data: XOR<ShootUpdateManyMutationInput, ShootUncheckedUpdateManyWithoutClientInput>
   }
 
+  export type VideoJobUpsertWithWhereUniqueWithoutClientInput = {
+    where: VideoJobWhereUniqueInput
+    update: XOR<VideoJobUpdateWithoutClientInput, VideoJobUncheckedUpdateWithoutClientInput>
+    create: XOR<VideoJobCreateWithoutClientInput, VideoJobUncheckedCreateWithoutClientInput>
+  }
+
+  export type VideoJobUpdateWithWhereUniqueWithoutClientInput = {
+    where: VideoJobWhereUniqueInput
+    data: XOR<VideoJobUpdateWithoutClientInput, VideoJobUncheckedUpdateWithoutClientInput>
+  }
+
+  export type VideoJobUpdateManyWithWhereWithoutClientInput = {
+    where: VideoJobScalarWhereInput
+    data: XOR<VideoJobUpdateManyMutationInput, VideoJobUncheckedUpdateManyWithoutClientInput>
+  }
+
+  export type VideoJobScalarWhereInput = {
+    AND?: VideoJobScalarWhereInput | VideoJobScalarWhereInput[]
+    OR?: VideoJobScalarWhereInput[]
+    NOT?: VideoJobScalarWhereInput | VideoJobScalarWhereInput[]
+    id?: StringFilter<"VideoJob"> | string
+    date?: StringFilter<"VideoJob"> | string
+    clientId?: StringNullableFilter<"VideoJob"> | string | null
+    clientName?: StringFilter<"VideoJob"> | string
+    shotBy?: StringFilter<"VideoJob"> | string
+    videosShot?: IntFilter<"VideoJob"> | number
+    edited?: IntFilter<"VideoJob"> | number
+    editStatus?: StringFilter<"VideoJob"> | string
+    editorIds?: StringFilter<"VideoJob"> | string
+    editorNames?: StringFilter<"VideoJob"> | string
+    informedAM?: BoolFilter<"VideoJob"> | boolean
+    posting?: StringFilter<"VideoJob"> | string
+    verifiedBy?: StringFilter<"VideoJob"> | string
+    storage?: StringFilter<"VideoJob"> | string
+    note?: StringFilter<"VideoJob"> | string
+    updatedBy?: StringFilter<"VideoJob"> | string
+    createdAt?: DateTimeFilter<"VideoJob"> | Date | string
+    updatedAt?: DateTimeFilter<"VideoJob"> | Date | string
+  }
+
   export type ClientCreateWithoutContactsInput = {
     id?: string
     code: string
@@ -70675,6 +72625,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutContactsInput = {
@@ -70744,6 +72695,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutContactsInput = {
@@ -70829,6 +72781,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutContactsInput = {
@@ -70898,6 +72851,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutServicesInput = {
@@ -70967,6 +72921,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutServicesInput = {
@@ -71036,6 +72991,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutServicesInput = {
@@ -71121,6 +73077,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutServicesInput = {
@@ -71190,6 +73147,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutDeliverablesInput = {
@@ -71259,6 +73217,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutDeliverablesInput = {
@@ -71328,6 +73287,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutDeliverablesInput = {
@@ -71413,6 +73373,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutDeliverablesInput = {
@@ -71482,6 +73443,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutAssignmentsInput = {
@@ -71551,6 +73513,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutAssignmentsInput = {
@@ -71620,6 +73583,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutAssignmentsInput = {
@@ -71760,6 +73724,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutAssignmentsInput = {
@@ -71829,6 +73794,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserUpsertWithoutAssignmentsInput = {
@@ -71959,6 +73925,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutUpdatesInput = {
@@ -72028,6 +73995,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutUpdatesInput = {
@@ -72168,6 +74136,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutUpdatesInput = {
@@ -72237,6 +74206,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserUpsertWithoutUpdatesInput = {
@@ -72367,6 +74337,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutInvoicesInput = {
@@ -72436,6 +74407,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutInvoicesInput = {
@@ -72521,6 +74493,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutInvoicesInput = {
@@ -72590,6 +74563,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type PaymentCreateWithoutInvoiceInput = {
@@ -72690,6 +74664,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSalesInvoicesInput = {
@@ -72759,6 +74734,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSalesInvoicesInput = {
@@ -72875,6 +74851,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSalesInvoicesInput = {
@@ -72944,6 +74921,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type SalesInvoiceCreateWithoutPaymentsInput = {
@@ -73181,6 +75159,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSlasInput = {
@@ -73250,6 +75229,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSlasInput = {
@@ -73335,6 +75315,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSlasInput = {
@@ -73404,6 +75385,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutCampaignsInput = {
@@ -73473,6 +75455,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutCampaignsInput = {
@@ -73542,6 +75525,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutCampaignsInput = {
@@ -73627,6 +75611,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutCampaignsInput = {
@@ -73696,6 +75681,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutDevProjectsInput = {
@@ -73765,6 +75751,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutDevProjectsInput = {
@@ -73834,6 +75821,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutDevProjectsInput = {
@@ -74022,6 +76010,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutDevProjectsInput = {
@@ -74091,6 +76080,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserUpsertWithoutDevProjectsInput = {
@@ -74468,6 +76458,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSocialPostsInput = {
@@ -74537,6 +76528,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSocialPostsInput = {
@@ -74622,6 +76614,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSocialPostsInput = {
@@ -74691,6 +76684,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutSeoAnalyticsInput = {
@@ -74760,6 +76754,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSeoAnalyticsInput = {
@@ -74829,6 +76824,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSeoAnalyticsInput = {
@@ -74914,6 +76910,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSeoAnalyticsInput = {
@@ -74983,6 +76980,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutSeoBlogSlotsInput = {
@@ -75052,6 +77050,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSeoBlogSlotsInput = {
@@ -75121,6 +77120,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSeoBlogSlotsInput = {
@@ -75206,6 +77206,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSeoBlogSlotsInput = {
@@ -75275,6 +77276,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutSeoKeywordsInput = {
@@ -75344,6 +77346,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSeoKeywordsInput = {
@@ -75413,6 +77416,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSeoKeywordsInput = {
@@ -75498,6 +77502,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSeoKeywordsInput = {
@@ -75567,6 +77572,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutSeoBacklinksInput = {
@@ -75636,6 +77642,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSeoBacklinksInput = {
@@ -75705,6 +77712,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSeoBacklinksInput = {
@@ -75790,6 +77798,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSeoBacklinksInput = {
@@ -75859,6 +77868,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutGmbLocationsInput = {
@@ -75928,6 +77938,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutGmbLocationsInput = {
@@ -75997,6 +78008,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutGmbLocationsInput = {
@@ -76082,6 +78094,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutGmbLocationsInput = {
@@ -76151,6 +78164,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutSeoReportsInput = {
@@ -76220,6 +78234,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutSeoReportsInput = {
@@ -76289,6 +78304,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutSeoReportsInput = {
@@ -76374,6 +78390,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutSeoReportsInput = {
@@ -76443,6 +78460,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutCreativeTasksInput = {
@@ -76512,6 +78530,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutCreativeTasksInput = {
@@ -76581,6 +78600,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutCreativeTasksInput = {
@@ -76776,6 +78796,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutCreativeTasksInput = {
@@ -76845,6 +78866,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserUpsertWithoutCreativeTasksInput = {
@@ -77036,6 +79058,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutShootsInput = {
@@ -77105,6 +79128,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutShootsInput = {
@@ -77300,6 +79324,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutShootsInput = {
@@ -77369,6 +79394,7 @@ export namespace Prisma {
     seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserUpsertWithoutShootsInput = {
@@ -77560,6 +79586,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutGoogleCampaignsInput = {
@@ -77629,6 +79656,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutGoogleCampaignsInput = {
@@ -77714,6 +79742,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutGoogleCampaignsInput = {
@@ -77783,6 +79812,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateWithoutAdsMetricsInput = {
@@ -77852,6 +79882,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
     seoReports?: SeoReportCreateNestedManyWithoutClientInput
     shoots?: ShootCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutAdsMetricsInput = {
@@ -77921,6 +79952,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
     seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
     shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+    videoJobs?: VideoJobUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutAdsMetricsInput = {
@@ -78006,6 +80038,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutAdsMetricsInput = {
@@ -78075,6 +80108,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserCreateWithoutSalesLeadsInput = {
@@ -79588,6 +81622,302 @@ export namespace Prisma {
     activities?: LeadActivityUncheckedUpdateManyWithoutLeadNestedInput
   }
 
+  export type ClientCreateWithoutVideoJobsInput = {
+    id?: string
+    code: string
+    name: string
+    website?: string | null
+    industry?: string | null
+    monthlyRetainer?: number
+    googleBudget?: number
+    seoPriority?: string
+    seoScheduleDays?: string
+    blogTarget?: number
+    backlinkTarget?: number
+    keywordTarget?: number
+    gscLink?: string
+    gaLink?: string
+    domainAuthority?: number
+    pocName?: string | null
+    pocMobile?: string | null
+    pocEmail?: string | null
+    onboardDate?: Date | string
+    renewalDate?: string
+    status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
+    billingCompany?: string
+    billingDay?: number
+    paymentTerm?: string
+    importantNotes?: string
+    websiteName?: string
+    websiteDomain?: string
+    websiteServices?: string
+    domainTaken?: boolean
+    domainAmount?: number
+    hostingTaken?: boolean
+    hostingAmount?: number
+    designAmount?: number
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accountManager?: UserCreateNestedOneWithoutManagedClientsInput
+    services?: ClientServiceCreateNestedManyWithoutClientInput
+    deliverables?: DeliverableCreateNestedManyWithoutClientInput
+    assignments?: AssignmentCreateNestedManyWithoutClientInput
+    updates?: WorkUpdateCreateNestedManyWithoutClientInput
+    adsMetrics?: AdsPerformanceCreateNestedManyWithoutClientInput
+    invoices?: InvoiceCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceCreateNestedManyWithoutClientInput
+    slas?: SlaCreateNestedManyWithoutClientInput
+    campaigns?: CampaignEntryCreateNestedManyWithoutClientInput
+    socialPosts?: SocialPostCreateNestedManyWithoutClientInput
+    devProjects?: DevProjectCreateNestedManyWithoutClientInput
+    contacts?: ClientContactCreateNestedManyWithoutClientInput
+    tasks?: TaskCreateNestedManyWithoutClientInput
+    googleCampaigns?: GoogleAdsCampaignCreateNestedManyWithoutClientInput
+    creativeTasks?: CreativeTaskCreateNestedManyWithoutClientInput
+    seoAnalytics?: SeoAnalyticsCreateNestedManyWithoutClientInput
+    seoBlogSlots?: SeoBlogSlotCreateNestedManyWithoutClientInput
+    seoKeywords?: SeoKeywordCreateNestedManyWithoutClientInput
+    seoBacklinks?: SeoBacklinkCreateNestedManyWithoutClientInput
+    gmbLocations?: GmbClientCreateNestedManyWithoutClientInput
+    seoReports?: SeoReportCreateNestedManyWithoutClientInput
+    shoots?: ShootCreateNestedManyWithoutClientInput
+  }
+
+  export type ClientUncheckedCreateWithoutVideoJobsInput = {
+    id?: string
+    code: string
+    name: string
+    website?: string | null
+    industry?: string | null
+    monthlyRetainer?: number
+    googleBudget?: number
+    seoPriority?: string
+    seoScheduleDays?: string
+    blogTarget?: number
+    backlinkTarget?: number
+    keywordTarget?: number
+    gscLink?: string
+    gaLink?: string
+    domainAuthority?: number
+    pocName?: string | null
+    pocMobile?: string | null
+    pocEmail?: string | null
+    onboardDate?: Date | string
+    renewalDate?: string
+    status?: string
+    gstApplicable?: boolean
+    gstRate?: number
+    gstin?: string
+    billingCompany?: string
+    billingDay?: number
+    paymentTerm?: string
+    importantNotes?: string
+    websiteName?: string
+    websiteDomain?: string
+    websiteServices?: string
+    domainTaken?: boolean
+    domainAmount?: number
+    hostingTaken?: boolean
+    hostingAmount?: number
+    designAmount?: number
+    websiteTakenDate?: string
+    websiteExpiryDate?: string
+    websiteRenewAmount?: number
+    followupLog?: string
+    nextFollowup?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accountManagerId?: string | null
+    services?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
+    deliverables?: DeliverableUncheckedCreateNestedManyWithoutClientInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutClientInput
+    updates?: WorkUpdateUncheckedCreateNestedManyWithoutClientInput
+    adsMetrics?: AdsPerformanceUncheckedCreateNestedManyWithoutClientInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    salesInvoices?: SalesInvoiceUncheckedCreateNestedManyWithoutClientInput
+    slas?: SlaUncheckedCreateNestedManyWithoutClientInput
+    campaigns?: CampaignEntryUncheckedCreateNestedManyWithoutClientInput
+    socialPosts?: SocialPostUncheckedCreateNestedManyWithoutClientInput
+    devProjects?: DevProjectUncheckedCreateNestedManyWithoutClientInput
+    contacts?: ClientContactUncheckedCreateNestedManyWithoutClientInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutClientInput
+    googleCampaigns?: GoogleAdsCampaignUncheckedCreateNestedManyWithoutClientInput
+    creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutClientInput
+    seoAnalytics?: SeoAnalyticsUncheckedCreateNestedManyWithoutClientInput
+    seoBlogSlots?: SeoBlogSlotUncheckedCreateNestedManyWithoutClientInput
+    seoKeywords?: SeoKeywordUncheckedCreateNestedManyWithoutClientInput
+    seoBacklinks?: SeoBacklinkUncheckedCreateNestedManyWithoutClientInput
+    gmbLocations?: GmbClientUncheckedCreateNestedManyWithoutClientInput
+    seoReports?: SeoReportUncheckedCreateNestedManyWithoutClientInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutClientInput
+  }
+
+  export type ClientCreateOrConnectWithoutVideoJobsInput = {
+    where: ClientWhereUniqueInput
+    create: XOR<ClientCreateWithoutVideoJobsInput, ClientUncheckedCreateWithoutVideoJobsInput>
+  }
+
+  export type ClientUpsertWithoutVideoJobsInput = {
+    update: XOR<ClientUpdateWithoutVideoJobsInput, ClientUncheckedUpdateWithoutVideoJobsInput>
+    create: XOR<ClientCreateWithoutVideoJobsInput, ClientUncheckedCreateWithoutVideoJobsInput>
+    where?: ClientWhereInput
+  }
+
+  export type ClientUpdateToOneWithWhereWithoutVideoJobsInput = {
+    where?: ClientWhereInput
+    data: XOR<ClientUpdateWithoutVideoJobsInput, ClientUncheckedUpdateWithoutVideoJobsInput>
+  }
+
+  export type ClientUpdateWithoutVideoJobsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    googleBudget?: IntFieldUpdateOperationsInput | number
+    seoPriority?: StringFieldUpdateOperationsInput | string
+    seoScheduleDays?: StringFieldUpdateOperationsInput | string
+    blogTarget?: IntFieldUpdateOperationsInput | number
+    backlinkTarget?: IntFieldUpdateOperationsInput | number
+    keywordTarget?: IntFieldUpdateOperationsInput | number
+    gscLink?: StringFieldUpdateOperationsInput | string
+    gaLink?: StringFieldUpdateOperationsInput | string
+    domainAuthority?: IntFieldUpdateOperationsInput | number
+    pocName?: NullableStringFieldUpdateOperationsInput | string | null
+    pocMobile?: NullableStringFieldUpdateOperationsInput | string | null
+    pocEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    renewalDate?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
+    billingCompany?: StringFieldUpdateOperationsInput | string
+    billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
+    importantNotes?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    websiteServices?: StringFieldUpdateOperationsInput | string
+    domainTaken?: BoolFieldUpdateOperationsInput | boolean
+    domainAmount?: IntFieldUpdateOperationsInput | number
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
+    designAmount?: IntFieldUpdateOperationsInput | number
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accountManager?: UserUpdateOneWithoutManagedClientsNestedInput
+    services?: ClientServiceUpdateManyWithoutClientNestedInput
+    deliverables?: DeliverableUpdateManyWithoutClientNestedInput
+    assignments?: AssignmentUpdateManyWithoutClientNestedInput
+    updates?: WorkUpdateUpdateManyWithoutClientNestedInput
+    adsMetrics?: AdsPerformanceUpdateManyWithoutClientNestedInput
+    invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUpdateManyWithoutClientNestedInput
+    slas?: SlaUpdateManyWithoutClientNestedInput
+    campaigns?: CampaignEntryUpdateManyWithoutClientNestedInput
+    socialPosts?: SocialPostUpdateManyWithoutClientNestedInput
+    devProjects?: DevProjectUpdateManyWithoutClientNestedInput
+    contacts?: ClientContactUpdateManyWithoutClientNestedInput
+    tasks?: TaskUpdateManyWithoutClientNestedInput
+    googleCampaigns?: GoogleAdsCampaignUpdateManyWithoutClientNestedInput
+    creativeTasks?: CreativeTaskUpdateManyWithoutClientNestedInput
+    seoAnalytics?: SeoAnalyticsUpdateManyWithoutClientNestedInput
+    seoBlogSlots?: SeoBlogSlotUpdateManyWithoutClientNestedInput
+    seoKeywords?: SeoKeywordUpdateManyWithoutClientNestedInput
+    seoBacklinks?: SeoBacklinkUpdateManyWithoutClientNestedInput
+    gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
+    seoReports?: SeoReportUpdateManyWithoutClientNestedInput
+    shoots?: ShootUpdateManyWithoutClientNestedInput
+  }
+
+  export type ClientUncheckedUpdateWithoutVideoJobsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    googleBudget?: IntFieldUpdateOperationsInput | number
+    seoPriority?: StringFieldUpdateOperationsInput | string
+    seoScheduleDays?: StringFieldUpdateOperationsInput | string
+    blogTarget?: IntFieldUpdateOperationsInput | number
+    backlinkTarget?: IntFieldUpdateOperationsInput | number
+    keywordTarget?: IntFieldUpdateOperationsInput | number
+    gscLink?: StringFieldUpdateOperationsInput | string
+    gaLink?: StringFieldUpdateOperationsInput | string
+    domainAuthority?: IntFieldUpdateOperationsInput | number
+    pocName?: NullableStringFieldUpdateOperationsInput | string | null
+    pocMobile?: NullableStringFieldUpdateOperationsInput | string | null
+    pocEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    renewalDate?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    gstApplicable?: BoolFieldUpdateOperationsInput | boolean
+    gstRate?: IntFieldUpdateOperationsInput | number
+    gstin?: StringFieldUpdateOperationsInput | string
+    billingCompany?: StringFieldUpdateOperationsInput | string
+    billingDay?: IntFieldUpdateOperationsInput | number
+    paymentTerm?: StringFieldUpdateOperationsInput | string
+    importantNotes?: StringFieldUpdateOperationsInput | string
+    websiteName?: StringFieldUpdateOperationsInput | string
+    websiteDomain?: StringFieldUpdateOperationsInput | string
+    websiteServices?: StringFieldUpdateOperationsInput | string
+    domainTaken?: BoolFieldUpdateOperationsInput | boolean
+    domainAmount?: IntFieldUpdateOperationsInput | number
+    hostingTaken?: BoolFieldUpdateOperationsInput | boolean
+    hostingAmount?: IntFieldUpdateOperationsInput | number
+    designAmount?: IntFieldUpdateOperationsInput | number
+    websiteTakenDate?: StringFieldUpdateOperationsInput | string
+    websiteExpiryDate?: StringFieldUpdateOperationsInput | string
+    websiteRenewAmount?: IntFieldUpdateOperationsInput | number
+    followupLog?: StringFieldUpdateOperationsInput | string
+    nextFollowup?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    services?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
+    deliverables?: DeliverableUncheckedUpdateManyWithoutClientNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutClientNestedInput
+    updates?: WorkUpdateUncheckedUpdateManyWithoutClientNestedInput
+    adsMetrics?: AdsPerformanceUncheckedUpdateManyWithoutClientNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    salesInvoices?: SalesInvoiceUncheckedUpdateManyWithoutClientNestedInput
+    slas?: SlaUncheckedUpdateManyWithoutClientNestedInput
+    campaigns?: CampaignEntryUncheckedUpdateManyWithoutClientNestedInput
+    socialPosts?: SocialPostUncheckedUpdateManyWithoutClientNestedInput
+    devProjects?: DevProjectUncheckedUpdateManyWithoutClientNestedInput
+    contacts?: ClientContactUncheckedUpdateManyWithoutClientNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutClientNestedInput
+    googleCampaigns?: GoogleAdsCampaignUncheckedUpdateManyWithoutClientNestedInput
+    creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutClientNestedInput
+    seoAnalytics?: SeoAnalyticsUncheckedUpdateManyWithoutClientNestedInput
+    seoBlogSlots?: SeoBlogSlotUncheckedUpdateManyWithoutClientNestedInput
+    seoKeywords?: SeoKeywordUncheckedUpdateManyWithoutClientNestedInput
+    seoBacklinks?: SeoBacklinkUncheckedUpdateManyWithoutClientNestedInput
+    gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
+    seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+  }
+
   export type ClientCreateManyAccountManagerInput = {
     id?: string
     code: string
@@ -79919,6 +82249,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUpdateManyWithoutClientNestedInput
     shoots?: ShootUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutAccountManagerInput = {
@@ -79988,6 +82319,7 @@ export namespace Prisma {
     gmbLocations?: GmbClientUncheckedUpdateManyWithoutClientNestedInput
     seoReports?: SeoReportUncheckedUpdateManyWithoutClientNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutClientNestedInput
+    videoJobs?: VideoJobUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateManyWithoutAccountManagerInput = {
@@ -81027,6 +83359,26 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type VideoJobCreateManyClientInput = {
+    id?: string
+    date: string
+    clientName: string
+    shotBy?: string
+    videosShot?: number
+    edited?: number
+    editStatus?: string
+    editorIds?: string
+    editorNames?: string
+    informedAM?: boolean
+    posting?: string
+    verifiedBy?: string
+    storage?: string
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type ClientServiceUpdateWithoutClientInput = {
     id?: StringFieldUpdateOperationsInput | string
     service?: StringFieldUpdateOperationsInput | string
@@ -81998,6 +84350,66 @@ export namespace Prisma {
     footageLink?: StringFieldUpdateOperationsInput | string
     handedOff?: BoolFieldUpdateOperationsInput | boolean
     followupLog?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VideoJobUpdateWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    clientName?: StringFieldUpdateOperationsInput | string
+    shotBy?: StringFieldUpdateOperationsInput | string
+    videosShot?: IntFieldUpdateOperationsInput | number
+    edited?: IntFieldUpdateOperationsInput | number
+    editStatus?: StringFieldUpdateOperationsInput | string
+    editorIds?: StringFieldUpdateOperationsInput | string
+    editorNames?: StringFieldUpdateOperationsInput | string
+    informedAM?: BoolFieldUpdateOperationsInput | boolean
+    posting?: StringFieldUpdateOperationsInput | string
+    verifiedBy?: StringFieldUpdateOperationsInput | string
+    storage?: StringFieldUpdateOperationsInput | string
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VideoJobUncheckedUpdateWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    clientName?: StringFieldUpdateOperationsInput | string
+    shotBy?: StringFieldUpdateOperationsInput | string
+    videosShot?: IntFieldUpdateOperationsInput | number
+    edited?: IntFieldUpdateOperationsInput | number
+    editStatus?: StringFieldUpdateOperationsInput | string
+    editorIds?: StringFieldUpdateOperationsInput | string
+    editorNames?: StringFieldUpdateOperationsInput | string
+    informedAM?: BoolFieldUpdateOperationsInput | boolean
+    posting?: StringFieldUpdateOperationsInput | string
+    verifiedBy?: StringFieldUpdateOperationsInput | string
+    storage?: StringFieldUpdateOperationsInput | string
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VideoJobUncheckedUpdateManyWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    clientName?: StringFieldUpdateOperationsInput | string
+    shotBy?: StringFieldUpdateOperationsInput | string
+    videosShot?: IntFieldUpdateOperationsInput | number
+    edited?: IntFieldUpdateOperationsInput | number
+    editStatus?: StringFieldUpdateOperationsInput | string
+    editorIds?: StringFieldUpdateOperationsInput | string
+    editorNames?: StringFieldUpdateOperationsInput | string
+    informedAM?: BoolFieldUpdateOperationsInput | boolean
+    posting?: StringFieldUpdateOperationsInput | string
+    verifiedBy?: StringFieldUpdateOperationsInput | string
+    storage?: StringFieldUpdateOperationsInput | string
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

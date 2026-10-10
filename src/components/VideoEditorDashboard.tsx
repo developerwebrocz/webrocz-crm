@@ -4,10 +4,13 @@ import { todayIST } from "@/lib/india-date";
 import { initials } from "@/lib/domain";
 import TodayEditCount from "@/components/TodayEditCount";
 import MyShootsStrip from "@/components/MyShootsStrip";
+import CountStepper from "@/components/CountStepper";
+import { getMyOpenVideoJobs } from "@/lib/video-job-queries";
+import { saveVideoJob } from "@/app/video-job-actions";
 import { advanceVideoTask } from "@/app/video-dashboard-actions";
 import {
   Clapperboard, ListOrdered, Plus, AlertTriangle, CalendarClock, Loader, Eye, CheckCircle2, LayoutGrid,
-  ArrowRight, Play, Send, Check, ExternalLink, Sparkles, Users, Flame, Clock3,
+  ArrowRight, Play, Send, Check, ExternalLink, Sparkles, Users, Flame, Clock3, Film, Camera,
 } from "lucide-react";
 
 // A video editor's home page: what to do today at a glance — today's editing count, the videos
@@ -95,6 +98,11 @@ export default async function VideoEditorDashboard({ user, rows, counts, progres
   const upcoming = open.filter((r) => !focusIds.has(r.id) && r.status === "PENDING").sort(byDue).slice(0, 5);
   const inReview = open.filter((r) => !focusIds.has(r.id) && r.status === "REVIEW").sort(byDue).slice(0, 5);
 
+  // client shoots whose videos I still have to edit (the "Client Videos" tracker)
+  const jobs = await getMyOpenVideoJobs(user.id);
+  const jobsToEdit = jobs.reduce((s, j) => s + Math.max(0, j.videosShot - j.edited), 0);
+  const jobLine = jobs.length ? `${jobs.length} client shoot${jobs.length === 1 ? " is" : "s are"} waiting for your edit${jobsToEdit ? ` (${jobsToEdit} video${jobsToEdit === 1 ? "" : "s"})` : ""}. ` : "";
+
   const summary = counts.overdue > 0
     ? `${counts.overdue} video${counts.overdue === 1 ? " is" : "s are"} overdue${counts.dueToday ? ` and ${counts.dueToday} due today` : ""} — start with those.`
     : counts.dueToday > 0 ? `${counts.dueToday} video${counts.dueToday === 1 ? " is" : "s are"} due today.`
@@ -102,6 +110,7 @@ export default async function VideoEditorDashboard({ user, rows, counts, progres
     : "No videos in your queue right now.";
 
   const tiles = [
+    { label: "Client videos", n: jobs.length, icon: Film, tone: "#6ee7b7", href: "/client-videos" },
     { label: "In my queue", n: open.length, icon: LayoutGrid, tone: "#c4b5fd", href: "/videos" },
     { label: "Due today", n: counts.dueToday, icon: CalendarClock, tone: "#fcd34d", href: "/videos?f=DUE_TODAY" },
     { label: "In progress", n: counts.inProgress, icon: Loader, tone: "#7dd3fc", href: "/videos?f=IN_PROGRESS" },
@@ -136,15 +145,16 @@ export default async function VideoEditorDashboard({ user, rows, counts, progres
           <div className="min-w-0">
             <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[.1em] text-white/60"><Clapperboard size={13} /> Video studio · {dateLabel}</div>
             <h1 className="mt-2 text-[26px] font-extrabold leading-tight tracking-tight !text-white sm:text-[28px]">{greeting}, {user.name.split(" ")[0]}</h1>
-            <p className="mt-1.5 text-[13.5px] text-white/75">{summary}</p>
+            <p className="mt-1.5 text-[13.5px] text-white/75">{jobLine}{open.length || !jobs.length ? summary : ""}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            <Link href="/client-videos" className="inline-flex h-9 items-center gap-1.5 rounded-[10px] bg-white/10 px-3.5 text-[12.5px] font-bold text-white ring-1 ring-white/15 transition hover:bg-white/20"><Film size={14} /> Client Videos</Link>
             <Link href="/videos" className="inline-flex h-9 items-center gap-1.5 rounded-[10px] bg-white/10 px-3.5 text-[12.5px] font-bold text-white ring-1 ring-white/15 transition hover:bg-white/20"><Clapperboard size={14} /> My Videos</Link>
             <Link href="/video-team" className="inline-flex h-9 items-center gap-1.5 rounded-[10px] bg-white/10 px-3.5 text-[12.5px] font-bold text-white ring-1 ring-white/15 transition hover:bg-white/20"><ListOrdered size={14} /> Editing Count</Link>
             <Link href="/videos/new" className="inline-flex h-9 items-center gap-1.5 rounded-[10px] bg-white px-3.5 text-[12.5px] font-bold text-[var(--ink)] transition hover:bg-white/90"><Plus size={14} /> Add video</Link>
           </div>
         </div>
-        <div className="relative mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="relative mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
           {tiles.map((t) => (
             <Link key={t.label} href={t.href} className="group rounded-[13px] bg-white/[.07] px-4 py-3 ring-1 ring-white/10 transition hover:bg-white/[.13]">
               <div className="flex items-center justify-between">
@@ -166,6 +176,54 @@ export default async function VideoEditorDashboard({ user, rows, counts, progres
         {/* left: today's count + the work */}
         <div className="min-w-0 space-y-5">
           <TodayEditCount userId={user.id} />
+
+          {/* my client videos: the shoots assigned to me that are not fully edited yet */}
+          <div className="card !p-0 overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--line)] px-5 py-3.5">
+              <div className="flex items-center gap-2.5">
+                <span className="grid h-8 w-8 place-items-center rounded-[9px]" style={{ background: tint("var(--emerald)", 12), color: "var(--emerald)" }}><Film size={16} /></span>
+                <div>
+                  <div className="text-[14px] font-bold">My client videos</div>
+                  <div className="text-[11.5px] text-[var(--muted)]">Client shoots assigned to you — update how many videos you have edited</div>
+                </div>
+              </div>
+              <Link href="/client-videos" className="inline-flex items-center gap-1 text-[12px] font-bold text-[var(--violet)] hover:underline">All client videos <ArrowRight size={12} /></Link>
+            </div>
+            {jobs.length > 0 ? (
+              <div className="divide-y divide-[var(--line)]">
+                {jobs.slice(0, 8).map((j) => {
+                  const pct = j.videosShot > 0 ? Math.min(100, Math.round((j.edited / j.videosShot) * 100)) : 0;
+                  const tone = j.editStatus === "IN_PROGRESS" ? "var(--sky)" : "var(--amber)";
+                  return (
+                    <div key={j.id} className="flex flex-wrap items-center gap-x-4 gap-y-2.5 px-5 py-3" style={{ boxShadow: `inset 3px 0 0 ${tone}` }}>
+                      <div className="min-w-0 flex-1 basis-[220px]">
+                        <div className="truncate text-[14px] font-bold">{j.clientName}</div>
+                        <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11.5px] text-[var(--muted)]">
+                          <span className="inline-flex items-center gap-1"><Camera size={11} /> {new Date(`${j.date}T00:00:00Z`).toLocaleDateString("en-IN", { day: "2-digit", month: "short", timeZone: "UTC" })}{j.shotBy ? ` · ${j.shotBy}` : ""}</span>
+                          {j.with.length > 0 && <span>· with {j.with.join(", ")}</span>}
+                          {j.note && <span className="truncate">· {j.note}</span>}
+                        </div>
+                        <div className="mt-2 flex items-center gap-2.5">
+                          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[var(--surface-3)]"><div className="h-full rounded-full" style={{ width: `${pct}%`, background: tone }} /></div>
+                          <span className="flex-none text-[12px] font-bold tnum">{j.edited}{j.videosShot ? <span className="font-normal text-[var(--muted)]"> / {j.videosShot} edited</span> : <span className="font-normal text-[var(--muted)]"> edited</span>}</span>
+                        </div>
+                      </div>
+                      <form action={saveVideoJob} className="flex flex-none items-center gap-2">
+                        <input type="hidden" name="id" value={j.id} />
+                        <input type="hidden" name="return" value="/" />
+                        <div className="w-[132px]"><CountStepper key={j.edited} name="edited" defaultValue={j.edited} /></div>
+                        <button type="submit" className="inline-flex h-[42px] items-center rounded-[10px] border border-[var(--line-2)] bg-[var(--surface)] px-3 text-[12.5px] font-bold hover:bg-[var(--surface-3)]">Update</button>
+                        <button type="submit" name="complete" value="1" title="All videos edited" className="inline-flex h-[42px] items-center gap-1.5 rounded-[10px] px-3 text-[12.5px] font-bold text-white hover:opacity-90" style={{ background: "var(--emerald)" }}><Check size={14} /> All edited</button>
+                      </form>
+                    </div>
+                  );
+                })}
+                {jobs.length > 8 && <Link href="/client-videos" className="block px-5 py-2.5 text-center text-[12.5px] font-bold text-[var(--violet)] hover:underline">+{jobs.length - 8} more client shoots</Link>}
+              </div>
+            ) : (
+              <div className="px-5 py-7 text-center text-[12.5px] text-[var(--muted)]">No client videos are waiting for your edit. New client shoots assigned to you will show here.</div>
+            )}
+          </div>
 
           <div className="card !p-0 overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--line)] px-5 py-3.5">

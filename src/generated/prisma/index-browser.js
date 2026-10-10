@@ -726,6 +726,27 @@ exports.Prisma.ExpenseScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.VideoJobScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  clientId: 'clientId',
+  clientName: 'clientName',
+  shotBy: 'shotBy',
+  videosShot: 'videosShot',
+  edited: 'edited',
+  editStatus: 'editStatus',
+  editorIds: 'editorIds',
+  editorNames: 'editorNames',
+  informedAM: 'informedAM',
+  posting: 'posting',
+  verifiedBy: 'verifiedBy',
+  storage: 'storage',
+  note: 'note',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -776,7 +797,8 @@ exports.Prisma.ModelName = {
   Proposal: 'Proposal',
   Reminder: 'Reminder',
   Meeting: 'Meeting',
-  Expense: 'Expense'
+  Expense: 'Expense',
+  VideoJob: 'VideoJob'
 };
 
 /**
