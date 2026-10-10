@@ -1,21 +1,21 @@
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
 import { todayIST } from "@/lib/india-date";
-import { initials } from "@/lib/domain";
 import TodayEditCount from "@/components/TodayEditCount";
 import MyShootsStrip from "@/components/MyShootsStrip";
+import VideoTeamLeadBoard from "@/components/VideoTeamLeadBoard";
 import CountStepper from "@/components/CountStepper";
 import { getMyOpenVideoJobs } from "@/lib/video-job-queries";
 import { saveVideoJob } from "@/app/video-job-actions";
 import { advanceVideoTask } from "@/app/video-dashboard-actions";
 import {
   Clapperboard, ListOrdered, Plus, AlertTriangle, CalendarClock, Loader, Eye, CheckCircle2, LayoutGrid,
-  ArrowRight, Play, Send, Check, ExternalLink, Sparkles, Users, Flame, Clock3, Film, Camera,
+  ArrowRight, Play, Send, Check, ExternalLink, Sparkles, Flame, Clock3, Film, Camera,
 } from "lucide-react";
 
 // A video editor's home page: what to do today at a glance — today's editing count, the videos
 // that need attention (with one-click next step), what is coming up, and overall progress.
-// The full list with filters stays in "My Videos". The team lead also sees the team's day.
+// The full list with filters stays in "My Videos". The team lead also gets the team board
+// (everyone's work + assign) right under the greeting.
 
 type Row = {
   id: string; code: string; title: string; client: string; type: string; priority: string; status: string;
@@ -121,20 +121,6 @@ export default async function VideoEditorDashboard({ user, rows, counts, progres
     { key: "PENDING", n: pending }, { key: "IN_PROGRESS", n: counts.inProgress }, { key: "REVIEW", n: counts.review }, { key: "COMPLETED", n: counts.completed },
   ];
 
-  // Team lead: the team's day (today's count + open videos per editor).
-  const team = user.teamLead
-    ? await (async () => {
-        const [editors, todayCounts, openTasks] = await Promise.all([
-          prisma.user.findMany({ where: { role: "EDITOR", active: true }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
-          prisma.editCount.findMany({ where: { date: today }, select: { userId: true, count: true } }),
-          prisma.creativeTask.groupBy({ by: ["assignedToId"], where: { kind: "VIDEO", status: { not: "COMPLETED" } }, _count: { _all: true } }),
-        ]);
-        const c = new Map(todayCounts.map((x) => [x.userId, x.count]));
-        const o = new Map(openTasks.map((x) => [x.assignedToId, x._count._all]));
-        const list = editors.map((e) => ({ ...e, today: c.has(e.id) ? c.get(e.id)! : null, open: o.get(e.id) ?? 0 }));
-        return { list, total: list.reduce((s, e) => s + (e.today ?? 0), 0), updated: list.filter((e) => e.today !== null).length };
-      })()
-    : null;
 
   return (
     <div className="space-y-5">
@@ -169,6 +155,9 @@ export default async function VideoEditorDashboard({ user, rows, counts, progres
           ))}
         </div>
       </div>
+
+      {/* team lead: the whole team's work and the assign buttons */}
+      {user.teamLead && <VideoTeamLeadBoard meId={user.id} />}
 
       <MyShootsStrip userId={user.id} />
 
@@ -309,28 +298,6 @@ export default async function VideoEditorDashboard({ user, rows, counts, progres
             ) : <div className="px-5 py-6 text-center text-[12.5px] text-[var(--muted)]">{counts.review > 0 ? "They are listed in “Needs your attention”." : "Nothing is waiting for review."}</div>}
           </div>
 
-          {team && (
-            <div className="card !p-0 overflow-hidden">
-              <div className="flex items-center justify-between gap-2 border-b border-[var(--line)] px-5 py-3.5">
-                <div className="flex items-center gap-2.5">
-                  <span className="grid h-8 w-8 place-items-center rounded-[9px]" style={{ background: tint("var(--sky)", 12), color: "var(--sky)" }}><Users size={16} /></span>
-                  <div><div className="text-[14px] font-bold">My team today</div><div className="text-[11.5px] text-[var(--muted)]">{team.total} videos · {team.updated} of {team.list.length} updated</div></div>
-                </div>
-                <Link href="/video-team" className="inline-flex items-center gap-1 text-[12px] font-bold text-[var(--violet)] hover:underline">Open <ArrowRight size={12} /></Link>
-              </div>
-              <div className="divide-y divide-[var(--line)]">
-                {team.list.map((e) => (
-                  <div key={e.id} className="flex items-center gap-3 px-5 py-2.5">
-                    <span className="grid h-8 w-8 flex-none place-items-center rounded-[9px] text-[11.5px] font-extrabold" style={{ background: tint("var(--violet)", 11), color: "var(--violet)" }}>{initials(e.name)}</span>
-                    <div className="min-w-0 flex-1"><div className="truncate text-[13px] font-semibold">{e.name}{e.id === user.id ? " (me)" : ""}</div><div className="text-[11.5px] text-[var(--muted)]">{e.open} open video{e.open === 1 ? "" : "s"}</div></div>
-                    {e.today !== null
-                      ? <span className="rounded-full px-2.5 py-1 text-[11.5px] font-bold" style={{ background: tint("var(--emerald)", 11), color: "var(--emerald)" }}>{e.today} today</span>
-                      : <span className="rounded-full px-2.5 py-1 text-[11.5px] font-bold" style={{ background: tint("var(--amber)", 13), color: "#92600a" }}>Not updated</span>}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

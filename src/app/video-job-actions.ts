@@ -115,6 +115,35 @@ export async function saveVideoJob(fd: FormData) {
   back("1");
 }
 
+// "Assign" on the team lead's dashboard: choose the editors for a client shoot.
+export async function assignVideoJobEditors(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me || !canManageVideoJobs(me)) redirect("/");
+  const ret = str(fd, "return");
+  const job = await prisma.videoJob.findUnique({ where: { id: str(fd, "id") } });
+  if (job) {
+    const editors = await prisma.user.findMany({ where: { role: "EDITOR" }, select: { id: true } });
+    const allowed = new Set(editors.map((e) => e.id));
+    const editorIds = [...new Set(fd.getAll("editorIds").map(String).filter((x) => allowed.has(x)))];
+    if (editorIds.length) {
+      await prisma.videoJob.update({ where: { id: job.id }, data: { editorIds: JSON.stringify(editorIds), updatedBy: me.name } });
+      const before = new Set(parseIds(job.editorIds));
+      const fresh = editorIds.filter((x) => !before.has(x) && x !== me.id);
+      if (fresh.length) {
+        try {
+          await prisma.notification.createMany({ data: fresh.map((userId) => ({
+            userId, title: `Client videos to edit: ${job.clientName}`,
+            body: `${job.videosShot ? `${job.videosShot} video${job.videosShot === 1 ? "" : "s"} shot` : "Videos shot"}${job.shotBy ? ` by ${job.shotBy}` : ""} · assigned by ${me.name}`,
+            link: "/client-videos", tone: "violet",
+          })) });
+        } catch { /* notifications are best-effort */ }
+      }
+    }
+  }
+  revalidatePath("/client-videos"); revalidatePath("/");
+  redirect(ret.startsWith("/") && !ret.startsWith("//") ? ret : "/client-videos");
+}
+
 export async function deleteVideoJob(fd: FormData) {
   const me = await getCurrentUser();
   if (!me || !canSeeAllVideoJobs(me)) redirect("/");

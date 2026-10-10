@@ -32,11 +32,14 @@ const fmtDay = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString(
 const weekday = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-IN", { weekday: "short", timeZone: "UTC" });
 const isOpen = (r: VideoJobRow) => r.editStatus === "PENDING" || r.editStatus === "IN_PROGRESS";
 
-export default function ClientVideosBoard({ d, meId, saved }: { d: VideoJobBoardData; meId: string; saved: string }) {
+const TAB_KEYS = ["ALL", "OPEN", "PENDING", "IN_PROGRESS", "COMPLETED", "POST", "NO_EDIT"];
+
+// `initialTab`: the pipeline step picked in the sidebar. `openAdd`: start on the "Add client shoot" form.
+export default function ClientVideosBoard({ d, meId, saved, initialTab = "", openAdd = false }: { d: VideoJobBoardData; meId: string; saved: string; initialTab?: string; openAdd?: boolean }) {
   const [q, setQ] = useState("");
-  const [tab, setTab] = useState("ALL");
+  const [tab, setTab] = useState(TAB_KEYS.includes(initialTab) ? initialTab : "ALL");
   const [editor, setEditor] = useState("");
-  const [edit, setEdit] = useState<VideoJobRow | "new" | null>(null);
+  const [edit, setEdit] = useState<VideoJobRow | "new" | null>(openAdd && d.canManage ? "new" : null);
   const [importing, setImporting] = useState(false);
   const flash = SAVED[saved];
   const ret = `/client-videos?month=${d.month}&saved=1`;
@@ -61,7 +64,8 @@ export default function ClientVideosBoard({ d, meId, saved }: { d: VideoJobBoard
   ];
   const tabs = [
     { key: "ALL", label: "All", n: d.rows.length },
-    { key: "OPEN", label: "To edit", n: d.rows.filter(isOpen).length },
+    { key: "PENDING", label: "To edit", n: d.rows.filter((r) => r.editStatus === "PENDING").length },
+    { key: "IN_PROGRESS", label: "Editing", n: d.rows.filter((r) => r.editStatus === "IN_PROGRESS").length },
     { key: "COMPLETED", label: "Completed", n: d.rows.filter((r) => r.editStatus === "COMPLETED").length },
     { key: "POST", label: "Not posted", n: d.rows.filter((r) => r.editStatus === "COMPLETED" && r.posting !== "POSTED").length },
     { key: "NO_EDIT", label: "No edit", n: d.rows.filter((r) => r.editStatus === "NO_EDIT").length },
@@ -116,6 +120,7 @@ export default function ClientVideosBoard({ d, meId, saved }: { d: VideoJobBoard
       <div className="card !p-0 overflow-hidden">
         <div className="flex flex-wrap items-center gap-2 border-b border-[var(--line)] px-5 py-3">
           <div className="flex flex-wrap items-center gap-1.5">
+            {tab === "OPEN" && <button type="button" className="pill pill-dark">To edit + Editing <span className="ml-1 opacity-70 tnum">{d.rows.filter(isOpen).length}</span></button>}
             {tabs.map((t) => (
               <button key={t.key} type="button" onClick={() => setTab(t.key)} className={`pill ${tab === t.key ? "pill-dark" : ""}`}>{t.label} <span className={`ml-1 tnum ${tab === t.key ? "opacity-70" : "text-[var(--muted)]"}`}>{t.n}</span></button>
             ))}
@@ -215,7 +220,11 @@ export default function ClientVideosBoard({ d, meId, saved }: { d: VideoJobBoard
   );
 }
 
-function JobModal({ d, row, meId, ret, close }: { d: VideoJobBoardData; row: VideoJobRow | null; meId: string; ret: string; close: () => void }) {
+// What the form needs to know (also used by the team lead's dashboard to assign client videos).
+export type VideoJobFormOpts = Pick<VideoJobBoardData, "canManage" | "canDelete" | "shooters" | "editors" | "clientNames" | "today">;
+
+// `presetEditorId`: tick this editor on a new row ("assign to Madhu").
+export function JobModal({ d, row, meId, ret, close, presetEditorId = "", title = "Add client shoot" }: { d: VideoJobFormOpts; row: VideoJobRow | null; meId: string; ret: string; close: () => void; presetEditorId?: string; title?: string }) {
   const full = d.canManage; // every field; otherwise the editor updates the progress only
   const shotNames = (row?.shotBy ?? "").split(",").map((x) => x.trim()).filter(Boolean);
   const otherShooters = shotNames.filter((n) => !d.shooters.includes(n)).join(", ");
@@ -225,7 +234,7 @@ function JobModal({ d, row, meId, ret, close }: { d: VideoJobBoardData; row: Vid
       <div className="flex max-h-[92vh] w-full max-w-[640px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg">
         <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
           <div className="min-w-0">
-            <h2 className="truncate text-[16px] font-bold">{row ? row.clientName : "Add client shoot"}</h2>
+            <h2 className="truncate text-[16px] font-bold">{row ? row.clientName : title}</h2>
             <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">{row ? `${fmtDay(row.date)}${row.shotBy ? ` · shot by ${row.shotBy}` : ""}${row.videosShot ? ` · ${row.videosShot} videos shot` : ""}` : "After a shoot: the client, how many videos were shot and who edits them."}</p>
           </div>
           <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
@@ -253,7 +262,7 @@ function JobModal({ d, row, meId, ret, close }: { d: VideoJobBoardData; row: Vid
               <div>
                 <span className="eyebrow flex items-center gap-1.5"><Users size={12} /> Assigned to editor</span>
                 <div className="mt-1.5 flex flex-wrap gap-2">
-                  {d.editors.map((e) => <label key={e.id} className={chip}><input type="checkbox" name="editorIds" value={e.id} defaultChecked={row?.editorIds.includes(e.id) ?? false} className="h-4 w-4 accent-[var(--violet)]" /> {e.name}{e.id === meId ? " (me)" : ""}</label>)}
+                  {d.editors.map((e) => <label key={e.id} className={chip}><input type="checkbox" name="editorIds" value={e.id} defaultChecked={row ? row.editorIds.includes(e.id) : e.id === presetEditorId} className="h-4 w-4 accent-[var(--violet)]" /> {e.name}{e.id === meId ? " (me)" : ""}</label>)}
                 </div>
                 {row?.editorNames ? <label className="mt-2 block"><span className="text-[11.5px] text-[var(--muted)]">Other editors from the sheet (no login)</span><input name="editorNames" defaultValue={row.editorNames} className="input mt-1" /></label> : null}
               </div>

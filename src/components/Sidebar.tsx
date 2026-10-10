@@ -16,7 +16,7 @@ type Item = { href: string; label: string; icon: React.ElementType; badge?: numb
 type Group = { label?: string; items: Item[] };
 
 type Pipeline = { total: number; dueToday: number; inProgress: number; review: number; completed: number; overdue: number };
-export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0, reminderCount = 0, pipeline, user, myShoots = false }: { clientCount: number; approvalsCount?: number; taskCount?: number; reminderCount?: number; pipeline?: Pipeline; user: { name: string; role: string }; myShoots?: boolean }) {
+export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0, reminderCount = 0, pipeline, user, myShoots = false, videoPipe }: { clientCount: number; approvalsCount?: number; taskCount?: number; reminderCount?: number; pipeline?: Pipeline; user: { name: string; role: string }; myShoots?: boolean; videoPipe?: { toEdit: number; editing: number; done: number; notPosted: number; team: boolean } }) {
   const path = usePathname();
   const sp = useSearchParams();
   const curStage = sp.get("stage") ?? "";
@@ -157,6 +157,35 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     // Sales team → clean, pipeline-only sidebar (Sales group already added above).
   } else if (isAccountant) {
     // Accountant → finance-only (Invoices group already added above).
+  } else if (isEditor) {
+    // Video editors: the work first, then the client-videos pipeline in the order the work
+    // moves (to edit → editing → completed → posted), then everything else.
+    const vp = videoPipe ?? { toEdit: 0, editing: 0, done: 0, notPosted: 0, team: false };
+    const tabParam = sp.get("tab") ?? "";
+    const onCv = path.startsWith("/client-videos");
+    const openTasks = pipeline ? Math.max(0, pipeline.total - pipeline.completed) : 0;
+    groups.push({ label: "Video Work", items: [
+      { href: "/client-videos", label: "Client Videos", icon: Film, forceActive: onCv && tabParam === "" },
+      { href: "/video-team", label: "Editing Count", icon: ListOrdered },
+      { href: "/videos", label: "My Videos", icon: Clapperboard, badge: openTasks || undefined },
+      ...(myShoots ? [{ href: "/shoots", label: "My Shoots", icon: Camera }] : []),
+    ] });
+    const steps = [
+      { key: "PENDING", label: "To Edit", icon: CalendarClock, color: "#F59E0B", bg: "rgba(245,158,11,.20)", fg: "#FDBA74", n: vp.toEdit },
+      { key: "IN_PROGRESS", label: "Editing", icon: Loader, color: "#3B82F6", bg: "rgba(59,130,246,.20)", fg: "#93C5FD", n: vp.editing },
+      { key: "COMPLETED", label: "Completed", icon: CheckCircle2, color: "#10B981", bg: "rgba(16,185,129,.20)", fg: "#6EE7B7", n: vp.done },
+      { key: "POST", label: "Not Posted", icon: Megaphone, color: "#8B5CF6", bg: "rgba(139,92,246,.22)", fg: "#C4B5FD", n: vp.notPosted },
+    ];
+    groups.push({ label: vp.team ? "Team Pipeline" : "My Pipeline", items: steps.map((x) => ({
+      href: `/client-videos?tab=${x.key}`, label: x.label, icon: x.icon, iconColor: x.color,
+      badge: x.n, badgeBg: x.bg, badgeFg: x.fg, showZero: true,
+      forceActive: onCv && tabParam === x.key,
+    })) });
+    groups.push({ label: "More", items: [
+      { href: "/tasks", label: "My Tasks", icon: ListChecks, badge: taskCount || undefined },
+      { href: "/updates", label: "Update Work", icon: ClipboardList },
+      { href: "/reports", label: "Reports", icon: FileBarChart },
+    ] });
   } else {
     // role-primary console + personal work
     const work: Item[] = [];
