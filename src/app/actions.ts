@@ -499,12 +499,15 @@ export async function markNotificationsRead() {
 // specific team member. It lands on THAT person's Studio board and pings them a notification.
 export async function assignCreativeTask(fd: FormData) {
   const me = await getCurrentUser();
-  if (!me || !CREATIVE_ASSIGNER.includes(me.role)) redirect("/");
+  // the video team lead (a Video Editor marked as lead) assigns video work to their own team
+  const videoLead = !!me && me.role === "EDITOR" && me.teamLead;
+  if (!me || !(CREATIVE_ASSIGNER.includes(me.role) || videoLead)) redirect("/");
   const assignedToId = s(fd, "assignedToId");
   const title = s(fd, "title");
   if (!assignedToId || !title) redirect("/");
   const assignee = await prisma.user.findUnique({ where: { id: assignedToId } });
   if (!assignee || (assignee.role !== "DESIGNER" && assignee.role !== "EDITOR")) redirect("/");
+  if (videoLead && assignee.role !== "EDITOR") redirect("/");
   const kind = assignee.role === "EDITOR" ? "VIDEO" : "DESIGN";
   const prefix = kind === "VIDEO" ? "VID" : "DSG";
   const count = await prisma.creativeTask.count({ where: { assignedToId, kind } });

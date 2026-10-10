@@ -8,7 +8,8 @@ import { Send, X, Palette, Clapperboard } from "lucide-react";
 type Member = { id: string; name: string; role: string };
 type ClientOpt = { id: string; name: string };
 
-export default function AssignCreativeForm({ members, clients }: { members: Member[]; clients: ClientOpt[] }) {
+// `from`: page to return to after assigning (default: the dashboard). `label`: button text.
+export default function AssignCreativeForm({ members, clients, from, label }: { members: Member[]; clients: ClientOpt[]; from?: string; label?: string }) {
   const [open, setOpen] = useState(false);
   const [memberId, setMemberId] = useState("");
 
@@ -18,7 +19,7 @@ export default function AssignCreativeForm({ members, clients }: { members: Memb
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className="btn btn-violet"><Send size={15} /> Assign to Design / Video team</button>
+      <button onClick={() => setOpen(true)} className="btn btn-violet"><Send size={15} /> {label ?? "Assign to Design / Video team"}</button>
 
       {open && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" style={{ background: "rgba(15,23,42,.45)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) setOpen(false); }}>
@@ -31,11 +32,12 @@ export default function AssignCreativeForm({ members, clients }: { members: Memb
               <button onClick={() => setOpen(false)} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
             </div>
             <form action={assignCreativeTask} className="flex flex-col gap-4 overflow-y-auto p-6">
+              {from && <input type="hidden" name="from" value={from} />}
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="block"><span className="eyebrow">Assign to</span>
                   <select name="assignedToId" required value={memberId} onChange={(e) => setMemberId(e.target.value)} className="select mt-1.5">
                     <option value="">— Select team member —</option>
-                    <optgroup label="Designers">{members.filter((m) => m.role === "DESIGNER").map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}</optgroup>
+                    {members.some((m) => m.role === "DESIGNER") && <optgroup label="Designers">{members.filter((m) => m.role === "DESIGNER").map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}</optgroup>}
                     <optgroup label="Video Editors">{members.filter((m) => m.role === "EDITOR").map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}</optgroup>
                   </select>
                 </label>

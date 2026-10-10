@@ -20,6 +20,7 @@ model User {
   phone        String?
   passwordHash String?
   active       Boolean  @default(true)
+  teamLead     Boolean  @default(false) // video team lead: sees the whole team's work and assigns it
   createdAt    DateTime @default(now())
 
   managedClients   Client[]       @relation("AccountManager")
@@ -34,6 +35,24 @@ model User {
   salesLeads       Lead[]         @relation("LeadOwner")
   shoots           Shoot[]        @relation("ShootAssignee")
   shootRequests    Shoot[]        @relation("ShootRequester")
+  editCounts       EditCount[]
+}
+
+// Video team's daily "Editing Count" (kept in a Google Sheet before): how many videos an
+// editor finished on a day. One row per editor per date; no row = no entry (leave / holiday).
+model EditCount {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      String // "2026-08-24" (India date)
+  count     Int      @default(0)
+  note      String   @default("")
+  updatedBy String   @default("") // who saved it last
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date])
+  @@index([date])
 }
 
 model Task {

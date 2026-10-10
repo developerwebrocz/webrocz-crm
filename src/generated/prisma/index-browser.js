@@ -125,7 +125,19 @@ exports.Prisma.UserScalarFieldEnum = {
   phone: 'phone',
   passwordHash: 'passwordHash',
   active: 'active',
+  teamLead: 'teamLead',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.EditCountScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  date: 'date',
+  count: 'count',
+  note: 'note',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.TaskScalarFieldEnum = {
@@ -726,6 +738,7 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   User: 'User',
+  EditCount: 'EditCount',
   Task: 'Task',
   TimeSession: 'TimeSession',
   Client: 'Client',

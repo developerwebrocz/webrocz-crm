@@ -19,6 +19,11 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
+ * Model EditCount
+ * 
+ */
+export type EditCount = $Result.DefaultSelection<Prisma.$EditCountPayload>
+/**
  * Model Task
  * 
  */
@@ -334,6 +339,16 @@ export class PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.editCount`: Exposes CRUD operations for the **EditCount** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more EditCounts
+    * const editCounts = await prisma.editCount.findMany()
+    * ```
+    */
+  get editCount(): Prisma.EditCountDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.task`: Exposes CRUD operations for the **Task** model.
@@ -1152,6 +1167,7 @@ export namespace Prisma {
 
   export const ModelName: {
     User: 'User',
+    EditCount: 'EditCount',
     Task: 'Task',
     TimeSession: 'TimeSession',
     Client: 'Client',
@@ -1204,7 +1220,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "task" | "timeSession" | "client" | "clientContact" | "clientService" | "deliverable" | "assignment" | "workUpdate" | "invoice" | "salesInvoice" | "payment" | "sla" | "candidate" | "campaignEntry" | "devProject" | "devTask" | "devActivity" | "socialPost" | "seoAnalytics" | "seoBlogSlot" | "seoKeyword" | "seoBacklink" | "gmbClient" | "seoReport" | "creativeTask" | "shoot" | "googleAdsCampaign" | "adsPerformance" | "notification" | "lead" | "leadActivity" | "followup" | "quotation" | "proposal" | "reminder" | "meeting" | "expense"
+      modelProps: "user" | "editCount" | "task" | "timeSession" | "client" | "clientContact" | "clientService" | "deliverable" | "assignment" | "workUpdate" | "invoice" | "salesInvoice" | "payment" | "sla" | "candidate" | "campaignEntry" | "devProject" | "devTask" | "devActivity" | "socialPost" | "seoAnalytics" | "seoBlogSlot" | "seoKeyword" | "seoBacklink" | "gmbClient" | "seoReport" | "creativeTask" | "shoot" | "googleAdsCampaign" | "adsPerformance" | "notification" | "lead" | "leadActivity" | "followup" | "quotation" | "proposal" | "reminder" | "meeting" | "expense"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1279,6 +1295,80 @@ export namespace Prisma {
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
             result: $Utils.Optional<UserCountAggregateOutputType> | number
+          }
+        }
+      }
+      EditCount: {
+        payload: Prisma.$EditCountPayload<ExtArgs>
+        fields: Prisma.EditCountFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.EditCountFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditCountPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.EditCountFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditCountPayload>
+          }
+          findFirst: {
+            args: Prisma.EditCountFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditCountPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.EditCountFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditCountPayload>
+          }
+          findMany: {
+            args: Prisma.EditCountFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditCountPayload>[]
+          }
+          create: {
+            args: Prisma.EditCountCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditCountPayload>
+          }
+          createMany: {
+            args: Prisma.EditCountCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.EditCountCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditCountPayload>[]
+          }
+          delete: {
+            args: Prisma.EditCountDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditCountPayload>
+          }
+          update: {
+            args: Prisma.EditCountUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditCountPayload>
+          }
+          deleteMany: {
+            args: Prisma.EditCountDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.EditCountUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.EditCountUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditCountPayload>[]
+          }
+          upsert: {
+            args: Prisma.EditCountUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditCountPayload>
+          }
+          aggregate: {
+            args: Prisma.EditCountAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateEditCount>
+          }
+          groupBy: {
+            args: Prisma.EditCountGroupByArgs<ExtArgs>
+            result: $Utils.Optional<EditCountGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.EditCountCountArgs<ExtArgs>
+            result: $Utils.Optional<EditCountCountAggregateOutputType> | number
           }
         }
       }
@@ -4144,6 +4234,7 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     user?: UserOmit
+    editCount?: EditCountOmit
     task?: TaskOmit
     timeSession?: TimeSessionOmit
     client?: ClientOmit
@@ -4273,6 +4364,7 @@ export namespace Prisma {
     salesLeads: number
     shoots: number
     shootRequests: number
+    editCounts: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4288,6 +4380,7 @@ export namespace Prisma {
     salesLeads?: boolean | UserCountOutputTypeCountSalesLeadsArgs
     shoots?: boolean | UserCountOutputTypeCountShootsArgs
     shootRequests?: boolean | UserCountOutputTypeCountShootRequestsArgs
+    editCounts?: boolean | UserCountOutputTypeCountEditCountsArgs
   }
 
   // Custom InputTypes
@@ -4383,6 +4476,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountShootRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ShootWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountEditCountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EditCountWhereInput
   }
 
 
@@ -4775,6 +4875,7 @@ export namespace Prisma {
     phone: string | null
     passwordHash: string | null
     active: boolean | null
+    teamLead: boolean | null
     createdAt: Date | null
   }
 
@@ -4786,6 +4887,7 @@ export namespace Prisma {
     phone: string | null
     passwordHash: string | null
     active: boolean | null
+    teamLead: boolean | null
     createdAt: Date | null
   }
 
@@ -4797,6 +4899,7 @@ export namespace Prisma {
     phone: number
     passwordHash: number
     active: number
+    teamLead: number
     createdAt: number
     _all: number
   }
@@ -4810,6 +4913,7 @@ export namespace Prisma {
     phone?: true
     passwordHash?: true
     active?: true
+    teamLead?: true
     createdAt?: true
   }
 
@@ -4821,6 +4925,7 @@ export namespace Prisma {
     phone?: true
     passwordHash?: true
     active?: true
+    teamLead?: true
     createdAt?: true
   }
 
@@ -4832,6 +4937,7 @@ export namespace Prisma {
     phone?: true
     passwordHash?: true
     active?: true
+    teamLead?: true
     createdAt?: true
     _all?: true
   }
@@ -4916,6 +5022,7 @@ export namespace Prisma {
     phone: string | null
     passwordHash: string | null
     active: boolean
+    teamLead: boolean
     createdAt: Date
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
@@ -4944,6 +5051,7 @@ export namespace Prisma {
     phone?: boolean
     passwordHash?: boolean
     active?: boolean
+    teamLead?: boolean
     createdAt?: boolean
     managedClients?: boolean | User$managedClientsArgs<ExtArgs>
     assignments?: boolean | User$assignmentsArgs<ExtArgs>
@@ -4957,6 +5065,7 @@ export namespace Prisma {
     salesLeads?: boolean | User$salesLeadsArgs<ExtArgs>
     shoots?: boolean | User$shootsArgs<ExtArgs>
     shootRequests?: boolean | User$shootRequestsArgs<ExtArgs>
+    editCounts?: boolean | User$editCountsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4968,6 +5077,7 @@ export namespace Prisma {
     phone?: boolean
     passwordHash?: boolean
     active?: boolean
+    teamLead?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["user"]>
 
@@ -4979,6 +5089,7 @@ export namespace Prisma {
     phone?: boolean
     passwordHash?: boolean
     active?: boolean
+    teamLead?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["user"]>
 
@@ -4990,10 +5101,11 @@ export namespace Prisma {
     phone?: boolean
     passwordHash?: boolean
     active?: boolean
+    teamLead?: boolean
     createdAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "role" | "email" | "phone" | "passwordHash" | "active" | "createdAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "role" | "email" | "phone" | "passwordHash" | "active" | "teamLead" | "createdAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     managedClients?: boolean | User$managedClientsArgs<ExtArgs>
     assignments?: boolean | User$assignmentsArgs<ExtArgs>
@@ -5007,6 +5119,7 @@ export namespace Prisma {
     salesLeads?: boolean | User$salesLeadsArgs<ExtArgs>
     shoots?: boolean | User$shootsArgs<ExtArgs>
     shootRequests?: boolean | User$shootRequestsArgs<ExtArgs>
+    editCounts?: boolean | User$editCountsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5027,6 +5140,7 @@ export namespace Prisma {
       salesLeads: Prisma.$LeadPayload<ExtArgs>[]
       shoots: Prisma.$ShootPayload<ExtArgs>[]
       shootRequests: Prisma.$ShootPayload<ExtArgs>[]
+      editCounts: Prisma.$EditCountPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5036,6 +5150,7 @@ export namespace Prisma {
       phone: string | null
       passwordHash: string | null
       active: boolean
+      teamLead: boolean
       createdAt: Date
     }, ExtArgs["result"]["user"]>
     composites: {}
@@ -5443,6 +5558,7 @@ export namespace Prisma {
     salesLeads<T extends User$salesLeadsArgs<ExtArgs> = {}>(args?: Subset<T, User$salesLeadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     shoots<T extends User$shootsArgs<ExtArgs> = {}>(args?: Subset<T, User$shootsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     shootRequests<T extends User$shootRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$shootRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShootPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    editCounts<T extends User$editCountsArgs<ExtArgs> = {}>(args?: Subset<T, User$editCountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EditCountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5479,6 +5595,7 @@ export namespace Prisma {
     readonly phone: FieldRef<"User", 'String'>
     readonly passwordHash: FieldRef<"User", 'String'>
     readonly active: FieldRef<"User", 'Boolean'>
+    readonly teamLead: FieldRef<"User", 'Boolean'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
   }
     
@@ -6159,6 +6276,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.editCounts
+   */
+  export type User$editCountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditCount
+     */
+    select?: EditCountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditCount
+     */
+    omit?: EditCountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EditCountInclude<ExtArgs> | null
+    where?: EditCountWhereInput
+    orderBy?: EditCountOrderByWithRelationInput | EditCountOrderByWithRelationInput[]
+    cursor?: EditCountWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: EditCountScalarFieldEnum | EditCountScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6174,6 +6315,1140 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: UserInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model EditCount
+   */
+
+  export type AggregateEditCount = {
+    _count: EditCountCountAggregateOutputType | null
+    _avg: EditCountAvgAggregateOutputType | null
+    _sum: EditCountSumAggregateOutputType | null
+    _min: EditCountMinAggregateOutputType | null
+    _max: EditCountMaxAggregateOutputType | null
+  }
+
+  export type EditCountAvgAggregateOutputType = {
+    count: number | null
+  }
+
+  export type EditCountSumAggregateOutputType = {
+    count: number | null
+  }
+
+  export type EditCountMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    date: string | null
+    count: number | null
+    note: string | null
+    updatedBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type EditCountMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    date: string | null
+    count: number | null
+    note: string | null
+    updatedBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type EditCountCountAggregateOutputType = {
+    id: number
+    userId: number
+    date: number
+    count: number
+    note: number
+    updatedBy: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type EditCountAvgAggregateInputType = {
+    count?: true
+  }
+
+  export type EditCountSumAggregateInputType = {
+    count?: true
+  }
+
+  export type EditCountMinAggregateInputType = {
+    id?: true
+    userId?: true
+    date?: true
+    count?: true
+    note?: true
+    updatedBy?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type EditCountMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    date?: true
+    count?: true
+    note?: true
+    updatedBy?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type EditCountCountAggregateInputType = {
+    id?: true
+    userId?: true
+    date?: true
+    count?: true
+    note?: true
+    updatedBy?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type EditCountAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EditCount to aggregate.
+     */
+    where?: EditCountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EditCounts to fetch.
+     */
+    orderBy?: EditCountOrderByWithRelationInput | EditCountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: EditCountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EditCounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EditCounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned EditCounts
+    **/
+    _count?: true | EditCountCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: EditCountAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: EditCountSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: EditCountMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: EditCountMaxAggregateInputType
+  }
+
+  export type GetEditCountAggregateType<T extends EditCountAggregateArgs> = {
+        [P in keyof T & keyof AggregateEditCount]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateEditCount[P]>
+      : GetScalarType<T[P], AggregateEditCount[P]>
+  }
+
+
+
+
+  export type EditCountGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EditCountWhereInput
+    orderBy?: EditCountOrderByWithAggregationInput | EditCountOrderByWithAggregationInput[]
+    by: EditCountScalarFieldEnum[] | EditCountScalarFieldEnum
+    having?: EditCountScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: EditCountCountAggregateInputType | true
+    _avg?: EditCountAvgAggregateInputType
+    _sum?: EditCountSumAggregateInputType
+    _min?: EditCountMinAggregateInputType
+    _max?: EditCountMaxAggregateInputType
+  }
+
+  export type EditCountGroupByOutputType = {
+    id: string
+    userId: string
+    date: string
+    count: number
+    note: string
+    updatedBy: string
+    createdAt: Date
+    updatedAt: Date
+    _count: EditCountCountAggregateOutputType | null
+    _avg: EditCountAvgAggregateOutputType | null
+    _sum: EditCountSumAggregateOutputType | null
+    _min: EditCountMinAggregateOutputType | null
+    _max: EditCountMaxAggregateOutputType | null
+  }
+
+  type GetEditCountGroupByPayload<T extends EditCountGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<EditCountGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof EditCountGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], EditCountGroupByOutputType[P]>
+            : GetScalarType<T[P], EditCountGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type EditCountSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    date?: boolean
+    count?: boolean
+    note?: boolean
+    updatedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["editCount"]>
+
+  export type EditCountSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    date?: boolean
+    count?: boolean
+    note?: boolean
+    updatedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["editCount"]>
+
+  export type EditCountSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    date?: boolean
+    count?: boolean
+    note?: boolean
+    updatedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["editCount"]>
+
+  export type EditCountSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    date?: boolean
+    count?: boolean
+    note?: boolean
+    updatedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type EditCountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "date" | "count" | "note" | "updatedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["editCount"]>
+  export type EditCountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type EditCountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type EditCountIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $EditCountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "EditCount"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      date: string
+      count: number
+      note: string
+      updatedBy: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["editCount"]>
+    composites: {}
+  }
+
+  type EditCountGetPayload<S extends boolean | null | undefined | EditCountDefaultArgs> = $Result.GetResult<Prisma.$EditCountPayload, S>
+
+  type EditCountCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<EditCountFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: EditCountCountAggregateInputType | true
+    }
+
+  export interface EditCountDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['EditCount'], meta: { name: 'EditCount' } }
+    /**
+     * Find zero or one EditCount that matches the filter.
+     * @param {EditCountFindUniqueArgs} args - Arguments to find a EditCount
+     * @example
+     * // Get one EditCount
+     * const editCount = await prisma.editCount.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends EditCountFindUniqueArgs>(args: SelectSubset<T, EditCountFindUniqueArgs<ExtArgs>>): Prisma__EditCountClient<$Result.GetResult<Prisma.$EditCountPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one EditCount that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {EditCountFindUniqueOrThrowArgs} args - Arguments to find a EditCount
+     * @example
+     * // Get one EditCount
+     * const editCount = await prisma.editCount.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends EditCountFindUniqueOrThrowArgs>(args: SelectSubset<T, EditCountFindUniqueOrThrowArgs<ExtArgs>>): Prisma__EditCountClient<$Result.GetResult<Prisma.$EditCountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EditCount that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EditCountFindFirstArgs} args - Arguments to find a EditCount
+     * @example
+     * // Get one EditCount
+     * const editCount = await prisma.editCount.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends EditCountFindFirstArgs>(args?: SelectSubset<T, EditCountFindFirstArgs<ExtArgs>>): Prisma__EditCountClient<$Result.GetResult<Prisma.$EditCountPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EditCount that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EditCountFindFirstOrThrowArgs} args - Arguments to find a EditCount
+     * @example
+     * // Get one EditCount
+     * const editCount = await prisma.editCount.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends EditCountFindFirstOrThrowArgs>(args?: SelectSubset<T, EditCountFindFirstOrThrowArgs<ExtArgs>>): Prisma__EditCountClient<$Result.GetResult<Prisma.$EditCountPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more EditCounts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EditCountFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all EditCounts
+     * const editCounts = await prisma.editCount.findMany()
+     * 
+     * // Get first 10 EditCounts
+     * const editCounts = await prisma.editCount.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const editCountWithIdOnly = await prisma.editCount.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends EditCountFindManyArgs>(args?: SelectSubset<T, EditCountFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EditCountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a EditCount.
+     * @param {EditCountCreateArgs} args - Arguments to create a EditCount.
+     * @example
+     * // Create one EditCount
+     * const EditCount = await prisma.editCount.create({
+     *   data: {
+     *     // ... data to create a EditCount
+     *   }
+     * })
+     * 
+     */
+    create<T extends EditCountCreateArgs>(args: SelectSubset<T, EditCountCreateArgs<ExtArgs>>): Prisma__EditCountClient<$Result.GetResult<Prisma.$EditCountPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many EditCounts.
+     * @param {EditCountCreateManyArgs} args - Arguments to create many EditCounts.
+     * @example
+     * // Create many EditCounts
+     * const editCount = await prisma.editCount.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends EditCountCreateManyArgs>(args?: SelectSubset<T, EditCountCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many EditCounts and returns the data saved in the database.
+     * @param {EditCountCreateManyAndReturnArgs} args - Arguments to create many EditCounts.
+     * @example
+     * // Create many EditCounts
+     * const editCount = await prisma.editCount.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many EditCounts and only return the `id`
+     * const editCountWithIdOnly = await prisma.editCount.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends EditCountCreateManyAndReturnArgs>(args?: SelectSubset<T, EditCountCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EditCountPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a EditCount.
+     * @param {EditCountDeleteArgs} args - Arguments to delete one EditCount.
+     * @example
+     * // Delete one EditCount
+     * const EditCount = await prisma.editCount.delete({
+     *   where: {
+     *     // ... filter to delete one EditCount
+     *   }
+     * })
+     * 
+     */
+    delete<T extends EditCountDeleteArgs>(args: SelectSubset<T, EditCountDeleteArgs<ExtArgs>>): Prisma__EditCountClient<$Result.GetResult<Prisma.$EditCountPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one EditCount.
+     * @param {EditCountUpdateArgs} args - Arguments to update one EditCount.
+     * @example
+     * // Update one EditCount
+     * const editCount = await prisma.editCount.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends EditCountUpdateArgs>(args: SelectSubset<T, EditCountUpdateArgs<ExtArgs>>): Prisma__EditCountClient<$Result.GetResult<Prisma.$EditCountPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more EditCounts.
+     * @param {EditCountDeleteManyArgs} args - Arguments to filter EditCounts to delete.
+     * @example
+     * // Delete a few EditCounts
+     * const { count } = await prisma.editCount.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends EditCountDeleteManyArgs>(args?: SelectSubset<T, EditCountDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EditCounts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EditCountUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many EditCounts
+     * const editCount = await prisma.editCount.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends EditCountUpdateManyArgs>(args: SelectSubset<T, EditCountUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EditCounts and returns the data updated in the database.
+     * @param {EditCountUpdateManyAndReturnArgs} args - Arguments to update many EditCounts.
+     * @example
+     * // Update many EditCounts
+     * const editCount = await prisma.editCount.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more EditCounts and only return the `id`
+     * const editCountWithIdOnly = await prisma.editCount.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends EditCountUpdateManyAndReturnArgs>(args: SelectSubset<T, EditCountUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EditCountPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one EditCount.
+     * @param {EditCountUpsertArgs} args - Arguments to update or create a EditCount.
+     * @example
+     * // Update or create a EditCount
+     * const editCount = await prisma.editCount.upsert({
+     *   create: {
+     *     // ... data to create a EditCount
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the EditCount we want to update
+     *   }
+     * })
+     */
+    upsert<T extends EditCountUpsertArgs>(args: SelectSubset<T, EditCountUpsertArgs<ExtArgs>>): Prisma__EditCountClient<$Result.GetResult<Prisma.$EditCountPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of EditCounts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EditCountCountArgs} args - Arguments to filter EditCounts to count.
+     * @example
+     * // Count the number of EditCounts
+     * const count = await prisma.editCount.count({
+     *   where: {
+     *     // ... the filter for the EditCounts we want to count
+     *   }
+     * })
+    **/
+    count<T extends EditCountCountArgs>(
+      args?: Subset<T, EditCountCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], EditCountCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a EditCount.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EditCountAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends EditCountAggregateArgs>(args: Subset<T, EditCountAggregateArgs>): Prisma.PrismaPromise<GetEditCountAggregateType<T>>
+
+    /**
+     * Group by EditCount.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EditCountGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends EditCountGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: EditCountGroupByArgs['orderBy'] }
+        : { orderBy?: EditCountGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, EditCountGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEditCountGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the EditCount model
+   */
+  readonly fields: EditCountFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for EditCount.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__EditCountClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the EditCount model
+   */
+  interface EditCountFieldRefs {
+    readonly id: FieldRef<"EditCount", 'String'>
+    readonly userId: FieldRef<"EditCount", 'String'>
+    readonly date: FieldRef<"EditCount", 'String'>
+    readonly count: FieldRef<"EditCount", 'Int'>
+    readonly note: FieldRef<"EditCount", 'String'>
+    readonly updatedBy: FieldRef<"EditCount", 'String'>
+    readonly createdAt: FieldRef<"EditCount", 'DateTime'>
+    readonly updatedAt: FieldRef<"EditCount", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * EditCount findUnique
+   */
+  export type EditCountFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditCount
+     */
+    select?: EditCountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditCount
+     */
+    omit?: EditCountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EditCountInclude<ExtArgs> | null
+    /**
+     * Filter, which EditCount to fetch.
+     */
+    where: EditCountWhereUniqueInput
+  }
+
+  /**
+   * EditCount findUniqueOrThrow
+   */
+  export type EditCountFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditCount
+     */
+    select?: EditCountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditCount
+     */
+    omit?: EditCountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EditCountInclude<ExtArgs> | null
+    /**
+     * Filter, which EditCount to fetch.
+     */
+    where: EditCountWhereUniqueInput
+  }
+
+  /**
+   * EditCount findFirst
+   */
+  export type EditCountFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditCount
+     */
+    select?: EditCountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditCount
+     */
+    omit?: EditCountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EditCountInclude<ExtArgs> | null
+    /**
+     * Filter, which EditCount to fetch.
+     */
+    where?: EditCountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EditCounts to fetch.
+     */
+    orderBy?: EditCountOrderByWithRelationInput | EditCountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EditCounts.
+     */
+    cursor?: EditCountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EditCounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EditCounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EditCounts.
+     */
+    distinct?: EditCountScalarFieldEnum | EditCountScalarFieldEnum[]
+  }
+
+  /**
+   * EditCount findFirstOrThrow
+   */
+  export type EditCountFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditCount
+     */
+    select?: EditCountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditCount
+     */
+    omit?: EditCountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EditCountInclude<ExtArgs> | null
+    /**
+     * Filter, which EditCount to fetch.
+     */
+    where?: EditCountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EditCounts to fetch.
+     */
+    orderBy?: EditCountOrderByWithRelationInput | EditCountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EditCounts.
+     */
+    cursor?: EditCountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EditCounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EditCounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EditCounts.
+     */
+    distinct?: EditCountScalarFieldEnum | EditCountScalarFieldEnum[]
+  }
+
+  /**
+   * EditCount findMany
+   */
+  export type EditCountFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditCount
+     */
+    select?: EditCountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditCount
+     */
+    omit?: EditCountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EditCountInclude<ExtArgs> | null
+    /**
+     * Filter, which EditCounts to fetch.
+     */
+    where?: EditCountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EditCounts to fetch.
+     */
+    orderBy?: EditCountOrderByWithRelationInput | EditCountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing EditCounts.
+     */
+    cursor?: EditCountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EditCounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EditCounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EditCounts.
+     */
+    distinct?: EditCountScalarFieldEnum | EditCountScalarFieldEnum[]
+  }
+
+  /**
+   * EditCount create
+   */
+  export type EditCountCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditCount
+     */
+    select?: EditCountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditCount
+     */
+    omit?: EditCountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EditCountInclude<ExtArgs> | null
+    /**
+     * The data needed to create a EditCount.
+     */
+    data: XOR<EditCountCreateInput, EditCountUncheckedCreateInput>
+  }
+
+  /**
+   * EditCount createMany
+   */
+  export type EditCountCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many EditCounts.
+     */
+    data: EditCountCreateManyInput | EditCountCreateManyInput[]
+  }
+
+  /**
+   * EditCount createManyAndReturn
+   */
+  export type EditCountCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditCount
+     */
+    select?: EditCountSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditCount
+     */
+    omit?: EditCountOmit<ExtArgs> | null
+    /**
+     * The data used to create many EditCounts.
+     */
+    data: EditCountCreateManyInput | EditCountCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EditCountIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * EditCount update
+   */
+  export type EditCountUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditCount
+     */
+    select?: EditCountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditCount
+     */
+    omit?: EditCountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EditCountInclude<ExtArgs> | null
+    /**
+     * The data needed to update a EditCount.
+     */
+    data: XOR<EditCountUpdateInput, EditCountUncheckedUpdateInput>
+    /**
+     * Choose, which EditCount to update.
+     */
+    where: EditCountWhereUniqueInput
+  }
+
+  /**
+   * EditCount updateMany
+   */
+  export type EditCountUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update EditCounts.
+     */
+    data: XOR<EditCountUpdateManyMutationInput, EditCountUncheckedUpdateManyInput>
+    /**
+     * Filter which EditCounts to update
+     */
+    where?: EditCountWhereInput
+    /**
+     * Limit how many EditCounts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * EditCount updateManyAndReturn
+   */
+  export type EditCountUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditCount
+     */
+    select?: EditCountSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditCount
+     */
+    omit?: EditCountOmit<ExtArgs> | null
+    /**
+     * The data used to update EditCounts.
+     */
+    data: XOR<EditCountUpdateManyMutationInput, EditCountUncheckedUpdateManyInput>
+    /**
+     * Filter which EditCounts to update
+     */
+    where?: EditCountWhereInput
+    /**
+     * Limit how many EditCounts to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EditCountIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * EditCount upsert
+   */
+  export type EditCountUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditCount
+     */
+    select?: EditCountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditCount
+     */
+    omit?: EditCountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EditCountInclude<ExtArgs> | null
+    /**
+     * The filter to search for the EditCount to update in case it exists.
+     */
+    where: EditCountWhereUniqueInput
+    /**
+     * In case the EditCount found by the `where` argument doesn't exist, create a new EditCount with this data.
+     */
+    create: XOR<EditCountCreateInput, EditCountUncheckedCreateInput>
+    /**
+     * In case the EditCount was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<EditCountUpdateInput, EditCountUncheckedUpdateInput>
+  }
+
+  /**
+   * EditCount delete
+   */
+  export type EditCountDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditCount
+     */
+    select?: EditCountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditCount
+     */
+    omit?: EditCountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EditCountInclude<ExtArgs> | null
+    /**
+     * Filter which EditCount to delete.
+     */
+    where: EditCountWhereUniqueInput
+  }
+
+  /**
+   * EditCount deleteMany
+   */
+  export type EditCountDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EditCounts to delete
+     */
+    where?: EditCountWhereInput
+    /**
+     * Limit how many EditCounts to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * EditCount without action
+   */
+  export type EditCountDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditCount
+     */
+    select?: EditCountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditCount
+     */
+    omit?: EditCountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EditCountInclude<ExtArgs> | null
   }
 
 
@@ -51262,10 +52537,25 @@ export namespace Prisma {
     phone: 'phone',
     passwordHash: 'passwordHash',
     active: 'active',
+    teamLead: 'teamLead',
     createdAt: 'createdAt'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+  export const EditCountScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    date: 'date',
+    count: 'count',
+    note: 'note',
+    updatedBy: 'updatedBy',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type EditCountScalarFieldEnum = (typeof EditCountScalarFieldEnum)[keyof typeof EditCountScalarFieldEnum]
 
 
   export const TaskScalarFieldEnum: {
@@ -52034,6 +53324,7 @@ export namespace Prisma {
     phone?: StringNullableFilter<"User"> | string | null
     passwordHash?: StringNullableFilter<"User"> | string | null
     active?: BoolFilter<"User"> | boolean
+    teamLead?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     managedClients?: ClientListRelationFilter
     assignments?: AssignmentListRelationFilter
@@ -52047,6 +53338,7 @@ export namespace Prisma {
     salesLeads?: LeadListRelationFilter
     shoots?: ShootListRelationFilter
     shootRequests?: ShootListRelationFilter
+    editCounts?: EditCountListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -52057,6 +53349,7 @@ export namespace Prisma {
     phone?: SortOrderInput | SortOrder
     passwordHash?: SortOrderInput | SortOrder
     active?: SortOrder
+    teamLead?: SortOrder
     createdAt?: SortOrder
     managedClients?: ClientOrderByRelationAggregateInput
     assignments?: AssignmentOrderByRelationAggregateInput
@@ -52070,6 +53363,7 @@ export namespace Prisma {
     salesLeads?: LeadOrderByRelationAggregateInput
     shoots?: ShootOrderByRelationAggregateInput
     shootRequests?: ShootOrderByRelationAggregateInput
+    editCounts?: EditCountOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -52083,6 +53377,7 @@ export namespace Prisma {
     phone?: StringNullableFilter<"User"> | string | null
     passwordHash?: StringNullableFilter<"User"> | string | null
     active?: BoolFilter<"User"> | boolean
+    teamLead?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     managedClients?: ClientListRelationFilter
     assignments?: AssignmentListRelationFilter
@@ -52096,6 +53391,7 @@ export namespace Prisma {
     salesLeads?: LeadListRelationFilter
     shoots?: ShootListRelationFilter
     shootRequests?: ShootListRelationFilter
+    editCounts?: EditCountListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -52106,6 +53402,7 @@ export namespace Prisma {
     phone?: SortOrderInput | SortOrder
     passwordHash?: SortOrderInput | SortOrder
     active?: SortOrder
+    teamLead?: SortOrder
     createdAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -52123,7 +53420,81 @@ export namespace Prisma {
     phone?: StringNullableWithAggregatesFilter<"User"> | string | null
     passwordHash?: StringNullableWithAggregatesFilter<"User"> | string | null
     active?: BoolWithAggregatesFilter<"User"> | boolean
+    teamLead?: BoolWithAggregatesFilter<"User"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+  }
+
+  export type EditCountWhereInput = {
+    AND?: EditCountWhereInput | EditCountWhereInput[]
+    OR?: EditCountWhereInput[]
+    NOT?: EditCountWhereInput | EditCountWhereInput[]
+    id?: StringFilter<"EditCount"> | string
+    userId?: StringFilter<"EditCount"> | string
+    date?: StringFilter<"EditCount"> | string
+    count?: IntFilter<"EditCount"> | number
+    note?: StringFilter<"EditCount"> | string
+    updatedBy?: StringFilter<"EditCount"> | string
+    createdAt?: DateTimeFilter<"EditCount"> | Date | string
+    updatedAt?: DateTimeFilter<"EditCount"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type EditCountOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    date?: SortOrder
+    count?: SortOrder
+    note?: SortOrder
+    updatedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type EditCountWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_date?: EditCountUserIdDateCompoundUniqueInput
+    AND?: EditCountWhereInput | EditCountWhereInput[]
+    OR?: EditCountWhereInput[]
+    NOT?: EditCountWhereInput | EditCountWhereInput[]
+    userId?: StringFilter<"EditCount"> | string
+    date?: StringFilter<"EditCount"> | string
+    count?: IntFilter<"EditCount"> | number
+    note?: StringFilter<"EditCount"> | string
+    updatedBy?: StringFilter<"EditCount"> | string
+    createdAt?: DateTimeFilter<"EditCount"> | Date | string
+    updatedAt?: DateTimeFilter<"EditCount"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "userId_date">
+
+  export type EditCountOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    date?: SortOrder
+    count?: SortOrder
+    note?: SortOrder
+    updatedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: EditCountCountOrderByAggregateInput
+    _avg?: EditCountAvgOrderByAggregateInput
+    _max?: EditCountMaxOrderByAggregateInput
+    _min?: EditCountMinOrderByAggregateInput
+    _sum?: EditCountSumOrderByAggregateInput
+  }
+
+  export type EditCountScalarWhereWithAggregatesInput = {
+    AND?: EditCountScalarWhereWithAggregatesInput | EditCountScalarWhereWithAggregatesInput[]
+    OR?: EditCountScalarWhereWithAggregatesInput[]
+    NOT?: EditCountScalarWhereWithAggregatesInput | EditCountScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"EditCount"> | string
+    userId?: StringWithAggregatesFilter<"EditCount"> | string
+    date?: StringWithAggregatesFilter<"EditCount"> | string
+    count?: IntWithAggregatesFilter<"EditCount"> | number
+    note?: StringWithAggregatesFilter<"EditCount"> | string
+    updatedBy?: StringWithAggregatesFilter<"EditCount"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"EditCount"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"EditCount"> | Date | string
   }
 
   export type TaskWhereInput = {
@@ -55784,6 +57155,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -55797,6 +57169,7 @@ export namespace Prisma {
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -55807,6 +57180,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -55820,6 +57194,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -55830,6 +57205,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -55843,6 +57219,7 @@ export namespace Prisma {
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -55853,6 +57230,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -55866,6 +57244,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -55876,6 +57255,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
   }
 
@@ -55887,6 +57267,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -55898,7 +57279,84 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EditCountCreateInput = {
+    id?: string
+    date: string
+    count?: number
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutEditCountsInput
+  }
+
+  export type EditCountUncheckedCreateInput = {
+    id?: string
+    userId: string
+    date: string
+    count?: number
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EditCountUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutEditCountsNestedInput
+  }
+
+  export type EditCountUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EditCountCreateManyInput = {
+    id?: string
+    userId: string
+    date: string
+    count?: number
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EditCountUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EditCountUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TaskCreateInput = {
@@ -60175,6 +61633,12 @@ export namespace Prisma {
     none?: ShootWhereInput
   }
 
+  export type EditCountListRelationFilter = {
+    every?: EditCountWhereInput
+    some?: EditCountWhereInput
+    none?: EditCountWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -60216,6 +61680,10 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type EditCountOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -60224,6 +61692,7 @@ export namespace Prisma {
     phone?: SortOrder
     passwordHash?: SortOrder
     active?: SortOrder
+    teamLead?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -60235,6 +61704,7 @@ export namespace Prisma {
     phone?: SortOrder
     passwordHash?: SortOrder
     active?: SortOrder
+    teamLead?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -60246,6 +61716,7 @@ export namespace Prisma {
     phone?: SortOrder
     passwordHash?: SortOrder
     active?: SortOrder
+    teamLead?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -60305,9 +61776,82 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
+  }
+
+  export type EditCountUserIdDateCompoundUniqueInput = {
+    userId: string
+    date: string
+  }
+
+  export type EditCountCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    date?: SortOrder
+    count?: SortOrder
+    note?: SortOrder
+    updatedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EditCountAvgOrderByAggregateInput = {
+    count?: SortOrder
+  }
+
+  export type EditCountMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    date?: SortOrder
+    count?: SortOrder
+    note?: SortOrder
+    updatedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EditCountMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    date?: SortOrder
+    count?: SortOrder
+    note?: SortOrder
+    updatedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EditCountSumOrderByAggregateInput = {
+    count?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type ClientNullableScalarRelationFilter = {
@@ -60371,17 +61915,6 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
   export type TimeSessionCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -60432,22 +61965,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type UserNullableScalarRelationFilter = {
@@ -62883,6 +64400,13 @@ export namespace Prisma {
     connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
   }
 
+  export type EditCountCreateNestedManyWithoutUserInput = {
+    create?: XOR<EditCountCreateWithoutUserInput, EditCountUncheckedCreateWithoutUserInput> | EditCountCreateWithoutUserInput[] | EditCountUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EditCountCreateOrConnectWithoutUserInput | EditCountCreateOrConnectWithoutUserInput[]
+    createMany?: EditCountCreateManyUserInputEnvelope
+    connect?: EditCountWhereUniqueInput | EditCountWhereUniqueInput[]
+  }
+
   export type ClientUncheckedCreateNestedManyWithoutAccountManagerInput = {
     create?: XOR<ClientCreateWithoutAccountManagerInput, ClientUncheckedCreateWithoutAccountManagerInput> | ClientCreateWithoutAccountManagerInput[] | ClientUncheckedCreateWithoutAccountManagerInput[]
     connectOrCreate?: ClientCreateOrConnectWithoutAccountManagerInput | ClientCreateOrConnectWithoutAccountManagerInput[]
@@ -62965,6 +64489,13 @@ export namespace Prisma {
     connectOrCreate?: ShootCreateOrConnectWithoutRequestedByInput | ShootCreateOrConnectWithoutRequestedByInput[]
     createMany?: ShootCreateManyRequestedByInputEnvelope
     connect?: ShootWhereUniqueInput | ShootWhereUniqueInput[]
+  }
+
+  export type EditCountUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<EditCountCreateWithoutUserInput, EditCountUncheckedCreateWithoutUserInput> | EditCountCreateWithoutUserInput[] | EditCountUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EditCountCreateOrConnectWithoutUserInput | EditCountCreateOrConnectWithoutUserInput[]
+    createMany?: EditCountCreateManyUserInputEnvelope
+    connect?: EditCountWhereUniqueInput | EditCountWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -63151,6 +64682,20 @@ export namespace Prisma {
     deleteMany?: ShootScalarWhereInput | ShootScalarWhereInput[]
   }
 
+  export type EditCountUpdateManyWithoutUserNestedInput = {
+    create?: XOR<EditCountCreateWithoutUserInput, EditCountUncheckedCreateWithoutUserInput> | EditCountCreateWithoutUserInput[] | EditCountUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EditCountCreateOrConnectWithoutUserInput | EditCountCreateOrConnectWithoutUserInput[]
+    upsert?: EditCountUpsertWithWhereUniqueWithoutUserInput | EditCountUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: EditCountCreateManyUserInputEnvelope
+    set?: EditCountWhereUniqueInput | EditCountWhereUniqueInput[]
+    disconnect?: EditCountWhereUniqueInput | EditCountWhereUniqueInput[]
+    delete?: EditCountWhereUniqueInput | EditCountWhereUniqueInput[]
+    connect?: EditCountWhereUniqueInput | EditCountWhereUniqueInput[]
+    update?: EditCountUpdateWithWhereUniqueWithoutUserInput | EditCountUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: EditCountUpdateManyWithWhereWithoutUserInput | EditCountUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: EditCountScalarWhereInput | EditCountScalarWhereInput[]
+  }
+
   export type ClientUncheckedUpdateManyWithoutAccountManagerNestedInput = {
     create?: XOR<ClientCreateWithoutAccountManagerInput, ClientUncheckedCreateWithoutAccountManagerInput> | ClientCreateWithoutAccountManagerInput[] | ClientUncheckedCreateWithoutAccountManagerInput[]
     connectOrCreate?: ClientCreateOrConnectWithoutAccountManagerInput | ClientCreateOrConnectWithoutAccountManagerInput[]
@@ -63319,6 +64864,42 @@ export namespace Prisma {
     deleteMany?: ShootScalarWhereInput | ShootScalarWhereInput[]
   }
 
+  export type EditCountUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<EditCountCreateWithoutUserInput, EditCountUncheckedCreateWithoutUserInput> | EditCountCreateWithoutUserInput[] | EditCountUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EditCountCreateOrConnectWithoutUserInput | EditCountCreateOrConnectWithoutUserInput[]
+    upsert?: EditCountUpsertWithWhereUniqueWithoutUserInput | EditCountUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: EditCountCreateManyUserInputEnvelope
+    set?: EditCountWhereUniqueInput | EditCountWhereUniqueInput[]
+    disconnect?: EditCountWhereUniqueInput | EditCountWhereUniqueInput[]
+    delete?: EditCountWhereUniqueInput | EditCountWhereUniqueInput[]
+    connect?: EditCountWhereUniqueInput | EditCountWhereUniqueInput[]
+    update?: EditCountUpdateWithWhereUniqueWithoutUserInput | EditCountUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: EditCountUpdateManyWithWhereWithoutUserInput | EditCountUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: EditCountScalarWhereInput | EditCountScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutEditCountsInput = {
+    create?: XOR<UserCreateWithoutEditCountsInput, UserUncheckedCreateWithoutEditCountsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutEditCountsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type UserUpdateOneRequiredWithoutEditCountsNestedInput = {
+    create?: XOR<UserCreateWithoutEditCountsInput, UserUncheckedCreateWithoutEditCountsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutEditCountsInput
+    upsert?: UserUpsertWithoutEditCountsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutEditCountsInput, UserUpdateWithoutEditCountsInput>, UserUncheckedUpdateWithoutEditCountsInput>
+  }
+
   export type UserCreateNestedOneWithoutTasksAssignedInput = {
     create?: XOR<UserCreateWithoutTasksAssignedInput, UserUncheckedCreateWithoutTasksAssignedInput>
     connectOrCreate?: UserCreateOrConnectWithoutTasksAssignedInput
@@ -63371,14 +64952,6 @@ export namespace Prisma {
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type UserUpdateOneRequiredWithoutTimeSessionsNestedInput = {
@@ -65399,31 +66972,6 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | null
-    notIn?: Date[] | string[] | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | null
-    notIn?: Date[] | string[] | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -65449,6 +66997,31 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -66170,6 +67743,35 @@ export namespace Prisma {
     data: ShootCreateManyRequestedByInput | ShootCreateManyRequestedByInput[]
   }
 
+  export type EditCountCreateWithoutUserInput = {
+    id?: string
+    date: string
+    count?: number
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EditCountUncheckedCreateWithoutUserInput = {
+    id?: string
+    date: string
+    count?: number
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EditCountCreateOrConnectWithoutUserInput = {
+    where: EditCountWhereUniqueInput
+    create: XOR<EditCountCreateWithoutUserInput, EditCountUncheckedCreateWithoutUserInput>
+  }
+
+  export type EditCountCreateManyUserInputEnvelope = {
+    data: EditCountCreateManyUserInput | EditCountCreateManyUserInput[]
+  }
+
   export type ClientUpsertWithWhereUniqueWithoutAccountManagerInput = {
     where: ClientWhereUniqueInput
     update: XOR<ClientUpdateWithoutAccountManagerInput, ClientUncheckedUpdateWithoutAccountManagerInput>
@@ -66590,6 +68192,148 @@ export namespace Prisma {
     data: XOR<ShootUpdateManyMutationInput, ShootUncheckedUpdateManyWithoutRequestedByInput>
   }
 
+  export type EditCountUpsertWithWhereUniqueWithoutUserInput = {
+    where: EditCountWhereUniqueInput
+    update: XOR<EditCountUpdateWithoutUserInput, EditCountUncheckedUpdateWithoutUserInput>
+    create: XOR<EditCountCreateWithoutUserInput, EditCountUncheckedCreateWithoutUserInput>
+  }
+
+  export type EditCountUpdateWithWhereUniqueWithoutUserInput = {
+    where: EditCountWhereUniqueInput
+    data: XOR<EditCountUpdateWithoutUserInput, EditCountUncheckedUpdateWithoutUserInput>
+  }
+
+  export type EditCountUpdateManyWithWhereWithoutUserInput = {
+    where: EditCountScalarWhereInput
+    data: XOR<EditCountUpdateManyMutationInput, EditCountUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type EditCountScalarWhereInput = {
+    AND?: EditCountScalarWhereInput | EditCountScalarWhereInput[]
+    OR?: EditCountScalarWhereInput[]
+    NOT?: EditCountScalarWhereInput | EditCountScalarWhereInput[]
+    id?: StringFilter<"EditCount"> | string
+    userId?: StringFilter<"EditCount"> | string
+    date?: StringFilter<"EditCount"> | string
+    count?: IntFilter<"EditCount"> | number
+    note?: StringFilter<"EditCount"> | string
+    updatedBy?: StringFilter<"EditCount"> | string
+    createdAt?: DateTimeFilter<"EditCount"> | Date | string
+    updatedAt?: DateTimeFilter<"EditCount"> | Date | string
+  }
+
+  export type UserCreateWithoutEditCountsInput = {
+    id?: string
+    name: string
+    role: string
+    email?: string | null
+    phone?: string | null
+    passwordHash?: string | null
+    active?: boolean
+    teamLead?: boolean
+    createdAt?: Date | string
+    managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    assignments?: AssignmentCreateNestedManyWithoutUserInput
+    updates?: WorkUpdateCreateNestedManyWithoutUserInput
+    devProjects?: DevProjectCreateNestedManyWithoutAssignedToInput
+    timeSessions?: TimeSessionCreateNestedManyWithoutUserInput
+    tasksAssigned?: TaskCreateNestedManyWithoutAssignedByInput
+    tasksReceived?: TaskCreateNestedManyWithoutAssignedToInput
+    creativeTasks?: CreativeTaskCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
+    salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
+  }
+
+  export type UserUncheckedCreateWithoutEditCountsInput = {
+    id?: string
+    name: string
+    role: string
+    email?: string | null
+    phone?: string | null
+    passwordHash?: string | null
+    active?: boolean
+    teamLead?: boolean
+    createdAt?: Date | string
+    managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
+    updates?: WorkUpdateUncheckedCreateNestedManyWithoutUserInput
+    devProjects?: DevProjectUncheckedCreateNestedManyWithoutAssignedToInput
+    timeSessions?: TimeSessionUncheckedCreateNestedManyWithoutUserInput
+    tasksAssigned?: TaskUncheckedCreateNestedManyWithoutAssignedByInput
+    tasksReceived?: TaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeTasks?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
+    salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
+    shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
+    shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
+  }
+
+  export type UserCreateOrConnectWithoutEditCountsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutEditCountsInput, UserUncheckedCreateWithoutEditCountsInput>
+  }
+
+  export type UserUpsertWithoutEditCountsInput = {
+    update: XOR<UserUpdateWithoutEditCountsInput, UserUncheckedUpdateWithoutEditCountsInput>
+    create: XOR<UserCreateWithoutEditCountsInput, UserUncheckedCreateWithoutEditCountsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutEditCountsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutEditCountsInput, UserUncheckedUpdateWithoutEditCountsInput>
+  }
+
+  export type UserUpdateWithoutEditCountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    assignments?: AssignmentUpdateManyWithoutUserNestedInput
+    updates?: WorkUpdateUpdateManyWithoutUserNestedInput
+    devProjects?: DevProjectUpdateManyWithoutAssignedToNestedInput
+    timeSessions?: TimeSessionUpdateManyWithoutUserNestedInput
+    tasksAssigned?: TaskUpdateManyWithoutAssignedByNestedInput
+    tasksReceived?: TaskUpdateManyWithoutAssignedToNestedInput
+    creativeTasks?: CreativeTaskUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
+    salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutEditCountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
+    updates?: WorkUpdateUncheckedUpdateManyWithoutUserNestedInput
+    devProjects?: DevProjectUncheckedUpdateManyWithoutAssignedToNestedInput
+    timeSessions?: TimeSessionUncheckedUpdateManyWithoutUserNestedInput
+    tasksAssigned?: TaskUncheckedUpdateManyWithoutAssignedByNestedInput
+    tasksReceived?: TaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeTasks?: CreativeTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
+    salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
+    shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
+    shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
+  }
+
   export type UserCreateWithoutTasksAssignedInput = {
     id?: string
     name: string
@@ -66598,6 +68342,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -66610,6 +68355,7 @@ export namespace Prisma {
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTasksAssignedInput = {
@@ -66620,6 +68366,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -66632,6 +68379,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTasksAssignedInput = {
@@ -66647,6 +68395,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -66659,6 +68408,7 @@ export namespace Prisma {
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTasksReceivedInput = {
@@ -66669,6 +68419,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -66681,6 +68432,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTasksReceivedInput = {
@@ -66850,6 +68602,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -66862,6 +68615,7 @@ export namespace Prisma {
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTasksAssignedInput = {
@@ -66872,6 +68626,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -66884,6 +68639,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutTasksReceivedInput = {
@@ -66905,6 +68661,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -66917,6 +68674,7 @@ export namespace Prisma {
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTasksReceivedInput = {
@@ -66927,6 +68685,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -66939,6 +68698,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ClientUpsertWithoutTasksInput = {
@@ -67098,6 +68858,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -67110,6 +68871,7 @@ export namespace Prisma {
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTimeSessionsInput = {
@@ -67120,6 +68882,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -67132,6 +68895,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTimeSessionsInput = {
@@ -67158,6 +68922,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -67170,6 +68935,7 @@ export namespace Prisma {
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTimeSessionsInput = {
@@ -67180,6 +68946,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -67192,6 +68959,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutManagedClientsInput = {
@@ -67202,6 +68970,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     assignments?: AssignmentCreateNestedManyWithoutUserInput
     updates?: WorkUpdateCreateNestedManyWithoutUserInput
@@ -67214,6 +68983,7 @@ export namespace Prisma {
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutManagedClientsInput = {
@@ -67224,6 +68994,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutUserInput
@@ -67236,6 +69007,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutManagedClientsInput = {
@@ -68112,6 +69884,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
     updates?: WorkUpdateUpdateManyWithoutUserNestedInput
@@ -68124,6 +69897,7 @@ export namespace Prisma {
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutManagedClientsInput = {
@@ -68134,6 +69908,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
     updates?: WorkUpdateUncheckedUpdateManyWithoutUserNestedInput
@@ -68146,6 +69921,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ClientServiceUpsertWithWhereUniqueWithoutClientInput = {
@@ -69810,6 +71586,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     updates?: WorkUpdateCreateNestedManyWithoutUserInput
@@ -69822,6 +71599,7 @@ export namespace Prisma {
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAssignmentsInput = {
@@ -69832,6 +71610,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     updates?: WorkUpdateUncheckedCreateNestedManyWithoutUserInput
@@ -69844,6 +71623,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAssignmentsInput = {
@@ -70019,6 +71799,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     updates?: WorkUpdateUpdateManyWithoutUserNestedInput
@@ -70031,6 +71812,7 @@ export namespace Prisma {
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignmentsInput = {
@@ -70041,6 +71823,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     updates?: WorkUpdateUncheckedUpdateManyWithoutUserNestedInput
@@ -70053,6 +71836,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ClientCreateWithoutUpdatesInput = {
@@ -70206,6 +71990,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -70218,6 +72003,7 @@ export namespace Prisma {
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUpdatesInput = {
@@ -70228,6 +72014,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -70240,6 +72027,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUpdatesInput = {
@@ -70415,6 +72203,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -70427,6 +72216,7 @@ export namespace Prisma {
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUpdatesInput = {
@@ -70437,6 +72227,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -70449,6 +72240,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ClientCreateWithoutInvoicesInput = {
@@ -72000,6 +73792,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -72012,6 +73805,7 @@ export namespace Prisma {
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDevProjectsInput = {
@@ -72022,6 +73816,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -72034,6 +73829,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDevProjectsInput = {
@@ -72257,6 +74053,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -72269,6 +74066,7 @@ export namespace Prisma {
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDevProjectsInput = {
@@ -72279,6 +74077,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -72291,6 +74090,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DevTaskUpsertWithWhereUniqueWithoutProjectInput = {
@@ -74735,6 +76535,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -74747,6 +76548,7 @@ export namespace Prisma {
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCreativeTasksInput = {
@@ -74757,6 +76559,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -74769,6 +76572,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCreativeTasksInput = {
@@ -74784,6 +76588,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -74796,6 +76601,7 @@ export namespace Prisma {
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCreativeAssignedInput = {
@@ -74806,6 +76612,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -74818,6 +76625,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCreativeAssignedInput = {
@@ -74993,6 +76801,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -75005,6 +76814,7 @@ export namespace Prisma {
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreativeTasksInput = {
@@ -75015,6 +76825,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -75027,6 +76838,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutCreativeAssignedInput = {
@@ -75048,6 +76860,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -75060,6 +76873,7 @@ export namespace Prisma {
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreativeAssignedInput = {
@@ -75070,6 +76884,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -75082,6 +76897,7 @@ export namespace Prisma {
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ClientCreateWithoutShootsInput = {
@@ -75235,6 +77051,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -75247,6 +77064,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutShootsInput = {
@@ -75257,6 +77075,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -75269,6 +77088,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutShootsInput = {
@@ -75284,6 +77104,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -75296,6 +77117,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadCreateNestedManyWithoutAssignedToInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
+    editCounts?: EditCountCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutShootRequestsInput = {
@@ -75306,6 +77128,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -75318,6 +77141,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     salesLeads?: LeadUncheckedCreateNestedManyWithoutAssignedToInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
+    editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutShootRequestsInput = {
@@ -75493,6 +77317,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -75505,6 +77330,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutShootsInput = {
@@ -75515,6 +77341,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -75527,6 +77354,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutShootRequestsInput = {
@@ -75548,6 +77376,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -75560,6 +77389,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
+    editCounts?: EditCountUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutShootRequestsInput = {
@@ -75570,6 +77400,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -75582,6 +77413,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     salesLeads?: LeadUncheckedUpdateManyWithoutAssignedToNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
+    editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ClientCreateWithoutGoogleCampaignsInput = {
@@ -76176,6 +78008,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentCreateNestedManyWithoutUserInput
@@ -76188,6 +78021,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskCreateNestedManyWithoutAssignedByUserInput
     shoots?: ShootCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSalesLeadsInput = {
@@ -76198,6 +78032,7 @@ export namespace Prisma {
     phone?: string | null
     passwordHash?: string | null
     active?: boolean
+    teamLead?: boolean
     createdAt?: Date | string
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
     assignments?: AssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -76210,6 +78045,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedCreateNestedManyWithoutAssignedByUserInput
     shoots?: ShootUncheckedCreateNestedManyWithoutAssignedToInput
     shootRequests?: ShootUncheckedCreateNestedManyWithoutRequestedByInput
+    editCounts?: EditCountUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSalesLeadsInput = {
@@ -76432,6 +78268,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUpdateManyWithoutUserNestedInput
@@ -76444,6 +78281,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUpdateManyWithoutAssignedByUserNestedInput
     shoots?: ShootUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSalesLeadsInput = {
@@ -76454,6 +78292,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    teamLead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
     assignments?: AssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -76466,6 +78305,7 @@ export namespace Prisma {
     creativeAssigned?: CreativeTaskUncheckedUpdateManyWithoutAssignedByUserNestedInput
     shoots?: ShootUncheckedUpdateManyWithoutAssignedToNestedInput
     shootRequests?: ShootUncheckedUpdateManyWithoutRequestedByNestedInput
+    editCounts?: EditCountUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type FollowupUpsertWithWhereUniqueWithoutLeadInput = {
@@ -77921,6 +79761,16 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type EditCountCreateManyUserInput = {
+    id?: string
+    date: string
+    count?: number
+    note?: string
+    updatedBy?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type ClientUpdateWithoutAccountManagerInput = {
     id?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
@@ -78739,6 +80589,36 @@ export namespace Prisma {
     footageLink?: StringFieldUpdateOperationsInput | string
     handedOff?: BoolFieldUpdateOperationsInput | boolean
     followupLog?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EditCountUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EditCountUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EditCountUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    note?: StringFieldUpdateOperationsInput | string
+    updatedBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
