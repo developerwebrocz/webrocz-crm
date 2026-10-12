@@ -1,184 +1,295 @@
-import { getAmDashboard, getCreativeTeam, getClientOptions, getAssignedByMe } from "@/lib/queries";
+import Link from "next/link";
+import { getCreativeTeam, getClientOptions, getAssignedByMe } from "@/lib/queries";
+import { getAmHome } from "@/lib/am-dashboard-queries";
 import { ownClientsOf } from "@/lib/am-scope";
 import { inrShort, inr } from "@/lib/domain";
 import AssignCreativeForm from "@/components/AssignCreativeForm";
 import MyShootRequests from "@/components/MyShootRequests";
+import AmReportDownload from "@/components/AmReportDownload";
 import {
-  Users, Megaphone, Target, Images, IndianRupee, TrendingUp, AlertTriangle,
-  ArrowRight, Wallet, Zap, Palette, Clapperboard,
+  Users, Megaphone, Target, Images, IndianRupee, TrendingUp, AlertTriangle, ArrowRight, Palette, Clapperboard,
+  CheckCircle2, Clock3, Plus, ListChecks, Pencil, Briefcase, UserPlus, FileBarChart, Sparkles,
 } from "lucide-react";
 
+// Account manager's home page: greeting and the day in one line, this month's figures for
+// their clients, what still has to be entered today (yesterday's ad results, today's posts),
+// every client with its numbers and a monthly report to download, and the work they assigned.
+// Real dates and real data only — an account manager sees the clients they manage.
+
 const CREATIVE_STATUS_TONE: Record<string, { label: string; tone: string }> = {
-  PENDING: { label: "Pending", tone: "muted" }, IN_PROGRESS: { label: "In Progress", tone: "sky" },
+  PENDING: { label: "Pending", tone: "amber" }, IN_PROGRESS: { label: "In progress", tone: "sky" },
   REVIEW: { label: "Review", tone: "violet" }, COMPLETED: { label: "Completed", tone: "emerald" },
 };
+const tint = (c: string, pct: number) => `color-mix(in srgb, ${c} ${pct}%, white)`;
+const fmtDay = (d: string) => (d ? new Date(`${d}T00:00:00Z`).toLocaleDateString("en-IN", { day: "2-digit", month: "short", timeZone: "UTC" }) : "—");
 
 export default async function AmOverview({ user }: { user: { id: string; name: string; role: string } }) {
   const [d, creativeTeam, clientOpts, assigned] = await Promise.all([
-    getAmDashboard(user.id, user.role),
+    getAmHome(user.id, user.role),
     getCreativeTeam(),
     getClientOptions(ownClientsOf(user)), // only the clients this manager handles
     getAssignedByMe(user.id),
   ]);
   const first = user.name.split(" ")[0] || "there";
-  const hour = new Date().getHours();
+  const hour = Number(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata", hour: "numeric", hour12: false })) % 24;
   const greet = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const t = d.totals, todo = d.todo;
+  const pendingBits = [
+    todo.meta.total - todo.meta.done > 0 ? `Meta results pending for ${todo.meta.total - todo.meta.done} client${todo.meta.total - todo.meta.done === 1 ? "" : "s"}` : "",
+    todo.google.total - todo.google.done > 0 ? `Google results pending for ${todo.google.total - todo.google.done}` : "",
+    t.creativeOverdue > 0 ? `${t.creativeOverdue} design / video task${t.creativeOverdue === 1 ? "" : "s"} overdue` : "",
+  ].filter(Boolean);
+  const summary = !t.clients ? "No clients are assigned to you yet — ask the admin to set you as the account manager on your clients."
+    : pendingBits.length ? pendingBits.join(" · ") + "." : "Everything is up to date for today.";
+
+  const tiles = [
+    { label: d.isHead ? "Active clients" : "My clients", value: String(t.clients), sub: "active", icon: Users, tone: "#c4b5fd", href: "/clients" },
+    { label: "Ad spend", value: inrShort(t.spend), sub: d.monthLabel, icon: IndianRupee, tone: "#6ee7b7", href: "/ads" },
+    { label: "Leads", value: String(t.leads), sub: "Meta + Google", icon: TrendingUp, tone: "#7dd3fc", href: "/ads" },
+    { label: "Cost / lead", value: t.cpl ? inr(t.cpl) : "—", sub: "this month", icon: Target, tone: "#fcd34d", href: "/ads" },
+    { label: "Posts logged", value: String(t.posts), sub: d.monthLabel, icon: Images, tone: "#f9a8d4", href: "/smo" },
+    { label: "Creative work", value: String(t.creativeOpen), sub: t.creativeOverdue ? `${t.creativeOverdue} overdue` : "open", icon: Palette, tone: t.creativeOverdue ? "#fda4af" : "#d8b4fe", href: "/reports/creative" },
+  ];
+
+  // "what to update today" — one line per daily job, with who is still pending
+  const names = (list: string[]) => (list.length ? list.slice(0, 3).join(", ") + (list.length > 3 ? ` +${list.length - 3} more` : "") : "");
+  const jobs = [
+    { key: "meta", icon: Megaphone, tone: "var(--violet)", title: "Meta Ads — yesterday’s results", href: "/ads", cta: "Enter Meta results",
+      total: todo.meta.total, done: todo.meta.done, none: "No client takes Meta Ads yet.", pending: names(todo.meta.pending), unit: `${d.yesterdayLabel}` },
+    { key: "google", icon: Target, tone: "var(--emerald)", title: "Google Ads — yesterday’s results", href: "/google-ads", cta: "Enter Google results",
+      total: todo.google.total, done: todo.google.done, none: "No client takes Google Ads yet.", pending: names(todo.google.pending), unit: `${d.yesterdayLabel}` },
+    { key: "smo", icon: Images, tone: "var(--sky)", title: "SM Posts — today’s posts", href: "/smo", cta: "Log today’s posts",
+      total: todo.smo.total, done: todo.smo.done, none: "No client takes SMO yet.", pending: names(todo.smo.pending), unit: `${todo.smo.postsToday} post${todo.smo.postsToday === 1 ? "" : "s"} logged today` },
+  ];
 
   return (
     <div className="space-y-5">
-      {/* header */}
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <span className="eyebrow">{user.role === "DM_EXEC" ? "Digital Marketing Executive" : d.isHead ? "AM Head" : "Account Manager"} · {d.monthLabel}</span>
-          <h1 className="mt-1.5 text-[26px] font-extrabold tracking-tight">{greet}, {first}</h1>
-          <p className="mt-1 text-sm text-[var(--muted)]">Ads performance across your clients — enter daily Meta & Google Ads results and keep every client updated.</p>
+      {/* hero */}
+      <div className="relative overflow-hidden rounded-[18px] px-6 py-6 text-white shadow-[var(--shadow-md)] sm:px-7" style={{ background: "linear-gradient(120deg, #14152a 0%, #231a4d 55%, #4c1d95 100%)" }}>
+        <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full" style={{ background: "radial-gradient(circle, rgba(167,139,250,.35), transparent 70%)" }} />
+        <div className="relative flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[.1em] text-white/60"><Briefcase size={13} /> {user.role === "DM_EXEC" ? "Digital marketing" : d.isHead ? "AM Head" : "Account management"} · {d.todayLabel}</div>
+            <h1 className="mt-2 text-[26px] font-extrabold leading-tight tracking-tight !text-white sm:text-[28px]">{greet}, {first}</h1>
+            <p className="mt-1.5 text-[13.5px] text-white/75">{summary}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link href="/clients" className="inline-flex h-9 items-center gap-1.5 rounded-[10px] bg-white/10 px-3.5 text-[12.5px] font-bold text-white ring-1 ring-white/15 transition hover:bg-white/20"><Users size={14} /> My clients</Link>
+            <Link href="/clients/new" className="inline-flex h-9 items-center gap-1.5 rounded-[10px] bg-white/10 px-3.5 text-[12.5px] font-bold text-white ring-1 ring-white/15 transition hover:bg-white/20"><UserPlus size={14} /> New client</Link>
+            <AssignCreativeForm members={creativeTeam} clients={clientOpts.map((c) => ({ id: c.id, name: c.name }))} />
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <a href="/ads" className="btn btn-ghost"><Megaphone size={15} /> Meta entry</a>
-          <a href="/google-ads" className="btn btn-ghost"><Target size={15} /> Google Ads</a>
-          <AssignCreativeForm members={creativeTeam} clients={clientOpts.map((c) => ({ id: c.id, name: c.name }))} />
+        <div className="relative mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-6">
+          {tiles.map((k) => (
+            <Link key={k.label} href={k.href} className="group rounded-[13px] bg-white/[.07] px-4 py-3 ring-1 ring-white/10 transition hover:bg-white/[.13]">
+              <div className="flex items-center justify-between">
+                <span className="text-[10.5px] font-bold uppercase tracking-wide text-white/60">{k.label}</span>
+                <k.icon size={14} style={{ color: k.tone }} />
+              </div>
+              <div className="mt-1.5 text-[24px] font-extrabold leading-none tnum" style={{ color: k.tone }}>{k.value}</div>
+              <div className="mt-1 truncate text-[10.5px] text-white/55">{k.sub}</div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.5fr)_minmax(300px,1fr)]">
+        {/* what to update today */}
+        <div className="card !p-0 overflow-hidden">
+          <div className="flex items-center gap-2.5 border-b border-[var(--line)] px-5 py-3.5">
+            <span className="grid h-8 w-8 place-items-center rounded-[9px]" style={{ background: tint("var(--amber)", 13), color: "var(--amber)" }}><ListChecks size={16} /></span>
+            <div>
+              <div className="text-[14px] font-bold">What to update today</div>
+              <div className="text-[11.5px] text-[var(--muted)]">Enter yesterday’s ad results each morning and log the posts that go out today</div>
+            </div>
+          </div>
+          <div className="divide-y divide-[var(--line)]">
+            {jobs.map((j) => {
+              const allDone = j.total > 0 && j.done >= j.total;
+              return (
+                <div key={j.key} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5">
+                  <span className="grid h-9 w-9 flex-none place-items-center rounded-[10px]" style={{ background: tint(j.tone, 12), color: j.tone }}><j.icon size={17} /></span>
+                  <div className="min-w-0 flex-1 basis-[240px]">
+                    <div className="text-[13.5px] font-bold">{j.title}</div>
+                    <div className="mt-0.5 text-[12px] text-[var(--muted)]">
+                      {j.total === 0 ? j.none : <><b className="text-[var(--ink-2)] tnum">{j.done} of {j.total}</b> client{j.total === 1 ? "" : "s"} done · {j.unit}{j.pending ? <> · pending: <span className="text-[var(--ink-2)]">{j.pending}</span></> : null}</>}
+                    </div>
+                  </div>
+                  {j.total > 0 && (allDone
+                    ? <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11.5px] font-bold text-[var(--emerald)]" style={{ background: tint("var(--emerald)", 11) }}><CheckCircle2 size={12} /> Done</span>
+                    : <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11.5px] font-bold" style={{ background: tint("var(--amber)", 14), color: "#92600a" }}><Clock3 size={12} /> {j.total - j.done} pending</span>)}
+                  <Link href={j.href} className={j.total > 0 && !allDone ? "btn btn-violet btn-sm" : "btn btn-ghost btn-sm"}>{j.cta} <ArrowRight size={13} /></Link>
+                </div>
+              );
+            })}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5">
+              <span className="grid h-9 w-9 flex-none place-items-center rounded-[10px]" style={{ background: tint("var(--rose)", 11), color: "var(--rose)" }}><Palette size={17} /></span>
+              <div className="min-w-0 flex-1 basis-[240px]">
+                <div className="text-[13.5px] font-bold">Design / video work for my clients</div>
+                <div className="mt-0.5 text-[12px] text-[var(--muted)]"><b className="text-[var(--ink-2)] tnum">{t.creativeOpen}</b> open · <b className="tnum" style={{ color: t.creativeOverdue ? "var(--rose)" : "var(--ink-2)" }}>{t.creativeOverdue}</b> overdue · <b className="text-[var(--ink-2)] tnum">{t.creativeDone}</b> completed this month</div>
+              </div>
+              <Link href="/reports/creative" className="btn btn-ghost btn-sm">Creative Report <ArrowRight size={13} /></Link>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5">
+              <span className="grid h-9 w-9 flex-none place-items-center rounded-[10px]" style={{ background: tint("var(--indigo)", 11), color: "var(--indigo)" }}><ListChecks size={17} /></span>
+              <div className="min-w-0 flex-1 basis-[240px]">
+                <div className="text-[13.5px] font-bold">My tasks</div>
+                <div className="mt-0.5 text-[12px] text-[var(--muted)]"><b className="text-[var(--ink-2)] tnum">{todo.tasks.open}</b> open{todo.tasks.overdue ? <> · <b className="text-[var(--rose)] tnum">{todo.tasks.overdue}</b> overdue</> : null}</div>
+              </div>
+              <Link href="/tasks" className="btn btn-ghost btn-sm">Open My Tasks <ArrowRight size={13} /></Link>
+            </div>
+          </div>
+        </div>
+
+        {/* how the work is added */}
+        <div className="card card-pad">
+          <div className="flex items-center gap-2 text-[14px] font-bold"><Sparkles size={16} className="text-[var(--violet)]" /> How to add your work</div>
+          <ol className="mt-3 space-y-3">
+            {[
+              { n: 1, title: "Keep the client’s details right", text: "Open a client → Edit info: contact, services, monthly posts / reels, designer and editor.", href: "/clients", cta: "My clients" },
+              { n: 2, title: "Enter ad results every morning", text: "Meta Ads and Google Ads: yesterday’s spend and leads for each client.", href: "/ads", cta: "Meta Ads" },
+              { n: 3, title: "Log the posts that go out", text: "SM Posts: each post’s platform, type, link and status.", href: "/smo", cta: "SM Posts" },
+              { n: 4, title: "Give work to the design / video team", text: "Assign to Design / Video team: title, client, due date and brief — they are notified.", href: "/reports/creative", cta: "Track it" },
+              { n: 5, title: "Send the monthly report", text: "Download report (below) gives each client’s spend, leads, posts and creative work for the month.", href: "#clients-report", cta: "Report" },
+            ].map((s) => (
+              <li key={s.n} className="flex gap-3">
+                <span className="grid h-6 w-6 flex-none place-items-center rounded-full text-[11.5px] font-extrabold text-white" style={{ background: "var(--violet)" }}>{s.n}</span>
+                <div className="min-w-0">
+                  <div className="text-[13px] font-bold">{s.title}</div>
+                  <div className="text-[12px] leading-relaxed text-[var(--muted)]">{s.text} <a href={s.href} className="font-bold text-[var(--violet)] hover:underline">{s.cta} →</a></div>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+
+      {/* every client, this month — and the report */}
+      <div id="clients-report" className="card !p-0 scroll-mt-24 overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--line)] px-5 py-3.5">
+          <div className="flex items-center gap-2.5">
+            <span className="grid h-8 w-8 place-items-center rounded-[9px]" style={{ background: tint("var(--sky)", 12), color: "var(--sky)" }}><FileBarChart size={16} /></span>
+            <div>
+              <div className="text-[14px] font-bold">{d.isHead ? "Clients" : "My clients"} · {d.monthLabel}</div>
+              <div className="text-[11.5px] text-[var(--muted)]">Spend, leads, posts and creative work this month — the client report</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <AmReportDownload rows={d.rows} monthLabel={d.monthLabel} manager={user.name} />
+            <Link href="/clients" className="inline-flex items-center gap-1 text-[12.5px] font-bold text-[var(--violet)] hover:underline">All details <ArrowRight size={13} /></Link>
+          </div>
+        </div>
+        <div className="overflow-x-auto scroll-thin">
+          <table className="w-full min-w-[1040px] text-[13px]">
+            <thead>
+              <tr className="border-b border-[var(--line)] bg-[var(--surface-2)] text-[11px] font-bold uppercase tracking-wide text-[var(--muted)]">
+                <th className="px-5 py-2.5 text-left">Client</th>
+                <th className="px-3 py-2.5 text-left">Services</th>
+                <th className="px-3 py-2.5 text-right">Meta spend</th>
+                <th className="px-3 py-2.5 text-right">Meta leads</th>
+                <th className="px-3 py-2.5 text-right">Google spend</th>
+                <th className="px-3 py-2.5 text-right">Google leads</th>
+                <th className="px-3 py-2.5 text-center">Posts</th>
+                <th className="px-3 py-2.5 text-center">Creative</th>
+                <th className="px-3 py-2.5 text-left">Yesterday</th>
+                <th className="px-5 py-2.5 text-right">Open</th>
+              </tr>
+            </thead>
+            <tbody>
+              {d.rows.map((r) => {
+                const needs = (r.hasMeta && !r.metaYesterday) || (r.hasGoogle && !r.googleYesterday);
+                const anyAds = r.hasMeta || r.hasGoogle;
+                return (
+                  <tr key={r.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
+                    <td className="max-w-[240px] px-5 py-2.5">
+                      <Link href={`/clients/${r.id}`} className="block truncate font-bold hover:text-[var(--violet)]" title={r.name}>{r.name}</Link>
+                      <div className="truncate text-[11.5px] text-[var(--muted)]">{[r.poc, d.isHead ? r.am : ""].filter(Boolean).join(" · ") || r.code}</div>
+                    </td>
+                    <td className="px-3 py-2.5"><div className="flex max-w-[220px] flex-wrap gap-1">{r.services.slice(0, 4).map((s) => <span key={s} className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[10.5px] font-semibold text-[var(--ink-2)]">{s}</span>)}{r.services.length > 4 && <span className="text-[10.5px] text-[var(--muted)]">+{r.services.length - 4}</span>}{r.services.length === 0 && <span className="text-[11.5px] text-[var(--amber)]">Not set — Edit info</span>}</div></td>
+                    <td className="px-3 py-2.5 text-right tnum">{r.metaSpend ? inrShort(r.metaSpend) : <span className="text-[var(--line-2)]">—</span>}</td>
+                    <td className="px-3 py-2.5 text-right font-bold tnum">{r.metaLeads || <span className="font-normal text-[var(--line-2)]">—</span>}</td>
+                    <td className="px-3 py-2.5 text-right tnum">{r.gSpend ? inrShort(r.gSpend) : <span className="text-[var(--line-2)]">—</span>}</td>
+                    <td className="px-3 py-2.5 text-right font-bold tnum">{r.gLeads || <span className="font-normal text-[var(--line-2)]">—</span>}</td>
+                    <td className="px-3 py-2.5 text-center font-bold tnum">{r.posts || <span className="font-normal text-[var(--line-2)]">—</span>}</td>
+                    <td className="px-3 py-2.5 text-center text-[12px]">{r.creativeOpen || r.creativeDone ? <><b className="tnum">{r.creativeDone}</b> done · <b className="tnum" style={{ color: r.creativeOverdue ? "var(--rose)" : undefined }}>{r.creativeOpen}</b> open</> : <span className="text-[var(--line-2)]">—</span>}</td>
+                    <td className="px-3 py-2.5">
+                      {!anyAds ? <span className="text-[11.5px] text-[var(--faint)]">No ads</span>
+                        : needs ? <Link href={r.hasMeta && !r.metaYesterday ? "/ads" : "/google-ads"} className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: tint("var(--amber)", 14), color: "#92600a" }}><AlertTriangle size={11} /> Enter results</Link>
+                        : <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold text-[var(--emerald)]" style={{ background: tint("var(--emerald)", 11) }}><CheckCircle2 size={11} /> Updated</span>}
+                      {r.lastUpdate && <div className="mt-0.5 text-[10.5px] text-[var(--faint)]">last {fmtDay(r.lastUpdate)}</div>}
+                    </td>
+                    <td className="px-5 py-2.5">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <Link href={`/clients/${r.id}/edit`} title="Edit info" className="grid h-8 w-8 place-items-center rounded-[9px] border border-[var(--line-2)] bg-[var(--surface)] text-[var(--ink-2)] hover:bg-[var(--surface-3)]"><Pencil size={13} /></Link>
+                        <Link href={`/clients/${r.id}`} className="inline-flex h-8 items-center gap-1 rounded-[9px] border border-[var(--line-2)] bg-[var(--surface)] px-2.5 text-[12px] font-bold hover:bg-[var(--surface-3)]">Open <ArrowRight size={12} /></Link>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+              {d.rows.length === 0 && (
+                <tr><td colSpan={10} className="px-5 py-12 text-center">
+                  <div className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-[var(--surface-2)] text-[var(--muted)]"><Users size={20} /></div>
+                  <div className="mt-2 text-[14px] font-bold">No clients yet</div>
+                  <div className="mt-0.5 text-[12.5px] text-[var(--muted)]">A client shows here when you are its account manager. Add one with <Link href="/clients/new" className="font-bold text-[var(--violet)]">New client</Link>, or ask the admin to set you on your existing clients.</div>
+                </td></tr>
+              )}
+            </tbody>
+            {d.rows.length > 0 && (
+              <tfoot>
+                <tr className="border-t-2 border-[var(--line-2)] bg-[var(--surface-2)] text-[13px] font-extrabold">
+                  <td className="px-5 py-3" colSpan={2}>Total · {t.clients} client{t.clients === 1 ? "" : "s"}</td>
+                  <td className="px-3 py-3 text-right tnum">{inrShort(t.metaSpend)}</td>
+                  <td className="px-3 py-3 text-right tnum">{t.metaLeads}</td>
+                  <td className="px-3 py-3 text-right tnum">{inrShort(t.gSpend)}</td>
+                  <td className="px-3 py-3 text-right tnum">{t.gLeads}</td>
+                  <td className="px-3 py-3 text-center tnum">{t.posts}</td>
+                  <td className="px-3 py-3 text-center text-[12px]">{t.creativeDone} done · {t.creativeOpen} open</td>
+                  <td colSpan={2} className="px-5 py-3 text-right text-[12px] font-bold text-[var(--muted)]">{t.cpl ? `Cost per lead ${inr(t.cpl)}` : ""}</td>
+                </tr>
+              </tfoot>
+            )}
+          </table>
         </div>
       </div>
 
       {/* shoot requests sent to Studio X — status of each */}
       <MyShootRequests userId={user.id} clients={clientOpts.map((c) => ({ id: c.id, name: c.name }))} />
 
-      {/* KPIs */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Kpi icon={Users} tone="violet" label="My clients" value={d.clients} note="active" />
-        <Kpi icon={IndianRupee} tone="emerald" label="Ad spend · this month" value={inrShort(d.totalSpend)} note="Meta + Google" />
-        <Kpi icon={Zap} tone="sky" label="Total leads" value={d.totalLeads} note="this month" />
-        <Kpi icon={TrendingUp} tone="amber" label="Avg cost / lead" value={inr(d.avgCpl)} note="blended" />
-      </div>
-
-      {/* needs attention */}
-      {(d.pending.length > 0 || d.budgetAlerts.length > 0) && (
-        <div className="card card-pad" style={{ borderColor: "color-mix(in srgb, var(--rose) 35%, white)", background: "color-mix(in srgb, var(--rose) 4%, white)" }}>
-          <div className="flex items-center gap-2">
-            <span className="grid h-8 w-8 place-items-center rounded-lg" style={{ background: "color-mix(in srgb, var(--rose) 12%, white)", color: "var(--rose)" }}><AlertTriangle size={16} /></span>
-            <h2 className="text-[14.5px] font-bold">Needs your attention</h2>
-            <span className="text-[12px] text-[var(--muted)]">{d.pending.length} not updated yesterday · {d.budgetAlerts.length} near budget</span>
-          </div>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {d.pending.map((r) => (
-              <a key={r.id} href="/google-ads" className="inline-flex items-center gap-2 rounded-full border border-[var(--line-2)] bg-[var(--surface)] px-3 py-1.5 text-[12.5px] font-semibold hover:border-[var(--rose)]">
-                <span className="h-2 w-2 rounded-full" style={{ background: "var(--rose)" }} /> {r.name} <span className="text-[var(--muted)]">· update Google Ads</span>
-              </a>
-            ))}
-            {d.budgetAlerts.map((r) => (
-              <span key={r.id} className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[12.5px] font-semibold" style={{ borderColor: "color-mix(in srgb, var(--amber) 40%, white)", color: "var(--amber)" }}>
-                <Wallet size={12} /> {r.name} · {r.gBudgetPct}% budget
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* channel split + quick actions */}
-      <div className="grid gap-4 lg:grid-cols-3">
-        <ChannelCard href="/ads" icon={Megaphone} tone="sky" title="Meta Ads" rows={[["Spend", inrShort(d.meta.spend)], ["Leads", d.meta.leads], ["ROAS", `${d.meta.roas}x`]]} cta="Daily entry" />
-        <ChannelCard href="/google-ads" icon={Target} tone="violet" title="Google Ads" rows={[["Spend", inrShort(d.google.spend)], ["Leads", d.google.leads], ["Conversions", d.google.conv]]} cta="Open console" />
-        <ChannelCard href="/smo" icon={Images} tone="emerald" title="SM Posts" rows={[["Clients", d.clients], ["Channel", "Instagram · FB"], ["Entry", "Daily posts"]]} cta="Post tracker" />
-      </div>
-
-      {/* clients table */}
-      <div className="card !p-0 overflow-hidden">
-        <div className="flex items-center justify-between border-b border-[var(--line)] px-5 py-4">
-          <div>
-            <h2 className="text-[15px] font-bold">My clients · ad performance</h2>
-            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">This month across Meta & Google. Click a client to open its daily entry.</p>
-          </div>
-        </div>
-        <div className="overflow-x-auto scroll-thin">
-          <table className="w-full min-w-[760px] text-left">
-            <thead><tr className="border-b border-[var(--line)]">{["Client", "Meta spend", "Meta leads", "Google spend", "Google leads", "Budget", ""].map((h) => <th key={h} className="th px-5 py-2.5">{h}</th>)}</tr></thead>
-            <tbody>
-              {d.rows.map((r) => (
-                <tr key={r.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
-                  <td className="px-5 py-3"><a href={`/clients/${r.id}`} className="text-[13.5px] font-semibold hover:text-[var(--violet)]">{r.name}</a><div className="text-[11px] text-[var(--muted)]">{r.industry}</div></td>
-                  <td className="px-5 py-3 text-[13px] tnum">{r.metaSpend ? inrShort(r.metaSpend) : "—"}</td>
-                  <td className="px-5 py-3 text-[13px] font-semibold tnum">{r.metaLeads || "—"}</td>
-                  <td className="px-5 py-3 text-[13px] tnum">{r.gSpend ? inrShort(r.gSpend) : "—"}</td>
-                  <td className="px-5 py-3 text-[13px] font-semibold tnum">{r.gLeads || "—"}</td>
-                  <td className="px-5 py-3">
-                    {r.hasGoogle ? (
-                      <div className="flex items-center gap-2"><div className="h-1.5 w-16 overflow-hidden rounded-full bg-[var(--surface-3)]"><div className="h-full rounded-full" style={{ width: `${Math.min(100, r.gBudgetPct)}%`, background: r.gBudgetPct >= 90 ? "var(--rose)" : "var(--violet)" }} /></div><span className="text-[11.5px] font-bold tnum" style={{ color: r.gBudgetPct >= 90 ? "var(--rose)" : "var(--muted)" }}>{r.gBudgetPct}%</span></div>
-                    ) : <span className="text-[var(--faint)]">—</span>}
-                  </td>
-                  <td className="px-5 py-3 text-right">
-                    {r.gPending ? <a href="/google-ads" className="inline-flex items-center gap-1 rounded-md bg-[color-mix(in_srgb,var(--rose)_12%,white)] px-2 py-1 text-[11.5px] font-bold text-[var(--rose)]">Pending</a>
-                      : <a href={r.hasGoogle ? "/google-ads" : "/ads"} className="inline-flex items-center gap-1 text-[12px] font-semibold text-[var(--violet)]">Open <ArrowRight size={13} /></a>}
-                  </td>
-                </tr>
-              ))}
-              {d.rows.length === 0 && <tr><td colSpan={7} className="px-5 py-12 text-center text-sm text-[var(--muted)]">No active clients assigned to you yet.</td></tr>}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
       {/* creative work this AM has assigned to the design / video team */}
       <div className="card !p-0 overflow-hidden">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--line)] px-5 py-4">
-          <div>
-            <h2 className="text-[15px] font-bold">Work I assigned</h2>
-            <p className="text-[12px] text-[var(--muted)]">{assigned.open} open · {assigned.total} total briefed to the design / video team</p>
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--line)] px-5 py-3.5">
+          <div className="flex items-center gap-2.5">
+            <span className="grid h-8 w-8 place-items-center rounded-[9px]" style={{ background: tint("var(--rose)", 11), color: "var(--rose)" }}><Plus size={16} /></span>
+            <div>
+              <div className="text-[14px] font-bold">Work I assigned</div>
+              <div className="text-[11.5px] text-[var(--muted)]">{assigned.open} open · {assigned.total} total briefed to the design / video team</div>
+            </div>
           </div>
-          <a href="/reports/creative" className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--violet)]">Creative Report <ArrowRight size={13} /></a>
+          <Link href="/reports/creative" className="inline-flex items-center gap-1 text-[12.5px] font-bold text-[var(--violet)] hover:underline">Creative Report <ArrowRight size={13} /></Link>
         </div>
         <div className="overflow-x-auto scroll-thin">
           <table className="w-full min-w-[720px] text-left">
-            <thead><tr className="border-b border-[var(--line)]">{["Task", "Assigned to", "Client", "Type", "Due", "Status"].map((h) => <th key={h} className="th px-5 py-2.5">{h}</th>)}</tr></thead>
+            <thead><tr className="border-b border-[var(--line)] bg-[var(--surface-2)]">{["Task", "Assigned to", "Client", "Type", "Due", "Status"].map((h) => <th key={h} className="px-5 py-2.5 text-[11px] font-bold uppercase tracking-wide text-[var(--muted)]">{h}</th>)}</tr></thead>
             <tbody>
-              {assigned.rows.map((t) => {
-                const st = CREATIVE_STATUS_TONE[t.status] ?? CREATIVE_STATUS_TONE.PENDING;
+              {assigned.rows.map((x) => {
+                const st = CREATIVE_STATUS_TONE[x.status] ?? CREATIVE_STATUS_TONE.PENDING;
                 return (
-                  <tr key={t.id} className="border-b border-[var(--line)] hover:bg-[var(--surface-2)]">
-                    <td className="px-5 py-3"><div className="text-[13.5px] font-semibold">{t.title}</div><div className="text-[11px] text-[var(--faint)]">{t.code}</div></td>
-                    <td className="px-5 py-3 text-[12.5px]"><span className="inline-flex items-center gap-1.5">{t.memberRole === "EDITOR" ? <Clapperboard size={13} className="text-[var(--rose)]" /> : <Palette size={13} className="text-[var(--amber)]" />} {t.member}</span></td>
-                    <td className="px-5 py-3 text-[12.5px] text-[var(--ink-2)]">{t.client}</td>
-                    <td className="px-5 py-3 text-[12.5px] text-[var(--muted)]">{t.type}</td>
-                    <td className="px-5 py-3 text-[12px] tnum">{t.dueDate ? <span className={t.overdue ? "font-semibold text-[var(--rose)]" : "text-[var(--muted)]"}>{new Date(t.dueDate + "T00:00:00").toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}{t.overdue ? " · overdue" : ""}</span> : <span className="text-[var(--faint)]">—</span>}</td>
-                    <td className="px-5 py-3"><span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ background: `color-mix(in srgb, var(--${st.tone}) 14%, white)`, color: `var(--${st.tone})` }}>{st.label}</span></td>
+                  <tr key={x.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
+                    <td className="px-5 py-2.5"><div className="text-[13.5px] font-semibold">{x.title}</div><div className="text-[11px] text-[var(--faint)]">{x.code}</div></td>
+                    <td className="px-5 py-2.5 text-[12.5px]"><span className="inline-flex items-center gap-1.5">{x.memberRole === "EDITOR" ? <Clapperboard size={13} className="text-[var(--rose)]" /> : <Palette size={13} className="text-[var(--amber)]" />}{x.member}</span></td>
+                    <td className="px-5 py-2.5 text-[12.5px] text-[var(--ink-2)]">{x.client}</td>
+                    <td className="px-5 py-2.5 text-[12.5px] text-[var(--muted)]">{x.type}</td>
+                    <td className="px-5 py-2.5 text-[12px] tnum">{x.dueDate ? <span className={x.overdue ? "font-semibold text-[var(--rose)]" : "text-[var(--muted)]"}>{fmtDay(x.dueDate)}{x.overdue ? " · overdue" : ""}</span> : <span className="text-[var(--faint)]">—</span>}</td>
+                    <td className="px-5 py-2.5"><span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ background: `color-mix(in srgb, var(--${st.tone}) 14%, white)`, color: `var(--${st.tone})` }}>{st.label}</span></td>
                   </tr>
                 );
               })}
-              {assigned.rows.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-sm text-[var(--muted)]">You haven&apos;t assigned any creative work yet. Use <b className="text-[var(--ink-2)]">Assign to Design / Video team</b> above.</td></tr>}
+              {assigned.rows.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-sm text-[var(--muted)]">You have not assigned any design / video work yet. Use <b className="text-[var(--ink-2)]">Assign to Design / Video team</b> at the top.</td></tr>}
             </tbody>
           </table>
         </div>
       </div>
     </div>
-  );
-}
-
-function Kpi({ icon: Icon, tone, label, value, note }: { icon: typeof Users; tone: string; label: string; value: React.ReactNode; note?: string }) {
-  const c: Record<string, string> = { violet: "var(--violet)", emerald: "var(--emerald)", sky: "var(--sky)", amber: "var(--amber)" };
-  return (
-    <div className="card card-pad">
-      <div className="flex items-start justify-between">
-        <span className="grid h-9 w-9 place-items-center rounded-[10px]" style={{ background: `color-mix(in srgb, ${c[tone]} 12%, white)`, color: c[tone] }}><Icon size={17} /></span>
-        {note && <span className="rounded-md bg-[var(--surface-2)] px-2 py-1 text-[11px] font-semibold text-[var(--muted)]">{note}</span>}
-      </div>
-      <div className="mt-3 text-[12px] font-semibold uppercase tracking-wide text-[var(--muted)]">{label}</div>
-      <div className="mt-1 text-[28px] font-extrabold leading-none tracking-tight tnum">{value}</div>
-    </div>
-  );
-}
-
-function ChannelCard({ href, icon: Icon, tone, title, rows, cta }: { href: string; icon: typeof Users; tone: string; title: string; rows: [string, React.ReactNode][]; cta: string }) {
-  const c: Record<string, string> = { violet: "var(--violet)", emerald: "var(--emerald)", sky: "var(--sky)" };
-  return (
-    <a href={href} className="card card-hover card-pad group block">
-      <div className="flex items-center justify-between">
-        <span className="grid h-10 w-10 place-items-center rounded-xl" style={{ background: `color-mix(in srgb, ${c[tone]} 12%, white)`, color: c[tone] }}><Icon size={19} /></span>
-        <ArrowRight size={16} className="text-[var(--faint)] transition group-hover:translate-x-0.5 group-hover:text-[var(--ink)]" />
-      </div>
-      <div className="mt-3 text-[15px] font-bold">{title}</div>
-      <div className="mt-2 space-y-1">
-        {rows.map(([k, v]) => <div key={k} className="flex items-center justify-between text-[12.5px]"><span className="text-[var(--muted)]">{k}</span><span className="font-bold tnum">{v}</span></div>)}
-      </div>
-      <div className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-semibold" style={{ color: c[tone] }}>{cta} <ArrowRight size={13} /></div>
-    </a>
   );
 }

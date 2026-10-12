@@ -1,5 +1,6 @@
 import { prisma } from "./prisma";
 import { SERVICE_ALIAS } from "./am-scope";
+import { todayIST } from "./india-date";
 import { COMPLETING_STATUSES, healthBand, serviceKind, SALES_STAGE_KEYS } from "./domain";
 import { resolvePeriod, now, type PeriodKey } from "./period";
 
@@ -527,51 +528,6 @@ export async function getSeoLeaderboard(monthIn?: string) {
   return { month: selMonth, months: SEO_BOARD_MONTHS.map((k) => ({ key: k, label: mLabelOf(k) })), rows };
 }
 
-// Account Manager dashboard — Meta + Google Ads overview across the AM's clients (this month).
-export async function getAmDashboard(userId: string, role: string) {
-  const monthPrefix = "2026-08"; // demo month anchor (matches the ads seed)
-  const yesterday = "2026-08-30";
-  const isHead = role === "AM_HEAD";
-  const clients = await prisma.client.findMany({
-    where: { status: "ACTIVE", ...(isHead ? {} : { accountManagerId: userId }) },
-    select: {
-      id: true, name: true, code: true, industry: true, googleBudget: true,
-      accountManager: { select: { name: true } },
-      googleCampaigns: { where: { date: { startsWith: monthPrefix } } },
-      campaigns: { where: { date: { startsWith: monthPrefix } } },
-    },
-    orderBy: { code: "asc" },
-  });
-  let metaSpend = 0, metaLeads = 0, metaSale = 0, gSpend = 0, gLeads = 0, gConv = 0;
-  const rows = clients.map((c) => {
-    const m = c.campaigns.reduce((a, e) => ({ spend: a.spend + e.spent, leads: a.leads + e.results, sale: a.sale + e.saleValue }), { spend: 0, leads: 0, sale: 0 });
-    const g = c.googleCampaigns.reduce((a, e) => ({ spend: a.spend + e.spent, leads: a.leads + e.leads, conv: a.conv + e.conversions }), { spend: 0, leads: 0, conv: 0 });
-    metaSpend += m.spend; metaLeads += m.leads; metaSale += m.sale;
-    gSpend += g.spend; gLeads += g.leads; gConv += g.conv;
-    const hasGoogle = c.googleBudget > 0;
-    const hasMeta = c.campaigns.length > 0;
-    const gPending = hasGoogle && !c.googleCampaigns.some((e) => e.date === yesterday);
-    const gBudgetPct = c.googleBudget ? Math.round((g.spend / c.googleBudget) * 100) : 0;
-    return {
-      id: c.id, name: c.name, code: c.code, industry: c.industry ?? "—", am: c.accountManager?.name ?? "—",
-      metaSpend: m.spend, metaLeads: m.leads, gSpend: g.spend, gLeads: g.leads,
-      hasGoogle, hasMeta, gPending, gBudgetPct, budget: c.googleBudget,
-    };
-  });
-  const pending = rows.filter((r) => r.gPending);
-  const budgetAlerts = rows.filter((r) => r.hasGoogle && r.gBudgetPct >= 90);
-  const totalSpend = metaSpend + gSpend, totalLeads = metaLeads + gLeads;
-  return {
-    isHead, monthLabel: "August 2026",
-    clients: rows.length,
-    meta: { spend: metaSpend, leads: metaLeads, roas: metaSpend ? +(metaSale / metaSpend).toFixed(1) : 0 },
-    google: { spend: gSpend, leads: gLeads, conv: gConv },
-    totalSpend, totalLeads, avgCpl: totalLeads ? Math.round(totalSpend / totalLeads) : 0,
-    pending, budgetAlerts,
-    rows: [...rows].sort((a, b) => (b.metaSpend + b.gSpend) - (a.metaSpend + a.gSpend)),
-  };
-}
-
 export async function getSeoBoard(userId: string, role: string, monthIn?: string) {
   const selMonth = monthIn && SEO_BOARD_MONTHS.includes(monthIn) ? monthIn : SEO_BOARD_MONTHS[0];
   const isHead = role === "SEO_HEAD" || role === "SUPER_ADMIN" || role === "SUB_ADMIN";
@@ -938,25 +894,39 @@ export async function getCreativeReport(amId?: string) {
 }
 
 // ---- Google Ads (Account Manager daily-entry console) ----
-// The demo calendar is anchored to Aug 2026 so the console always has data to show.
-const GADS_TODAY = "2026-08-31";
-const GADS_YESTERDAY = "2026-08-30";
-const GADS_WEEK_START = "2026-08-25";
-const GADS_MONTH_PREFIX = "2026-08";
+// Dates follow the real calendar in India (the console used to be pinned to the demo month,
+// Aug 2026, so results entered in any other month were filed under 30 / 31 Aug).
+function gadsDates() {
+  const today = todayIST();
+  const base = new Date(`${today}T00:00:00Z`).getTime();
+  const iso = (ms: number) => new Date(ms).toISOString().slice(0, 10);
+  const fmt = (d: string, o: Intl.DateTimeFormatOptions) => new Date(`${d}T00:00:00Z`).toLocaleDateString("en-IN", { timeZone: "UTC", ...o });
+  const yesterday = iso(base - 86400000), weekStart = iso(base - 6 * 86400000);
+  return {
+    today, yesterday, weekStart, month: today.slice(0, 7),
+    todayLabel: fmt(today, { day: "2-digit", month: "short", year: "numeric" }),
+    yesterdayLabel: fmt(yesterday, { day: "2-digit", month: "short", year: "numeric" }),
+    weekLabel: `${fmt(weekStart, { day: "2-digit", month: "short" })} – ${fmt(today, { day: "2-digit", month: "short" })}`,
+    monthLabel: fmt(today, { month: "short", year: "numeric" }),
+  };
+}
+// A client is on the Google Ads console when it has a Google budget or takes the Google Ads service.
+const GADS_CLIENT = { OR: [{ googleBudget: { gt: 0 } }, { services: { some: { service: { in: ["GOOGLE_ADS", "Google Ads"] } } } }] };
 const GADS_PERIOD_KEYS = ["YESTERDAY", "TODAY", "WEEK", "MONTH"] as const;
 
 type GadsDateWhere = { in: string[] } | { startsWith: string } | { gte: string; lte: string };
 function gadsDateWhere(period: string): { where: GadsDateWhere; label: string; single: string | null } {
-  if (period === "TODAY") return { where: { in: [GADS_TODAY] }, label: "31 Aug 2026", single: GADS_TODAY };
-  if (period === "WEEK") return { where: { gte: GADS_WEEK_START, lte: GADS_TODAY }, label: "25–31 Aug", single: null };
-  if (period === "MONTH") return { where: { startsWith: GADS_MONTH_PREFIX }, label: "Aug 2026", single: null };
-  return { where: { in: [GADS_YESTERDAY] }, label: "30 Aug 2026", single: GADS_YESTERDAY }; // YESTERDAY
+  const g = gadsDates();
+  if (period === "TODAY") return { where: { in: [g.today] }, label: g.todayLabel, single: g.today };
+  if (period === "WEEK") return { where: { gte: g.weekStart, lte: g.today }, label: g.weekLabel, single: null };
+  if (period === "MONTH") return { where: { startsWith: g.month }, label: g.monthLabel, single: null };
+  return { where: { in: [g.yesterday] }, label: g.yesterdayLabel, single: g.yesterday }; // YESTERDAY
 }
 
 export async function getGoogleAdsBoard(userId: string, role: string, periodIn = "YESTERDAY", viewAsIn: string | null = null, dateIn: string | null = null) {
   const isHead = role === "AM_HEAD" || role === "SUPER_ADMIN" || role === "SUB_ADMIN";
   // A specific date picked from the calendar (never in the future) overrides the period tabs.
-  const pickedDate = dateIn && /^\d{4}-\d{2}-\d{2}$/.test(dateIn) && dateIn <= GADS_TODAY ? dateIn : null;
+  const pickedDate = dateIn && /^\d{4}-\d{2}-\d{2}$/.test(dateIn) && dateIn <= gadsDates().today ? dateIn : null;
   let period: string, dateWhere: GadsDateWhere, periodDate: string, single: string | null;
   if (pickedDate) {
     period = "DATE";
@@ -972,7 +942,7 @@ export async function getGoogleAdsBoard(userId: string, role: string, periodIn =
   let ams: { id: string; name: string }[] = [];
   if (isHead) {
     const amClients = await prisma.client.findMany({
-      where: { googleBudget: { gt: 0 }, accountManagerId: { not: null } },
+      where: { ...GADS_CLIENT, accountManagerId: { not: null } },
       select: { accountManagerId: true }, distinct: ["accountManagerId"],
     });
     const amIds = amClients.map((c) => c.accountManagerId!).filter(Boolean);
@@ -981,7 +951,7 @@ export async function getGoogleAdsBoard(userId: string, role: string, periodIn =
   const viewAs = isHead && viewAsIn && ams.some((a) => a.id === viewAsIn) ? viewAsIn : null;
 
   const clients = await prisma.client.findMany({
-    where: { googleBudget: { gt: 0 }, ...(isHead ? (viewAs ? { accountManagerId: viewAs } : {}) : { accountManagerId: userId }) },
+    where: { ...GADS_CLIENT, ...(isHead ? (viewAs ? { accountManagerId: viewAs } : {}) : { accountManagerId: userId }) },
     include: { googleCampaigns: { where: { date: dateWhere }, orderBy: { name: "asc" } }, accountManager: { select: { name: true } } },
     orderBy: { code: "asc" },
   });
@@ -989,7 +959,7 @@ export async function getGoogleAdsBoard(userId: string, role: string, periodIn =
   // This-month spend per client (for the budget banner — always the full month, not the period).
   const ids = clients.map((c) => c.id);
   const monthAgg = ids.length
-    ? await prisma.googleAdsCampaign.groupBy({ by: ["clientId"], where: { clientId: { in: ids }, date: { startsWith: GADS_MONTH_PREFIX } }, _sum: { spent: true } })
+    ? await prisma.googleAdsCampaign.groupBy({ by: ["clientId"], where: { clientId: { in: ids }, date: { startsWith: gadsDates().month } }, _sum: { spent: true } })
     : [];
   const monthSpend = new Map(monthAgg.map((m) => [m.clientId, m._sum.spent ?? 0]));
 
@@ -1054,16 +1024,16 @@ export async function getGoogleAdsBoard(userId: string, role: string, periodIn =
     counts: { clients: rows.length, campaigns: totalCampaigns, smart: smartCampaigns, pending },
     budgetClient: budgetClient && { name: budgetClient.name, budget: budgetClient.budget, spend: budgetClient.monthSpend, usedPct: budgetClient.usedPct },
     isHead, ams, viewAs,
-    selectedDate: pickedDate, maxDate: GADS_TODAY,
+    selectedDate: pickedDate, maxDate: gadsDates().today,
   };
 }
 
 // Google Ads daily-entry form data (client picker + existing rows for a client+date).
 export async function getGoogleAdsEntry(userId: string, role: string, clientId: string | null, period = "YESTERDAY") {
   const isHead = role === "AM_HEAD" || role === "SUPER_ADMIN" || role === "SUB_ADMIN";
-  const date = period === "TODAY" ? GADS_TODAY : GADS_YESTERDAY; // entry is per single day
+  const date = period === "TODAY" ? gadsDates().today : gadsDates().yesterday; // entry is per single day
   const clients = await prisma.client.findMany({
-    where: { googleBudget: { gt: 0 }, ...(isHead ? {} : { accountManagerId: userId }) },
+    where: { ...GADS_CLIENT, ...(isHead ? {} : { accountManagerId: userId }) },
     orderBy: { code: "asc" },
     select: { id: true, name: true, googleBudget: true },
   });
