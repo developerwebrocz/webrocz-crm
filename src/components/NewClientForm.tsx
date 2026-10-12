@@ -13,6 +13,7 @@ export type ClientInitial = {
   pocName?: string; pocMobile?: string; pocEmail?: string;
   status?: string; onboardDate?: string; notes?: string;
   accountManagerId?: string; amHeadId?: string; seoHeadId?: string; seoMemberId?: string; designerId?: string; editorId?: string; devId?: string;
+  sharedAmIds?: string[];
   services?: string[]; detailOther?: string; deliverables?: Record<string, number>;
 };
 
@@ -59,9 +60,10 @@ function Footer({ selectedCount, editing }: { selectedCount: number; editing: bo
 }
 
 export default function NewClientForm({
-  users, action, today, initial = {},
+  users, action, today, initial = {}, shareLocked = false,
 }: {
   users: U[]; action: (fd: FormData) => void; today: string; initial?: ClientInitial;
+  shareLocked?: boolean; // an account manager editing: who the client is shared with is shown, not changed
 }) {
   const editing = !!initial.id;
   const [selected, setSelected] = useState<ServiceKey[]>((initial.services as ServiceKey[]) ?? []);
@@ -185,6 +187,21 @@ export default function NewClientForm({
             </select>
           </Field>
           <Field label="Onboarding date" required><input name="onboardDate" type="date" className="input" defaultValue={initial.onboardDate ?? today} /></Field>
+        </div>
+        {/* a client two account managers work on: tick the others here — they see and edit it like its manager */}
+        <div className="mt-5 rounded-xl border border-[var(--line-2)] bg-[var(--surface-2)] p-4">
+          <div className="eyebrow">Also works on this client</div>
+          <p className="mt-0.5 text-[12px] text-[var(--muted)]">{shareLocked ? "Shared with these account managers (the admin sets this)." : "Tick the other account managers who work on this client too — it shows on their dashboard and they can edit it."}</p>
+          {!shareLocked && <input type="hidden" name="sharedAm_set" value="1" />}
+          <div className="mt-3 flex flex-wrap gap-2">
+            {byRoles(["ACCOUNT_MANAGER", "DM_EXEC"]).filter((u) => !shareLocked || initial.sharedAmIds?.includes(u.id)).map((u) => (
+              <label key={u.id} className="flex cursor-pointer items-center gap-2 rounded-full border border-[var(--line-2)] bg-[var(--surface)] px-3 py-1.5 text-[12.5px] font-semibold has-[:checked]:border-[var(--violet)] has-[:checked]:text-[var(--violet)]">
+                <input type="checkbox" name="sharedAmIds" value={u.id} defaultChecked={initial.sharedAmIds?.includes(u.id)} disabled={shareLocked} className="accent-[var(--violet)]" />
+                {u.name}
+              </label>
+            ))}
+            {shareLocked && !initial.sharedAmIds?.length && <span className="text-[12.5px] text-[var(--muted)]">Not shared with anyone.</span>}
+          </div>
         </div>
       </Section>
 

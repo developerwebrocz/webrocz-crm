@@ -1,7 +1,8 @@
 import { getClientDetail, getClientAds } from "@/lib/queries";
 import { getCurrentUser } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
-import { ownClientsOf } from "@/lib/am-scope";
+import { ownClientsOf, SHARED_AM } from "@/lib/am-scope";
+import { managesClient } from "@/lib/am-access";
 import { inr, inrShort, CLIENT_STATUS, SERVICES, WORK_STATUS, CAMPAIGN_TYPES } from "@/lib/domain";
 import { Avatar, Badge, Card, Eyebrow, Progress, IconChip } from "@/components/ui";
 import { deleteClient, setClientStatus, addClientContact, deleteClientContact, setRenewalDate } from "@/app/actions";
@@ -21,7 +22,7 @@ export default async function ClientDetailPage({ params }: PageProps<"/clients/[
   const { client: c, pct, agreed, cp, band, track, updates } = data;
   const me = await getCurrentUser();
   // an account manager can open only the clients they manage (not another manager's by its link)
-  if (ownClientsOf(me) && c.accountManagerId !== me!.id) redirect("/clients");
+  if (ownClientsOf(me) && !(await managesClient(me!.id, c.id))) redirect("/clients");
   const ads = await getClientAds(id);
   const isSuper = me?.role === "SUPER_ADMIN" || me?.role === "SUB_ADMIN";
   const renewalDays = c.renewalDate ? Math.ceil((new Date(c.renewalDate + "T23:59:59").getTime() - Date.now()) / 86400000) : null;
@@ -110,7 +111,7 @@ export default async function ClientDetailPage({ params }: PageProps<"/clients/[
           <dl className="mt-4 space-y-3 border-t border-[var(--line)] pt-4 text-sm">
             {c.monthlyRetainer > 0 && <Row k="Monthly retainer" v={inr(c.monthlyRetainer)} />}
             <Row k="Industry" v={c.industry ?? "—"} />
-            <Row k="Account manager" v={c.accountManager?.name ?? "—"} />
+            <Row k="Account manager" v={[...new Set([c.accountManager?.name, ...c.assignments.filter((a) => a.department === SHARED_AM).map((a) => a.user.name)].filter(Boolean))].join(" + ") || "—"} />
             <Row k="POC mobile" v={c.pocMobile ?? "—"} />
             <Row k="POC email" v={c.pocEmail ?? "—"} />
             <Row k="Onboarded" v={new Date(c.onboardDate).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })} />

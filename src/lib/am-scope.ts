@@ -12,3 +12,12 @@ export function ownClientsOf(user: { id: string; role: string } | null | undefin
 // META_ADS) and the accounts side (names like "Meta Ads"). These are the same service under
 // two names — so the edit form shows it ticked, and saving does not add it a second time.
 export const SERVICE_ALIAS: Record<string, string> = { META_ADS: "Meta Ads", GOOGLE_ADS: "Google Ads", VIDEO: "Videoshoot" };
+
+// A client can be shared: besides its account manager, other account managers work on it too.
+// They are kept as assignments of this kind, and see / edit the client exactly like its manager.
+export const SHARED_AM = "SHARED_AM";
+
+// "The clients this person works on": they are the account manager, or the client is shared with them.
+export const managedBy = (userId: string) => ({
+  AND: [{ OR: [{ accountManagerId: userId }, { assignments: { some: { userId, department: SHARED_AM } } }] }],
+});

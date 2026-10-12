@@ -8,11 +8,20 @@
 // • A manager name in the sheet that does not clearly match ONE team member (Account Manager /
 //   AM Head / Digital Marketing Executive) is not guessed — it is listed at the end. Tell which
 //   team member it is with  'map=Sheet name>Team name;Other>Other'  and run again.
+//
+// One person's clients from a plain list (a text file, one client name per line):
+//
+//   npx tsx prisma/assign-account-managers.ts 'manager=Team member name' 'list=/tmp/clients.txt'
+//
+// • A client with no account manager gets this person as its account manager.
+// • A client that already has another account manager is SHARED: the other manager stays, and
+//   this person is added to it — both see it on their dashboard and both can edit it.
 // Names and files are given on the command line (not stored here). Same Prisma + SQLite adapter as the app.
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaClient } from "../src/generated/prisma/client.js";
 import { readFileSync } from "node:fs";
 import { parseCsv } from "../src/lib/video-import-core";
+import { SHARED_AM } from "../src/lib/am-scope";
 
 (function loadEnv() {
   for (const p of [".env", "prisma/../.env"]) {
@@ -68,7 +77,50 @@ function findManager(sheet: string, people: Person[]): Person | null {
   return null;
 }
 
+// 'manager=…' 'list=…' — one person's clients; shared when the client already has a manager
+async function shareList(managerName: string, listFile: string) {
+  const [managers, others, clients] = await Promise.all([
+    prisma.user.findMany({ where: { active: true, role: { in: ["ACCOUNT_MANAGER", "AM_HEAD", "DM_EXEC"] } }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
+    prisma.user.findMany({ where: { role: { notIn: ["ACCOUNT_MANAGER", "AM_HEAD", "DM_EXEC"] } }, select: { id: true, name: true, role: true, active: true } }),
+    prisma.client.findMany({ select: { id: true, name: true, accountManagerId: true, accountManager: { select: { name: true } }, assignments: { where: { department: SHARED_AM }, select: { userId: true } } } }),
+  ]);
+  const m = managers.find((p) => norm(p.name) === norm(managerName)) ?? findManager(managerName, managers);
+  if (!m) {
+    console.log(`! No account manager called "${managerName}" in Team.`);
+    console.log(`  Account managers in Team: ${managers.map((p) => p.name).join(", ") || "(none)"}`);
+    const o = others.find((p) => norm(p.name) === norm(managerName)) ?? findManager(managerName, others);
+    if (o) console.log(`  "${o.name}" is in Team as ${(o as { role: string }).role} — change the role to Account Manager (Team → edit), then run this again.`);
+    else console.log("  Add this person in Team with the role Account Manager, then run this again.");
+    console.log("Nothing was changed.");
+    console.log("AM_SHARE_DONE");
+    return;
+  }
+  const names = readFileSync(listFile, "utf8").split(/\r?\n/).map((x) => x.replace(/^\uFEFF/, "").trim()).filter(Boolean);
+  const made: string[] = [], shared: string[] = [], same: string[] = [], missing: string[] = [];
+  for (const name of names) {
+    const hit = clients.filter((c) => norm(c.name) === norm(name));
+    if (hit.length !== 1) { missing.push(name); continue; }
+    const c = hit[0];
+    if (c.accountManagerId === m.id || c.assignments.some((a) => a.userId === m.id)) { same.push(c.name); continue; }
+    if (!c.accountManagerId) {
+      await prisma.client.update({ where: { id: c.id }, data: { accountManagerId: m.id } });
+      c.accountManagerId = m.id; made.push(c.name);
+    } else {
+      await prisma.assignment.create({ data: { clientId: c.id, userId: m.id, department: SHARED_AM } });
+      c.assignments.push({ userId: m.id }); shared.push(`${c.name} (with ${c.accountManager?.name ?? "its manager"})`);
+    }
+  }
+  console.log(`${m.name}: ${names.length} clients in the list.`);
+  const lines = (list: string[]) => list.map((x) => `\n  ${x}`).join("");
+  console.log(`Set as account manager (had none): ${made.length}${lines(made)}`);
+  console.log(`Shared — the other manager stays, ${m.name} added: ${shared.length}${lines(shared)}`);
+  console.log(`Already with ${m.name}: ${same.length}`);
+  if (missing.length) console.log(`\n! Client not found (or two with the same name): ${missing.join(", ")}`);
+  console.log("AM_SHARE_DONE");
+}
+
 async function main() {
+  if (args.get("manager") && args.get("list")) return shareList(args.get("manager")!, args.get("list")!);
   const file = args.get("file");
   if (!file) { console.log("Give the sheet: 'file=/tmp/account-managers.csv'"); return; }
   const rows = parseCsv(readFileSync(file, "utf8"));

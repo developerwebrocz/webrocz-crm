@@ -1,8 +1,14 @@
 import { prisma } from "./prisma";
-import { SERVICE_ALIAS } from "./am-scope";
+import { SERVICE_ALIAS, SHARED_AM, managedBy } from "./am-scope";
 import { todayIST } from "./india-date";
 import { COMPLETING_STATUSES, healthBand, serviceKind, SALES_STAGE_KEYS } from "./domain";
 import { resolvePeriod, now, type PeriodKey } from "./period";
+
+// A client's account manager, plus anyone it is shared with: "Veni + Suresh Reddy".
+function amNames(c: { accountManager: { name: string } | null; assignments: { department: string; user: { name: string } }[] }): string | null {
+  const names = [c.accountManager?.name, ...c.assignments.filter((a) => a.department === SHARED_AM).map((a) => a.user.name)].filter((n): n is string => !!n);
+  return names.length ? [...new Set(names)].join(" + ") : null;
+}
 
 // workType -> service + whether it counts toward agreed deliverables
 const WORKTYPE_SERVICE: Record<string, "SEO" | "SMO" | "VIDEO"> = {
@@ -153,10 +159,10 @@ export async function getDashboard(periodKey: PeriodKey = "month", from?: string
       id: c.id, code: c.code, name: c.name, status: c.status,
       industry: c.industry, website: c.website,
       pocName: c.pocName, pocMobile: c.pocMobile,
-      am: c.accountManager?.name ?? null,
+      am: amNames(c),
       retainer: c.monthlyRetainer,
       services: c.services.map((s) => s.service),
-      team: c.assignments.filter((a) => a.department !== "ACCOUNT").map((a) => a.user.name),
+      team: c.assignments.filter((a) => a.department !== "ACCOUNT" && a.department !== SHARED_AM).map((a) => a.user.name),
       agreed: scaledAgreed, completed: cp.total, pending: cp.pending, pct,
       postsDone: cp.byService.SMO, postsAgreed: ag.byService.SMO,
       videosDone: cp.byService.VIDEO, videosAgreed: ag.byService.VIDEO,
@@ -867,7 +873,7 @@ export async function getAssignedByMe(userId: string, take = 8) {
 export async function getCreativeReport(amId?: string) {
   const [members, tasks] = await Promise.all([
     prisma.user.findMany({ where: { role: { in: ["DESIGNER", "EDITOR"] } }, orderBy: [{ role: "asc" }, { name: "asc" }] }),
-    prisma.creativeTask.findMany({ where: amId ? { OR: [{ client: { accountManagerId: amId } }, { assignedById: amId }] } : {}, include: { client: true, assignedTo: true, assignedByUser: true }, orderBy: [{ assignedDate: "desc" }, { code: "asc" }] }),
+    prisma.creativeTask.findMany({ where: amId ? { OR: [{ client: managedBy(amId) }, { assignedById: amId }] } : {}, include: { client: true, assignedTo: true, assignedByUser: true }, orderBy: [{ assignedDate: "desc" }, { code: "asc" }] }),
   ]);
   const today = creativeToday();
   const rows = tasks.map((t) => {
@@ -889,7 +895,7 @@ export async function getCreativeReport(amId?: string) {
   const assignerMap = new Map<string, string>();
   for (const t of tasks) if (t.assignedById && t.assignedByUser) assignerMap.set(t.assignedById, t.assignedByUser.name);
   const assigners = [...assignerMap.entries()].map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name));
-  const clientOptions = await prisma.client.findMany({ where: { status: { not: "UPCOMING" }, ...(amId ? { accountManagerId: amId } : {}) }, select: { id: true, name: true }, orderBy: { name: "asc" } });
+  const clientOptions = await prisma.client.findMany({ where: { status: { not: "UPCOMING" }, ...(amId ? managedBy(amId) : {}) }, select: { id: true, name: true }, orderBy: { name: "asc" } });
   return { rows, clients, types, days, members: memberOpts, assigners, clientOptions, today };
 }
 
@@ -951,7 +957,7 @@ export async function getGoogleAdsBoard(userId: string, role: string, periodIn =
   const viewAs = isHead && viewAsIn && ams.some((a) => a.id === viewAsIn) ? viewAsIn : null;
 
   const clients = await prisma.client.findMany({
-    where: { ...GADS_CLIENT, ...(isHead ? (viewAs ? { accountManagerId: viewAs } : {}) : { accountManagerId: userId }) },
+    where: { ...GADS_CLIENT, ...(isHead ? (viewAs ? managedBy(viewAs) : {}) : managedBy(userId)) },
     include: { googleCampaigns: { where: { date: dateWhere }, orderBy: { name: "asc" } }, accountManager: { select: { name: true } } },
     orderBy: { code: "asc" },
   });
@@ -1033,7 +1039,7 @@ export async function getGoogleAdsEntry(userId: string, role: string, clientId: 
   const isHead = role === "AM_HEAD" || role === "SUPER_ADMIN" || role === "SUB_ADMIN";
   const date = period === "TODAY" ? gadsDates().today : gadsDates().yesterday; // entry is per single day
   const clients = await prisma.client.findMany({
-    where: { ...GADS_CLIENT, ...(isHead ? {} : { accountManagerId: userId }) },
+    where: { ...GADS_CLIENT, ...(isHead ? {} : managedBy(userId)) },
     orderBy: { code: "asc" },
     select: { id: true, name: true, googleBudget: true },
   });
@@ -1057,7 +1063,7 @@ export async function getTasksView(userId: string, role: string) {
     isAssigner ? prisma.task.findMany({ where: { assignedById: userId }, include: { assignedTo: true, client: true }, orderBy: { createdAt: "desc" }, take: 40 }) : Promise.resolve([]),
     isAssigner ? prisma.user.findMany({ where: { active: true, role: { not: "SUPER_ADMIN" } }, orderBy: [{ role: "asc" }, { name: "asc" }], select: { id: true, name: true, role: true } }) : Promise.resolve([]),
     // client options are offered to everyone so a self-task can be linked to a client
-    prisma.client.findMany({ where: { status: { not: "UPCOMING" }, ...(role === "ACCOUNT_MANAGER" || role === "DM_EXEC" ? { accountManagerId: userId } : {}) }, orderBy: { code: "asc" }, select: { id: true, name: true } }),
+    prisma.client.findMany({ where: { status: { not: "UPCOMING" }, ...(role === "ACCOUNT_MANAGER" || role === "DM_EXEC" ? managedBy(userId) : {}) }, orderBy: { code: "asc" }, select: { id: true, name: true } }),
   ]);
   const m = (t: (typeof mine)[number]) => ({
     id: t.id, title: t.title, detail: t.detail, priority: t.priority, status: t.status, dueDate: t.dueDate, seen: t.seen,
@@ -1099,7 +1105,7 @@ export async function getApprovalsCount(dept?: string) {
 // Content calendar — SM posts (and their status) laid out by day for a month.
 export async function getCalendar(monthPrefix: string, amId?: string) {
   const posts = await prisma.socialPost.findMany({
-    where: { date: { startsWith: monthPrefix }, ...(amId ? { client: { accountManagerId: amId } } : {}) },
+    where: { date: { startsWith: monthPrefix }, ...(amId ? { client: managedBy(amId) } : {}) },
     include: { client: true },
     orderBy: [{ date: "asc" }, { slot: "asc" }],
   });
@@ -1125,7 +1131,7 @@ export async function getSearchIndex(viewer?: { id: string; role: string }) {
   const seesClients = admin || ownOnly || viewer?.role === "AM_HEAD";
   const seesProjects = admin || viewer?.role === "DEV_HEAD" || viewer?.role === "WEB_DEV";
   const [clients, projects, team] = await Promise.all([
-    seesClients ? prisma.client.findMany({ where: ownOnly ? { accountManagerId: viewer!.id } : {}, select: { id: true, name: true, code: true, pocName: true, industry: true }, orderBy: { code: "asc" } }) : Promise.resolve([]),
+    seesClients ? prisma.client.findMany({ where: ownOnly ? managedBy(viewer!.id) : {}, select: { id: true, name: true, code: true, pocName: true, industry: true }, orderBy: { code: "asc" } }) : Promise.resolve([]),
     seesProjects ? prisma.devProject.findMany({ select: { id: true, name: true, platform: true }, orderBy: { updatedAt: "desc" } }) : Promise.resolve([]),
     admin ? prisma.user.findMany({ where: { active: true }, select: { id: true, name: true, role: true } }) : Promise.resolve([]),
   ]);
@@ -1202,10 +1208,10 @@ export async function getAlerts(userId?: string, role?: string) {
 }
 
 // The Clients "book" view — services + agreed monthly deliverables + team + status.
-// `amId`: only the clients of this account manager (an AM sees just their own).
+// `amId`: only the clients of this account manager (an AM sees just their own, and the ones shared with them).
 export async function getClientBook(amId?: string) {
   const clients = await prisma.client.findMany({
-    where: amId ? { accountManagerId: amId } : {},
+    where: amId ? managedBy(amId) : {},
     include: {
       accountManager: true,
       services: true,
@@ -1221,13 +1227,13 @@ export async function getClientBook(amId?: string) {
       .filter((d) => d.agreed > 0)
       .sort((a, b) => METRIC_ORDER.indexOf(a.metric) - METRIC_ORDER.indexOf(b.metric))
       .map((d) => ({ metric: d.metric, agreed: d.agreed }));
-    const team = c.assignments.filter((a) => a.department !== "ACCOUNT").map((a) => a.user.name);
+    const team = c.assignments.filter((a) => a.department !== "ACCOUNT" && a.department !== SHARED_AM).map((a) => a.user.name);
     return {
       id: c.id, code: c.code, name: c.name, status: c.status,
       industry: c.industry, website: c.website, pocName: c.pocName,
       services: c.services.map((s) => s.service),
       deliverables: dels,
-      am: c.accountManager?.name ?? null,
+      am: amNames(c),
       teamCount: team.length,
     };
   });
@@ -1286,7 +1292,7 @@ export async function getClientForEdit(id: string) {
   if (!c) return null;
 
   const roleOf = (predicate: (r: string) => boolean) =>
-    c.assignments.find((a) => predicate(a.user.role))?.userId ?? "";
+    c.assignments.find((a) => a.department !== SHARED_AM && predicate(a.user.role))?.userId ?? "";
 
   const deliverables: Record<string, number> = {};
   for (const d of c.deliverables) deliverables[`${d.service}_${d.metric}`] = d.agreed;
@@ -1309,6 +1315,7 @@ export async function getClientForEdit(id: string) {
     seoMemberId: roleOf((r) => r === "SEO"),
     designerId: roleOf((r) => r === "DESIGNER"),
     editorId: roleOf((r) => r === "EDITOR"),
+    sharedAmIds: c.assignments.filter((a) => a.department === SHARED_AM).map((a) => a.userId),
     // a service saved under its accounts-side name ("Meta Ads") is the same as this form's key (META_ADS)
     services: [...new Set(c.services.map((s) => Object.keys(SERVICE_ALIAS).find((k) => SERVICE_ALIAS[k] === s.service) ?? s.service))],
     detailOther: c.services.find((s) => s.service === "OTHER")?.detail ?? "",
@@ -1558,7 +1565,7 @@ export async function getTeamOverview() {
 
 // `amId`: only the clients of this account manager (for an AM's client pickers).
 export async function getClientOptions(amId?: string) {
-  return prisma.client.findMany({ where: amId ? { accountManagerId: amId } : {}, select: { id: true, name: true, code: true }, orderBy: { name: "asc" } });
+  return prisma.client.findMany({ where: amId ? managedBy(amId) : {}, select: { id: true, name: true, code: true }, orderBy: { name: "asc" } });
 }
 
 // Active designers + video editors — for the "assign creative work" picker.
@@ -1584,7 +1591,7 @@ export async function getAdsEntry(date: string, amId?: string) {
   const activeAm = amId ?? ams[0]?.id;
 
   const clients = await prisma.client.findMany({
-    where: { status: { not: "UPCOMING" }, ...(activeAm ? { accountManagerId: activeAm } : {}) },
+    where: { status: { not: "UPCOMING" }, ...(activeAm ? managedBy(activeAm) : {}) },
     include: { accountManager: true, campaigns: { where: { date } } },
     orderBy: { code: "asc" },
   });
@@ -1631,7 +1638,7 @@ export async function getSmoEntry(date: string, amId?: string) {
   const activeAm = amId ?? ams[0]?.id;
 
   const clients = await prisma.client.findMany({
-    where: { status: { not: "UPCOMING" }, ...(activeAm ? { accountManagerId: activeAm } : {}) },
+    where: { status: { not: "UPCOMING" }, ...(activeAm ? managedBy(activeAm) : {}) },
     include: { accountManager: true, socialPosts: { where: { date }, orderBy: { slot: "asc" } } },
     orderBy: { code: "asc" },
   });
@@ -1840,7 +1847,7 @@ export async function getMyDashboard(userId: string, role: string) {
   const scope = roleScope(role);
 
   const [managed, assignedRows, myUpdates] = await Promise.all([
-    prisma.client.findMany({ where: { accountManagerId: userId }, include: { deliverables: true, services: true, updates: { where: { date: { gte: start, lte: end } } } } }),
+    prisma.client.findMany({ where: managedBy(userId), include: { deliverables: true, services: true, updates: { where: { date: { gte: start, lte: end } } } } }),
     prisma.assignment.findMany({ where: { userId }, include: { client: { include: { deliverables: true, services: true, updates: { where: { date: { gte: start, lte: end } } } } } } }),
     prisma.workUpdate.findMany({ where: { userId, date: { gte: start, lte: end } }, orderBy: { date: "desc" }, include: { client: true }, take: 40 }),
   ]);
@@ -2830,7 +2837,7 @@ export async function getDmClients(userId: string, role: string) {
   const clients = await prisma.client.findMany({
     where: {
       services: { some: { service: { in: ["SEO", "SMO", "META_ADS", "GOOGLE_ADS"] } } },
-      ...(isHeadOrAdmin ? {} : { accountManagerId: userId }),
+      ...(isHeadOrAdmin ? {} : managedBy(userId)),
     },
     include: { accountManager: { select: { id: true, name: true } }, services: { select: { service: true } } },
     orderBy: { createdAt: "desc" },

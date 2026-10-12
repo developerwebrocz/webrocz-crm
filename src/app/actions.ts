@@ -2,7 +2,8 @@
 
 import { prisma } from "@/lib/prisma";
 import { SERVICES, SERVICE_KEYS, type ServiceKey, companyFor, stateFromGstin, GADS_TYPE_KEYS } from "@/lib/domain";
-import { ownClientsOf, SERVICE_ALIAS } from "@/lib/am-scope";
+import { ownClientsOf, SERVICE_ALIAS, SHARED_AM, managedBy } from "@/lib/am-scope";
+import { managesClient } from "@/lib/am-access";
 import { nextInvoiceNumbers } from "@/lib/invoice-number";
 import { todayIST } from "@/lib/india-date";
 import { WEB_ROCZ_CLIENT_SERVICES, detailFromCounts } from "@/lib/webrocz-services";
@@ -48,7 +49,7 @@ export async function saveGoogleAdsDay(fd: FormData) {
   // Only the client's account manager (or a head/admin) may enter data.
   const client = await prisma.client.findUnique({ where: { id: clientId } });
   const isHead = u.role === "AM_HEAD" || u.role === "SUPER_ADMIN" || u.role === "SUB_ADMIN";
-  if (!client || (!isHead && client.accountManagerId !== u.id)) redirect(`/google-ads?period=${period}`);
+  if (!client || (!isHead && !(await managesClient(u.id, clientId)))) redirect(`/google-ads?period=${period}`);
 
   const rowCount = n(fd, "rows") || 8;
   const GADS_TYPES_OK = GADS_TYPE_KEYS as readonly string[];
@@ -553,6 +554,8 @@ function parseServiceBlock(fd: FormData, clientId: string) {
   const raw: { clientId: string; userId: string; department: string }[] = [];
   const push = (uid: string, dept: string) => { if (uid) raw.push({ clientId, userId: uid, department: dept }); };
   push(s(fd, "accountManagerId"), "ACCOUNT");
+  // "Also works on this client" — shared with other account managers
+  for (const uid of fd.getAll("sharedAmIds")) if (String(uid) !== s(fd, "accountManagerId")) push(String(uid), SHARED_AM);
   push(s(fd, "amHeadId"), "ACCOUNT");
   push(s(fd, "seoHeadId"), "SEO");
   push(s(fd, "seoMemberId"), "SEO");
@@ -995,9 +998,12 @@ export async function updateClient(fd: FormData) {
   const existing = await prisma.client.findUnique({ where: { id }, include: { services: true } });
   if (!existing) redirect("/clients");
   const ownOnly = !!ownClientsOf(me);
-  if (ownOnly && existing!.accountManagerId !== me!.id) redirect("/clients"); // not their client
+  if (ownOnly && !(await managesClient(me!.id, id))) redirect("/clients"); // not their client
   // an account manager cannot hand the client to someone else from here
   if (ownOnly) fd.set("accountManagerId", existing!.accountManagerId ?? "");
+  // who the client is shared with changes only when an admin / AM head saves the form that shows it
+  const keepShared = ownOnly || !fd.has("sharedAm_set");
+  if (keepShared) fd.delete("sharedAmIds");
   const scalars = clientScalars(fd);
   if (!scalars.name) throw new Error("Client name is required");
 
@@ -1019,7 +1025,7 @@ export async function updateClient(fd: FormData) {
   await prisma.$transaction([
     ...(toDelete.length ? [prisma.clientService.deleteMany({ where: { clientId: id, service: { in: toDelete } } })] : []),
     prisma.deliverable.deleteMany({ where: { clientId: id } }),
-    prisma.assignment.deleteMany({ where: { clientId: id } }),
+    prisma.assignment.deleteMany({ where: { clientId: id, ...(keepShared ? { department: { not: SHARED_AM } } : {}) } }),
   ]);
   if (toCreate.length) await prisma.clientService.createMany({ data: toCreate.map((svc) => ({ clientId: id, service: svc, detail: serviceDetail(fd, svc) })) });
   // the typed descriptors (website type, branding scope, "other") follow the form
@@ -1430,7 +1436,7 @@ export async function copyAdsYesterday(fd: FormData) {
   const date = s(fd, "date"); const amId = s(fd, "amId");
   if (!date) return;
   const yKey = prevDay(date);
-  const clients = await prisma.client.findMany({ where: { status: { not: "UPCOMING" }, ...(amId ? { accountManagerId: amId } : {}) }, select: { id: true } });
+  const clients = await prisma.client.findMany({ where: { status: { not: "UPCOMING" }, ...(amId ? managedBy(amId) : {}) }, select: { id: true } });
   const ids = clients.map((c) => c.id);
   const yEntries = await prisma.campaignEntry.findMany({ where: { clientId: { in: ids }, date: yKey } });
   for (const e of yEntries) {
@@ -1444,7 +1450,7 @@ export async function copySmoYesterday(fd: FormData) {
   const date = s(fd, "date"); const amId = s(fd, "amId");
   if (!date) return;
   const yKey = prevDay(date);
-  const clients = await prisma.client.findMany({ where: { status: { not: "UPCOMING" }, ...(amId ? { accountManagerId: amId } : {}) }, select: { id: true } });
+  const clients = await prisma.client.findMany({ where: { status: { not: "UPCOMING" }, ...(amId ? managedBy(amId) : {}) }, select: { id: true } });
   const ids = clients.map((c) => c.id);
   const yPosts = await prisma.socialPost.findMany({ where: { clientId: { in: ids }, date: yKey } });
   for (const p of yPosts) {

@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "./prisma";
 import { todayIST } from "./india-date";
+import { SHARED_AM, managedBy } from "./am-scope";
 
 // Account manager's home page: their clients with this month's real numbers (Meta + Google
 // Ads, social posts, design / video work), and what still has to be entered today. An account
@@ -22,10 +23,11 @@ export async function getAmHome(userId: string, role: string) {
   const month = today.slice(0, 7);
 
   const clients = await prisma.client.findMany({
-    where: { status: "ACTIVE", ...(isHead ? {} : { accountManagerId: userId }) },
+    where: { status: "ACTIVE", ...(isHead ? {} : managedBy(userId)) },
     select: {
       id: true, name: true, code: true, pocName: true, pocMobile: true, googleBudget: true,
       accountManager: { select: { name: true } },
+      assignments: { where: { department: SHARED_AM }, select: { user: { select: { name: true } } } },
       services: { select: { service: true } },
       campaigns: { where: { date: { startsWith: month } }, select: { date: true, type: true, spent: true, results: true } },
       googleCampaigns: { where: { date: { startsWith: month } }, select: { date: true, spent: true, leads: true } },
@@ -44,7 +46,7 @@ export async function getAmHome(userId: string, role: string) {
     const lastDates = [...c.campaigns.map((e) => e.date), ...c.googleCampaigns.map((e) => e.date), ...c.socialPosts.map((e) => e.date)].sort();
     const hasMeta = has(META) || c.campaigns.length > 0, hasGoogle = has(GOOGLE) || c.googleBudget > 0 || c.googleCampaigns.length > 0, hasSmo = has(SMO) || c.socialPosts.length > 0;
     return {
-      id: c.id, name: c.name, code: c.code, poc: c.pocName ?? "", phone: c.pocMobile ?? "", am: c.accountManager?.name ?? "",
+      id: c.id, name: c.name, code: c.code, poc: c.pocName ?? "", phone: c.pocMobile ?? "", am: [...new Set([c.accountManager?.name, ...c.assignments.map((a) => a.user.name)].filter(Boolean))].join(" + "),
       services: [...new Set(svc.map((s) => NICE[s] ?? s))],
       hasMeta, hasGoogle, hasSmo,
       metaSpend, metaLeads, gSpend, gLeads,

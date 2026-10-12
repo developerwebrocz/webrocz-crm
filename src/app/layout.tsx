@@ -6,6 +6,7 @@ import Sidebar from "@/components/Sidebar";
 import MobileNav from "@/components/MobileNav";
 import { Suspense } from "react";
 import { NavTrail } from "@/components/NavTrail";
+import { managedBy } from "@/lib/am-scope";
 import { prisma } from "@/lib/prisma";
 import { editorHasShoots } from "@/lib/shoot-team";
 import { getVideoJobPipeline } from "@/lib/video-job-queries";
@@ -44,7 +45,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 
 async function AppShell({ user, userId, impersonatedBy, children }: { user: { name: string; role: string; shootTeam?: boolean; teamLead?: boolean }; userId: string; impersonatedBy?: string | null; children: React.ReactNode }) {
   const [clientCount, search, alerts, approvalsCount, taskCount, reminderCount] = await Promise.all([
-    prisma.client.count({ where: user.role === "ACCOUNT_MANAGER" || user.role === "DM_EXEC" ? { accountManagerId: userId } : {} }).catch(() => 0),
+    prisma.client.count({ where: user.role === "ACCOUNT_MANAGER" || user.role === "DM_EXEC" ? managedBy(userId) : {} }).catch(() => 0),
     getSearchIndex({ id: userId, role: user.role }).catch(() => ({ clients: [], projects: [], team: [] })),
     getAlerts(userId, user.role).catch(() => ({ count: 0, items: [] })),
     // approvals badge scoped by role: admin = all, head = their dept, others = 0
