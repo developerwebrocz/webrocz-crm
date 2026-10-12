@@ -7,3 +7,8 @@ export const OWN_CLIENTS_ONLY = ["ACCOUNT_MANAGER", "DM_EXEC"];
 export function ownClientsOf(user: { id: string; role: string } | null | undefined): string | undefined {
   return user && OWN_CLIENTS_ONLY.includes(user.role) ? user.id : undefined;
 }
+
+// A client's services are saved by two screens: the account-management form (keys like
+// META_ADS) and the accounts side (names like "Meta Ads"). These are the same service under
+// two names — so the edit form shows it ticked, and saving does not add it a second time.
+export const SERVICE_ALIAS: Record<string, string> = { META_ADS: "Meta Ads", GOOGLE_ADS: "Google Ads", VIDEO: "Videoshoot" };

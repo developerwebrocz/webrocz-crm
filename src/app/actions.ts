@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { SERVICES, SERVICE_KEYS, type ServiceKey, companyFor, stateFromGstin, GADS_TYPE_KEYS } from "@/lib/domain";
+import { ownClientsOf, SERVICE_ALIAS } from "@/lib/am-scope";
 import { nextInvoiceNumbers } from "@/lib/invoice-number";
 import { todayIST } from "@/lib/india-date";
 import { WEB_ROCZ_CLIENT_SERVICES, detailFromCounts } from "@/lib/webrocz-services";
@@ -981,23 +982,51 @@ export async function deleteExpense(fd: FormData) {
   redirect(`${s(fd, "return") || "/expenses"}?deleted=1`);
 }
 
+// Edit a client from the account-management side ("Edit info"): the admins, and an account
+// manager for the clients they manage. Saving changes only what this form carries — what the
+// accounts team keeps on the same client (monthly amount, their own services such as Domain /
+// Hosting / GMB, service notes) is left exactly as it is.
 export async function updateClient(fd: FormData) {
-  if (!(await isAdmin())) redirect("/");
+  const me = await getCurrentUser();
+  const admin = !!me && (me.role === "SUPER_ADMIN" || me.role === "SUB_ADMIN");
+  if (!me || !(admin || ["AM_HEAD", "ACCOUNT_MANAGER", "DM_EXEC"].includes(me.role))) redirect("/");
   const id = s(fd, "id");
   if (!id) throw new Error("Missing client id");
+  const existing = await prisma.client.findUnique({ where: { id }, include: { services: true } });
+  if (!existing) redirect("/clients");
+  const ownOnly = !!ownClientsOf(me);
+  if (ownOnly && existing!.accountManagerId !== me!.id) redirect("/clients"); // not their client
+  // an account manager cannot hand the client to someone else from here
+  if (ownOnly) fd.set("accountManagerId", existing!.accountManagerId ?? "");
   const scalars = clientScalars(fd);
   if (!scalars.name) throw new Error("Client name is required");
 
-  await prisma.client.update({ where: { id }, data: scalars });
+  // the form has no monthly-amount box: keep the saved amount (it used to be reset to 0)
+  await prisma.client.update({ where: { id }, data: { ...scalars, monthlyRetainer: fd.has("monthlyRetainer") ? scalars.monthlyRetainer : existing!.monthlyRetainer } });
 
-  // replace services / deliverables / assignments
   const { services, deliverables, assignments } = parseServiceBlock(fd, id);
+  // Services: add what was ticked and is not there yet, remove what was un-ticked, leave the
+  // rest (and their saved details) alone — nothing the accounts side added is wiped.
+  const have = new Set(existing!.services.map((x) => x.service));
+  const wanted = new Set<string>(services);
+  const toCreate = services.filter((k) => !have.has(k) && !(SERVICE_ALIAS[k] && have.has(SERVICE_ALIAS[k])));
+  const toDelete: string[] = [];
+  for (const k of SERVICE_KEYS) {
+    if (wanted.has(k)) continue;
+    if (have.has(k)) toDelete.push(k);
+    if (SERVICE_ALIAS[k] && have.has(SERVICE_ALIAS[k])) toDelete.push(SERVICE_ALIAS[k]);
+  }
   await prisma.$transaction([
-    prisma.clientService.deleteMany({ where: { clientId: id } }),
+    ...(toDelete.length ? [prisma.clientService.deleteMany({ where: { clientId: id, service: { in: toDelete } } })] : []),
     prisma.deliverable.deleteMany({ where: { clientId: id } }),
     prisma.assignment.deleteMany({ where: { clientId: id } }),
   ]);
-  await prisma.clientService.createMany({ data: services.map((svc) => ({ clientId: id, service: svc, detail: serviceDetail(fd, svc) })) });
+  if (toCreate.length) await prisma.clientService.createMany({ data: toCreate.map((svc) => ({ clientId: id, service: svc, detail: serviceDetail(fd, svc) })) });
+  // the typed descriptors (website type, branding scope, "other") follow the form
+  for (const svc of services) {
+    const detail = serviceDetail(fd, svc);
+    if (detail !== null && have.has(svc)) await prisma.clientService.updateMany({ where: { clientId: id, service: svc }, data: { detail } });
+  }
   if (deliverables.length) await prisma.deliverable.createMany({ data: deliverables });
   if (assignments.length) await prisma.assignment.createMany({ data: assignments });
 

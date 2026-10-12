@@ -4,22 +4,25 @@ import { getCurrentUser } from "@/lib/auth";
 import { Eyebrow } from "@/components/ui";
 import NewClientForm from "@/components/NewClientForm";
 import { notFound, redirect } from "next/navigation";
+import { ownClientsOf } from "@/lib/am-scope";
 
 export const dynamic = "force-dynamic";
 
 export default async function EditClientPage({ params }: PageProps<"/clients/[id]/edit">) {
   const me = await getCurrentUser();
-  if (!(me?.role === "SUPER_ADMIN" || me?.role === "SUB_ADMIN")) redirect("/");
+  // the admins, and the account-management team (an account manager: only the clients they manage)
+  if (!me || !["SUPER_ADMIN", "SUB_ADMIN", "AM_HEAD", "ACCOUNT_MANAGER", "DM_EXEC"].includes(me.role)) redirect("/");
   const { id } = await params;
   const [users, initial] = await Promise.all([getUsers(), getClientForEdit(id)]);
   if (!initial) notFound();
+  if (ownClientsOf(me) && initial.accountManagerId !== me.id) redirect("/clients");
   const today = new Date().toISOString().slice(0, 10);
 
   return (
     <div className="space-y-6">
       <a href={`/clients/${id}`} className="text-sm font-semibold text-[var(--muted)] hover:text-[var(--ink)]">← Back to client</a>
       <div>
-        <Eyebrow>Module 01 · Edit client</Eyebrow>
+        <Eyebrow>Edit info</Eyebrow>
         <h1 className="mt-1 text-[26px] font-extrabold tracking-tight">Edit {initial.name}</h1>
         <p className="mt-1 max-w-2xl text-sm text-[var(--muted)]">Update details, team and agreed deliverables — changes flow to every dashboard and report.</p>
       </div>

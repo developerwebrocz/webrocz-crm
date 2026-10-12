@@ -1,4 +1,5 @@
 import { prisma } from "./prisma";
+import { SERVICE_ALIAS } from "./am-scope";
 import { COMPLETING_STATUSES, healthBand, serviceKind, SALES_STAGE_KEYS } from "./domain";
 import { resolvePeriod, now, type PeriodKey } from "./period";
 
@@ -1338,7 +1339,8 @@ export async function getClientForEdit(id: string) {
     seoMemberId: roleOf((r) => r === "SEO"),
     designerId: roleOf((r) => r === "DESIGNER"),
     editorId: roleOf((r) => r === "EDITOR"),
-    services: c.services.map((s) => s.service),
+    // a service saved under its accounts-side name ("Meta Ads") is the same as this form's key (META_ADS)
+    services: [...new Set(c.services.map((s) => Object.keys(SERVICE_ALIAS).find((k) => SERVICE_ALIAS[k] === s.service) ?? s.service))],
     detailOther: c.services.find((s) => s.service === "OTHER")?.detail ?? "",
     deliverables,
   };

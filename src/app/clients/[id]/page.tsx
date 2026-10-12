@@ -51,7 +51,8 @@ export default async function ClientDetailPage({ params }: PageProps<"/clients/[
             </p>
           </div>
           <div className="flex gap-2">
-            {isSuper && <a href={`/clients/${c.id}/edit`} className="btn btn-ghost"><Pencil size={14} /> Edit</a>}
+            {/* Edit info: the admins and the account-management team (an account manager only reaches their own clients here) */}
+            {(isSuper || ["AM_HEAD", "ACCOUNT_MANAGER", "DM_EXEC"].includes(me?.role ?? "")) && <a href={`/clients/${c.id}/edit`} className="btn btn-ghost"><Pencil size={14} /> Edit info</a>}
             <a href={`/updates?clientId=${c.id}`} className="btn btn-dark"><Plus size={15} /> Update work</a>
             {isSuper && (
               <form action={deleteClient}>
