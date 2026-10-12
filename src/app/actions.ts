@@ -6,7 +6,7 @@ import { nextInvoiceNumbers } from "@/lib/invoice-number";
 import { todayIST } from "@/lib/india-date";
 import { WEB_ROCZ_CLIENT_SERVICES, detailFromCounts } from "@/lib/webrocz-services";
 import { hashPassword, verifyPassword, getCurrentUser, getRealUser } from "@/lib/auth";
-import { sendEmail, inviteEmailHtml } from "@/lib/email";
+import { sendEmailResult, emailConfigured, inviteEmailHtml } from "@/lib/email";
 import { SESSION_COOKIE, IMPERSONATE_COOKIE, signSession, signImpersonation } from "@/lib/session";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
@@ -1169,21 +1169,38 @@ export async function createUser(fd: FormData) {
   await prisma.user.create({
     data: { name, role, email, phone: s(fd, "phone") || null, passwordHash: password ? hashPassword(password) : null },
   });
-  // Email the new member an invite to set their own password (only if email configured).
+  // Email the new member an invite to set their own password — and tell the admin on the Team
+  // page whether it really went (sent / not sent, with the reason), instead of failing silently.
+  let mail = "";
   if (email && !password) {
-    try { await sendEmail(email, "You've been given access to WebRocz CRM", inviteEmailHtml(name, email)); } catch {}
+    if (!emailConfigured()) mail = "off";
+    else { const r = await sendEmailResult(email, "You've been given access to WebRocz CRM", inviteEmailHtml(name, email)); mail = r.ok ? "invited" : `fail&why=${encodeURIComponent(r.error)}`; }
   }
   revalidatePath("/team");
+  redirect(mail ? `/team?mail=${mail}&to=${encodeURIComponent(name)}` : "/team");
 }
 
 // Super Admin re-sends the "set your password" invite email to a pending member.
 export async function resendInvite(fd: FormData) {
   if (!(await isAdmin())) return;
   const u = await prisma.user.findUnique({ where: { id: s(fd, "id") } });
+  let mail = "";
   if (u?.email && !u.passwordHash) {
-    try { await sendEmail(u.email, "Set your password — WebRocz CRM", inviteEmailHtml(u.name, u.email)); } catch {}
+    const r = await sendEmailResult(u.email, "Set your password — WebRocz CRM", inviteEmailHtml(u.name, u.email));
+    mail = r.ok ? "invited" : `fail&why=${encodeURIComponent(r.error)}`;
   }
   revalidatePath("/team");
+  redirect(mail ? `/team?mail=${mail}&to=${encodeURIComponent(u?.name ?? "")}` : "/team");
+}
+
+// Team page → "Send test email": sends a test to the admin's own login email, so the email
+// set-up can be checked without creating a member.
+export async function sendTestEmail() {
+  const me = await getCurrentUser();
+  if (!me || !(me.role === "SUPER_ADMIN" || me.role === "SUB_ADMIN")) redirect("/");
+  if (!me.email) redirect(`/team?mail=fail&why=${encodeURIComponent("Your own login has no email address.")}`);
+  const r = await sendEmailResult(me.email!, "WebRocz CRM — test email", `<div style="font-family:Arial,sans-serif;font-size:14px;color:#111827">This is a test from the WebRocz CRM. Invite emails are working.</div>`);
+  redirect(r.ok ? `/team?mail=test&to=${encodeURIComponent(me.email!)}` : `/team?mail=fail&why=${encodeURIComponent(r.error)}`);
 }
 
 export async function toggleUserActive(fd: FormData) {

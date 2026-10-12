@@ -3,13 +3,23 @@ import { createUser } from "@/app/actions";
 import { Card, Eyebrow, PageHeader } from "@/components/ui";
 import AddMemberForm from "@/components/AddMemberForm";
 import TeamTable from "@/components/TeamTable";
-import { emailConfigured } from "@/lib/email";
-import { Users, UserCheck, CheckCircle2, Clock } from "lucide-react";
+import { emailSetup } from "@/lib/email";
+import { sendTestEmail } from "@/app/actions";
+import { Users, UserCheck, CheckCircle2, Clock, Mail, AlertTriangle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-export default async function TeamPage() {
+export default async function TeamPage({ searchParams }: { searchParams: Promise<{ [k: string]: string | string[] | undefined }> }) {
   const { members, totals, monthLabel } = await getTeamOverview();
+  const sp = await searchParams;
+  const one = (k: string) => (typeof sp[k] === "string" ? (sp[k] as string) : "");
+  const mail = emailSetup();
+  // what the last "add member" / "resend invite" / "test email" did
+  const note = one("mail") === "invited" ? { ok: true, text: `Invite email sent to ${one("to") || "the member"} — they set their own password from it.` }
+    : one("mail") === "test" ? { ok: true, text: `Test email sent to ${one("to")}. Check that inbox (and Spam).` }
+    : one("mail") === "off" ? { ok: false, text: `${one("to") || "The member"} was added, but no invite email was sent — the email service is not set up on the server. Use “Copy login link” and send it to them.` }
+    : one("mail") === "fail" ? { ok: false, text: `Email was NOT sent. ${one("why")}` }
+    : null;
 
   const kpis = [
     { label: "Team members", value: totals.members, icon: Users, tone: "var(--violet)" },
@@ -34,7 +44,29 @@ export default async function TeamPage() {
         ))}
       </div>
 
-      <TeamTable members={members} emailOn={emailConfigured()} />
+      {note && (
+        <p className="flex items-start gap-2 rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold" style={{ background: `color-mix(in srgb, ${note.ok ? "var(--emerald)" : "var(--rose)"} 9%, white)`, color: note.ok ? "var(--emerald)" : "var(--rose)" }}>
+          {note.ok ? <CheckCircle2 size={15} className="mt-0.5 flex-none" /> : <AlertTriangle size={15} className="mt-0.5 flex-none" />} {note.text}
+        </p>
+      )}
+
+      {/* invite emails: on / off, from which mailbox, and a test button */}
+      <div className="card card-pad flex flex-wrap items-center justify-between gap-3" style={mail.on ? undefined : { borderColor: "color-mix(in srgb, var(--amber) 35%, white)", background: "color-mix(in srgb, var(--amber) 6%, white)" }}>
+        <div className="flex items-start gap-2.5">
+          <span className="grid h-9 w-9 flex-none place-items-center rounded-[10px]" style={{ background: `color-mix(in srgb, ${mail.on ? "var(--emerald)" : "var(--amber)"} 13%, white)`, color: mail.on ? "var(--emerald)" : "var(--amber)" }}><Mail size={16} /></span>
+          <div>
+            <div className="text-[14px] font-bold">{mail.on ? "Invite emails are ON" : "Invite emails are OFF"}</div>
+            <div className="text-[12.5px] text-[var(--muted)]">
+              {mail.on
+                ? <>Sent from <b>{mail.from}</b> through {mail.via}. A new member gets an email with a link to set their password.</>
+                : <>The server has no mailbox to send from, so a new member gets no email. Until it is set up, use <b>Copy login link</b> on the member’s row.</>}
+            </div>
+          </div>
+        </div>
+        {mail.on && <form action={sendTestEmail}><button type="submit" className="btn btn-ghost btn-sm"><Mail size={14} /> Send test email to me</button></form>}
+      </div>
+
+      <TeamTable members={members} emailOn={mail.on} />
 
       <Card>
         <Eyebrow>Add team member</Eyebrow>
