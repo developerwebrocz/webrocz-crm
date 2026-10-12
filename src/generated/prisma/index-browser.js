@@ -527,6 +527,7 @@ exports.Prisma.CreativeTaskScalarFieldEnum = {
   code: 'code',
   title: 'title',
   clientId: 'clientId',
+  clientLabel: 'clientLabel',
   assignedToId: 'assignedToId',
   assignedById: 'assignedById',
   type: 'type',

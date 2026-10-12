@@ -37258,6 +37258,7 @@ export namespace Prisma {
     code: string | null
     title: string | null
     clientId: string | null
+    clientLabel: string | null
     assignedToId: string | null
     assignedById: string | null
     type: string | null
@@ -37282,6 +37283,7 @@ export namespace Prisma {
     code: string | null
     title: string | null
     clientId: string | null
+    clientLabel: string | null
     assignedToId: string | null
     assignedById: string | null
     type: string | null
@@ -37306,6 +37308,7 @@ export namespace Prisma {
     code: number
     title: number
     clientId: number
+    clientLabel: number
     assignedToId: number
     assignedById: number
     type: number
@@ -37332,6 +37335,7 @@ export namespace Prisma {
     code?: true
     title?: true
     clientId?: true
+    clientLabel?: true
     assignedToId?: true
     assignedById?: true
     type?: true
@@ -37356,6 +37360,7 @@ export namespace Prisma {
     code?: true
     title?: true
     clientId?: true
+    clientLabel?: true
     assignedToId?: true
     assignedById?: true
     type?: true
@@ -37380,6 +37385,7 @@ export namespace Prisma {
     code?: true
     title?: true
     clientId?: true
+    clientLabel?: true
     assignedToId?: true
     assignedById?: true
     type?: true
@@ -37477,6 +37483,7 @@ export namespace Prisma {
     code: string
     title: string
     clientId: string | null
+    clientLabel: string
     assignedToId: string
     assignedById: string | null
     type: string
@@ -37518,6 +37525,7 @@ export namespace Prisma {
     code?: boolean
     title?: boolean
     clientId?: boolean
+    clientLabel?: boolean
     assignedToId?: boolean
     assignedById?: boolean
     type?: boolean
@@ -37545,6 +37553,7 @@ export namespace Prisma {
     code?: boolean
     title?: boolean
     clientId?: boolean
+    clientLabel?: boolean
     assignedToId?: boolean
     assignedById?: boolean
     type?: boolean
@@ -37572,6 +37581,7 @@ export namespace Prisma {
     code?: boolean
     title?: boolean
     clientId?: boolean
+    clientLabel?: boolean
     assignedToId?: boolean
     assignedById?: boolean
     type?: boolean
@@ -37599,6 +37609,7 @@ export namespace Prisma {
     code?: boolean
     title?: boolean
     clientId?: boolean
+    clientLabel?: boolean
     assignedToId?: boolean
     assignedById?: boolean
     type?: boolean
@@ -37617,7 +37628,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type CreativeTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "kind" | "code" | "title" | "clientId" | "assignedToId" | "assignedById" | "type" | "priority" | "status" | "source" | "assignedDate" | "dueDate" | "dimensions" | "brief" | "notes" | "refLink" | "rawLink" | "finalLink" | "createdAt" | "updatedAt", ExtArgs["result"]["creativeTask"]>
+  export type CreativeTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "kind" | "code" | "title" | "clientId" | "clientLabel" | "assignedToId" | "assignedById" | "type" | "priority" | "status" | "source" | "assignedDate" | "dueDate" | "dimensions" | "brief" | "notes" | "refLink" | "rawLink" | "finalLink" | "createdAt" | "updatedAt", ExtArgs["result"]["creativeTask"]>
   export type CreativeTaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | CreativeTask$clientArgs<ExtArgs>
     assignedTo?: boolean | UserDefaultArgs<ExtArgs>
@@ -37647,6 +37658,7 @@ export namespace Prisma {
       code: string
       title: string
       clientId: string | null
+      clientLabel: string
       assignedToId: string
       assignedById: string | null
       type: string
@@ -38094,6 +38106,7 @@ export namespace Prisma {
     readonly code: FieldRef<"CreativeTask", 'String'>
     readonly title: FieldRef<"CreativeTask", 'String'>
     readonly clientId: FieldRef<"CreativeTask", 'String'>
+    readonly clientLabel: FieldRef<"CreativeTask", 'String'>
     readonly assignedToId: FieldRef<"CreativeTask", 'String'>
     readonly assignedById: FieldRef<"CreativeTask", 'String'>
     readonly type: FieldRef<"CreativeTask", 'String'>
@@ -55909,6 +55922,7 @@ export namespace Prisma {
     code: 'code',
     title: 'title',
     clientId: 'clientId',
+    clientLabel: 'clientLabel',
     assignedToId: 'assignedToId',
     assignedById: 'assignedById',
     type: 'type',
@@ -58852,6 +58866,7 @@ export namespace Prisma {
     code?: StringFilter<"CreativeTask"> | string
     title?: StringFilter<"CreativeTask"> | string
     clientId?: StringNullableFilter<"CreativeTask"> | string | null
+    clientLabel?: StringFilter<"CreativeTask"> | string
     assignedToId?: StringFilter<"CreativeTask"> | string
     assignedById?: StringNullableFilter<"CreativeTask"> | string | null
     type?: StringFilter<"CreativeTask"> | string
@@ -58879,6 +58894,7 @@ export namespace Prisma {
     code?: SortOrder
     title?: SortOrder
     clientId?: SortOrderInput | SortOrder
+    clientLabel?: SortOrder
     assignedToId?: SortOrder
     assignedById?: SortOrderInput | SortOrder
     type?: SortOrder
@@ -58909,6 +58925,7 @@ export namespace Prisma {
     code?: StringFilter<"CreativeTask"> | string
     title?: StringFilter<"CreativeTask"> | string
     clientId?: StringNullableFilter<"CreativeTask"> | string | null
+    clientLabel?: StringFilter<"CreativeTask"> | string
     assignedToId?: StringFilter<"CreativeTask"> | string
     assignedById?: StringNullableFilter<"CreativeTask"> | string | null
     type?: StringFilter<"CreativeTask"> | string
@@ -58936,6 +58953,7 @@ export namespace Prisma {
     code?: SortOrder
     title?: SortOrder
     clientId?: SortOrderInput | SortOrder
+    clientLabel?: SortOrder
     assignedToId?: SortOrder
     assignedById?: SortOrderInput | SortOrder
     type?: SortOrder
@@ -58966,6 +58984,7 @@ export namespace Prisma {
     code?: StringWithAggregatesFilter<"CreativeTask"> | string
     title?: StringWithAggregatesFilter<"CreativeTask"> | string
     clientId?: StringNullableWithAggregatesFilter<"CreativeTask"> | string | null
+    clientLabel?: StringWithAggregatesFilter<"CreativeTask"> | string
     assignedToId?: StringWithAggregatesFilter<"CreativeTask"> | string
     assignedById?: StringNullableWithAggregatesFilter<"CreativeTask"> | string | null
     type?: StringWithAggregatesFilter<"CreativeTask"> | string
@@ -63317,6 +63336,7 @@ export namespace Prisma {
     kind: string
     code: string
     title: string
+    clientLabel?: string
     type: string
     priority?: string
     status?: string
@@ -63342,6 +63362,7 @@ export namespace Prisma {
     code: string
     title: string
     clientId?: string | null
+    clientLabel?: string
     assignedToId: string
     assignedById?: string | null
     type: string
@@ -63365,6 +63386,7 @@ export namespace Prisma {
     kind?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    clientLabel?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -63390,6 +63412,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientLabel?: StringFieldUpdateOperationsInput | string
     assignedToId?: StringFieldUpdateOperationsInput | string
     assignedById?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
@@ -63414,6 +63437,7 @@ export namespace Prisma {
     code: string
     title: string
     clientId?: string | null
+    clientLabel?: string
     assignedToId: string
     assignedById?: string | null
     type: string
@@ -63437,6 +63461,7 @@ export namespace Prisma {
     kind?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    clientLabel?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -63459,6 +63484,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientLabel?: StringFieldUpdateOperationsInput | string
     assignedToId?: StringFieldUpdateOperationsInput | string
     assignedById?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
@@ -67091,6 +67117,7 @@ export namespace Prisma {
     code?: SortOrder
     title?: SortOrder
     clientId?: SortOrder
+    clientLabel?: SortOrder
     assignedToId?: SortOrder
     assignedById?: SortOrder
     type?: SortOrder
@@ -67115,6 +67142,7 @@ export namespace Prisma {
     code?: SortOrder
     title?: SortOrder
     clientId?: SortOrder
+    clientLabel?: SortOrder
     assignedToId?: SortOrder
     assignedById?: SortOrder
     type?: SortOrder
@@ -67139,6 +67167,7 @@ export namespace Prisma {
     code?: SortOrder
     title?: SortOrder
     clientId?: SortOrder
+    clientLabel?: SortOrder
     assignedToId?: SortOrder
     assignedById?: SortOrder
     type?: SortOrder
@@ -71294,6 +71323,7 @@ export namespace Prisma {
     kind: string
     code: string
     title: string
+    clientLabel?: string
     type: string
     priority?: string
     status?: string
@@ -71318,6 +71348,7 @@ export namespace Prisma {
     code: string
     title: string
     clientId?: string | null
+    clientLabel?: string
     assignedById?: string | null
     type: string
     priority?: string
@@ -71349,6 +71380,7 @@ export namespace Prisma {
     kind: string
     code: string
     title: string
+    clientLabel?: string
     type: string
     priority?: string
     status?: string
@@ -71373,6 +71405,7 @@ export namespace Prisma {
     code: string
     title: string
     clientId?: string | null
+    clientLabel?: string
     assignedToId: string
     type: string
     priority?: string
@@ -71941,6 +71974,7 @@ export namespace Prisma {
     code?: StringFilter<"CreativeTask"> | string
     title?: StringFilter<"CreativeTask"> | string
     clientId?: StringNullableFilter<"CreativeTask"> | string | null
+    clientLabel?: StringFilter<"CreativeTask"> | string
     assignedToId?: StringFilter<"CreativeTask"> | string
     assignedById?: StringNullableFilter<"CreativeTask"> | string | null
     type?: StringFilter<"CreativeTask"> | string
@@ -73518,6 +73552,7 @@ export namespace Prisma {
     kind: string
     code: string
     title: string
+    clientLabel?: string
     type: string
     priority?: string
     status?: string
@@ -73541,6 +73576,7 @@ export namespace Prisma {
     kind: string
     code: string
     title: string
+    clientLabel?: string
     assignedToId: string
     assignedById?: string | null
     type: string
@@ -84741,6 +84777,7 @@ export namespace Prisma {
     code: string
     title: string
     clientId?: string | null
+    clientLabel?: string
     assignedById?: string | null
     type: string
     priority?: string
@@ -84764,6 +84801,7 @@ export namespace Prisma {
     code: string
     title: string
     clientId?: string | null
+    clientLabel?: string
     assignedToId: string
     type: string
     priority?: string
@@ -85322,6 +85360,7 @@ export namespace Prisma {
     kind?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    clientLabel?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -85346,6 +85385,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientLabel?: StringFieldUpdateOperationsInput | string
     assignedById?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
@@ -85369,6 +85409,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientLabel?: StringFieldUpdateOperationsInput | string
     assignedById?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
@@ -85391,6 +85432,7 @@ export namespace Prisma {
     kind?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    clientLabel?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -85415,6 +85457,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientLabel?: StringFieldUpdateOperationsInput | string
     assignedToId?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
@@ -85438,6 +85481,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientLabel?: StringFieldUpdateOperationsInput | string
     assignedToId?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
@@ -85986,6 +86030,7 @@ export namespace Prisma {
     kind: string
     code: string
     title: string
+    clientLabel?: string
     assignedToId: string
     assignedById?: string | null
     type: string
@@ -86744,6 +86789,7 @@ export namespace Prisma {
     kind?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    clientLabel?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -86767,6 +86813,7 @@ export namespace Prisma {
     kind?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    clientLabel?: StringFieldUpdateOperationsInput | string
     assignedToId?: StringFieldUpdateOperationsInput | string
     assignedById?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
@@ -86790,6 +86837,7 @@ export namespace Prisma {
     kind?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    clientLabel?: StringFieldUpdateOperationsInput | string
     assignedToId?: StringFieldUpdateOperationsInput | string
     assignedById?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string

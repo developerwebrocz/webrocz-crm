@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { DESIGN_TYPES, VIDEO_TYPES } from "@/lib/domain";
+import { OWN_BRAND, OWN_BRAND_KEY } from "@/lib/team-kinds";
 import { saveCreativeTask, setCreativeStatus, addCreativeTask, deleteCreativeTask, logout } from "@/app/actions";
 import Notifications from "@/components/Notifications";
 import {
@@ -436,6 +437,7 @@ export default function CreativeBoard({
                   <select name="clientId" className="cb-fld" defaultValue=""
                     onChange={(e) => { if (e.target.value === "__NEW__") setAddingClient(true); }}>
                     <option value="">— Select client —</option>
+                    {kind === "VIDEO" && <option value={OWN_BRAND_KEY}>{OWN_BRAND}</option>}
                     {clientOptions.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     <option value="__NEW__">＋ New Client – Add Name</option>
                   </select>

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { SERVICES, SERVICE_KEYS, type ServiceKey, companyFor, stateFromGstin, GADS_TYPE_KEYS } from "@/lib/domain";
 import { ownClientsOf, SERVICE_ALIAS, SHARED_AM, managedBy } from "@/lib/am-scope";
 import { managesClient } from "@/lib/am-access";
+import { OWN_BRAND, OWN_BRAND_KEY } from "@/lib/team-kinds";
 import { nextInvoiceNumbers } from "@/lib/invoice-number";
 import { todayIST } from "@/lib/india-date";
 import { WEB_ROCZ_CLIENT_SERVICES, detailFromCounts } from "@/lib/webrocz-services";
@@ -449,6 +450,9 @@ export async function addCreativeTask(fd: FormData) {
   // create a minimal client on the fly and attach the task to it.
   const newClientName = s(fd, "newClient").trim();
   let clientId = s(fd, "clientId") || null;
+  // "WebRocz" in the video team's list: the agency's own video — a name, not a client record
+  const ownWork = kind === "VIDEO" && clientId === OWN_BRAND_KEY && !newClientName;
+  if (clientId === OWN_BRAND_KEY) clientId = null;
   if (newClientName) {
     const created = await prisma.client.create({ data: { code: await nextClientCode(), name: newClientName, status: "ACTIVE" } });
     clientId = created.id;
@@ -456,7 +460,7 @@ export async function addCreativeTask(fd: FormData) {
   await prisma.creativeTask.create({
     data: {
       kind, code: `${prefix}-${String(count + 1).padStart(3, "0")}`, title,
-      clientId, assignedToId: u.id, assignedById: u.id,
+      clientId, clientLabel: ownWork ? OWN_BRAND : "", assignedToId: u.id, assignedById: u.id,
       type: s(fd, "type") || (kind === "VIDEO" ? "Reel" : "Social Creative"),
       priority: ["HIGH", "MEDIUM", "LOW"].includes(s(fd, "priority")) ? s(fd, "priority") : "MEDIUM",
       status: "PENDING", source: "ADDITIONAL",

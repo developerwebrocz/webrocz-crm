@@ -98,7 +98,7 @@ export async function getEditCountBoard(viewer: EditCountViewer, monthParam?: st
         orderBy: [{ dueDate: "asc" }, { createdAt: "desc" }],
         take: 200,
       })).map((t) => ({
-        id: t.id, code: t.code, title: t.title, client: t.client?.name ?? "", editor: t.assignedTo.name, by: t.assignedByUser?.name ?? "",
+        id: t.id, code: t.code, title: t.title, client: t.client?.name ?? t.clientLabel, editor: t.assignedTo.name, by: t.assignedByUser?.name ?? "",
         type: t.type, priority: t.priority, status: t.status, dueDate: t.dueDate, assignedDate: t.assignedDate,
         overdue: !!t.dueDate && t.dueDate < today && t.status !== "COMPLETED",
         done: t.status === "COMPLETED", at: t.updatedAt.getTime(),

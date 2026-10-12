@@ -741,7 +741,7 @@ export async function getCreativeBoard(userId: string, role: string, kind: "DESI
     }
     const dueLabel = t.dueDate ? new Date(t.dueDate + "T00:00:00").toLocaleDateString("en-IN", { month: "short", day: "2-digit" }) : "";
     return {
-      id: t.id, code: t.code, title: t.title, client: t.client?.name ?? "—",
+      id: t.id, code: t.code, title: t.title, client: t.client?.name ?? (t.clientLabel || "—"),
       type: t.type, priority: t.priority, status: t.status, source: t.source,
       assignedDate: t.assignedDate, dueDate: t.dueDate, dimensions: t.dimensions,
       brief: t.brief, notes: t.notes, refLink: t.refLink, rawLink: t.rawLink, finalLink: t.finalLink,
@@ -862,7 +862,7 @@ export async function getAssignedByMe(userId: string, take = 8) {
   const rows = tasks.map((t) => ({
     id: t.id, kind: t.kind, code: t.code, title: t.title,
     member: t.assignedTo?.name ?? "—", memberRole: t.assignedTo?.role ?? "",
-    client: t.client?.name ?? "—", type: t.type, priority: t.priority, status: t.status,
+    client: t.client?.name ?? (t.clientLabel || "—"), type: t.type, priority: t.priority, status: t.status,
     dueDate: t.dueDate, overdue: !!t.dueDate && t.dueDate < today && t.status !== "COMPLETED",
   }));
   const open = rows.filter((r) => r.status !== "COMPLETED").length;
@@ -882,7 +882,7 @@ export async function getCreativeReport(amId?: string) {
       id: t.id, kind: t.kind, code: t.code, title: t.title,
       member: t.assignedTo?.name ?? "—", memberId: t.assignedToId, role: t.assignedTo?.role ?? "",
       assignedBy: t.assignedByUser?.name ?? "—", assignedById: t.assignedById ?? "",
-      client: t.client?.name ?? "—", type: t.type, priority: t.priority, status: t.status, source: t.source,
+      client: t.client?.name ?? (t.clientLabel || "—"), type: t.type, priority: t.priority, status: t.status, source: t.source,
       assignedDate: t.assignedDate, dueDate: t.dueDate, finalLink: t.finalLink,
       updatedAt: t.updatedAt.toISOString().slice(0, 10), overdue,
     };

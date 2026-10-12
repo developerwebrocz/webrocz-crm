@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "./prisma";
 import { todayIST } from "./india-date";
+import { OWN_BRAND } from "./team-kinds";
 
 // Video team "Client Videos" tracker: one row per client shoot — videos shot, who edits them,
 // how many are edited, whether the account manager was told and whether they are posted.
@@ -80,8 +81,12 @@ export async function getVideoJobBoard(viewer: VideoJobViewer, monthParam?: stri
     rows, kpis,
     editors: people.filter((p) => p.role === "EDITOR" && p.active).map((p) => ({ id: p.id, name: p.name })),
     shooters: people.filter((p) => p.active && (p.role === "VIDEOGRAPHER" || p.shootTeam)).map((p) => p.name),
-    clientNames: clients.map((c) => c.name),
+    clientNames: withOwnBrand(clients.map((c) => c.name)),
   };
+}
+// The client pick list for the video team: the agency's own name first, then the clients.
+function withOwnBrand(names: string[]) {
+  return [OWN_BRAND, ...names.filter((n) => n.trim().toLowerCase() !== OWN_BRAND.toLowerCase())];
 }
 export type VideoJobBoardData = Awaited<ReturnType<typeof getVideoJobBoard>>;
 export type VideoJobRow = VideoJobBoardData["rows"][number];
@@ -142,7 +147,7 @@ export async function getVideoTeamBoard() {
     openJobs: jobs.length,
     videosLeft: jobs.reduce((s, j) => s + Math.max(0, j.videosShot - j.edited), 0),
     clients,
-    form: { canManage: true, canDelete: true, today, editors: editors.map((e) => ({ id: e.id, name: e.name })), shooters: shooters.map((s) => s.name), clientNames: clients.map((c) => c.name) },
+    form: { canManage: true, canDelete: true, today, editors: editors.map((e) => ({ id: e.id, name: e.name })), shooters: shooters.map((s) => s.name), clientNames: withOwnBrand(clients.map((c) => c.name)) },
   };
 }
 
