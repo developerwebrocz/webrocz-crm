@@ -71,6 +71,8 @@ export default function SlaBoard({ rows, counts, totals, canUpload, canGenerate 
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search client, title, uploader…" className="input !py-2 !pl-9" />
         </div>
         <select value={status} onChange={(e) => setStatus(e.target.value)} className="select !w-auto"><option value="ALL">All status</option><option value="UPLOADED">To invoice</option><option value="INVOICED">Invoiced</option></select>
+        {/* the list opens on "To invoice": say so when SLAs already moved to an invoice are not shown */}
+        {status === "UPLOADED" && counts.invoiced > 0 && <button type="button" onClick={() => setStatus("ALL")} className="text-[12.5px] font-semibold text-[var(--violet)] hover:underline">Showing “To invoice” only · {counts.invoiced} already invoiced not shown — show all</button>}
       </div>
 
       <div className="card !p-0 overflow-hidden">
