@@ -2833,18 +2833,17 @@ export async function getSalesReports(pipeline = "WEBROCZ", from?: string, to?: 
 // ---- Digital Marketing assignment: onboarded marketing clients + assign a DM Executive ----
 export async function getDmClients(userId: string, role: string) {
   const isHeadOrAdmin = ["SUPER_ADMIN", "SUB_ADMIN", "DM_HEAD"].includes(role);
-  // clients created from sales onboarding with a DM/SEO service; scoped for a DM exec to their own.
+  // Head / admin: clients created from sales onboarding with a DM/SEO service.
+  // A DM executive: every client they work on (theirs, and the ones shared with them) — whatever
+  // name its services were saved under ("Digital Marketing", "Meta Ads" …).
   const clients = await prisma.client.findMany({
-    where: {
-      services: { some: { service: { in: ["SEO", "SMO", "META_ADS", "GOOGLE_ADS"] } } },
-      ...(isHeadOrAdmin ? {} : managedBy(userId)),
-    },
-    include: { accountManager: { select: { id: true, name: true } }, services: { select: { service: true } } },
+    where: isHeadOrAdmin ? { services: { some: { service: { in: ["SEO", "SMO", "META_ADS", "GOOGLE_ADS"] } } } } : managedBy(userId),
+    include: { accountManager: { select: { id: true, name: true } }, services: { select: { service: true } }, assignments: { where: { department: SHARED_AM }, select: { user: { select: { name: true } } } } },
     orderBy: { createdAt: "desc" },
   });
   const rows = clients.map((c) => ({
     id: c.id, code: c.code, name: c.name, poc: c.pocName, phone: c.pocMobile,
-    retainer: c.monthlyRetainer, assigned: c.accountManager?.name ?? null, assignedId: c.accountManagerId,
+    retainer: c.monthlyRetainer, assigned: [...new Set([c.accountManager?.name, ...c.assignments.map((a) => a.user.name)].filter(Boolean))].join(" + ") || null, assignedId: c.accountManagerId,
     services: c.services.map((s) => s.service),
     createdAt: c.createdAt.toISOString().slice(0, 10),
   }));
