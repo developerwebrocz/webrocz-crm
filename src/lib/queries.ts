@@ -906,10 +906,11 @@ export async function getAssignedByMe(userId: string, take = 8) {
   return { rows: rows.slice(0, take), total: rows.length, open };
 }
 
-export async function getCreativeReport() {
+// `amId`: an account manager's view — only the work on clients they manage, and work they assigned themselves.
+export async function getCreativeReport(amId?: string) {
   const [members, tasks] = await Promise.all([
     prisma.user.findMany({ where: { role: { in: ["DESIGNER", "EDITOR"] } }, orderBy: [{ role: "asc" }, { name: "asc" }] }),
-    prisma.creativeTask.findMany({ include: { client: true, assignedTo: true, assignedByUser: true }, orderBy: [{ assignedDate: "desc" }, { code: "asc" }] }),
+    prisma.creativeTask.findMany({ where: amId ? { OR: [{ client: { accountManagerId: amId } }, { assignedById: amId }] } : {}, include: { client: true, assignedTo: true, assignedByUser: true }, orderBy: [{ assignedDate: "desc" }, { code: "asc" }] }),
   ]);
   const today = creativeToday();
   const rows = tasks.map((t) => {
@@ -931,7 +932,7 @@ export async function getCreativeReport() {
   const assignerMap = new Map<string, string>();
   for (const t of tasks) if (t.assignedById && t.assignedByUser) assignerMap.set(t.assignedById, t.assignedByUser.name);
   const assigners = [...assignerMap.entries()].map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name));
-  const clientOptions = await prisma.client.findMany({ where: { status: { not: "UPCOMING" } }, select: { id: true, name: true }, orderBy: { name: "asc" } });
+  const clientOptions = await prisma.client.findMany({ where: { status: { not: "UPCOMING" }, ...(amId ? { accountManagerId: amId } : {}) }, select: { id: true, name: true }, orderBy: { name: "asc" } });
   return { rows, clients, types, days, members: memberOpts, assigners, clientOptions, today };
 }
 
@@ -1085,7 +1086,7 @@ export async function getTasksView(userId: string, role: string) {
     isAssigner ? prisma.task.findMany({ where: { assignedById: userId }, include: { assignedTo: true, client: true }, orderBy: { createdAt: "desc" }, take: 40 }) : Promise.resolve([]),
     isAssigner ? prisma.user.findMany({ where: { active: true, role: { not: "SUPER_ADMIN" } }, orderBy: [{ role: "asc" }, { name: "asc" }], select: { id: true, name: true, role: true } }) : Promise.resolve([]),
     // client options are offered to everyone so a self-task can be linked to a client
-    prisma.client.findMany({ where: { status: { not: "UPCOMING" } }, orderBy: { code: "asc" }, select: { id: true, name: true } }),
+    prisma.client.findMany({ where: { status: { not: "UPCOMING" }, ...(role === "ACCOUNT_MANAGER" || role === "DM_EXEC" ? { accountManagerId: userId } : {}) }, orderBy: { code: "asc" }, select: { id: true, name: true } }),
   ]);
   const m = (t: (typeof mine)[number]) => ({
     id: t.id, title: t.title, detail: t.detail, priority: t.priority, status: t.status, dueDate: t.dueDate, seen: t.seen,
