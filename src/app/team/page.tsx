@@ -16,9 +16,10 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
   const mail = emailSetup();
   // what the last "add member" / "resend invite" / "test email" did
   const note = one("mail") === "invited" ? { ok: true, text: `Invite email sent to ${one("to") || "the member"} — they set their own password from it.` }
+    : one("mail") === "pwset" ? { ok: true, text: `Password set for ${one("to")}. Their login: the email on their row + the password you typed, at the Team Portal (/staff).` }
     : one("mail") === "test" ? { ok: true, text: `Test email sent to ${one("to")}. Check that inbox (and Spam).` }
     : one("mail") === "off" ? { ok: false, text: `${one("to") || "The member"} was added, but no invite email was sent — the email service is not set up on the server. Use “Copy login link” and send it to them.` }
-    : one("mail") === "fail" ? { ok: false, text: `Email was NOT sent. ${one("why")}` }
+    : one("mail") === "fail" ? { ok: false, text: /password was not changed/.test(one("why")) ? one("why") : `Email was NOT sent. ${one("why")}` }
     : null;
 
   const kpis = [
