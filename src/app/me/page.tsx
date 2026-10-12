@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@/lib/auth";
 import { getMyDashboard } from "@/lib/queries";
 import { redirect } from "next/navigation";
-import { ROLES, WORK_STATUS } from "@/lib/domain";
+import { roleLabel as roleLabelOf, WORK_STATUS } from "@/lib/domain";
 import { Avatar, Badge, Card, Eyebrow, IconChip, Progress, PageHeader, ServiceChips } from "@/components/ui";
 import { Users, CheckCircle2, Clock, Gauge, Plus } from "lucide-react";
 
@@ -11,7 +11,7 @@ export default async function MyDashboardPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   const d = await getMyDashboard(user.id, user.role);
-  const roleLabel = ROLES[user.role as keyof typeof ROLES] ?? user.role;
+  const roleLabel = roleLabelOf(user.role, user.teamLead);
   const monitor = d.scope.monitor;
 
   return (

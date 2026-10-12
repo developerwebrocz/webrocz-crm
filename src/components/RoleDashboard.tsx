@@ -1,5 +1,5 @@
 import { getMyDashboard } from "@/lib/queries";
-import { ROLES, DEPARTMENTS } from "@/lib/domain";
+import { roleLabel as roleLabelOf, DEPARTMENTS } from "@/lib/domain";
 import { monthLabel, monthGonePct } from "@/lib/period";
 import { Card, Eyebrow, Avatar, ServiceChips, IconChip } from "@/components/ui";
 import { Users, CheckCircle2, Clock, Gauge, Plus, Megaphone, ArrowRight, TrendingUp } from "lucide-react";
@@ -25,7 +25,7 @@ function StatMini({ icon: Icon, tone, label, value }: { icon: typeof Users; tone
 export default async function RoleDashboard({ user }: { user: { id: string; name: string; role: string } }) {
   const d = await getMyDashboard(user.id, user.role);
   const isAM = d.scope.monitor;
-  const roleLabel = ROLES[user.role as keyof typeof ROLES] ?? user.role;
+  const roleLabel = roleLabelOf(user.role, (user as { teamLead?: boolean | null }).teamLead);
   const deptLabel = DEPARTMENTS[DEPT_OF[user.role] ?? "ACCOUNT"];
   const gone = monthGonePct();
 

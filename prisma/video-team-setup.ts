@@ -50,11 +50,33 @@ async function main() {
   };
 
   if (args.has("lead")) {
-    const u = find(args.get("lead")!);
+    const leadName = args.get("lead")!;
+    const email = (args.get("email") ?? "").toLowerCase();
+    let u = matchPerson(leadName, editors);
+    // 'email=' with the lead: the login of the team lead. Not in Team yet → added as a member
+    // of this team (no password — they set their own on the link printed below).
+    if (email) {
+      const taken = await prisma.user.findUnique({ where: { email }, select: { id: true, name: true, role: true } });
+      if (taken && (!u || taken.id !== u.id)) {
+        if (!u && taken.role === ROLE) { u = { id: taken.id, name: taken.name, active: true }; }
+        else console.log(`  ! The email ${email} already belongs to ${taken.name} (${taken.role}) — not changed.`);
+      } else if (!u) {
+        const made = await prisma.user.create({ data: { name: leadName, role: ROLE, email, active: true }, select: { id: true, name: true, active: true } });
+        editors.push(made); u = made;
+        console.log(`Added to Team: ${made.name} (${LABEL}), login ${email}`);
+      } else if (!taken) {
+        await prisma.user.update({ where: { id: u.id }, data: { email } });
+        console.log(`Login email of ${u.name} set to ${email}`);
+      }
+    }
+    if (!u) console.log(`  ! No ${LABEL} matches "${leadName}" — add them in Team (role ${LABEL}), or give 'email=' to add them here.`);
     if (u) {
       await prisma.user.updateMany({ where: { role: ROLE, teamLead: true, id: { not: u.id } }, data: { teamLead: false } });
       await prisma.user.update({ where: { id: u.id }, data: { teamLead: true } });
       console.log(`${design ? "Design" : "Video"} team lead: ${u.name}`);
+      const acct = await prisma.user.findUnique({ where: { id: u.id }, select: { email: true, passwordHash: true } });
+      if (acct?.email) console.log(acct.passwordHash ? `  Login: ${acct.email} (password already set by them) at https://admin.webrocz.com/staff` : `  Login: ${acct.email} — they set their own password on: https://admin.webrocz.com/staff?setpw=1&email=${encodeURIComponent(acct.email)}`);
+      else console.log("  No login email yet — add 'email=...' to this command, or set it in Team (Edit).");
     }
   }
   if (args.has("shoots") && !design) {

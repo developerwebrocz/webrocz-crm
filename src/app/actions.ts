@@ -1205,11 +1205,16 @@ export async function updateUser(fd: FormData) {
     const target = await prisma.user.findUnique({ where: { id }, select: { role: true } });
     if (target?.role === "SUPER_ADMIN" || role === "SUPER_ADMIN") return; // a Sub Admin can't edit or create the owner
   }
+  // "Team lead" tick (Team → Edit): only a Designer or a Video Editor can be one, one per team.
+  const leadRole = role === "DESIGNER" || role === "EDITOR";
+  const lead = fd.has("teamLead_set") ? leadRole && fd.get("teamLead") === "on" : undefined;
+  if (lead) await prisma.user.updateMany({ where: { role, teamLead: true, id: { not: id } }, data: { teamLead: false } });
   await prisma.user.update({
     where: { id },
-    data: { name, role, email: s(fd, "email").toLowerCase() || null, phone: s(fd, "phone") || null },
+    data: { name, role, email: s(fd, "email").toLowerCase() || null, phone: s(fd, "phone") || null, ...(lead === undefined ? (leadRole ? {} : { teamLead: false }) : { teamLead: lead }) },
   });
   revalidatePath("/team");
+  revalidatePath("/", "layout");
 }
 
 // Super Admin permanently deletes a team member (can't delete yourself).

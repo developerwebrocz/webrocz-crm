@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import { initials, ROLES } from "@/lib/domain";
+import { initials, roleLabel as roleLabelOf } from "@/lib/domain";
 import { logout } from "@/app/actions";
 import { ChevronDown, LogOut } from "lucide-react";
 import GlobalSearch from "./GlobalSearch";
@@ -26,7 +26,7 @@ export default function TopBar({ user, search, alerts }: {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  const roleLabel = ROLES[user.role as keyof typeof ROLES] ?? user.role;
+  const roleLabel = roleLabelOf(user.role, (user as { teamLead?: boolean | null }).teamLead);
 
   return (
     <header className="sticky top-0 z-40 h-16 border-b border-[var(--line)] bg-[var(--surface)]">

@@ -77,6 +77,14 @@ export const GST_STATE_BY_CODE: Record<string, string> = {
   "36": "36-Telangana", "37": "37-Andhra Pradesh", "38": "38-Ladakh",
 };
 
+// What a person is called on screen: their role, or "… Team Lead" for the designer / video
+// editor marked as their team's lead (a team lead keeps the same role and logins).
+export const TEAM_LEAD_LABEL: Record<string, string> = { DESIGNER: "Designer Team Lead", EDITOR: "Video Team Lead" };
+export function roleLabel(role: string, teamLead?: boolean | null): string {
+  if (teamLead && TEAM_LEAD_LABEL[role]) return TEAM_LEAD_LABEL[role];
+  return (ROLES as Record<string, string>)[role] ?? role;
+}
+
 // Derive the canonical "code-Name" state label from a GSTIN's leading 2 digits.
 // Returns "" when the GSTIN is blank or its state code is unknown — callers then
 // leave clientState unset, which both consumers treat as the seller's home state.

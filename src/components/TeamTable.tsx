@@ -1,13 +1,13 @@
 "use client";
 
 import { Fragment, useMemo, useState } from "react";
-import { initials, ROLES } from "@/lib/domain";
+import { initials, ROLES, roleLabel } from "@/lib/domain";
 import { toggleUserActive, impersonate, resetUserPassword, updateUser, deleteUser, resendInvite } from "@/app/actions";
 import { Search, Eye, KeyRound, Pencil, Trash2, Mail, ArrowRightLeft, Link2, Check } from "lucide-react";
 import TransferWorkModal from "@/components/TransferWorkModal";
 
 type Member = {
-  id: string; name: string; role: string; email: string | null; phone: string | null; active: boolean;
+  id: string; name: string; role: string; email: string | null; phone: string | null; active: boolean; teamLead?: boolean;
   hasPassword: boolean;
   clients: number; projects: number; done: number; pending: number; total: number; openTasks: number;
   completion: number; lastActive: string | null;
@@ -106,7 +106,7 @@ export default function TeamTable({ members, emailOn = true }: { members: Member
                 <td className="px-5 py-3">
                   <span className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold" style={{ color: roleTone[m.role] ?? "var(--ink-2)" }}>
                     <span className="h-1.5 w-1.5 rounded-full" style={{ background: roleTone[m.role] ?? "var(--ink-2)" }} />
-                    {ROLES[m.role as keyof typeof ROLES] ?? m.role}
+                    {roleLabel(m.role, m.teamLead)}
                   </span>
                 </td>
                 <td className="px-5 py-3 text-center text-[13px] font-semibold tnum">{m.projects || m.clients || "—"}</td>
@@ -168,6 +168,8 @@ export default function TeamTable({ members, emailOn = true }: { members: Member
                     <label className="block"><span className="eyebrow">Role</span><select name="role" defaultValue={m.role} className="select mt-1.5">{Object.entries(ROLES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
                     <label className="block"><span className="eyebrow">Email (login)</span><input name="email" type="email" defaultValue={m.email ?? ""} className="input mt-1.5" /></label>
                     <label className="block"><span className="eyebrow">Phone</span><input name="phone" defaultValue={m.phone ?? ""} className="input mt-1.5" /></label>
+                    {/* a Designer / Video Editor can be made their team's lead (sees the whole team, assigns work) */}
+                    <label className="flex items-center gap-2 text-[12.5px] font-semibold sm:col-span-2 lg:col-span-4"><input type="hidden" name="teamLead_set" value="1" /><input type="checkbox" name="teamLead" defaultChecked={!!m.teamLead} className="h-4 w-4 accent-[var(--violet)]" /> Team lead <span className="font-normal text-[var(--muted)]">— for a Designer or a Video Editor: sees the whole team’s work and assigns it (one lead per team)</span></label>
                     <div className="flex items-end gap-2"><button type="submit" className="btn btn-violet">Save</button><button type="button" onClick={() => setEditId(null)} className="btn btn-ghost">Cancel</button></div>
                   </form>
                 </td></tr>

@@ -1555,7 +1555,7 @@ export async function getTeamOverview() {
     const isAm = u.role === "ACCOUNT_MANAGER" || u.role === "AM_HEAD" || u.role === "DM_EXEC";
     const isDev = u.role === "WEB_DEV" || u.role === "DEV_HEAD";
     return {
-      id: u.id, name: u.name, role: u.role, email: u.email, phone: u.phone, active: u.active,
+      id: u.id, name: u.name, role: u.role, email: u.email, phone: u.phone, active: u.active, teamLead: u.teamLead,
       hasPassword: !!u.passwordHash,
       clients: isAm ? u._count.managedClients : u._count.assignments,
       projects: isDev ? u._count.devProjects : 0,

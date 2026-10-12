@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { initials, ROLES } from "@/lib/domain";
+import { initials, roleLabel } from "@/lib/domain";
 import {
   LayoutDashboard, Users, UserCog, Megaphone, ClipboardList,
   FileBarChart, Search, UsersRound, Wallet, Images, Code2,
@@ -301,7 +301,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
         <span className="avatar h-9 w-9" style={{ borderRadius: 10 }}>{initials(user.name)}</span>
         <div className="min-w-0">
           <div className="truncate text-sm font-semibold text-white">{user.name}</div>
-          <div className="truncate text-[11px] text-[var(--sb-muted-2)]">{ROLES[user.role as keyof typeof ROLES] ?? user.role}</div>
+          <div className="truncate text-[11px] text-[var(--sb-muted-2)]">{roleLabel(user.role, (user as { teamLead?: boolean | null }).teamLead)}</div>
         </div>
       </div>
     </aside>
