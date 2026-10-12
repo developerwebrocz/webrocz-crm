@@ -1,4 +1,5 @@
 import { getClientOptions, getUsers, getReport, workScopeFor } from "@/lib/queries";
+import { ownClientsOf } from "@/lib/am-scope";
 import { now } from "@/lib/period";
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -19,7 +20,7 @@ export default async function UpdatesPage({ searchParams }: PageProps<"/updates"
   // The activity feed is scoped: employee → own, head → their team, admin → all.
   const scope = workScopeFor(user.role, user.id);
   const [clients, users, report] = await Promise.all([
-    getClientOptions(),
+    getClientOptions(ownClientsOf(user)), // an account manager picks from their own clients
     isAdmin ? getUsers() : Promise.resolve([]),
     getReport("today", scope),
   ]);

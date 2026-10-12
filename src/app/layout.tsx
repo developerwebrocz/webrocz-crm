@@ -45,7 +45,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 async function AppShell({ user, userId, impersonatedBy, children }: { user: { name: string; role: string; shootTeam?: boolean; teamLead?: boolean }; userId: string; impersonatedBy?: string | null; children: React.ReactNode }) {
   const [clientCount, search, alerts, approvalsCount, taskCount, reminderCount] = await Promise.all([
     prisma.client.count().catch(() => 0),
-    getSearchIndex().catch(() => ({ clients: [], projects: [], team: [] })),
+    getSearchIndex({ id: userId, role: user.role }).catch(() => ({ clients: [], projects: [], team: [] })),
     getAlerts(userId, user.role).catch(() => ({ count: 0, items: [] })),
     // approvals badge scoped by role: admin = all, head = their dept, others = 0
     ((user.role === "SUPER_ADMIN" || user.role === "SUB_ADMIN") ? getApprovalsCount() : deptForRole(user.role) ? getApprovalsCount(deptForRole(user.role)!) : Promise.resolve(0)).catch(() => 0),

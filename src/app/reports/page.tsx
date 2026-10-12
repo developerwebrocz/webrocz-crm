@@ -1,4 +1,5 @@
 import { getReport, getUsers, getClientOptions, workScopeFor } from "@/lib/queries";
+import { ownClientsOf } from "@/lib/am-scope";
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Card, Eyebrow } from "@/components/ui";
@@ -33,7 +34,7 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
   const [{ rows, kpis, range }, users, clients] = await Promise.all([
     getReport(period, reportOpts),
     isAdmin ? getUsers() : Promise.resolve([]),
-    getClientOptions(),
+    getClientOptions(ownClientsOf(user)), // an account manager filters by their own clients
   ]);
 
   const fmt = (d: Date) => new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short" });

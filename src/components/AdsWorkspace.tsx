@@ -1,4 +1,5 @@
 import { getAdsEntry, getSmoEntry, getCreativeTeam, getClientOptions } from "@/lib/queries";
+import { ownClientsOf } from "@/lib/am-scope";
 import { saveClientCampaigns, saveClientPosts, copyAdsYesterday, copySmoYesterday } from "@/app/actions";
 import { CopyPlus } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
@@ -44,7 +45,7 @@ export default async function AdsWorkspace({
   // "Assign to Design / Video team" on the SM Posts board (assigners only).
   const canAssign = smo && CREATIVE_ASSIGNER.includes(user.role);
   const [creativeTeam, clientOpts] = canAssign
-    ? await Promise.all([getCreativeTeam(), getClientOptions()])
+    ? await Promise.all([getCreativeTeam(), getClientOptions(ownClientsOf(user))])
     : [[], []];
   const amName = isAM ? user.name : ams.find((a) => a.id === activeAm)?.name ?? "—";
   const dateLabel = new Date(date + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short" });

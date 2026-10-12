@@ -1,4 +1,5 @@
 import { getAmDashboard, getCreativeTeam, getClientOptions, getAssignedByMe } from "@/lib/queries";
+import { ownClientsOf } from "@/lib/am-scope";
 import { inrShort, inr } from "@/lib/domain";
 import AssignCreativeForm from "@/components/AssignCreativeForm";
 import MyShootRequests from "@/components/MyShootRequests";
@@ -16,7 +17,7 @@ export default async function AmOverview({ user }: { user: { id: string; name: s
   const [d, creativeTeam, clientOpts, assigned] = await Promise.all([
     getAmDashboard(user.id, user.role),
     getCreativeTeam(),
-    getClientOptions(),
+    getClientOptions(ownClientsOf(user)), // only the clients this manager handles
     getAssignedByMe(user.id),
   ]);
   const first = user.name.split(" ")[0] || "there";

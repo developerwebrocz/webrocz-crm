@@ -1144,11 +1144,18 @@ export async function getCalendar(monthPrefix: string, amId?: string) {
 }
 
 // Lightweight index for the global (⌘K) search — clients, dev projects, team.
-export async function getSearchIndex() {
+// The search box only offers what the person can open: clients for the account-management
+// side (an AM / DM Executive just their own clients), developer projects for the dev team,
+// team members for the admins. `viewer` omitted = everything (old behaviour).
+export async function getSearchIndex(viewer?: { id: string; role: string }) {
+  const admin = !viewer || viewer.role === "SUPER_ADMIN" || viewer.role === "SUB_ADMIN";
+  const ownOnly = !!viewer && (viewer.role === "ACCOUNT_MANAGER" || viewer.role === "DM_EXEC");
+  const seesClients = admin || ownOnly || viewer?.role === "AM_HEAD";
+  const seesProjects = admin || viewer?.role === "DEV_HEAD" || viewer?.role === "WEB_DEV";
   const [clients, projects, team] = await Promise.all([
-    prisma.client.findMany({ select: { id: true, name: true, code: true, pocName: true, industry: true }, orderBy: { code: "asc" } }),
-    prisma.devProject.findMany({ select: { id: true, name: true, platform: true }, orderBy: { updatedAt: "desc" } }),
-    prisma.user.findMany({ where: { active: true }, select: { id: true, name: true, role: true } }),
+    seesClients ? prisma.client.findMany({ where: ownOnly ? { accountManagerId: viewer!.id } : {}, select: { id: true, name: true, code: true, pocName: true, industry: true }, orderBy: { code: "asc" } }) : Promise.resolve([]),
+    seesProjects ? prisma.devProject.findMany({ select: { id: true, name: true, platform: true }, orderBy: { updatedAt: "desc" } }) : Promise.resolve([]),
+    admin ? prisma.user.findMany({ where: { active: true }, select: { id: true, name: true, role: true } }) : Promise.resolve([]),
   ]);
   return {
     clients: clients.map((c) => ({ id: c.id, label: c.name, sub: [c.pocName, c.industry, c.code].filter(Boolean).join(" · "), href: `/clients/${c.id}` })),
@@ -1223,8 +1230,10 @@ export async function getAlerts(userId?: string, role?: string) {
 }
 
 // The Clients "book" view — services + agreed monthly deliverables + team + status.
-export async function getClientBook() {
+// `amId`: only the clients of this account manager (an AM sees just their own).
+export async function getClientBook(amId?: string) {
   const clients = await prisma.client.findMany({
+    where: amId ? { accountManagerId: amId } : {},
     include: {
       accountManager: true,
       services: true,
@@ -1574,8 +1583,9 @@ export async function getTeamOverview() {
   return { members, totals, monthLabel: start.toLocaleDateString("en-IN", { month: "long", year: "numeric" }) };
 }
 
-export async function getClientOptions() {
-  return prisma.client.findMany({ select: { id: true, name: true, code: true }, orderBy: { name: "asc" } });
+// `amId`: only the clients of this account manager (for an AM's client pickers).
+export async function getClientOptions(amId?: string) {
+  return prisma.client.findMany({ where: amId ? { accountManagerId: amId } : {}, select: { id: true, name: true, code: true }, orderBy: { name: "asc" } });
 }
 
 // Active designers + video editors — for the "assign creative work" picker.
