@@ -19,7 +19,8 @@ const SMTP_HOST = process.env.SMTP_HOST || (GMAIL_USER ? "smtp.gmail.com" : "");
 const SMTP_PORT = Number(process.env.SMTP_PORT || 465);
 const SMTP_USER = process.env.SMTP_USER || GMAIL_USER;
 const SMTP_PASS = process.env.SMTP_PASS || GMAIL_APP_PASSWORD;
-const SMTP_ON = !!(SMTP_HOST && SMTP_USER && SMTP_PASS);
+// (a sample value left in .env — "YOUR_GMAIL" — is not a mailbox: treated as not set up)
+const SMTP_ON = !!(SMTP_HOST && SMTP_USER && SMTP_PASS) && (!GMAIL_USER || (GMAIL_USER.includes("@") && !/^your_/i.test(GMAIL_USER) && !/^your_/i.test(GMAIL_APP_PASSWORD)));
 // EMAIL_FROM can be a bare address (e.g. noreply@webrocz.com) — we add the "WebRocz" display name.
 // With a mailbox (SMTP) the mailbox itself is the sender unless EMAIL_FROM says otherwise.
 const RAW_FROM = process.env.EMAIL_FROM || (SMTP_ON && !RESEND_API_KEY ? SMTP_USER : "noreply@webrocz.com");
