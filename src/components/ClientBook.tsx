@@ -113,7 +113,7 @@ export default function ClientBook({
                     )}
                   </td>
                   <td className="td whitespace-nowrap text-[13px] text-[var(--ink-2)]">
-                    {r.am ? <>AM {r.am}{r.teamCount > 0 ? ` +${r.teamCount}` : ""}</> : <span className="text-[var(--muted)]">Unassigned</span>}
+                    {r.am ? <>{r.am}{r.teamCount > 0 ? ` +${r.teamCount}` : ""}</> : <span className="text-[var(--muted)]">Unassigned</span>}
                   </td>
                   <td className="td"><Badge tone={STATUS_TONE[r.status] ?? "violet"}>{CLIENT_STATUS[r.status as keyof typeof CLIENT_STATUS] ?? r.status}</Badge></td>
                   <td className="td" onClick={(e) => e.stopPropagation()}>
