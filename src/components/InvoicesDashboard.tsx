@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { FileText, ShieldCheck, Clock, MessageSquarePlus, X, Pencil, Trash2, Plus } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { FileText, ShieldCheck, Clock, MessageSquarePlus, X, Pencil, Trash2, Plus, CheckCircle2 } from "lucide-react";
 import { companyLabel, COMPANY_KEYS } from "@/lib/domain";
 import { addInvoiceNote, deleteSalesInvoice } from "@/app/sales-actions";
 import AddInvoiceModal from "@/components/AddInvoiceModal";
@@ -143,7 +144,8 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
         </div>
       </div>}
 
-      {fuInv && <InvoiceFollowupModal inv={fuInv} close={() => setFuInv(null)} />}
+      {/* stays open after a save: show the invoice's fresh row (with the new note) */}
+      {fuInv && <InvoiceFollowupModal inv={rows.find((r) => r.id === fuInv.id) ?? fuInv} close={() => setFuInv(null)} />}
       {delInv && <DeleteInvoiceModal inv={delInv} back={keepHub ? hubHref : "/invoices"} close={() => setDelInv(null)} />}
       {addOpen && company === "WEB_ROCZ" && <AddWebRoczInvoiceModal clientNames={clientNames} clientDomains={clientDomains} close={() => setAddOpen(false)} returnTo={`/invoices?company=WEB_ROCZ${embedded ? "&hub=1" : ""}`} />}
       {addOpen && company === "WEB_ROCZ_PVT" && <AddWebRoczPvtInvoiceModal clientNames={clientNames} close={() => setAddOpen(false)} returnTo={`/invoices?company=WEB_ROCZ_PVT${embedded ? "&hub=1" : ""}`} />}
@@ -176,10 +178,14 @@ function DeleteInvoiceModal({ inv, back, close }: { inv: any; back: string; clos
 }
 
 // View an invoice's follow-up notes and add a new one (with a next-follow-up date).
+// Saving keeps the popup open on the same list — the note box is cleared and the new note shows
+// above; it closes only with Close (or the X).
 function InvoiceFollowupModal({ inv, close }: { inv: any; close: () => void }) {
   const notes: { date: string; by: string; note: string }[] = inv.followups ?? [];
+  const path = usePathname();
+  const [saved, setSaved] = useState(0);
   return (
-    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
+    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }}>
       <div className="flex max-h-[92vh] w-full max-w-[480px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
           <div>
@@ -199,12 +205,14 @@ function InvoiceFollowupModal({ inv, close }: { inv: any; close: () => void }) {
             ))}
           </div>
         </div>
-        <form action={addInvoiceNote} className="space-y-3 border-t border-[var(--line)] px-6 py-4">
+        <form action={async (fd) => { await addInvoiceNote(fd); setSaved((n) => n + 1); }} className="space-y-3 border-t border-[var(--line)] px-6 py-4">
+          <input type="hidden" name="stay" value="1" />
+          <input type="hidden" name="return" value={path} />
           <input type="hidden" name="invoiceId" value={inv.id} />
           <input type="hidden" name="leadId" value={inv.leadId ?? ""} />
           <label className="block"><span className="eyebrow">Add follow-up note</span><textarea name="note" required rows={2} className="input mt-1" placeholder="e.g. Called client, will pay by 25th" /></label>
           <label className="block"><span className="eyebrow">Next follow-up</span><input name="nextFollowup" type="date" defaultValue={inv.nextFollowup || todayISO()} className="input mt-1" /></label>
-          <div className="flex justify-end gap-2"><button type="button" onClick={close} className="btn btn-ghost">Close</button><button type="submit" className="btn btn-violet"><MessageSquarePlus size={15} /> Save follow-up</button></div>
+          <div className="flex items-center justify-end gap-2">{saved > 0 && <span className="mr-auto inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--emerald)]"><CheckCircle2 size={14} /> Saved</span>}<button type="button" onClick={close} className="btn btn-ghost">Close</button><button type="submit" className="btn btn-violet"><MessageSquarePlus size={15} /> Save follow-up</button></div>
         </form>
       </div>
     </div>

@@ -775,8 +775,14 @@ export async function addInvoiceNote(fd: FormData) {
   if (!me || !INVOICE_MANAGE.includes(me.role)) redirect("/sales");
   const invId = s(fd, "invoiceId"); const leadId = s(fd, "leadId");
   const note = s(fd, "note");
+  // The page the form is on (`return`). With `stay` the user is not moved at all: that page is
+  // refreshed in place (the invoices list keeps its Follow-up popup open). Without it the save
+  // used to open the invoice — or, for an invoice made from a lead, the sales page, which an
+  // accountant cannot open and so landed on the dashboard.
+  const here = s(fd, "return");
+  const back = here.startsWith("/") && !here.startsWith("//") ? here : invoiceReturn(leadId, invId);
   const inv = await prisma.salesInvoice.findUnique({ where: { id: invId } });
-  if (!inv || !note) redirect(invoiceReturn(leadId, invId));
+  if (!inv || !note) redirect(back);
   let log: { date: string; by: string; note: string }[] = [];
   try { const a = JSON.parse(inv.notesLog || "[]"); if (Array.isArray(a)) log = a; } catch { /* ignore */ }
   // date + time in India ("2026-10-09 15:42"); toISOString() is UTC, 5h30 behind
@@ -785,7 +791,10 @@ export async function addInvoiceNote(fd: FormData) {
   await prisma.salesInvoice.update({ where: { id: invId }, data: { notesLog: JSON.stringify(log.slice(0, 100)), nextFollowup: s(fd, "nextFollowup") || inv.nextFollowup } });
   await notifyRole("SUPER_ADMIN", `Invoice note: ${inv.number}`, `${me.name}: ${note.slice(0, 80)}`, invoiceReturn(leadId, invId), "amber");
   revalidatePath(invoiceReturn(leadId, invId));
-  redirect(invoiceReturn(leadId, invId));
+  revalidatePath("/invoices");
+  revalidatePath("/");
+  if (s(fd, "stay") === "1") { revalidatePath(back.split("?")[0]); return; }
+  redirect(back);
 }
 
 // Email the invoice to the client (link to the printable page + summary).

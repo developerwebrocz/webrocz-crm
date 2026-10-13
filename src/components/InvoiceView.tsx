@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { generateInvoice, saveInvoice, emailInvoice, approveInvoice, addInvoiceNote } from "@/app/sales-actions";
 import { SELLER } from "@/lib/domain";
 import InvoicePrintable from "@/components/InvoicePrintable";
@@ -15,6 +16,7 @@ import { Download, Mail, Pencil, FileText, CheckCircle2, Lock, ShieldCheck, Mess
 
 export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, approvalOff, sent, backHref }: { lead: any; invoice: any; canManage: boolean; isSuperAdmin: boolean; approvalOff?: boolean; sent: string; backHref: string }) {
   const [edit, setEdit] = useState(false);
+  const herePath = usePathname(); // where the follow-up note form is — saving stays here
   // Edit form: the invoice total is typed exactly as it should read on the invoice; the
   // taxable amount and GST shown under it are worked back from that total.
   const [editTotal, setEditTotal] = useState(String(invoice?.total ?? ""));
@@ -288,7 +290,9 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
         <div className="no-print card card-pad">
           <h3 className="text-[14px] font-bold">Payment follow-up notes</h3>
           <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">Accountant follow-ups. Every note notifies &amp; is visible to the Super Admin.</p>
+          {/* saving stays on this invoice page (the note shows below) */}
           <form action={addInvoiceNote} className="mt-3 flex flex-wrap items-end gap-2">
+            <input type="hidden" name="stay" value="1" /><input type="hidden" name="return" value={herePath} />
             <input type="hidden" name="invoiceId" value={invoice.id} /><input type="hidden" name="leadId" value={leadId} />
             <div className="flex-1 min-w-[240px]"><L label="Note"><input name="note" required placeholder="e.g. Called client, will pay by 25th" className="input" /></L></div>
             <div><L label="Next follow-up"><input name="nextFollowup" type="date" defaultValue={invoice.nextFollowup ?? ""} className="input" /></L></div>
