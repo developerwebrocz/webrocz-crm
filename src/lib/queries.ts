@@ -2,7 +2,7 @@ import { prisma } from "./prisma";
 import { SERVICE_ALIAS, SHARED_AM, managedBy } from "./am-scope";
 import { todayIST } from "./india-date";
 import { getVideoTeamNames } from "./video-job-queries";
-import { chosenClientFollowup, chosenInvoiceFollowup, parseNotes, lastFollowupOf } from "./followup-shown";
+import { chosenClientFollowup, chosenInvoiceFollowup, parseNotes } from "./followup-shown";
 import { COMPLETING_STATUSES, healthBand, serviceKind, SALES_STAGE_KEYS } from "./domain";
 import { resolvePeriod, now, type PeriodKey } from "./period";
 
@@ -2651,8 +2651,8 @@ export async function getInvoices(opts: { q?: string; status?: string; company?:
   // One next follow-up date per client (set from the client's or an invoice's follow-up) — only
   // a date somebody chose, not one an old form filled in with "today" by itself.
   const clientNext = new Map(clients.map((c) => [c.id, chosenClientFollowup(c.nextFollowup, parseNotes(c.followupLog))] as const).filter(([, d]) => d));
-  // the client's own follow-ups (Phone / WhatsApp popup): how many, and the last one
-  const clientFu = new Map(clients.map((c) => { const notes = parseNotes(c.followupLog); return [c.id, { count: notes.length, last: lastFollowupOf(notes) }] as const; }));
+  // how many follow-ups the client has (Phone / WhatsApp popup) — the number on the Follow-up button
+  const clientFu = new Map(clients.map((c) => [c.id, { count: parseNotes(c.followupLog).length }] as const));
   const invLeadSvc = new Map(invLeads.map((l) => [l.id, parseServices(l.services)]));
   // Resolve invoices with no clientId to a client by exact (case-insensitive) name, so the
   // client name in the list can still deep-link to the detail page where possible.
@@ -2670,7 +2670,7 @@ export async function getInvoices(opts: { q?: string; status?: string; company?:
       total: r.total, received: r.received, balance, paymentStatus: r.paymentStatus,
       approved: r.approved, issueDate: r.issueDate, dueDate, overdue: balance > 0 && !!dueDate && dueDate < today,
       pipeline: r.pipeline, company, gst: r.taxPct > 0, leadId: r.leadId, nextFollowup: (clientId && clientNext.get(clientId)) || chosenInvoiceFollowup(r.nextFollowup, followups), followups,
-      clientFollowupCount: (clientId && clientFu.get(clientId)?.count) || 0, clientLastFollowup: (clientId && clientFu.get(clientId)?.last) || null,
+      clientFollowupCount: (clientId && clientFu.get(clientId)?.count) || 0,
     };
   });
   const q = (opts.q || "").toLowerCase().trim();

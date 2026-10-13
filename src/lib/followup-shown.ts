@@ -29,10 +29,3 @@ export function chosenClientFollowup(date: string | null | undefined, notes: Not
   if (notes.some((n) => n.next === date && !!n.via)) return date;
   return notes.some((n) => n.next === date && day(n.date) === date) ? "" : date;
 }
-
-// The newest follow-up of a client: when it was done and how (Phone / WhatsApp).
-export function lastFollowupOf(notes: Note[]): { date: string; time: string; via: string } | null {
-  let best: Note | null = null, key = "";
-  for (const n of notes) { const k = `${n.date ?? ""} ${n.time ?? ""}`; if (n.date && (!best || k >= key)) { best = n; key = k; } }
-  return best ? { date: day(best.date), time: best.time ?? "", via: best.via ?? "" } : null;
-}

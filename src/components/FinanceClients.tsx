@@ -251,7 +251,6 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
                       <Link href={companySel !== "ALL" ? `/accounts/${r.id}?company=${companySel}` : `/accounts/${r.id}`} prefetch title="Edit info & invoices" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><Pencil size={13} /> Edit</Link>
                       {canDelete && <button onClick={() => setDelRow(r)} title="Delete client" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--rose)] hover:bg-[color-mix(in_srgb,var(--rose)_10%,white)]"><Trash2 size={13} /> Delete</button>}
                     </div>
-                    {(() => { const last = latestFollowup(r.clientFollowups); const via = (last as { via?: string } | null)?.via; return last ? <div className="mt-1 whitespace-nowrap text-[11px] font-semibold text-[var(--ink-2)] tnum">last follow-up {fmtDate(last.date)}{via === "WHATSAPP" ? " · WhatsApp" : via === "PHONE" ? " · Phone" : ""}</div> : null; })()}
                     {r.nextFollowup && <div className="mt-1 whitespace-nowrap text-[11px] font-bold text-[var(--rose)] tnum">next follow-up {fmtDate(r.nextFollowup)}</div>}
                   </td>
                 </tr>
