@@ -269,7 +269,8 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
         )}
       </div>
 
-      {fuRow && <FollowupModal r={fuRow} close={() => setFuRow(null)} />}
+      {/* the popup stays open after a save: show the client's fresh row (with the new follow-up) */}
+      {fuRow && <FollowupModal r={rows.find((x) => x.id === fuRow.id) ?? fuRow} close={() => setFuRow(null)} />}
       {delRow && <DeleteModal r={delRow} close={() => setDelRow(null)} />}
       {addOpen && lockedCompany === "WEB_ROCZ" && <AddWebRoczClientModal close={() => setAddOpen(false)} />}
       {addOpen && lockedCompany === "WEB_ROCZ_PVT" && <AddWebRoczPvtClientModal close={() => setAddOpen(false)} />}
@@ -425,7 +426,7 @@ function FollowupModal({ r, close }: { r: Row; close: () => void }) {
 
         {/* Phone and WhatsApp follow-ups are logged and listed separately. */}
         <div className="space-y-4 overflow-y-auto scroll-thin px-6 py-4">
-          <ClientFollowupChannels clientId={r.id} returnTo={here} followups={r.clientFollowups} />
+          <ClientFollowupChannels clientId={r.id} returnTo={here} followups={r.clientFollowups} stay />
           {r.notes.length > 0 && (
             <div>
               <div className="mb-1 text-[11px] font-bold uppercase tracking-wide text-[var(--faint)]">On invoices</div>

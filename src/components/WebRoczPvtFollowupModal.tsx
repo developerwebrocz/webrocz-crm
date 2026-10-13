@@ -10,11 +10,12 @@ import ClientFollowupChannels, { type ClientFollowup } from "@/components/Client
 // client's follow-ups itself, so the shared invoices page needs no extra data.
 export default function WebRoczPvtFollowupModal({ clientId, name, close }: { clientId: string; name: string; close: () => void }) {
   const [followups, setFollowups] = useState<ClientFollowup[] | null>(null);
+  const [reload, setReload] = useState(0); // a follow-up was saved in this popup → load the list again
   useEffect(() => {
     let alive = true;
     getWebRoczPvtClientFollowups(clientId).then((f) => { if (alive) setFollowups(f); }).catch(() => { if (alive) setFollowups([]); });
     return () => { alive = false; };
-  }, [clientId]);
+  }, [clientId, reload]);
   // After saving, come back to the invoices list the popup was opened from.
   const here = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/invoices?company=WEB_ROCZ_PVT";
   return (
@@ -28,7 +29,7 @@ export default function WebRoczPvtFollowupModal({ clientId, name, close }: { cli
           <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
         </div>
         <div className="overflow-y-auto scroll-thin px-6 py-4">
-          <ClientFollowupChannels clientId={clientId} returnTo={here} followups={followups ?? []} />
+          <ClientFollowupChannels clientId={clientId} returnTo={here} followups={followups ?? []} stay onSaved={() => setReload((n) => n + 1)} />
         </div>
         <div className="flex justify-end border-t border-[var(--line)] px-6 py-3"><button type="button" onClick={close} className="btn btn-ghost">Close</button></div>
       </div>

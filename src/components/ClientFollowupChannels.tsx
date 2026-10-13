@@ -1,6 +1,7 @@
 "use client";
 
-import { Phone, MessageCircle, MessageSquarePlus } from "lucide-react";
+import { useState } from "react";
+import { Phone, MessageCircle, MessageSquarePlus, CheckCircle2 } from "lucide-react";
 import { logClientFollowup } from "@/app/actions";
 
 // Client follow-ups kept separately by how the client was reached: Phone and WhatsApp.
@@ -31,7 +32,17 @@ const CHANNELS = [
 
 // `action` is where a follow-up is saved; it defaults to the client's own log. Studio X
 // passes its shoot action (then `clientId` carries the shoot id).
-export default function ClientFollowupChannels({ clientId, returnTo, followups, action = logClientFollowup }: { clientId: string; returnTo: string; followups: ClientFollowup[]; action?: (fd: FormData) => void | Promise<void> }) {
+// `stay` (the Follow-up popups): saving does not leave the popup — the note box is cleared, the
+// date and time are set to now again, and the new follow-up shows in the list below; the popup
+// closes only with its Close button. `onSaved` lets a popup that loads its own list reload it.
+export default function ClientFollowupChannels({ clientId, returnTo, followups, action = logClientFollowup, stay = false, onSaved }: { clientId: string; returnTo: string; followups: ClientFollowup[]; action?: (fd: FormData) => void | Promise<void>; stay?: boolean; onSaved?: () => void }) {
+  // per side (Phone / WhatsApp): how many were saved while the popup is open
+  const [savedCount, setSavedCount] = useState<Record<string, number>>({});
+  const save = (key: string) => async (fd: FormData) => {
+    await action(fd);
+    setSavedCount((c) => ({ ...c, [key]: (c[key] ?? 0) + 1 }));
+    onSaved?.();
+  };
   // newest first: by date, then time; same moment (or no time) → the one saved later first
   const newestFirst = followups.map((f, i) => ({ f, i })).sort((a, b) => { const ka = a.f.date + " " + (a.f.time || ""), kb = b.f.date + " " + (b.f.time || ""); return ka === kb ? b.i - a.i : ka < kb ? 1 : -1; }).map((x) => x.f);
   const earlier = newestFirst.filter((f) => f.via !== "PHONE" && f.via !== "WHATSAPP");
@@ -63,7 +74,8 @@ export default function ClientFollowupChannels({ clientId, returnTo, followups, 
                 )}
               </header>
 
-              <form action={action} className="space-y-3 px-4 py-4">
+              <form action={stay ? save(key) : action} className="space-y-3 px-4 py-4">
+                {stay && <input type="hidden" name="stay" value="1" />}
                 <input type="hidden" name="id" value={clientId} />
                 <input type="hidden" name="return" value={returnTo} />
                 <input type="hidden" name="via" value={key} />
@@ -72,11 +84,14 @@ export default function ClientFollowupChannels({ clientId, returnTo, followups, 
                   <textarea name="note" rows={3} required className="input mt-1.5 resize-none !text-[13.5px] leading-relaxed" placeholder={placeholder} />
                 </label>
                 {/* when this follow-up was done — filled with now, can be changed */}
-                <div className="grid grid-cols-2 gap-2.5">
+                <div key={savedCount[key] ?? 0} className="grid grid-cols-2 gap-2.5">
                   <label className="block"><span className={lbl}>Follow-up date</span><input ref={fillToday} name="date" type="date" className="input mt-1.5 !text-[13.5px]" /></label>
                   <label className="block"><span className={lbl}>Follow-up time</span><input ref={fillNow} name="time" type="time" className="input mt-1.5 !text-[13.5px]" /></label>
                 </div>
-                <div className="flex justify-end"><button type="submit" className="btn justify-center whitespace-nowrap px-6 text-white" style={{ background: color }}><MessageSquarePlus size={15} /> Save follow-up</button></div>
+                <div className="flex items-center justify-end gap-3">
+                  {stay && (savedCount[key] ?? 0) > 0 && <span className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--emerald)]"><CheckCircle2 size={14} /> Saved</span>}
+                  <button type="submit" className="btn justify-center whitespace-nowrap px-6 text-white" style={{ background: color }}><MessageSquarePlus size={15} /> Save follow-up</button>
+                </div>
               </form>
 
               <div className="border-t border-[var(--line)] px-4 py-3.5">
