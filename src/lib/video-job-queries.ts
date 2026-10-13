@@ -1,7 +1,7 @@
 import "server-only";
 import { prisma } from "./prisma";
 import { todayIST } from "./india-date";
-import { OWN_BRAND } from "./team-kinds";
+import { OWN_BRANDS } from "./team-kinds";
 
 // Video team "Client Videos" tracker: one row per client shoot — videos shot, who edits them,
 // how many are edited, whether the account manager was told and whether they are posted.
@@ -81,12 +81,24 @@ export async function getVideoJobBoard(viewer: VideoJobViewer, monthParam?: stri
     rows, kpis,
     editors: people.filter((p) => p.role === "EDITOR" && p.active).map((p) => ({ id: p.id, name: p.name })),
     shooters: people.filter((p) => p.active && (p.role === "VIDEOGRAPHER" || p.shootTeam)).map((p) => p.name),
-    clientNames: withOwnBrand(clients.map((c) => c.name)),
+    clientNames: withTeamNames(await getVideoTeamNames(), clients.map((c) => c.name)),
   };
 }
-// The client pick list for the video team: the agency's own name first, then the clients.
-function withOwnBrand(names: string[]) {
-  return [OWN_BRAND, ...names.filter((n) => n.trim().toLowerCase() !== OWN_BRAND.toLowerCase())];
+// Names the video team works for that are not client records: the agency's own brands first,
+// then the names the team added themselves (on a video, or typed on Client Videos).
+export async function getVideoTeamNames(): Promise<string[]> {
+  const [tasks, jobs] = await Promise.all([
+    prisma.creativeTask.findMany({ where: { kind: "VIDEO", clientLabel: { not: "" } }, select: { clientLabel: true }, distinct: ["clientLabel"] }),
+    prisma.videoJob.findMany({ where: { clientId: null }, select: { clientName: true }, distinct: ["clientName"] }),
+  ]);
+  const added = [...tasks.map((t) => t.clientLabel), ...jobs.map((j) => j.clientName)].map((n) => n.trim()).filter(Boolean).sort((a, b) => a.localeCompare(b));
+  const seen = new Set<string>();
+  return [...OWN_BRANDS, ...added].filter((n) => { const k = n.toLowerCase().replace(/\s+/g, ""); if (seen.has(k)) return false; seen.add(k); return true; });
+}
+// The client pick list for the video team: those names first, then the clients.
+function withTeamNames(teamNames: string[], names: string[]) {
+  const own = new Set(teamNames.map((n) => n.toLowerCase()));
+  return [...teamNames, ...names.filter((n) => !own.has(n.trim().toLowerCase()))];
 }
 export type VideoJobBoardData = Awaited<ReturnType<typeof getVideoJobBoard>>;
 export type VideoJobRow = VideoJobBoardData["rows"][number];
@@ -147,7 +159,7 @@ export async function getVideoTeamBoard() {
     openJobs: jobs.length,
     videosLeft: jobs.reduce((s, j) => s + Math.max(0, j.videosShot - j.edited), 0),
     clients,
-    form: { canManage: true, canDelete: true, today, editors: editors.map((e) => ({ id: e.id, name: e.name })), shooters: shooters.map((s) => s.name), clientNames: withOwnBrand(clients.map((c) => c.name)) },
+    form: { canManage: true, canDelete: true, today, editors: editors.map((e) => ({ id: e.id, name: e.name })), shooters: shooters.map((s) => s.name), clientNames: withTeamNames(await getVideoTeamNames(), clients.map((c) => c.name)) },
   };
 }
 

@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { DESIGN_TYPES, VIDEO_TYPES } from "@/lib/domain";
-import { OWN_BRAND, OWN_BRAND_KEY } from "@/lib/team-kinds";
+import { NAME_ONLY } from "@/lib/team-kinds";
 import { saveCreativeTask, setCreativeStatus, addCreativeTask, deleteCreativeTask, logout } from "@/app/actions";
 import Notifications from "@/components/Notifications";
 import {
@@ -71,10 +71,10 @@ function initials(name: string) {
 }
 
 export default function CreativeBoard({
-  kind, chrome = "embedded", rows, counts, clients, types, progress, today, clientOptions, userName, alerts, initialTab,
+  kind, chrome = "embedded", rows, counts, clients, types, progress, today, clientOptions, nameOptions = [], userName, alerts, initialTab,
 }: {
   kind: "DESIGN" | "VIDEO"; chrome?: "studio" | "embedded"; rows: Row[]; counts: Counts; clients: string[]; types: string[];
-  progress: number; today: string; clientOptions: ClientOpt[]; userName?: string; alerts?: AlertData; initialTab?: string;
+  progress: number; today: string; clientOptions: ClientOpt[]; nameOptions?: string[]; userName?: string; alerts?: AlertData; initialTab?: string;
 }) {
   const isVideo = kind === "VIDEO";
   const L = isVideo
@@ -437,8 +437,12 @@ export default function CreativeBoard({
                   <select name="clientId" className="cb-fld" defaultValue=""
                     onChange={(e) => { if (e.target.value === "__NEW__") setAddingClient(true); }}>
                     <option value="">— Select client —</option>
-                    {kind === "VIDEO" && <option value={OWN_BRAND_KEY}>{OWN_BRAND}</option>}
-                    {clientOptions.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    {nameOptions.length > 0 ? (
+                      <>
+                        <optgroup label="Our brands · added by the video team">{nameOptions.map((n) => <option key={n} value={NAME_ONLY + n}>{n}</option>)}</optgroup>
+                        <optgroup label="Clients">{clientOptions.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</optgroup>
+                      </>
+                    ) : clientOptions.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     <option value="__NEW__">＋ New Client – Add Name</option>
                   </select>
                 )}

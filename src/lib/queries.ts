@@ -1,6 +1,7 @@
 import { prisma } from "./prisma";
 import { SERVICE_ALIAS, SHARED_AM, managedBy } from "./am-scope";
 import { todayIST } from "./india-date";
+import { getVideoTeamNames } from "./video-job-queries";
 import { COMPLETING_STATUSES, healthBand, serviceKind, SALES_STAGE_KEYS } from "./domain";
 import { resolvePeriod, now, type PeriodKey } from "./period";
 
@@ -763,7 +764,10 @@ export async function getCreativeBoard(userId: string, role: string, kind: "DESI
   const progress = counts.total ? Math.round((counts.completed / counts.total) * 100) : 0;
   // All clients (id + name) for the "Add Additional" modal's client picker.
   const clientOptions = await prisma.client.findMany({ where: { status: { not: "UPCOMING" } }, select: { id: true, name: true }, orderBy: { name: "asc" } });
-  return { rows, counts, clients, types, progress, today, clientOptions };
+  // video team: the agency's own brands and the names the team added (not client records)
+  const taken = new Set(clientOptions.map((c) => c.name.trim().toLowerCase()));
+  const nameOptions = kind === "VIDEO" ? (await getVideoTeamNames()).filter((n) => !taken.has(n.toLowerCase())) : [];
+  return { rows, counts, clients, types, progress, today, clientOptions, nameOptions };
 }
 
 // ---- Super Admin: Designer + Video Editor daily work report ----

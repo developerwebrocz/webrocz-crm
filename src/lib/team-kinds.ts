@@ -1,10 +1,12 @@
 // The creative teams that keep a daily count and have a team lead: the video editors
 // ("Editing Count") and the designers ("Design Count"). One set of pages serves both; this
 // says what differs — the role, the page and the words.
-// The agency's own videos (its reels, ads, office shoots): picked as the client by the video team.
-// It is a name only — not a client record, so it never shows in Clients or in the accounts lists.
-export const OWN_BRAND = "WebRocz";
-export const OWN_BRAND_KEY = "__OWN__"; // the pick-list value that means "our own work"
+// The agency's own brands the video team makes videos for (its reels, ads, office shoots).
+// They are names only — not client records, so they never show in Clients or the accounts lists.
+// The video team can add more names of their own ("＋ New Client" on Add Video); those are kept
+// the same way, as a name on the video.
+export const OWN_BRANDS = ["Web Rocz", "Digital Hat", "Studio X", "Show Yours", "Talk X", "Rajesh Sir (Personal Branding)", "Prathibha IAS", "Prathibha Degree"];
+export const NAME_ONLY = "name:"; // pick-list value prefix: "name:Digital Hat" = this name, no client record
 
 export type TeamKind = "VIDEO" | "DESIGN";
 export type TeamInfo = {
