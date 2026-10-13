@@ -104,7 +104,7 @@ export default function ClientFollowupChannels({ clientId, returnTo, followups, 
                         const on = (nextOn[key] ?? "") === q.d;
                         return <button key={q.l} type="button" onClick={() => setNextOn((c) => ({ ...c, [key]: on ? "" : q.d }))} className="rounded-full border px-2.5 py-1 text-[12px] font-semibold" style={{ borderColor: on ? color : "var(--line-2)", background: on ? `color-mix(in srgb, ${color} 10%, white)` : "var(--surface)", color: on ? color : "var(--ink-2)" }}>{q.l}</button>;
                       })}
-                      <input name="next" type="date" min={isoIn(1)} value={nextOn[key] ?? ""} onChange={(e) => setNextOn((c) => ({ ...c, [key]: e.target.value }))} className="input !w-auto !py-1 !text-[12.5px]" title="Or pick any date" />
+                      <input name="next" type="date" min={isoIn(0)} value={nextOn[key] ?? ""} onChange={(e) => setNextOn((c) => ({ ...c, [key]: e.target.value }))} className="input !w-auto !py-1 !text-[12.5px]" title="Or pick any date" />
                     </div>
                   </div>
                 )}

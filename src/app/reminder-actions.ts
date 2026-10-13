@@ -32,7 +32,7 @@ export async function setPaymentReminder(fd: FormData) {
     if (!c) return;
     let log: Record<string, unknown>[] = [];
     try { const a = JSON.parse(c.followupLog || "[]"); if (Array.isArray(a)) log = a; } catch { /* keep empty */ }
-    if (note) log.push({ date: today, time, by: me.name, note, next: date });
+    if (note) log.push({ date: today, time, by: me.name, note, next: date, via: "REMINDER" });
     if (note) await prisma.client.update({ where: { id }, data: { followupLog: JSON.stringify(log) } });
     await setClientFollowupDate(id, date);
   } else {

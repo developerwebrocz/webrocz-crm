@@ -6,7 +6,7 @@
 // follow-up and is not a reminder. (The forms no longer pre-fill the date, and a date that is
 // picked is always a later day.)
 
-type Note = { date?: string; next?: string };
+type Note = { date?: string; time?: string; next?: string; via?: string };
 const day = (v: string | undefined) => (v ?? "").slice(0, 10);
 const isDate = (v: string | null | undefined): v is string => /^\d{4}-\d{2}-\d{2}$/.test(v ?? "");
 
@@ -20,8 +20,19 @@ export function chosenInvoiceFollowup(date: string | null | undefined, notes: No
   return notes.some((n) => day(n.date) === date) ? "" : date;
 }
 
-// A client's date: not chosen when it came with a follow-up logged that same day.
+// A client's date: not chosen when it came with a follow-up logged that same day on the old
+// form (the website-renewals one, which pre-filled it). A follow-up logged in the Phone / WhatsApp
+// popup or in Payment Reminders carries how it was made (`via`) — its date was picked by hand,
+// also when it is the same day.
 export function chosenClientFollowup(date: string | null | undefined, notes: Note[]): string {
   if (!isDate(date)) return "";
+  if (notes.some((n) => n.next === date && !!n.via)) return date;
   return notes.some((n) => n.next === date && day(n.date) === date) ? "" : date;
+}
+
+// The newest follow-up of a client: when it was done and how (Phone / WhatsApp).
+export function lastFollowupOf(notes: Note[]): { date: string; time: string; via: string } | null {
+  let best: Note | null = null, key = "";
+  for (const n of notes) { const k = `${n.date ?? ""} ${n.time ?? ""}`; if (n.date && (!best || k >= key)) { best = n; key = k; } }
+  return best ? { date: day(best.date), time: best.time ?? "", via: best.via ?? "" } : null;
 }

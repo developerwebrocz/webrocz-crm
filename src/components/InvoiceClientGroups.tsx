@@ -15,6 +15,7 @@ import { companyLabel } from "@/lib/domain";
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmtD = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split("-"); return d ? `${d}-${m}-${y}` : iso; };
 const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const VIA: Record<string, string> = { PHONE: "Phone", WHATSAPP: "WhatsApp" };
 const monthOf = (iso: string) => { const [y, m] = (iso || "").split("-"); return m ? `${MON[parseInt(m, 10) - 1] ?? m} ${y}` : "—"; };
 
 type Props = { rows: any[]; hideApproval?: boolean; canDelete?: boolean; openAll?: boolean; showCompany?: boolean; onFollowup: (inv: any) => void; onDelete: (inv: any) => void };
@@ -89,7 +90,9 @@ export default function InvoiceClientGroups({ rows, hideApproval, canDelete, ope
                     {/* Follow-up on the client itself (Phone / WhatsApp); a row with no linked client
                         falls back to the follow-up notes of its latest invoice. */}
                     <td className="px-4 py-3">
-                      <button onClick={(e) => { e.stopPropagation(); if (g.clientId) setFuClient({ id: g.clientId, name: g.name }); else onFollowup(g.invoices[0]); }} title="Follow-up — Phone / WhatsApp" className="inline-flex items-center gap-1 whitespace-nowrap rounded-[7px] border border-[var(--line-2)] bg-[var(--surface)] px-2.5 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><MessageSquarePlus size={13} /> Follow-up</button>
+                      <button onClick={(e) => { e.stopPropagation(); if (g.clientId) setFuClient({ id: g.clientId, name: g.name }); else onFollowup(g.invoices[0]); }} title="Follow-up — Phone / WhatsApp" className="inline-flex items-center gap-1 whitespace-nowrap rounded-[7px] border border-[var(--line-2)] bg-[var(--surface)] px-2.5 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><MessageSquarePlus size={13} /> Follow-up{g.invoices[0]?.clientFollowupCount > 0 && <span className="grid h-4 min-w-[16px] place-items-center rounded-full bg-[var(--violet)] px-1 text-[9px] font-bold text-white">{g.invoices[0].clientFollowupCount}</span>}</button>
+                      {/* the last follow-up done on the client (Phone / WhatsApp) */}
+                      {g.invoices[0]?.clientLastFollowup && <div className="mt-1 whitespace-nowrap text-[11px] font-semibold text-[var(--ink-2)] tnum">last follow-up {fmtD(g.invoices[0].clientLastFollowup.date)}{VIA[g.invoices[0].clientLastFollowup.via] ? ` · ${VIA[g.invoices[0].clientLastFollowup.via]}` : ""}</div>}
                       {g.nextFollowup && <div className="mt-1 whitespace-nowrap text-[11px] font-bold text-[var(--rose)] tnum">next follow-up {fmtD(g.nextFollowup)}</div>}
                     </td>
                   </tr>
