@@ -256,7 +256,7 @@ export async function getDashboard(periodKey: PeriodKey = "month", from?: string
     urgent: urgent.slice(0, 5),
     clients: clientCards, team,
     recent: recent.map((r) => ({
-      id: r.id, client: r.client.name, user: r.user.name,
+      id: r.id, client: r.client?.name ?? (r.clientLabel || "—"), user: r.user.name,
       workType: r.workType, status: r.status, date: r.date,
     })),
     avgRetainer: clients.length ? Math.round(budget / clients.length) : 0,
@@ -314,7 +314,7 @@ export async function getWorkTracking(date?: string, teamDept?: string) {
       id: u.id, name: u.name, role: u.role,
       seconds, active: mine.some((s) => !s.endedAt), sessions: mine.length,
       updates: myUpdates.length, done,
-      items: myUpdates.slice(0, 8).map((x) => ({ workType: x.workType, quantity: x.quantity, client: x.client.name, status: x.status })),
+      items: myUpdates.slice(0, 8).map((x) => ({ workType: x.workType, quantity: x.quantity, client: x.client?.name ?? (x.clientLabel || "—"), status: x.status })),
     };
   });
 
@@ -1094,7 +1094,7 @@ export async function getApprovals(dept?: string) {
     take: 100,
   });
   return updates.map((u) => ({
-    id: u.id, date: u.date, client: u.client.name, clientId: u.clientId,
+    id: u.id, date: u.date, client: u.client?.name ?? (u.clientLabel || "—"), clientId: u.clientId,
     user: u.user.name, workType: u.workType, quantity: u.quantity,
     title: u.title, detail: u.detail, keyword: u.keyword,
     prevPosition: u.prevPosition, currPosition: u.currPosition,
@@ -1893,7 +1893,7 @@ export async function getMyDashboard(userId: string, role: string) {
   return {
     scope, rows,
     stats: { clients: clients.length, completed: completedCount, pending: pendingCount, avg: avgPct },
-    updates: myUpdates.map((u) => ({ id: u.id, date: u.date, client: u.client.name, workType: u.workType, quantity: u.quantity, status: u.status, title: u.title, keyword: u.keyword, prevPosition: u.prevPosition, currPosition: u.currPosition })),
+    updates: myUpdates.map((u) => ({ id: u.id, date: u.date, client: u.client?.name ?? (u.clientLabel || "—"), workType: u.workType, quantity: u.quantity, status: u.status, title: u.title, keyword: u.keyword, prevPosition: u.prevPosition, currPosition: u.currPosition })),
   };
 }
 

@@ -1077,14 +1077,19 @@ export async function deleteClient(fd: FormData) {
 export async function createUpdate(fd: FormData) {
   const me = await getCurrentUser();
   if (!me) redirect("/login");
-  const clientId = s(fd, "clientId");
+  const picked = s(fd, "clientId");
+  // Video team: a pick like "name:Digital Hat" (the agency's own brands, names the team added)
+  // is kept as a name on the update — there is no client record for it.
+  const byName = picked.startsWith(NAME_ONLY) && me.role === "EDITOR";
+  const clientLabel = byName ? picked.slice(NAME_ONLY.length).replace(/\s+/g, " ").trim().slice(0, 160) : "";
+  const clientId = picked.startsWith(NAME_ONLY) ? null : picked;
   // Only the Super Admin may log work on someone else's behalf; everyone else logs as themselves.
   const userId = (me.role === "SUPER_ADMIN" || me.role === "SUB_ADMIN") ? (s(fd, "userId") || me.id) : me.id;
-  if (!clientId || !userId) throw new Error("Client and team member are required");
+  if ((!clientId && !clientLabel) || !userId) throw new Error("Client and team member are required");
 
   await prisma.workUpdate.create({
     data: {
-      clientId, userId,
+      clientId, clientLabel, userId,
       date: s(fd, "date") ? new Date(s(fd, "date")) : new Date(),
       workType: s(fd, "workType") || "task",
       quantity: Math.max(1, n(fd, "quantity")),
@@ -1102,6 +1107,7 @@ export async function createUpdate(fd: FormData) {
 
   revalidatePath("/");
   revalidatePath("/updates");
+  if (!clientId) redirect("/updates"); // logged for one of our own brands: there is no client page
   revalidatePath(`/clients/${clientId}`);
   redirect(`/clients/${clientId}`);
 }

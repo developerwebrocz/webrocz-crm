@@ -249,6 +249,7 @@ exports.Prisma.AssignmentScalarFieldEnum = {
 exports.Prisma.WorkUpdateScalarFieldEnum = {
   id: 'id',
   clientId: 'clientId',
+  clientLabel: 'clientLabel',
   userId: 'userId',
   date: 'date',
   workType: 'workType',

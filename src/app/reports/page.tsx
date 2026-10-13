@@ -39,7 +39,7 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
 
   const fmt = (d: Date) => new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short" });
   const exportRows = rows.map((r) => ({
-    date: fmt(r.date), client: r.client.name, workType: r.workType,
+    date: fmt(r.date), client: r.client?.name ?? (r.clientLabel || "—"), workType: r.workType,
     qty: r.quantity, status: WORK_STATUS[r.status as WorkStatus] ?? r.status,
     user: r.user.name, detail: r.keyword ? `${r.keyword} ${r.prevPosition}->${r.currPosition}` : (r.title ?? ""),
   }));
@@ -101,7 +101,7 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
               {rows.slice(0, 200).map((r) => (
                 <tr key={r.id} className="border-b border-[var(--line)]">
                   <td className="whitespace-nowrap px-4 py-2.5">{fmt(r.date)}</td>
-                  <td className="px-4 py-2.5 font-medium">{r.client.name}</td>
+                  <td className="px-4 py-2.5 font-medium">{r.client?.name ?? (r.clientLabel || "—")}</td>
                   <td className="px-4 py-2.5">{r.workType}</td>
                   <td className="px-4 py-2.5">{r.quantity}</td>
                   <td className="px-4 py-2.5">

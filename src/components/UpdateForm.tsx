@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { WORK_STATUS, WORK_TYPES } from "@/lib/domain";
+import { NAME_ONLY } from "@/lib/team-kinds";
 import { Eyebrow } from "./ui";
 
 type Opt = { id: string; name: string; code?: string };
@@ -33,9 +34,9 @@ function workDeptForRole(role?: string): string | null {
 }
 
 export default function UpdateForm({
-  clients, users, action, defaultClientId, today, currentUser, lockUser = false, role,
+  clients, names = [], users, action, defaultClientId, today, currentUser, lockUser = false, role,
 }: {
-  clients: Opt[]; users: Opt[]; action: (fd: FormData) => void; defaultClientId?: string; today: string;
+  clients: Opt[]; names?: string[]; users: Opt[]; action: (fd: FormData) => void; defaultClientId?: string; today: string;
   currentUser?: { id: string; name: string }; lockUser?: boolean; role?: string;
 }) {
   const dept = workDeptForRole(role);
@@ -50,7 +51,13 @@ export default function UpdateForm({
       <Field label="Client" required>
         <select name="clientId" required className="select" defaultValue={defaultClientId ?? ""}>
           <option value="">Select client</option>
-          {clients.map((c) => <option key={c.id} value={c.id}>{c.name}{c.code ? ` · ${c.code}` : ""}</option>)}
+          {names.length > 0 ? (
+            <>
+              {/* video team: the agency's own brands and the names the team added — not client records */}
+              <optgroup label="Our brands · added by the video team">{names.map((n) => <option key={n} value={NAME_ONLY + n}>{n}</option>)}</optgroup>
+              <optgroup label="Clients">{clients.map((c) => <option key={c.id} value={c.id}>{c.name}{c.code ? ` · ${c.code}` : ""}</option>)}</optgroup>
+            </>
+          ) : clients.map((c) => <option key={c.id} value={c.id}>{c.name}{c.code ? ` · ${c.code}` : ""}</option>)}
         </select>
       </Field>
       <Field label="Team member" required>

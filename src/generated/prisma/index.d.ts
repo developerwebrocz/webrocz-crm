@@ -16675,6 +16675,7 @@ export namespace Prisma {
   export type WorkUpdateMinAggregateOutputType = {
     id: string | null
     clientId: string | null
+    clientLabel: string | null
     userId: string | null
     date: Date | null
     workType: string | null
@@ -16694,6 +16695,7 @@ export namespace Prisma {
   export type WorkUpdateMaxAggregateOutputType = {
     id: string | null
     clientId: string | null
+    clientLabel: string | null
     userId: string | null
     date: Date | null
     workType: string | null
@@ -16713,6 +16715,7 @@ export namespace Prisma {
   export type WorkUpdateCountAggregateOutputType = {
     id: number
     clientId: number
+    clientLabel: number
     userId: number
     date: number
     workType: number
@@ -16746,6 +16749,7 @@ export namespace Prisma {
   export type WorkUpdateMinAggregateInputType = {
     id?: true
     clientId?: true
+    clientLabel?: true
     userId?: true
     date?: true
     workType?: true
@@ -16765,6 +16769,7 @@ export namespace Prisma {
   export type WorkUpdateMaxAggregateInputType = {
     id?: true
     clientId?: true
+    clientLabel?: true
     userId?: true
     date?: true
     workType?: true
@@ -16784,6 +16789,7 @@ export namespace Prisma {
   export type WorkUpdateCountAggregateInputType = {
     id?: true
     clientId?: true
+    clientLabel?: true
     userId?: true
     date?: true
     workType?: true
@@ -16889,7 +16895,8 @@ export namespace Prisma {
 
   export type WorkUpdateGroupByOutputType = {
     id: string
-    clientId: string
+    clientId: string | null
+    clientLabel: string
     userId: string
     date: Date
     workType: string
@@ -16928,6 +16935,7 @@ export namespace Prisma {
   export type WorkUpdateSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     clientId?: boolean
+    clientLabel?: boolean
     userId?: boolean
     date?: boolean
     workType?: boolean
@@ -16942,13 +16950,14 @@ export namespace Prisma {
     currPosition?: boolean
     followUpDate?: boolean
     createdAt?: boolean
-    client?: boolean | ClientDefaultArgs<ExtArgs>
+    client?: boolean | WorkUpdate$clientArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["workUpdate"]>
 
   export type WorkUpdateSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     clientId?: boolean
+    clientLabel?: boolean
     userId?: boolean
     date?: boolean
     workType?: boolean
@@ -16963,13 +16972,14 @@ export namespace Prisma {
     currPosition?: boolean
     followUpDate?: boolean
     createdAt?: boolean
-    client?: boolean | ClientDefaultArgs<ExtArgs>
+    client?: boolean | WorkUpdate$clientArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["workUpdate"]>
 
   export type WorkUpdateSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     clientId?: boolean
+    clientLabel?: boolean
     userId?: boolean
     date?: boolean
     workType?: boolean
@@ -16984,13 +16994,14 @@ export namespace Prisma {
     currPosition?: boolean
     followUpDate?: boolean
     createdAt?: boolean
-    client?: boolean | ClientDefaultArgs<ExtArgs>
+    client?: boolean | WorkUpdate$clientArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["workUpdate"]>
 
   export type WorkUpdateSelectScalar = {
     id?: boolean
     clientId?: boolean
+    clientLabel?: boolean
     userId?: boolean
     date?: boolean
     workType?: boolean
@@ -17007,29 +17018,30 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type WorkUpdateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "clientId" | "userId" | "date" | "workType" | "quantity" | "status" | "title" | "detail" | "proofLink" | "notes" | "keyword" | "prevPosition" | "currPosition" | "followUpDate" | "createdAt", ExtArgs["result"]["workUpdate"]>
+  export type WorkUpdateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "clientId" | "clientLabel" | "userId" | "date" | "workType" | "quantity" | "status" | "title" | "detail" | "proofLink" | "notes" | "keyword" | "prevPosition" | "currPosition" | "followUpDate" | "createdAt", ExtArgs["result"]["workUpdate"]>
   export type WorkUpdateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    client?: boolean | ClientDefaultArgs<ExtArgs>
+    client?: boolean | WorkUpdate$clientArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type WorkUpdateIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    client?: boolean | ClientDefaultArgs<ExtArgs>
+    client?: boolean | WorkUpdate$clientArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type WorkUpdateIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    client?: boolean | ClientDefaultArgs<ExtArgs>
+    client?: boolean | WorkUpdate$clientArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $WorkUpdatePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "WorkUpdate"
     objects: {
-      client: Prisma.$ClientPayload<ExtArgs>
+      client: Prisma.$ClientPayload<ExtArgs> | null
       user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      clientId: string
+      clientId: string | null
+      clientLabel: string
       userId: string
       date: Date
       workType: string
@@ -17438,7 +17450,7 @@ export namespace Prisma {
    */
   export interface Prisma__WorkUpdateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    client<T extends ClientDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClientDefaultArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    client<T extends WorkUpdate$clientArgs<ExtArgs> = {}>(args?: Subset<T, WorkUpdate$clientArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -17471,6 +17483,7 @@ export namespace Prisma {
   interface WorkUpdateFieldRefs {
     readonly id: FieldRef<"WorkUpdate", 'String'>
     readonly clientId: FieldRef<"WorkUpdate", 'String'>
+    readonly clientLabel: FieldRef<"WorkUpdate", 'String'>
     readonly userId: FieldRef<"WorkUpdate", 'String'>
     readonly date: FieldRef<"WorkUpdate", 'DateTime'>
     readonly workType: FieldRef<"WorkUpdate", 'String'>
@@ -17881,6 +17894,25 @@ export namespace Prisma {
      * Limit how many WorkUpdates to delete.
      */
     limit?: number
+  }
+
+  /**
+   * WorkUpdate.client
+   */
+  export type WorkUpdate$clientArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Client
+     */
+    select?: ClientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Client
+     */
+    omit?: ClientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientInclude<ExtArgs> | null
+    where?: ClientWhereInput
   }
 
   /**
@@ -55593,6 +55625,7 @@ export namespace Prisma {
   export const WorkUpdateScalarFieldEnum: {
     id: 'id',
     clientId: 'clientId',
+    clientLabel: 'clientLabel',
     userId: 'userId',
     date: 'date',
     workType: 'workType',
@@ -57185,7 +57218,8 @@ export namespace Prisma {
     OR?: WorkUpdateWhereInput[]
     NOT?: WorkUpdateWhereInput | WorkUpdateWhereInput[]
     id?: StringFilter<"WorkUpdate"> | string
-    clientId?: StringFilter<"WorkUpdate"> | string
+    clientId?: StringNullableFilter<"WorkUpdate"> | string | null
+    clientLabel?: StringFilter<"WorkUpdate"> | string
     userId?: StringFilter<"WorkUpdate"> | string
     date?: DateTimeFilter<"WorkUpdate"> | Date | string
     workType?: StringFilter<"WorkUpdate"> | string
@@ -57200,13 +57234,14 @@ export namespace Prisma {
     currPosition?: IntNullableFilter<"WorkUpdate"> | number | null
     followUpDate?: DateTimeNullableFilter<"WorkUpdate"> | Date | string | null
     createdAt?: DateTimeFilter<"WorkUpdate"> | Date | string
-    client?: XOR<ClientScalarRelationFilter, ClientWhereInput>
+    client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type WorkUpdateOrderByWithRelationInput = {
     id?: SortOrder
-    clientId?: SortOrder
+    clientId?: SortOrderInput | SortOrder
+    clientLabel?: SortOrder
     userId?: SortOrder
     date?: SortOrder
     workType?: SortOrder
@@ -57230,7 +57265,8 @@ export namespace Prisma {
     AND?: WorkUpdateWhereInput | WorkUpdateWhereInput[]
     OR?: WorkUpdateWhereInput[]
     NOT?: WorkUpdateWhereInput | WorkUpdateWhereInput[]
-    clientId?: StringFilter<"WorkUpdate"> | string
+    clientId?: StringNullableFilter<"WorkUpdate"> | string | null
+    clientLabel?: StringFilter<"WorkUpdate"> | string
     userId?: StringFilter<"WorkUpdate"> | string
     date?: DateTimeFilter<"WorkUpdate"> | Date | string
     workType?: StringFilter<"WorkUpdate"> | string
@@ -57245,13 +57281,14 @@ export namespace Prisma {
     currPosition?: IntNullableFilter<"WorkUpdate"> | number | null
     followUpDate?: DateTimeNullableFilter<"WorkUpdate"> | Date | string | null
     createdAt?: DateTimeFilter<"WorkUpdate"> | Date | string
-    client?: XOR<ClientScalarRelationFilter, ClientWhereInput>
+    client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
   export type WorkUpdateOrderByWithAggregationInput = {
     id?: SortOrder
-    clientId?: SortOrder
+    clientId?: SortOrderInput | SortOrder
+    clientLabel?: SortOrder
     userId?: SortOrder
     date?: SortOrder
     workType?: SortOrder
@@ -57278,7 +57315,8 @@ export namespace Prisma {
     OR?: WorkUpdateScalarWhereWithAggregatesInput[]
     NOT?: WorkUpdateScalarWhereWithAggregatesInput | WorkUpdateScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"WorkUpdate"> | string
-    clientId?: StringWithAggregatesFilter<"WorkUpdate"> | string
+    clientId?: StringNullableWithAggregatesFilter<"WorkUpdate"> | string | null
+    clientLabel?: StringWithAggregatesFilter<"WorkUpdate"> | string
     userId?: StringWithAggregatesFilter<"WorkUpdate"> | string
     date?: DateTimeWithAggregatesFilter<"WorkUpdate"> | Date | string
     workType?: StringWithAggregatesFilter<"WorkUpdate"> | string
@@ -61414,6 +61452,7 @@ export namespace Prisma {
 
   export type WorkUpdateCreateInput = {
     id?: string
+    clientLabel?: string
     date?: Date | string
     workType: string
     quantity?: number
@@ -61427,13 +61466,14 @@ export namespace Prisma {
     currPosition?: number | null
     followUpDate?: Date | string | null
     createdAt?: Date | string
-    client: ClientCreateNestedOneWithoutUpdatesInput
+    client?: ClientCreateNestedOneWithoutUpdatesInput
     user: UserCreateNestedOneWithoutUpdatesInput
   }
 
   export type WorkUpdateUncheckedCreateInput = {
     id?: string
-    clientId: string
+    clientId?: string | null
+    clientLabel?: string
     userId: string
     date?: Date | string
     workType: string
@@ -61452,6 +61492,7 @@ export namespace Prisma {
 
   export type WorkUpdateUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientLabel?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     workType?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
@@ -61465,13 +61506,14 @@ export namespace Prisma {
     currPosition?: NullableIntFieldUpdateOperationsInput | number | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    client?: ClientUpdateOneRequiredWithoutUpdatesNestedInput
+    client?: ClientUpdateOneWithoutUpdatesNestedInput
     user?: UserUpdateOneRequiredWithoutUpdatesNestedInput
   }
 
   export type WorkUpdateUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientId?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientLabel?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     workType?: StringFieldUpdateOperationsInput | string
@@ -61490,7 +61532,8 @@ export namespace Prisma {
 
   export type WorkUpdateCreateManyInput = {
     id?: string
-    clientId: string
+    clientId?: string | null
+    clientLabel?: string
     userId: string
     date?: Date | string
     workType: string
@@ -61509,6 +61552,7 @@ export namespace Prisma {
 
   export type WorkUpdateUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientLabel?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     workType?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
@@ -61526,7 +61570,8 @@ export namespace Prisma {
 
   export type WorkUpdateUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientId?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientLabel?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     workType?: StringFieldUpdateOperationsInput | string
@@ -66007,6 +66052,7 @@ export namespace Prisma {
   export type WorkUpdateCountOrderByAggregateInput = {
     id?: SortOrder
     clientId?: SortOrder
+    clientLabel?: SortOrder
     userId?: SortOrder
     date?: SortOrder
     workType?: SortOrder
@@ -66032,6 +66078,7 @@ export namespace Prisma {
   export type WorkUpdateMaxOrderByAggregateInput = {
     id?: SortOrder
     clientId?: SortOrder
+    clientLabel?: SortOrder
     userId?: SortOrder
     date?: SortOrder
     workType?: SortOrder
@@ -66051,6 +66098,7 @@ export namespace Prisma {
   export type WorkUpdateMinOrderByAggregateInput = {
     id?: SortOrder
     clientId?: SortOrder
+    clientLabel?: SortOrder
     userId?: SortOrder
     date?: SortOrder
     workType?: SortOrder
@@ -69830,10 +69878,12 @@ export namespace Prisma {
     divide?: number
   }
 
-  export type ClientUpdateOneRequiredWithoutUpdatesNestedInput = {
+  export type ClientUpdateOneWithoutUpdatesNestedInput = {
     create?: XOR<ClientCreateWithoutUpdatesInput, ClientUncheckedCreateWithoutUpdatesInput>
     connectOrCreate?: ClientCreateOrConnectWithoutUpdatesInput
     upsert?: ClientUpsertWithoutUpdatesInput
+    disconnect?: ClientWhereInput | boolean
+    delete?: ClientWhereInput | boolean
     connect?: ClientWhereUniqueInput
     update?: XOR<XOR<ClientUpdateToOneWithWhereWithoutUpdatesInput, ClientUpdateWithoutUpdatesInput>, ClientUncheckedUpdateWithoutUpdatesInput>
   }
@@ -71125,6 +71175,7 @@ export namespace Prisma {
 
   export type WorkUpdateCreateWithoutUserInput = {
     id?: string
+    clientLabel?: string
     date?: Date | string
     workType: string
     quantity?: number
@@ -71138,12 +71189,13 @@ export namespace Prisma {
     currPosition?: number | null
     followUpDate?: Date | string | null
     createdAt?: Date | string
-    client: ClientCreateNestedOneWithoutUpdatesInput
+    client?: ClientCreateNestedOneWithoutUpdatesInput
   }
 
   export type WorkUpdateUncheckedCreateWithoutUserInput = {
     id?: string
-    clientId: string
+    clientId?: string | null
+    clientLabel?: string
     date?: Date | string
     workType: string
     quantity?: number
@@ -71815,7 +71867,8 @@ export namespace Prisma {
     OR?: WorkUpdateScalarWhereInput[]
     NOT?: WorkUpdateScalarWhereInput | WorkUpdateScalarWhereInput[]
     id?: StringFilter<"WorkUpdate"> | string
-    clientId?: StringFilter<"WorkUpdate"> | string
+    clientId?: StringNullableFilter<"WorkUpdate"> | string | null
+    clientLabel?: StringFilter<"WorkUpdate"> | string
     userId?: StringFilter<"WorkUpdate"> | string
     date?: DateTimeFilter<"WorkUpdate"> | Date | string
     workType?: StringFilter<"WorkUpdate"> | string
@@ -73090,6 +73143,7 @@ export namespace Prisma {
 
   export type WorkUpdateCreateWithoutClientInput = {
     id?: string
+    clientLabel?: string
     date?: Date | string
     workType: string
     quantity?: number
@@ -73108,6 +73162,7 @@ export namespace Prisma {
 
   export type WorkUpdateUncheckedCreateWithoutClientInput = {
     id?: string
+    clientLabel?: string
     userId: string
     date?: Date | string
     workType: string
@@ -84700,7 +84755,8 @@ export namespace Prisma {
 
   export type WorkUpdateCreateManyUserInput = {
     id?: string
-    clientId: string
+    clientId?: string | null
+    clientLabel?: string
     date?: Date | string
     workType: string
     quantity?: number
@@ -85134,6 +85190,7 @@ export namespace Prisma {
 
   export type WorkUpdateUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientLabel?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     workType?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
@@ -85147,12 +85204,13 @@ export namespace Prisma {
     currPosition?: NullableIntFieldUpdateOperationsInput | number | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    client?: ClientUpdateOneRequiredWithoutUpdatesNestedInput
+    client?: ClientUpdateOneWithoutUpdatesNestedInput
   }
 
   export type WorkUpdateUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientId?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientLabel?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     workType?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
@@ -85170,7 +85228,8 @@ export namespace Prisma {
 
   export type WorkUpdateUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientId?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientLabel?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     workType?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
@@ -85850,6 +85909,7 @@ export namespace Prisma {
 
   export type WorkUpdateCreateManyClientInput = {
     id?: string
+    clientLabel?: string
     userId: string
     date?: Date | string
     workType: string
@@ -86249,6 +86309,7 @@ export namespace Prisma {
 
   export type WorkUpdateUpdateWithoutClientInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientLabel?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     workType?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
@@ -86267,6 +86328,7 @@ export namespace Prisma {
 
   export type WorkUpdateUncheckedUpdateWithoutClientInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientLabel?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     workType?: StringFieldUpdateOperationsInput | string
@@ -86285,6 +86347,7 @@ export namespace Prisma {
 
   export type WorkUpdateUncheckedUpdateManyWithoutClientInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientLabel?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     workType?: StringFieldUpdateOperationsInput | string

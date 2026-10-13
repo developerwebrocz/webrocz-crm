@@ -231,19 +231,22 @@ model Assignment {
 
 // Activity log — every unit of work, dated. Drives targets/reports.
 model WorkUpdate {
-  id        String   @id @default(cuid())
-  clientId  String
-  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  date      DateTime @default(now())
-  workType  String // blog | keyword | static | carousel | reel | aiVideo | reelEdit | meeting | ...
-  quantity  Int      @default(1)
-  status    String   @default("COMPLETED") // PLANNED | IN_PROGRESS | COMPLETED | APPROVED | PENDING_APPROVAL
-  title     String?
-  detail    String?
-  proofLink String?
-  notes     String?
+  id          String   @id @default(cuid())
+  // No client record = the video team's own work for one of the agency's brands (or a name the
+  // team added): the name is kept in clientLabel.
+  clientId    String?
+  client      Client?  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientLabel String   @default("")
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  date        DateTime @default(now())
+  workType    String // blog | keyword | static | carousel | reel | aiVideo | reelEdit | meeting | ...
+  quantity    Int      @default(1)
+  status      String   @default("COMPLETED") // PLANNED | IN_PROGRESS | COMPLETED | APPROVED | PENDING_APPROVAL
+  title       String?
+  detail      String?
+  proofLink   String?
+  notes       String?
 
   // SEO-specific ranking fields
   keyword      String?

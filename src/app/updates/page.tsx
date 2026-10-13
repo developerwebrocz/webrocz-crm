@@ -1,5 +1,6 @@
 import { getClientOptions, getUsers, getReport, workScopeFor } from "@/lib/queries";
 import { ownClientsOf } from "@/lib/am-scope";
+import { getVideoTeamNames } from "@/lib/video-job-queries";
 import { now } from "@/lib/period";
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -19,11 +20,15 @@ export default async function UpdatesPage({ searchParams }: PageProps<"/updates"
   const isAdmin = user.role === "SUPER_ADMIN" || user.role === "SUB_ADMIN";
   // The activity feed is scoped: employee → own, head → their team, admin → all.
   const scope = workScopeFor(user.role, user.id);
-  const [clients, users, report] = await Promise.all([
+  const [clients, users, report, teamNames] = await Promise.all([
     getClientOptions(ownClientsOf(user)), // an account manager picks from their own clients
     isAdmin ? getUsers() : Promise.resolve([]),
     getReport("today", scope),
+    // video editors also log work for the agency's own brands and the names their team added
+    user.role === "EDITOR" ? getVideoTeamNames() : Promise.resolve([] as string[]),
   ]);
+  const taken = new Set(clients.map((c) => c.name.trim().toLowerCase()));
+  const names = teamNames.filter((n) => !taken.has(n.toLowerCase()));
   // Match the report's "today" window (respects DEMO_DATE) so a saved update counts immediately.
   const today = `${now().getFullYear()}-${String(now().getMonth() + 1).padStart(2, "0")}-${String(now().getDate()).padStart(2, "0")}`;
 
@@ -48,6 +53,7 @@ export default async function UpdatesPage({ searchParams }: PageProps<"/updates"
       <div className="lg:col-span-2 space-y-4">
         <UpdateForm
           clients={clients}
+          names={names}
           users={users.map((u) => ({ id: u.id, name: u.name }))}
           action={createUpdate}
           defaultClientId={clientId}
@@ -68,7 +74,7 @@ export default async function UpdatesPage({ searchParams }: PageProps<"/updates"
                   {WORK_STATUS[r.status as keyof typeof WORK_STATUS] ?? r.status}
                 </span>
                 <div className="min-w-0">
-                  <div className="truncate font-medium">{r.client.name}</div>
+                  <div className="truncate font-medium">{r.client?.name ?? (r.clientLabel || "—")}</div>
                   <div className="eyebrow">{r.workType} · {r.user.name}</div>
                 </div>
               </div>

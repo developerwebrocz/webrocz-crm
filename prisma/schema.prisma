@@ -232,8 +232,11 @@ model Assignment {
 // Activity log — every unit of work, dated. Drives targets/reports.
 model WorkUpdate {
   id       String   @id @default(cuid())
-  clientId String
-  client   Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  // No client record = the video team's own work for one of the agency's brands (or a name the
+  // team added): the name is kept in clientLabel.
+  clientId String?
+  client   Client?  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientLabel String @default("")
   userId   String
   user     User     @relation(fields: [userId], references: [id])
   date     DateTime @default(now())
