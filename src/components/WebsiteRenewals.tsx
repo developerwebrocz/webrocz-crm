@@ -14,7 +14,7 @@ const todayISO = () => new Date().toISOString().slice(0, 10);
 type Row = {
   id: string; code: string; name: string; phone: string; email: string; status: string;
   websiteName: string; domain: string; domainTaken: boolean; hostingTaken: boolean; services: string[]; takenDate: string; expiryDate: string;
-  renewAmount: number; daysToExpiry: number | null; expiring: boolean; expired: boolean; hasWebsite: boolean; detailsFilled: boolean; isWebsiteClient: boolean; websiteGst: boolean; websiteNoGst: boolean;
+  renewAmount: number; nextFollowup?: string; daysToExpiry: number | null; expiring: boolean; expired: boolean; hasWebsite: boolean; detailsFilled: boolean; isWebsiteClient: boolean; websiteGst: boolean; websiteNoGst: boolean;
 };
 type Counts = { all: number; tracked: number; hosting: number; expiring: number; expired: number };
 type Totals = { renewDue: number; renewAll: number };
@@ -140,6 +140,7 @@ export default function WebsiteRenewals({ rows, counts, totals, embedded, locked
                   </td>
                   <td className="px-5 py-3">
                     <button onClick={() => setFuRow(r)} className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><MessageSquarePlus size={13} /> Follow-up</button>
+                    {r.nextFollowup && <div className="mt-1 whitespace-nowrap text-[11px] font-bold text-[var(--rose)] tnum">next follow-up {fmtDate(r.nextFollowup)}</div>}
                   </td>
                 </tr>
                 );

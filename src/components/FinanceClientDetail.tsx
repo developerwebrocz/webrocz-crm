@@ -12,6 +12,7 @@ import AddWebRoczInvoiceModal from "@/components/AddWebRoczInvoiceModal";
 import WebRoczClientCard from "@/components/WebRoczClientCard";
 import WebRoczPvtClientCard from "@/components/WebRoczPvtClientCard";
 import ClientFollowupChannels, { latestFollowup, followupWhen } from "@/components/ClientFollowupChannels";
+import { chosenClientFollowup } from "@/lib/followup-shown";
 import ClientImportantNotes, { parseImportantNotes } from "@/components/ClientImportantNotes";
 import { todayIST } from "@/lib/india-date";
 import { BackButton } from "@/components/NavTrail";
@@ -325,6 +326,7 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
         <div className="flex items-center justify-between border-b border-[var(--line)] px-5 py-3">
           <h2 className="flex items-center gap-1.5 text-[14px] font-bold"><MessageSquarePlus size={15} className="text-[var(--violet)]" /> Follow-ups ({clientFollowups.length})</h2>
           {(() => { const last = latestFollowup(clientFollowups); return last ? <span className="inline-flex items-center gap-1 text-[12px] font-semibold text-[var(--muted)]"><CalendarClock size={13} /> Last follow-up: <span className="tnum text-[var(--ink-2)]">{followupWhen(last)}</span></span> : null; })()}
+          {(() => { const next = chosenClientFollowup((client as { nextFollowup?: string }).nextFollowup, clientFollowups); return next ? <span className="whitespace-nowrap text-[12.5px] font-bold text-[var(--rose)] tnum">Next follow-up: {fmtDate(next)}</span> : null; })()}
         </div>
         {/* Phone and WhatsApp follow-ups are logged and listed separately. */}
         <div className="space-y-4 p-5">

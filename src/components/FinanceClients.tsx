@@ -251,6 +251,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
                       <Link href={companySel !== "ALL" ? `/accounts/${r.id}?company=${companySel}` : `/accounts/${r.id}`} prefetch title="Edit info & invoices" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><Pencil size={13} /> Edit</Link>
                       {canDelete && <button onClick={() => setDelRow(r)} title="Delete client" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--rose)] hover:bg-[color-mix(in_srgb,var(--rose)_10%,white)]"><Trash2 size={13} /> Delete</button>}
                     </div>
+                    {r.nextFollowup && <div className="mt-1 whitespace-nowrap text-[11px] font-bold text-[var(--rose)] tnum">next follow-up {fmtDate(r.nextFollowup)}</div>}
                   </td>
                 </tr>
               ))}
@@ -418,7 +419,7 @@ function FollowupModal({ r, close }: { r: Row; close: () => void }) {
       <div className="flex max-h-[92vh] w-full max-w-[860px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
           <div>
-            <h2 className="text-[16px] font-bold">Follow-up · {r.name}</h2>
+            <h2 className="text-[16px] font-bold">Follow-up · {r.name}{r.nextFollowup && <span className="ml-2 whitespace-nowrap text-[12.5px] font-bold text-[var(--rose)] tnum">next follow-up {fmtDate(r.nextFollowup)}</span>}</h2>
             <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">{r.clientFollowups.length} client follow-up{r.clientFollowups.length === 1 ? "" : "s"}{(() => { const last = latestFollowup(r.clientFollowups); return last ? ` · last ${followupWhen(last)}` : ""; })()}</p>
           </div>
           <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>

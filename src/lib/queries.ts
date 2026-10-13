@@ -2188,7 +2188,7 @@ export async function getFinanceClients() {
   const today = salesToday();
   const [clients, invoices, leads, amUsers, slaDocs] = await Promise.all([
     prisma.client.findMany({ orderBy: { name: "asc" }, select: { id: true, code: true, name: true, billingCompany: true, billingDay: true, websiteDomain: true, website: true, pocName: true, pocMobile: true, pocEmail: true, monthlyRetainer: true, status: true, followupLog: true, nextFollowup: true, accountManager: { select: { name: true } }, services: { select: { service: true, detail: true } } } }),
-    prisma.salesInvoice.findMany({ orderBy: { createdAt: "desc" }, select: { id: true, number: true, clientId: true, billTo: true, total: true, received: true, issueDate: true, dueDate: true, leadId: true, items: true, notesLog: true, company: true, taxPct: true } }),
+    prisma.salesInvoice.findMany({ orderBy: { createdAt: "desc" }, select: { id: true, number: true, clientId: true, billTo: true, nextFollowup: true, total: true, received: true, issueDate: true, dueDate: true, leadId: true, items: true, notesLog: true, company: true, taxPct: true } }),
     prisma.lead.findMany({ select: { id: true, services: true } }),
     prisma.user.findMany({ where: { active: true, role: { in: ["ACCOUNT_MANAGER", "AM_HEAD", "DM_EXEC"] } }, orderBy: { name: "asc" }, select: { id: true, name: true } }),
     prisma.sla.findMany({ where: { fileUrl: { not: "" } }, orderBy: { createdAt: "desc" }, select: { clientId: true, clientName: true, fileUrl: true, title: true, uploadedBy: true, status: true } }),
@@ -2214,9 +2214,13 @@ export async function getFinanceClients() {
   const outstandingByClient = new Map<string, { id: string; number: string }>();  // most recent outstanding invoice
   const lastDateByClient = new Map<string, string>();                             // latest invoice issue date
   const companiesByClient = new Map<string, Set<string>>();                       // billing entities used
+  // a follow-up date still kept on one of the client's invoices (set before dates moved to the client)
+  const invoiceNextByClient = new Map<string, string>();
   for (const inv of invoices) { // ordered createdAt desc → first seen is most recent
     const cid = inv.clientId || nameToId.get((inv.billTo || "").trim().toLowerCase());
     if (!cid) continue;
+    const ownNext = chosenInvoiceFollowup(inv.nextFollowup, parseNotes(inv.notesLog));
+    if (ownNext && (!invoiceNextByClient.get(cid) || ownNext < invoiceNextByClient.get(cid)!)) invoiceNextByClient.set(cid, ownNext);
     const bal = inv.total - inv.received;
     const due = dueOf(inv);
     const cat = catOfInvoice(inv, leadSvc);
@@ -2256,7 +2260,8 @@ export async function getFinanceClients() {
       // invoice yet still shows in that company's list)
       companies: [...new Set([...(companiesByClient.get(c.id) ?? []), ...(c.billingCompany ? [c.billingCompany] : [])])],
       clientFollowups: clientFollowups.sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 30),
-      nextFollowup: c.nextFollowup ?? "",
+      // the client's next follow-up — only a date somebody chose
+      nextFollowup: chosenClientFollowup(c.nextFollowup, clientFollowups) || invoiceNextByClient.get(c.id) || "",
       notes, noteTarget: outstandingByClient.get(c.id) ?? recentByClient.get(c.id) ?? null,
     };
   });
@@ -2454,7 +2459,7 @@ export async function getWebsiteRenewals() {
   const [clients, invoices, leads] = await Promise.all([
     prisma.client.findMany({
       orderBy: { name: "asc" },
-      select: { id: true, code: true, name: true, pocMobile: true, pocEmail: true, status: true, website: true, websiteName: true, websiteDomain: true, websiteServices: true, domainTaken: true, hostingTaken: true, websiteTakenDate: true, websiteExpiryDate: true, websiteRenewAmount: true, gstApplicable: true },
+      select: { id: true, code: true, name: true, pocMobile: true, pocEmail: true, status: true, website: true, websiteName: true, websiteDomain: true, websiteServices: true, domainTaken: true, hostingTaken: true, websiteTakenDate: true, websiteExpiryDate: true, websiteRenewAmount: true, gstApplicable: true, nextFollowup: true, followupLog: true },
     }),
     prisma.salesInvoice.findMany({ select: { clientId: true, billTo: true, items: true, leadId: true, company: true, taxPct: true } }),
     prisma.lead.findMany({ select: { id: true, services: true } }),
@@ -2499,6 +2504,7 @@ export async function getWebsiteRenewals() {
       status: c.status, websiteName: c.websiteName || "", domain,
       domainTaken: c.domainTaken, hostingTaken: c.hostingTaken, services: servicesOf(c), takenDate: c.websiteTakenDate || "", expiryDate: expiry,
       renewAmount: c.websiteRenewAmount || 0,
+      nextFollowup: chosenClientFollowup(c.nextFollowup, parseNotes(c.followupLog)),
       daysToExpiry, expiring, expired, hasWebsite, detailsFilled, isWebsiteClient, websiteGst, websiteNoGst,
     };
   });
