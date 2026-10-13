@@ -19,7 +19,7 @@ export default function WebRoczPvtFollowupModal({ clientId, name, close }: { cli
   // After saving, come back to the invoices list the popup was opened from.
   const here = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/invoices?company=WEB_ROCZ_PVT";
   return (
-    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
+    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }}>
       <div className="flex max-h-[92vh] w-full max-w-[860px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
           <div>
