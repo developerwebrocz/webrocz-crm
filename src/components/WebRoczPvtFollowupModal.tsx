@@ -29,7 +29,7 @@ export default function WebRoczPvtFollowupModal({ clientId, name, close }: { cli
           <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
         </div>
         <div className="overflow-y-auto scroll-thin px-6 py-4">
-          <ClientFollowupChannels clientId={clientId} returnTo={here} followups={followups ?? []} stay onSaved={() => setReload((n) => n + 1)} />
+          <ClientFollowupChannels clientId={clientId} returnTo={here} followups={followups ?? []} stay askNext onSaved={() => setReload((n) => n + 1)} />
         </div>
         <div className="flex justify-end border-t border-[var(--line)] px-6 py-3"><button type="button" onClick={close} className="btn btn-ghost">Close</button></div>
       </div>

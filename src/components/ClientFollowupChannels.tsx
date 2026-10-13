@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Phone, MessageCircle, MessageSquarePlus, CheckCircle2 } from "lucide-react";
+import { Phone, MessageCircle, MessageSquarePlus, CheckCircle2, BellRing } from "lucide-react";
 import { logClientFollowup } from "@/app/actions";
 
 // Client follow-ups kept separately by how the client was reached: Phone and WhatsApp.
@@ -35,11 +35,19 @@ const CHANNELS = [
 // `stay` (the Follow-up popups): saving does not leave the popup — the note box is cleared, the
 // date and time are set to now again, and the new follow-up shows in the list below; the popup
 // closes only with its Close button. `onSaved` lets a popup that loads its own list reload it.
-export default function ClientFollowupChannels({ clientId, returnTo, followups, action = logClientFollowup, stay = false, onSaved }: { clientId: string; returnTo: string; followups: ClientFollowup[]; action?: (fd: FormData) => void | Promise<void>; stay?: boolean; onSaved?: () => void }) {
+// `askNext` (accounts): the form also asks "Follow up again on" — tomorrow, or any date. That
+// date is the client's reminder: it shows in Payment Reminders on that day.
+export default function ClientFollowupChannels({ clientId, returnTo, followups, action = logClientFollowup, stay = false, onSaved, askNext = false }: { clientId: string; returnTo: string; followups: ClientFollowup[]; action?: (fd: FormData) => void | Promise<void>; stay?: boolean; onSaved?: () => void; askNext?: boolean }) {
+  // "Follow up again on" per side, and the date the last save set a reminder for
+  const [nextOn, setNextOn] = useState<Record<string, string>>({});
+  const [remindSet, setRemindSet] = useState<Record<string, string>>({});
+  const isoIn = (days: number) => { const d = new Date(); d.setDate(d.getDate() + days); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
   // per side (Phone / WhatsApp): how many were saved while the popup is open
   const [savedCount, setSavedCount] = useState<Record<string, number>>({});
   const save = (key: string) => async (fd: FormData) => {
     await action(fd);
+    setRemindSet((c) => ({ ...c, [key]: String(fd.get("next") ?? "") }));
+    setNextOn((c) => ({ ...c, [key]: "" }));
     setSavedCount((c) => ({ ...c, [key]: (c[key] ?? 0) + 1 }));
     onSaved?.();
   };
@@ -88,8 +96,20 @@ export default function ClientFollowupChannels({ clientId, returnTo, followups, 
                   <label className="block"><span className={lbl}>Follow-up date</span><input ref={fillToday} name="date" type="date" className="input mt-1.5 !text-[13.5px]" /></label>
                   <label className="block"><span className={lbl}>Follow-up time</span><input ref={fillNow} name="time" type="time" className="input mt-1.5 !text-[13.5px]" /></label>
                 </div>
+                {askNext && (
+                  <div className="rounded-[10px] border border-dashed border-[var(--line-2)] bg-[var(--surface-2)] p-2.5">
+                    <div className="flex items-center gap-1.5 text-[12.5px] font-semibold text-[var(--ink-2)]"><BellRing size={13} style={{ color: "#92600a" }} /> Follow up again on <span className="font-normal text-[var(--muted)]">· adds it to Payment Reminders</span></div>
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                      {[{ l: "Tomorrow", d: isoIn(1) }, { l: "In 3 days", d: isoIn(3) }, { l: "Next week", d: isoIn(7) }].map((q) => {
+                        const on = (nextOn[key] ?? "") === q.d;
+                        return <button key={q.l} type="button" onClick={() => setNextOn((c) => ({ ...c, [key]: on ? "" : q.d }))} className="rounded-full border px-2.5 py-1 text-[12px] font-semibold" style={{ borderColor: on ? color : "var(--line-2)", background: on ? `color-mix(in srgb, ${color} 10%, white)` : "var(--surface)", color: on ? color : "var(--ink-2)" }}>{q.l}</button>;
+                      })}
+                      <input name="next" type="date" min={isoIn(0)} value={nextOn[key] ?? ""} onChange={(e) => setNextOn((c) => ({ ...c, [key]: e.target.value }))} className="input !w-auto !py-1 !text-[12.5px]" title="Or pick any date" />
+                    </div>
+                  </div>
+                )}
                 <div className="flex items-center justify-end gap-3">
-                  {stay && (savedCount[key] ?? 0) > 0 && <span className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--emerald)]"><CheckCircle2 size={14} /> Saved</span>}
+                  {stay && (savedCount[key] ?? 0) > 0 && <span className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--emerald)]"><CheckCircle2 size={14} /> Saved{remindSet[key] ? ` · reminder set for ${fmtDate(remindSet[key])}` : ""}</span>}
                   <button type="submit" className="btn justify-center whitespace-nowrap px-6 text-white" style={{ background: color }}><MessageSquarePlus size={15} /> Save follow-up</button>
                 </div>
               </form>
@@ -125,6 +145,7 @@ function Entry({ n }: { n: ClientFollowup }) {
         <span className="min-w-0 truncate text-[var(--muted)]">{n.by || "—"}</span>
       </div>
       <div className="mt-1.5 whitespace-pre-wrap text-[13px] leading-relaxed text-[var(--ink)]">{n.note}</div>
+      {n.next && <div className="mt-1 inline-flex items-center gap-1 text-[11.5px] font-semibold" style={{ color: "#92600a" }}><BellRing size={11} /> follow up again {fmtDate(n.next)}</div>}
     </div>
   );
 }

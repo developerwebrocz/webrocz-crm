@@ -6,6 +6,7 @@ import { ROLES } from "@/lib/domain";
 import { addClientFromFinance } from "@/app/actions";
 import { downloadCsv } from "@/lib/csv";
 import PaymentReminders from "@/components/PaymentReminders";
+import type { PaymentReminder } from "@/lib/payment-reminders";
 import { ReceiptText, Wallet, Globe, Search, Phone, Mail, TrendingUp, X, IndianRupee, UserPlus, CheckCircle2, Users, ChevronLeft, ChevronRight, Download } from "lucide-react";
 
 const PAGE_SIZE = 10;
@@ -23,7 +24,7 @@ type Aging = { current: number; d30: number; d60: number; d90: number; d90plus: 
 // Where a client name / Pay button should take you: the client's finance page (deep-open Pay if given).
 const clientHref = (r: Inv, pay = false) => r.clientId ? `/accounts/${r.clientId}${pay ? `?pay=${r.id}` : ""}` : `/invoices/${r.id}`;
 
-export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, employees, aging, userName }: { totals: any; invoiceRows: Inv[]; monthlyRows: MonthRow[]; employees: Emp[]; aging: Aging; userName: string }) {
+export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, employees, aging, userName, reminders = [] }: { totals: any; invoiceRows: Inv[]; monthlyRows: MonthRow[]; employees: Emp[]; aging: Aging; userName: string; reminders?: PaymentReminder[] }) {
   const [tab, setTab] = useState<"invoices" | "monthly" | "employees">("invoices");
   const [cat, setCat] = useState("ALL");
   // Starts on invoices with payment still pending; a fully paid invoice leaves this view (it is
@@ -100,8 +101,8 @@ export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, 
         </div>
       </div>
 
-      {/* reminder pipeline: who to remind for payment, and when */}
-      <PaymentReminders rows={invoiceRows} />
+      {/* reminder pipeline: the follow-ups the accountant set, by their date */}
+      <PaymentReminders rows={reminders} />
 
       {/* finance KPIs */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">

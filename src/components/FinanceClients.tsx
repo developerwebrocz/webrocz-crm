@@ -426,7 +426,7 @@ function FollowupModal({ r, close }: { r: Row; close: () => void }) {
 
         {/* Phone and WhatsApp follow-ups are logged and listed separately. */}
         <div className="space-y-4 overflow-y-auto scroll-thin px-6 py-4">
-          <ClientFollowupChannels clientId={r.id} returnTo={here} followups={r.clientFollowups} stay />
+          <ClientFollowupChannels clientId={r.id} returnTo={here} followups={r.clientFollowups} stay askNext />
           {r.notes.length > 0 && (
             <div>
               <div className="mb-1 text-[11px] font-bold uppercase tracking-wide text-[var(--faint)]">On invoices</div>

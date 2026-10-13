@@ -888,6 +888,7 @@ export async function logClientFollowup(fd: FormData) {
   await prisma.client.update({ where: { id }, data: { followupLog: JSON.stringify(log), nextFollowup: next || undefined } });
   revalidatePath("/accounts");
   revalidatePath(`/accounts/${id}`);
+  if (next) { revalidatePath("/reminders"); revalidatePath("/"); }
   // The Follow-up popup stays open after a save (it is closed with its Close button): no
   // redirect then — the page it sits on is refreshed in place and shows the new follow-up.
   if (s(fd, "stay") === "1") { revalidatePath(back.split("?")[0]); return; }

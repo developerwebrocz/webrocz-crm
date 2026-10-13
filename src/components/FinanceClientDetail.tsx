@@ -328,7 +328,7 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
         </div>
         {/* Phone and WhatsApp follow-ups are logged and listed separately. */}
         <div className="space-y-4 p-5">
-          <ClientFollowupChannels clientId={client.id} returnTo={backUrl} followups={clientFollowups} />
+          <ClientFollowupChannels clientId={client.id} returnTo={backUrl} followups={clientFollowups} askNext />
           {invoices.some((i) => i.followups.length > 0) && (
             <div>
               <div className="mb-1 text-[11px] font-bold uppercase tracking-wide text-[var(--faint)]">On invoices</div>

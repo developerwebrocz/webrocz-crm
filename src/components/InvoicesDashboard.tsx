@@ -14,7 +14,6 @@ import WebRoczPvtInvoiceGroups from "@/components/WebRoczPvtInvoiceGroups";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmtD = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
-const todayISO = () => new Date().toISOString().slice(0, 10);
 
 // Default = invoices with payment pending. A fully paid invoice drops off this list and stays
 // on its client's page; "All invoices" / "Fully paid" bring them back here when needed.
@@ -211,7 +210,7 @@ function InvoiceFollowupModal({ inv, close }: { inv: any; close: () => void }) {
           <input type="hidden" name="invoiceId" value={inv.id} />
           <input type="hidden" name="leadId" value={inv.leadId ?? ""} />
           <label className="block"><span className="eyebrow">Add follow-up note</span><textarea name="note" required rows={2} className="input mt-1" placeholder="e.g. Called client, will pay by 25th" /></label>
-          <label className="block"><span className="eyebrow">Next follow-up</span><input name="nextFollowup" type="date" defaultValue={inv.nextFollowup || todayISO()} className="input mt-1" /></label>
+          <label className="block"><span className="eyebrow">Follow up again on <span className="font-normal normal-case tracking-normal text-[var(--muted)]">· adds it to Payment Reminders</span></span><input name="nextFollowup" type="date" defaultValue={inv.nextFollowup || ""} className="input mt-1" /></label>
           <div className="flex items-center justify-end gap-2">{saved > 0 && <span className="mr-auto inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--emerald)]"><CheckCircle2 size={14} /> Saved</span>}<button type="button" onClick={close} className="btn btn-ghost">Close</button><button type="submit" className="btn btn-violet"><MessageSquarePlus size={15} /> Save follow-up</button></div>
         </form>
       </div>
