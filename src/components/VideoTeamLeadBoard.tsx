@@ -37,7 +37,7 @@ export default async function VideoTeamLeadBoard({ meId }: { meId: string }) {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <AssignCreativeForm members={d.form.editors.map((e) => ({ id: e.id, name: e.name, role: "EDITOR" }))} clients={d.clients} from="/" label="Assign video task" />
+          <AssignCreativeForm members={d.form.editors.map((e) => ({ id: e.id, name: e.name, role: "EDITOR" }))} clients={d.clients} names={d.teamNames} from="/" label="Assign video task" />
           <AssignClientVideosButton form={d.form} meId={meId} />
         </div>
       </div>

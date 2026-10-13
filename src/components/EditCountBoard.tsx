@@ -38,7 +38,7 @@ const fmtDay = (iso: string) => (iso ? new Date(`${iso}T00:00:00Z`).toLocaleDate
 const tint = (color: string, pct: number) => `color-mix(in srgb, ${color} ${pct}%, white)`;
 
 // `team`: which team this page is for (video editors by default, or the designers).
-export default function EditCountBoard({ d, me, clients, saved, team = TEAMS.VIDEO }: { d: EditCountBoardData; me: Me; clients: ClientOpt[]; saved: string; team?: TeamInfo }) {
+export default function EditCountBoard({ d, me, clients, names = [], saved, team = TEAMS.VIDEO }: { d: EditCountBoardData; me: Me; clients: ClientOpt[]; names?: string[]; saved: string; team?: TeamInfo }) {
   const tm = team;
   const first = d.editors.find((e) => e.id === me.id) ?? d.editors.find((e) => e.active) ?? d.editors[0];
   const [userId, setUserId] = useState(first?.id ?? "");
@@ -113,7 +113,7 @@ export default function EditCountBoard({ d, me, clients, saved, team = TEAMS.VID
           </div>
           {hasData && <button type="button" onClick={download} className="btn btn-ghost" title="Download this month as a sheet (Excel)"><Download size={15} /> Download</button>}
           {d.seeAll && <button type="button" onClick={() => setImporting(true)} className="btn btn-ghost"><Upload size={15} /> Import sheet</button>}
-          {d.seeAll && <AssignCreativeForm members={d.editors.filter((e) => e.active).map((e) => ({ id: e.id, name: e.name, role: tm.role }))} clients={clients} from={`${tm.path}?month=${d.month}`} label="Assign work" />}
+          {d.seeAll && <AssignCreativeForm members={d.editors.filter((e) => e.active).map((e) => ({ id: e.id, name: e.name, role: tm.role }))} clients={clients} names={names} from={`${tm.path}?month=${d.month}`} label="Assign work" />}
         </div>
       </div>
 

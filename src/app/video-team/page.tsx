@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getClientOptions } from "@/lib/queries";
+import { getVideoTeamNames } from "@/lib/video-job-queries";
 import { getEditCountBoard, canOpenEditCount, isVideoAdmin } from "@/lib/edit-count-queries";
 import EditCountBoard from "@/components/EditCountBoard";
 
@@ -17,5 +18,8 @@ export default async function VideoTeamPage({ searchParams }: { searchParams: Pr
   const saved = typeof sp.saved === "string" ? sp.saved : "";
   const d = await getEditCountBoard(user, month);
   const clients = d.seeAll ? (await getClientOptions()).map((c) => ({ id: c.id, name: c.name })) : [];
-  return <EditCountBoard d={d} me={{ id: user.id, name: user.name, isEditor: user.role === "EDITOR", isAdmin: isVideoAdmin(user) }} clients={clients} saved={saved} />;
+  // the agency's own brands and the names the video team added, for "Assign work"
+  const taken = new Set(clients.map((c) => c.name.trim().toLowerCase()));
+  const names = d.seeAll ? (await getVideoTeamNames()).filter((n) => !taken.has(n.toLowerCase())) : [];
+  return <EditCountBoard d={d} me={{ id: user.id, name: user.name, isEditor: user.role === "EDITOR", isAdmin: isVideoAdmin(user) }} clients={clients} names={names} saved={saved} />;
 }

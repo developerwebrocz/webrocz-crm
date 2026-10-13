@@ -159,6 +159,8 @@ export async function getVideoTeamBoard() {
     openJobs: jobs.length,
     videosLeft: jobs.reduce((s, j) => s + Math.max(0, j.videosShot - j.edited), 0),
     clients,
+    // the agency's own brands and the names the team added — for "Assign video task"
+    teamNames: await (async () => { const taken = new Set(clients.map((c) => c.name.trim().toLowerCase())); return (await getVideoTeamNames()).filter((n) => !taken.has(n.toLowerCase())); })(),
     form: { canManage: true, canDelete: true, today, editors: editors.map((e) => ({ id: e.id, name: e.name })), shooters: shooters.map((s) => s.name), clientNames: withTeamNames(await getVideoTeamNames(), clients.map((c) => c.name)) },
   };
 }

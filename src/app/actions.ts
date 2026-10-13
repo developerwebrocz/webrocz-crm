@@ -531,13 +531,17 @@ export async function assignCreativeTask(fd: FormData) {
   const kind = assignee.role === "EDITOR" ? "VIDEO" : "DESIGN";
   const prefix = kind === "VIDEO" ? "VID" : "DSG";
   const count = await prisma.creativeTask.count({ where: { assignedToId, kind } });
-  const clientId = s(fd, "clientId") || null;
-  const client = clientId ? await prisma.client.findUnique({ where: { id: clientId }, select: { name: true } }) : null;
+  // Video work can be for one of the agency's own brands / a name the video team added
+  // ("name:Digital Hat"): kept as a name on the video — there is no client record for it.
+  const picked = s(fd, "clientId");
+  const clientLabel = picked.startsWith(NAME_ONLY) && kind === "VIDEO" ? picked.slice(NAME_ONLY.length).replace(/\s+/g, " ").trim().slice(0, 160) : "";
+  const clientId = picked.startsWith(NAME_ONLY) ? null : picked || null;
+  const client = clientId ? await prisma.client.findUnique({ where: { id: clientId }, select: { name: true } }) : clientLabel ? { name: clientLabel } : null;
   const path = kind === "VIDEO" ? "/videos" : "/designs";
   await prisma.creativeTask.create({
     data: {
       kind, code: `${prefix}-${String(count + 1).padStart(3, "0")}`, title,
-      clientId, assignedToId, assignedById: me.id,
+      clientId, clientLabel, assignedToId, assignedById: me.id,
       type: s(fd, "type") || (kind === "VIDEO" ? "Reel" : "Social Creative"),
       priority: ["HIGH", "MEDIUM", "LOW"].includes(s(fd, "priority")) ? s(fd, "priority") : "MEDIUM",
       status: "PENDING", source: "ADDITIONAL",

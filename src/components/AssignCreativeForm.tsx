@@ -3,19 +3,24 @@
 import { useMemo, useState } from "react";
 import { assignCreativeTask } from "@/app/actions";
 import { DESIGN_TYPES, VIDEO_TYPES } from "@/lib/domain";
+import { NAME_ONLY } from "@/lib/team-kinds";
 import { Send, X, Palette, Clapperboard } from "lucide-react";
 
 type Member = { id: string; name: string; role: string };
 type ClientOpt = { id: string; name: string };
 
 // `from`: page to return to after assigning (default: the dashboard). `label`: button text.
-export default function AssignCreativeForm({ members, clients, from, label }: { members: Member[]; clients: ClientOpt[]; from?: string; label?: string }) {
+// `names` (video team): the agency's own brands and the names the team added — picked like a
+// client for a video editor's work, kept as a name on the video (not a client record).
+export default function AssignCreativeForm({ members, clients, from, label, names = [] }: { members: Member[]; clients: ClientOpt[]; from?: string; label?: string; names?: string[] }) {
   const [open, setOpen] = useState(false);
   const [memberId, setMemberId] = useState("");
 
   const member = useMemo(() => members.find((m) => m.id === memberId), [members, memberId]);
   const isVideo = member?.role === "EDITOR";
   const types = isVideo ? VIDEO_TYPES : DESIGN_TYPES;
+  // shown for video work: a video editor is picked, or the form only has video editors
+  const showNames = names.length > 0 && (isVideo || members.every((m) => m.role === "EDITOR"));
 
   return (
     <>
@@ -42,7 +47,14 @@ export default function AssignCreativeForm({ members, clients, from, label }: { 
                   </select>
                 </label>
                 <label className="block"><span className="eyebrow">Client</span>
-                  <select name="clientId" className="select mt-1.5"><option value="">— Select client —</option>{clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
+                  <select name="clientId" className="select mt-1.5"><option value="">— Select client —</option>
+                    {showNames ? (
+                      <>
+                        <optgroup label="Our brands · added by the video team">{names.map((n) => <option key={n} value={NAME_ONLY + n}>{n}</option>)}</optgroup>
+                        <optgroup label="Clients">{clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</optgroup>
+                      </>
+                    ) : clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
                 </label>
               </div>
 
