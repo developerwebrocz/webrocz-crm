@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma";
 import { editorHasShoots } from "@/lib/shoot-team";
 import { getVideoJobPipeline } from "@/lib/video-job-queries";
 import { getSearchIndex, getAlerts, getApprovalsCount, getMyOpenTaskCount, deptForRole, getDueReminderCount, getCreativeBoard } from "@/lib/queries";
+import { getPaymentReminderCount } from "@/lib/payment-reminders";
 import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/auth";
 import { stopImpersonate } from "@/app/actions";
@@ -44,7 +45,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 }
 
 async function AppShell({ user, userId, impersonatedBy, children }: { user: { name: string; role: string; shootTeam?: boolean; teamLead?: boolean }; userId: string; impersonatedBy?: string | null; children: React.ReactNode }) {
-  const [clientCount, search, alerts, approvalsCount, taskCount, reminderCount] = await Promise.all([
+  const [clientCount, search, alerts, approvalsCount, taskCount, reminderCount, payReminderCount] = await Promise.all([
     prisma.client.count({ where: user.role === "ACCOUNT_MANAGER" || user.role === "DM_EXEC" ? managedBy(userId) : {} }).catch(() => 0),
     getSearchIndex({ id: userId, role: user.role }).catch(() => ({ clients: [], projects: [], team: [] })),
     getAlerts(userId, user.role).catch(() => ({ count: 0, items: [] })),
@@ -52,6 +53,8 @@ async function AppShell({ user, userId, impersonatedBy, children }: { user: { na
     ((user.role === "SUPER_ADMIN" || user.role === "SUB_ADMIN") ? getApprovalsCount() : deptForRole(user.role) ? getApprovalsCount(deptForRole(user.role)!) : Promise.resolve(0)).catch(() => 0),
     getMyOpenTaskCount(userId).catch(() => 0),
     getDueReminderCount().catch(() => 0),
+    // accounts: payment reminders due today or late (menu badge)
+    (["SUPER_ADMIN", "SUB_ADMIN", "ACCOUNTANT"].includes(user.role) ? getPaymentReminderCount() : Promise.resolve(0)).catch(() => 0),
   ]);
   // Designer / Editor: status counts for the sidebar pipeline shortcuts.
   const pipeline = (user.role === "DESIGNER" || user.role === "EDITOR")
@@ -76,7 +79,7 @@ async function AppShell({ user, userId, impersonatedBy, children }: { user: { na
       <TopBar user={user} search={search} alerts={alerts} />
       <MobileNav role={user.role} />
       <div className="flex">
-        <Sidebar clientCount={clientCount} approvalsCount={approvalsCount} taskCount={taskCount} reminderCount={reminderCount} pipeline={pipeline} user={user} myShoots={myShoots} videoPipe={videoPipe} />
+        <Sidebar clientCount={clientCount} approvalsCount={approvalsCount} taskCount={taskCount} reminderCount={reminderCount} payReminderCount={payReminderCount} pipeline={pipeline} user={user} myShoots={myShoots} videoPipe={videoPipe} />
         <main className="min-w-0 flex-1 px-5 py-7 sm:px-8">
           <div className="mx-auto w-full max-w-[1600px]">{children}</div>
         </main>

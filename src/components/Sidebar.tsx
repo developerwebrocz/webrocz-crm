@@ -5,7 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { initials, roleLabel } from "@/lib/domain";
 import {
-  LayoutDashboard, Users, UserCog, Megaphone, ClipboardList,
+  LayoutDashboard, Users, UserCog, Megaphone, ClipboardList, BellRing,
   FileBarChart, Search, UsersRound, Wallet, Images, Code2,
   CalendarDays, ClipboardCheck, ListChecks, Target, Palette, Clapperboard,
   Contact, CalendarClock, ReceiptText, FileText, CheckCircle2, XCircle, UserPlus, Repeat, Landmark, Building2, Globe, FileSignature, ChevronDown, PieChart,
@@ -16,7 +16,7 @@ type Item = { href: string; label: string; icon: React.ElementType; badge?: numb
 type Group = { label?: string; items: Item[] };
 
 type Pipeline = { total: number; dueToday: number; inProgress: number; review: number; completed: number; overdue: number };
-export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0, reminderCount = 0, pipeline, user, myShoots = false, videoPipe }: { clientCount: number; approvalsCount?: number; taskCount?: number; reminderCount?: number; pipeline?: Pipeline; user: { name: string; role: string }; myShoots?: boolean; videoPipe?: { toEdit: number; editing: number; done: number; notPosted: number; team: boolean; members?: { id: string; name: string; open: number }[] } }) {
+export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0, reminderCount = 0, payReminderCount = 0, pipeline, user, myShoots = false, videoPipe }: { clientCount: number; approvalsCount?: number; taskCount?: number; reminderCount?: number; payReminderCount?: number; pipeline?: Pipeline; user: { name: string; role: string }; myShoots?: boolean; videoPipe?: { toEdit: number; editing: number; done: number; notPosted: number; team: boolean; members?: { id: string; name: string; open: number }[] } }) {
   const path = usePathname();
   const sp = useSearchParams();
   const curStage = sp.get("stage") ?? "";
@@ -107,7 +107,8 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
   });
   // Accountant finance suite — also shown to Super/Sub Admin (they oversee finance).
   const financeGroups: Group[] = [
-    { label: "Accountants", items: [...companyItems, ...(paymentsOnTop ? [] : [{ href: "/payments", label: "Payments", icon: Wallet }])] },
+    // payment reminders due today or late — the accounts team's reminder pipeline
+    { label: "Accountants", items: [{ href: "/reminders", label: "Payment Reminders", icon: BellRing, badge: payReminderCount || undefined, badgeTone: "red" as const }, ...companyItems, ...(paymentsOnTop ? [] : [{ href: "/payments", label: "Payments", icon: Wallet }])] },
     { label: "Finance", items: [
       { href: "/dm-clients", label: "All DM Clients", icon: Megaphone },
       { href: "/sla", label: "SLAs", icon: FileSignature },

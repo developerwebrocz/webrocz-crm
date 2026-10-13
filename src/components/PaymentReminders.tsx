@@ -26,9 +26,9 @@ const STAGES: { key: Stage; label: string; hint: string; tone: string; icon: typ
   { key: "week", label: "This week", hint: "next 7 days", tone: "var(--violet)", icon: CalendarDays },
   { key: "later", label: "Later", hint: "after 7 days", tone: "var(--sky)", icon: CalendarRange },
 ];
-const PAGE = 8;
 
-export default function PaymentReminders({ rows }: { rows: Row[] }) {
+// `pageSize`: how many invoices of a stage show before "Show all" (more on the full page).
+export default function PaymentReminders({ rows, pageSize: PAGE = 8 }: { rows: Row[]; pageSize?: number }) {
   const today = todayIST();
   const weekEnd = addDays(today, 7);
 

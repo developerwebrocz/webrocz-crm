@@ -100,6 +100,9 @@ export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, 
         </div>
       </div>
 
+      {/* reminder pipeline: who to remind for payment, and when */}
+      <PaymentReminders rows={invoiceRows} />
+
       {/* finance KPIs */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
         <Kpi label="Total billed" value={inr(totals.billed)} icon={<ReceiptText size={15} />} />
@@ -111,9 +114,6 @@ export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, 
         <Kpi label="Pending approval" value={String(totals.pendingApproval)} tone="var(--violet)" />
         <Kpi label="Clients" value={String(totals.clients)} />
       </div>
-
-      {/* who to remind for payment, and when */}
-      <PaymentReminders rows={invoiceRows} />
 
       {/* receivables aging */}
       <div className="card !p-0 overflow-hidden">

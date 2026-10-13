@@ -29,5 +29,6 @@ export async function setPaymentReminder(fd: FormData) {
   }
   await prisma.salesInvoice.update({ where: { id }, data: { nextFollowup: date, ...(note ? { notesLog: JSON.stringify(log.slice(0, 100)) } : {}) } });
   revalidatePath("/");
+  revalidatePath("/reminders");
   revalidatePath("/invoices");
 }
