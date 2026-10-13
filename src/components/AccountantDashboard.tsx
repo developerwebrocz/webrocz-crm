@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ROLES } from "@/lib/domain";
 import { addClientFromFinance } from "@/app/actions";
 import { downloadCsv } from "@/lib/csv";
+import PaymentReminders from "@/components/PaymentReminders";
 import { ReceiptText, Wallet, Globe, Search, Phone, Mail, TrendingUp, X, IndianRupee, UserPlus, CheckCircle2, Users, ChevronLeft, ChevronRight, Download } from "lucide-react";
 
 const PAGE_SIZE = 10;
@@ -14,7 +15,7 @@ const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const monthLabel = (m: string) => { if (!m) return "—"; const [y, mo] = m.split("-"); const names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; return `${names[parseInt(mo, 10) - 1] ?? mo} ${y}`; };
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split("-"); return d ? `${d}-${m}-${y}` : iso; };
 
-type Inv = { id: string; clientId: string | null; code: string; number: string; billTo: string; contact: string | null; phone: string | null; email: string | null; total: number; received: number; balance: number; approved: boolean; paymentStatus: string; issueDate: string; dueDate: string; nextFollowup: string | null; month: string; category: string; overdue: boolean };
+type Inv = { id: string; clientId: string | null; code: string; number: string; billTo: string; contact: string | null; phone: string | null; email: string | null; total: number; received: number; balance: number; approved: boolean; paymentStatus: string; issueDate: string; dueDate: string; nextFollowup: string | null; month: string; category: string; overdue: boolean; company?: string };
 type MonthRow = { month: string; billed: number; received: number; pending: number; web: number; dm: number };
 type Emp = { id: string; name: string; role: string; email: string | null; phone: string | null };
 type Aging = { current: number; d30: number; d60: number; d90: number; d90plus: number };
@@ -110,6 +111,9 @@ export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, 
         <Kpi label="Pending approval" value={String(totals.pendingApproval)} tone="var(--violet)" />
         <Kpi label="Clients" value={String(totals.clients)} />
       </div>
+
+      {/* who to remind for payment, and when */}
+      <PaymentReminders rows={invoiceRows} />
 
       {/* receivables aging */}
       <div className="card !p-0 overflow-hidden">

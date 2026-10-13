@@ -2111,7 +2111,7 @@ export async function getAccountantDashboard() {
     return {
       id: i.id, clientId: i.clientId, code: (i.clientId && clientCode.get(i.clientId)) || "", number: i.number, billTo: i.billTo, contact: i.contact, phone: i.phone, email: i.email,
       total: i.total, received: i.received, balance, approved: i.approved,
-      paymentStatus: i.paymentStatus, issueDate: i.issueDate, dueDate: due, nextFollowup: i.nextFollowup,
+      paymentStatus: i.paymentStatus, issueDate: i.issueDate, dueDate: due, nextFollowup: i.nextFollowup, company: i.company,
       month: (i.issueDate || "").slice(0, 7),
       category: catOfInvoice(i, leadSvc), overdue: balance > 0 && !!due && due < today,
     };
