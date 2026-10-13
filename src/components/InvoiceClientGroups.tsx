@@ -4,10 +4,12 @@ import { Fragment, useMemo, useState } from "react";
 import Link from "next/link";
 import { ChevronRight, ShieldCheck, Clock, MessageSquarePlus, Pencil, Trash2, ExternalLink } from "lucide-react";
 import WebRoczPvtFollowupModal from "@/components/WebRoczPvtFollowupModal";
+import { companyLabel } from "@/lib/domain";
 
-// Web Rocz Pvt Ltd invoices list, grouped by client: one row per client with its totals;
-// clicking the row opens that client's invoices underneath. Kept in its own file so the
-// Web Solutions / Web Rocz invoice tables (InvoicesDashboard) stay as they are.
+// The invoices list, grouped by client: one row per client with its totals; clicking the row
+// opens all of that client's invoices underneath. Used for every billing company (Web Solutions,
+// Web Rocz, Web Rocz Pvt Ltd) and for the all-companies list — there a client billed by two
+// companies gets one row per company (`showCompany`).
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
@@ -15,15 +17,16 @@ const fmtD = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.sp
 const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const monthOf = (iso: string) => { const [y, m] = (iso || "").split("-"); return m ? `${MON[parseInt(m, 10) - 1] ?? m} ${y}` : "—"; };
 
-type Props = { rows: any[]; hideApproval?: boolean; canDelete?: boolean; openAll?: boolean; onFollowup: (inv: any) => void; onDelete: (inv: any) => void };
+type Props = { rows: any[]; hideApproval?: boolean; canDelete?: boolean; openAll?: boolean; showCompany?: boolean; onFollowup: (inv: any) => void; onDelete: (inv: any) => void };
 
-export default function WebRoczPvtInvoiceGroups({ rows, hideApproval, canDelete, openAll, onFollowup, onDelete }: Props) {
+export default function InvoiceClientGroups({ rows, hideApproval, canDelete, openAll, showCompany, onFollowup, onDelete }: Props) {
   // One group per client (by client id; an unlinked invoice groups under its bill-to name).
   const groups = useMemo(() => {
-    const map = new Map<string, { key: string; clientId: string | null; name: string; sub: string; invoices: any[] }>();
+    const map = new Map<string, { key: string; clientId: string | null; company: string; name: string; sub: string; invoices: any[] }>();
     for (const r of rows) {
-      const key = r.clientId || `name:${(r.billTo || "").trim().toLowerCase()}`;
-      const g = map.get(key) ?? { key, clientId: r.clientId || null, name: r.billTo, sub: r.phone || r.email || "", invoices: [] as any[] };
+      const who = r.clientId || `name:${(r.billTo || "").trim().toLowerCase()}`;
+      const key = showCompany ? `${who}|${r.company || ""}` : who;
+      const g = map.get(key) ?? { key, clientId: r.clientId || null, company: r.company || "", name: r.billTo, sub: r.phone || r.email || "", invoices: [] as any[] };
       g.invoices.push(r);
       map.set(key, g);
     }
@@ -32,9 +35,11 @@ export default function WebRoczPvtInvoiceGroups({ rows, hideApproval, canDelete,
       const total = invoices.reduce((s, i) => s + i.total, 0);
       const balance = invoices.reduce((s, i) => s + i.balance, 0);
       const pending = invoices.filter((i) => i.balance > 0).length;
-      return { ...g, invoices, total, balance, received: total - balance, pending, first: invoices[invoices.length - 1]?.issueDate ?? "", last: invoices[0]?.issueDate ?? "" };
+      // the nearest follow-up date set on any of the client's invoices
+      const nextFollowup = invoices.map((i) => i.nextFollowup).filter(Boolean).sort()[0] ?? "";
+      return { ...g, invoices, total, balance, received: total - balance, pending, nextFollowup, first: invoices[invoices.length - 1]?.issueDate ?? "", last: invoices[0]?.issueDate ?? "" };
     }).sort((a, b) => (a.last < b.last ? 1 : -1));
-  }, [rows]);
+  }, [rows, showCompany]);
   const [open, setOpen] = useState<Record<string, boolean>>({});
   // Client whose Follow-up popup (Phone / WhatsApp) is open.
   const [fuClient, setFuClient] = useState<{ id: string; name: string } | null>(null);
@@ -60,9 +65,9 @@ export default function WebRoczPvtInvoiceGroups({ rows, hideApproval, canDelete,
                         <ChevronRight size={15} className={`flex-none text-[var(--muted)] transition-transform ${shown ? "rotate-90" : ""}`} />
                         <div>
                           {g.clientId
-                            ? <Link href={`/accounts/${g.clientId}?company=WEB_ROCZ_PVT`} prefetch onClick={(e) => e.stopPropagation()} title="Open this client's page (all invoices, payments, notes)" className="whitespace-nowrap font-bold text-[var(--violet)] hover:underline">{g.name}</Link>
+                            ? <Link href={`/accounts/${g.clientId}${g.company ? `?company=${g.company}` : ""}`} prefetch onClick={(e) => e.stopPropagation()} title="Open this client's page (all invoices, payments, notes)" className="whitespace-nowrap font-bold text-[var(--violet)] hover:underline">{g.name}</Link>
                             : <div className="whitespace-nowrap font-bold text-[var(--ink)]">{g.name}</div>}
-                          {g.sub && <div className="text-[11.5px] text-[var(--faint)]">{g.sub}</div>}
+                          {(g.sub || showCompany) && <div className="text-[11.5px] text-[var(--faint)]">{[showCompany && g.company ? companyLabel(g.company) : "", g.sub].filter(Boolean).join(" · ")}</div>}
                         </div>
                       </div>
                     </td>
@@ -85,6 +90,7 @@ export default function WebRoczPvtInvoiceGroups({ rows, hideApproval, canDelete,
                         falls back to the follow-up notes of its latest invoice. */}
                     <td className="px-4 py-3">
                       <button onClick={(e) => { e.stopPropagation(); if (g.clientId) setFuClient({ id: g.clientId, name: g.name }); else onFollowup(g.invoices[0]); }} title="Follow-up — Phone / WhatsApp" className="inline-flex items-center gap-1 whitespace-nowrap rounded-[7px] border border-[var(--line-2)] bg-[var(--surface)] px-2.5 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><MessageSquarePlus size={13} /> Follow-up</button>
+                      {g.nextFollowup && <div className="mt-1 whitespace-nowrap text-[10.5px] text-[var(--amber)] tnum">next follow-up {fmtD(g.nextFollowup)}</div>}
                     </td>
                   </tr>
                   {shown && (
@@ -92,7 +98,7 @@ export default function WebRoczPvtInvoiceGroups({ rows, hideApproval, canDelete,
                       <td colSpan={cols} className="bg-[var(--surface-2)] px-4 pb-4 pt-2">
                         <div className="mb-2 flex items-center justify-between">
                           <span className="text-[11px] font-bold uppercase tracking-wide text-[var(--muted)]">{g.name} · {g.invoices.length} invoice{g.invoices.length === 1 ? "" : "s"}</span>
-                          {g.clientId && <Link href={`/accounts/${g.clientId}?company=WEB_ROCZ_PVT`} prefetch className="inline-flex items-center gap-1 text-[12px] font-semibold text-[var(--violet)] hover:underline"><ExternalLink size={12} /> Open client page</Link>}
+                          {g.clientId && <Link href={`/accounts/${g.clientId}${g.company ? `?company=${g.company}` : ""}`} prefetch className="inline-flex items-center gap-1 text-[12px] font-semibold text-[var(--violet)] hover:underline"><ExternalLink size={12} /> Open client page</Link>}
                         </div>
                         <div className="overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--surface)]">
                           <table className="w-full text-[12.5px]">
