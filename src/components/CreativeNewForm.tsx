@@ -1,8 +1,11 @@
 import { addCreativeTask } from "@/app/actions";
 import { DESIGN_TYPES, VIDEO_TYPES } from "@/lib/domain";
+import { NAME_ONLY } from "@/lib/team-kinds";
 import { ArrowLeft } from "lucide-react";
 
-export default function CreativeNewForm({ kind, clients }: { kind: "DESIGN" | "VIDEO"; clients: { id: string; name: string }[] }) {
+// `names` (video team): the agency's own brands and the names the team added — picked like a
+// client, kept as a name on the video. The video team can also type a new name.
+export default function CreativeNewForm({ kind, clients, names = [] }: { kind: "DESIGN" | "VIDEO"; clients: { id: string; name: string }[]; names?: string[] }) {
   const isVideo = kind === "VIDEO";
   const back = isVideo ? "/videos" : "/designs";
   const nounOne = isVideo ? "Video" : "Design";
@@ -22,9 +25,19 @@ export default function CreativeNewForm({ kind, clients }: { kind: "DESIGN" | "V
             <label className="block"><span className="lbl">Client</span>
               <select name="clientId" className="fld2">
                 <option value="">— Select client —</option>
-                {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                {names.length > 0 ? (
+                  <>
+                    <optgroup label="Our brands · added by the video team">{names.map((n) => <option key={n} value={NAME_ONLY + n}>{n}</option>)}</optgroup>
+                    <optgroup label="Clients">{clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</optgroup>
+                  </>
+                ) : clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </label>
+            {isVideo && (
+              <label className="block"><span className="lbl">Or add a new client</span>
+                <input name="newClient" maxLength={160} placeholder="Not in the list? Type the client name" className="fld2" autoComplete="off" />
+              </label>
+            )}
             <label className="block"><span className="lbl">Type</span>
               <select name="type" className="fld2">{types.map((t) => <option key={t} value={t}>{t}</option>)}</select>
             </label>
