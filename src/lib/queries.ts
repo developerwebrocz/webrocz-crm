@@ -2,6 +2,7 @@ import { prisma } from "./prisma";
 import { SERVICE_ALIAS, SHARED_AM, managedBy } from "./am-scope";
 import { todayIST } from "./india-date";
 import { getVideoTeamNames } from "./video-job-queries";
+import { chosenClientFollowup, chosenInvoiceFollowup, parseNotes } from "./followup-shown";
 import { COMPLETING_STATUSES, healthBand, serviceKind, SALES_STAGE_KEYS } from "./domain";
 import { resolvePeriod, now, type PeriodKey } from "./period";
 
@@ -2639,10 +2640,11 @@ export async function getInvoices(opts: { q?: string; status?: string; company?:
   const [rows, invLeads, clients] = await Promise.all([
     prisma.salesInvoice.findMany({ orderBy: { createdAt: "desc" } }),
     prisma.lead.findMany({ select: { id: true, services: true } }),
-    prisma.client.findMany({ select: { id: true, name: true, nextFollowup: true } }),
+    prisma.client.findMany({ select: { id: true, name: true, nextFollowup: true, followupLog: true } }),
   ]);
-  // one next follow-up date per client (set from the client's or an invoice's follow-up)
-  const clientNext = new Map(clients.filter((c) => c.nextFollowup).map((c) => [c.id, c.nextFollowup]));
+  // One next follow-up date per client (set from the client's or an invoice's follow-up) — only
+  // a date somebody chose, not one an old form filled in with "today" by itself.
+  const clientNext = new Map(clients.map((c) => [c.id, chosenClientFollowup(c.nextFollowup, parseNotes(c.followupLog))] as const).filter(([, d]) => d));
   const invLeadSvc = new Map(invLeads.map((l) => [l.id, parseServices(l.services)]));
   // Resolve invoices with no clientId to a client by exact (case-insensitive) name, so the
   // client name in the list can still deep-link to the detail page where possible.
@@ -2659,7 +2661,7 @@ export async function getInvoices(opts: { q?: string; status?: string; company?:
       id: r.id, number: r.number, billTo: r.billTo, clientId, contact: r.contact, phone: r.phone, email: r.email,
       total: r.total, received: r.received, balance, paymentStatus: r.paymentStatus,
       approved: r.approved, issueDate: r.issueDate, dueDate, overdue: balance > 0 && !!dueDate && dueDate < today,
-      pipeline: r.pipeline, company, gst: r.taxPct > 0, leadId: r.leadId, nextFollowup: (clientId && clientNext.get(clientId)) || r.nextFollowup, followups,
+      pipeline: r.pipeline, company, gst: r.taxPct > 0, leadId: r.leadId, nextFollowup: (clientId && clientNext.get(clientId)) || chosenInvoiceFollowup(r.nextFollowup, followups), followups,
     };
   });
   const q = (opts.q || "").toLowerCase().trim();

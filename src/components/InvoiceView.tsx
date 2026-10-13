@@ -295,7 +295,7 @@ export default function InvoiceView({ lead, invoice, canManage, isSuperAdmin, ap
             <input type="hidden" name="stay" value="1" /><input type="hidden" name="return" value={herePath} />
             <input type="hidden" name="invoiceId" value={invoice.id} /><input type="hidden" name="leadId" value={leadId} />
             <div className="flex-1 min-w-[240px]"><L label="Note"><input name="note" required placeholder="e.g. Called client, will pay by 25th" className="input" /></L></div>
-            <div><L label="Next follow-up"><input name="nextFollowup" type="date" defaultValue={invoice.nextFollowup ?? ""} className="input" /></L></div>
+            <div><L label="Follow up again on (optional)"><input name="nextFollowup" type="date" className="input" /></L></div>
             <button className="btn btn-ghost">Add note</button>
           </form>
           {notes.length > 0 && (

@@ -249,7 +249,7 @@ function FollowupModal({ r, close }: { r: Row; close: () => void }) {
           <input type="hidden" name="id" value={r.id} />
           <input type="hidden" name="return" value="/renewals" />
           <label className="block"><span className="eyebrow">Follow-up note</span><textarea name="note" required rows={2} className="input mt-1" placeholder="e.g. Called client about hosting renewal" /></label>
-          <label className="block"><span className="eyebrow">Next follow-up</span><input name="next" type="date" defaultValue={todayISO()} className="input mt-1" /></label>
+          <label className="block"><span className="eyebrow">Follow up again on (optional)</span><input name="next" type="date" className="input mt-1" /></label>
           <div className="flex justify-end gap-2 pt-1"><button type="button" onClick={close} className="btn btn-ghost">Cancel</button><button type="submit" className="btn btn-violet"><MessageSquarePlus size={15} /> Save follow-up</button></div>
         </form>
       </div>

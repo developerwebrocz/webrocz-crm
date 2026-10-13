@@ -13,6 +13,7 @@ import InvoiceClientGroups from "@/components/InvoiceClientGroups";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
+const tomorrowISO = () => { const d = new Date(); d.setDate(d.getDate() + 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 const fmtD = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
 
 // Default = invoices with payment pending. A fully paid invoice drops off this list and stays
@@ -172,7 +173,7 @@ function InvoiceFollowupModal({ inv, close }: { inv: any; close: () => void }) {
           <input type="hidden" name="invoiceId" value={inv.id} />
           <input type="hidden" name="leadId" value={inv.leadId ?? ""} />
           <label className="block"><span className="eyebrow">Add follow-up note</span><textarea name="note" required rows={2} className="input mt-1" placeholder="e.g. Called client, will pay by 25th" /></label>
-          <label className="block"><span className="eyebrow">Follow up again on <span className="font-normal normal-case tracking-normal text-[var(--muted)]">· adds it to Payment Reminders</span></span><input name="nextFollowup" type="date" defaultValue={inv.nextFollowup || ""} className="input mt-1" /></label>
+          <label className="block"><span className="eyebrow">Follow up again on <span className="font-normal normal-case tracking-normal text-[var(--muted)]">· adds it to Payment Reminders</span></span><input name="nextFollowup" type="date" min={tomorrowISO()} className="input mt-1" /><span className="mt-1 block text-[11px] text-[var(--muted)]">Pick a date only when you want a reminder. Leave it empty to just save the note{inv.nextFollowup ? " (the date above stays)" : ""}.</span></label>
           <div className="flex items-center justify-end gap-2">{saved > 0 && <span className="mr-auto inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--emerald)]"><CheckCircle2 size={14} /> Saved</span>}<button type="button" onClick={close} className="btn btn-ghost">Close</button><button type="submit" className="btn btn-violet"><MessageSquarePlus size={15} /> Save follow-up</button></div>
         </form>
       </div>

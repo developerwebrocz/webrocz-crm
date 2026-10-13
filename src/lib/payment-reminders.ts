@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "./prisma";
 import { todayIST } from "./india-date";
+import { chosenClientFollowup, chosenInvoiceFollowup, parseNotes } from "./followup-shown";
 
 // Payment Reminders (accounts). A reminder is something the accountant set by hand: "follow up
 // again on this date" — on a client (from the Phone / WhatsApp Follow-up popup) or on one invoice
@@ -11,7 +12,6 @@ import { todayIST } from "./india-date";
 const addDays = (iso: string, n: number) => { const d = new Date(`${iso}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 // due date: the one on the invoice, else 15 days from the invoice date (same rule as the dashboard)
 const dueOf = (i: { dueDate: string; issueDate: string }) => i.dueDate || (i.issueDate ? addDays(i.issueDate, 15) : "");
-const isDate = (v: string | null | undefined): v is string => /^\d{4}-\d{2}-\d{2}$/.test(v ?? "");
 
 export type PaymentReminder = {
   key: string; kind: "client" | "invoice"; id: string; clientId: string | null;
@@ -45,7 +45,9 @@ export async function getPaymentReminders(): Promise<PaymentReminder[]> {
   // reminders set on a client
   const withClientReminder = new Set<string>();
   for (const c of clients) {
-    if (!isDate(c.nextFollowup)) continue;
+    // only a date somebody chose (not one an old form filled in by itself)
+    const remindOn = chosenClientFollowup(c.nextFollowup, parseNotes(c.followupLog));
+    if (!remindOn) continue;
     withClientReminder.add(c.id);
     const mine = pending.filter((i) => i.clientId === c.id);
     const n = latest(c.followupLog);
@@ -54,13 +56,13 @@ export async function getPaymentReminders(): Promise<PaymentReminder[]> {
       contact: c.pocName ?? "", phone: c.pocMobile ?? "", company: c.billingCompany || mine[0]?.company || "",
       balance: mine.reduce((s, i) => s + (i.total - i.received), 0), total: mine.reduce((s, i) => s + i.total, 0),
       dueDate: mine.map(dueOf).filter(Boolean).sort()[0] ?? "", issueDate: "",
-      remindOn: c.nextFollowup, lastNote: n.note ?? "", lastBy: n.by ?? "", lastOn: n.date ?? "",
+      remindOn, lastNote: n.note ?? "", lastBy: n.by ?? "", lastOn: n.date ?? "",
     });
   }
 
   // invoices with money pending: with their own reminder, or with none at all
   for (const i of pending) {
-    const own = isDate(i.nextFollowup) ? i.nextFollowup : "";
+    const own = chosenInvoiceFollowup(i.nextFollowup, parseNotes(i.notesLog));
     // no reminder of its own, but its client has one → that client reminder covers it
     if (!own && i.clientId && withClientReminder.has(i.clientId)) continue;
     const n = latest(i.notesLog);
@@ -78,9 +80,10 @@ export async function getPaymentReminders(): Promise<PaymentReminder[]> {
 export async function getPaymentReminderCount(): Promise<number> {
   const today = todayIST();
   const [clients, invoices] = await Promise.all([
-    prisma.client.findMany({ where: { nextFollowup: { not: "" } }, select: { nextFollowup: true } }),
-    prisma.salesInvoice.findMany({ where: { nextFollowup: { not: null } }, select: { total: true, received: true, nextFollowup: true } }),
+    prisma.client.findMany({ where: { nextFollowup: { not: "" } }, select: { nextFollowup: true, followupLog: true } }),
+    prisma.salesInvoice.findMany({ where: { nextFollowup: { not: null } }, select: { total: true, received: true, nextFollowup: true, notesLog: true } }),
   ]);
-  return clients.filter((c) => isDate(c.nextFollowup) && c.nextFollowup <= today).length
-    + invoices.filter((i) => i.total - i.received > 0 && isDate(i.nextFollowup) && i.nextFollowup <= today).length;
+  const due = (d: string) => !!d && d <= today;
+  return clients.filter((c) => due(chosenClientFollowup(c.nextFollowup, parseNotes(c.followupLog)))).length
+    + invoices.filter((i) => i.total - i.received > 0 && due(chosenInvoiceFollowup(i.nextFollowup, parseNotes(i.notesLog)))).length;
 }

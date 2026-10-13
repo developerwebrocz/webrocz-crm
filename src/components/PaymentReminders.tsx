@@ -163,7 +163,7 @@ function RemindForm({ r, today, close }: { r: PaymentReminder; today: string; cl
     <form action={async (fd) => { await setPaymentReminder(fd); close(); }} className="mt-2.5 space-y-2.5 rounded-[10px] border border-[var(--line-2)] bg-[var(--surface-2)] p-3">
       <input type="hidden" name="kind" value={r.kind} /><input type="hidden" name="id" value={r.id} />
       <div className="flex flex-wrap items-end gap-2">
-        <label className="block"><span className="eyebrow">Follow up again on</span><input name="date" type="date" required min={today} value={date} onChange={(e) => setDate(e.target.value)} className="input mt-1 !w-auto !py-1.5" /></label>
+        <label className="block"><span className="eyebrow">Follow up again on</span><input name="date" type="date" required min={addDays(today, 1)} value={date} onChange={(e) => setDate(e.target.value)} className="input mt-1 !w-auto !py-1.5" /></label>
         <div className="flex flex-wrap gap-1.5 pb-0.5">
           {quick.map((q) => (
             <button key={q.label} type="button" onClick={() => setDate(q.d)} className="rounded-full border px-2.5 py-1 text-[12px] font-semibold" style={{ borderColor: date === q.d ? "var(--violet)" : "var(--line-2)", background: date === q.d ? "color-mix(in srgb, var(--violet) 9%, white)" : "var(--surface)", color: date === q.d ? "var(--violet)" : "var(--ink-2)" }}>{q.label}</button>
