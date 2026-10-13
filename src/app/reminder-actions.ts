@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { todayIST } from "@/lib/india-date";
+import { setClientFollowupDate, setInvoiceFollowupDate } from "@/lib/followup-date";
 import { revalidatePath } from "next/cache";
 
 // Payment Reminders (accounts): the accountant sets "follow up again on this date" by hand, on a
@@ -32,14 +33,16 @@ export async function setPaymentReminder(fd: FormData) {
     let log: Record<string, unknown>[] = [];
     try { const a = JSON.parse(c.followupLog || "[]"); if (Array.isArray(a)) log = a; } catch { /* keep empty */ }
     if (note) log.push({ date: today, time, by: me.name, note, next: date });
-    await prisma.client.update({ where: { id }, data: { nextFollowup: date, ...(note ? { followupLog: JSON.stringify(log) } : {}) } });
+    if (note) await prisma.client.update({ where: { id }, data: { followupLog: JSON.stringify(log) } });
+    await setClientFollowupDate(id, date);
   } else {
     const inv = await prisma.salesInvoice.findUnique({ where: { id }, select: { notesLog: true } });
     if (!inv) return;
     let log: { date: string; by: string; note: string }[] = [];
     try { const a = JSON.parse(inv.notesLog || "[]"); if (Array.isArray(a)) log = a; } catch { /* keep empty */ }
     if (note) log.unshift({ date: `${today} ${time}`, by: me.name, note });
-    await prisma.salesInvoice.update({ where: { id }, data: { nextFollowup: date, ...(note ? { notesLog: JSON.stringify(log.slice(0, 100)) } : {}) } });
+    if (note) await prisma.salesInvoice.update({ where: { id }, data: { notesLog: JSON.stringify(log.slice(0, 100)) } });
+    await setInvoiceFollowupDate(id, date); // goes on the invoice's client (one date per client)
   }
   refresh();
 }
@@ -52,7 +55,7 @@ export async function clearPaymentReminder(fd: FormData) {
   const kind = String(fd.get("kind") ?? "invoice");
   const id = String(fd.get("id") ?? "");
   if (!id) return;
-  if (kind === "client") await prisma.client.updateMany({ where: { id }, data: { nextFollowup: "" } });
-  else await prisma.salesInvoice.updateMany({ where: { id }, data: { nextFollowup: null } });
+  if (kind === "client") await setClientFollowupDate(id, "");
+  else await setInvoiceFollowupDate(id, "");
   refresh();
 }

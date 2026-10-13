@@ -33,10 +33,13 @@ const latest = (json: string): Note => {
 
 export async function getPaymentReminders(): Promise<PaymentReminder[]> {
   const [clients, invoices] = await Promise.all([
-    prisma.client.findMany({ where: { nextFollowup: { not: "" } }, select: { id: true, name: true, pocName: true, pocMobile: true, billingCompany: true, nextFollowup: true, followupLog: true } }),
+    prisma.client.findMany({ select: { id: true, name: true, pocName: true, pocMobile: true, billingCompany: true, nextFollowup: true, followupLog: true } }),
     prisma.salesInvoice.findMany({ select: { id: true, clientId: true, number: true, billTo: true, contact: true, phone: true, total: true, received: true, issueDate: true, dueDate: true, nextFollowup: true, notesLog: true, company: true }, orderBy: { issueDate: "asc" } }),
   ]);
-  const pending = invoices.filter((i) => i.total - i.received > 0);
+  // an invoice with no linked client belongs to the client with exactly its bill-to name
+  const byName = new Map<string, string>();
+  for (const c of clients) { const k = c.name.trim().toLowerCase(); byName.set(k, byName.has(k) ? "" : c.id); }
+  const pending = invoices.filter((i) => i.total - i.received > 0).map((i) => ({ ...i, clientId: i.clientId || byName.get(i.billTo.trim().toLowerCase()) || null }));
   const out: PaymentReminder[] = [];
 
   // reminders set on a client

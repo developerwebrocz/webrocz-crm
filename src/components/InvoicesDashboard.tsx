@@ -151,7 +151,7 @@ function InvoiceFollowupModal({ inv, close }: { inv: any; close: () => void }) {
         <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-6 py-4">
           <div>
             <h2 className="text-[16px] font-bold">Follow-up · {inv.number}</h2>
-            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">{inv.billTo} · {notes.length} note{notes.length === 1 ? "" : "s"}{inv.nextFollowup ? ` · next ${fmtD(inv.nextFollowup)}` : ""}</p>
+            <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">{inv.billTo} · {notes.length} note{notes.length === 1 ? "" : "s"}{inv.nextFollowup ? <> · <b className="text-[var(--rose)]">next follow-up {fmtD(inv.nextFollowup)}</b></> : ""}</p>
           </div>
           <button onClick={close} className="grid h-8 w-8 flex-none place-items-center rounded-full border border-[var(--line-2)] text-[var(--muted)]"><X size={16} /></button>
         </div>

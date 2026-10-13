@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { setInvoiceFollowupDate } from "@/lib/followup-date";
 import { getCurrentUser } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -788,7 +789,10 @@ export async function addInvoiceNote(fd: FormData) {
   // date + time in India ("2026-10-09 15:42"); toISOString() is UTC, 5h30 behind
   const nowIST = new Date();
   log.unshift({ date: `${todayIST(nowIST)} ${nowIST.toLocaleTimeString("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: false })}`, by: me.name, note });
-  await prisma.salesInvoice.update({ where: { id: invId }, data: { notesLog: JSON.stringify(log.slice(0, 100)), nextFollowup: s(fd, "nextFollowup") || inv.nextFollowup } });
+  await prisma.salesInvoice.update({ where: { id: invId }, data: { notesLog: JSON.stringify(log.slice(0, 100)) } });
+  // "Follow up again on": the newest date is the client's next follow-up (it replaces the older one)
+  const nextOn = s(fd, "nextFollowup");
+  if (/^\d{4}-\d{2}-\d{2}$/.test(nextOn)) await setInvoiceFollowupDate(invId, nextOn);
   await notifyRole("SUPER_ADMIN", `Invoice note: ${inv.number}`, `${me.name}: ${note.slice(0, 80)}`, invoiceReturn(leadId, invId), "amber");
   revalidatePath(invoiceReturn(leadId, invId));
   revalidatePath("/invoices");

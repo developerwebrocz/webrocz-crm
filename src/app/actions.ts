@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { SERVICES, SERVICE_KEYS, type ServiceKey, companyFor, stateFromGstin, GADS_TYPE_KEYS } from "@/lib/domain";
 import { ownClientsOf, SERVICE_ALIAS, SHARED_AM, managedBy } from "@/lib/am-scope";
 import { managesClient } from "@/lib/am-access";
+import { setClientFollowupDate } from "@/lib/followup-date";
 import { NAME_ONLY } from "@/lib/team-kinds";
 import { nextInvoiceNumbers } from "@/lib/invoice-number";
 import { todayIST } from "@/lib/india-date";
@@ -885,7 +886,9 @@ export async function logClientFollowup(fd: FormData) {
   // Phone / WhatsApp follow-ups are kept apart; forms that do not send a type save as before.
   const via = ["PHONE", "WHATSAPP"].includes(s(fd, "via")) ? s(fd, "via") : "";
   if (note) log.push({ date, time, by: u.name, note, next, ...(nextTime ? { nextTime } : {}), ...(via ? { via } : {}) });
-  await prisma.client.update({ where: { id }, data: { followupLog: JSON.stringify(log), nextFollowup: next || undefined } });
+  await prisma.client.update({ where: { id }, data: { followupLog: JSON.stringify(log) } });
+  // "Follow up again on": the client's next follow-up — the newest date replaces the older one
+  if (/^\d{4}-\d{2}-\d{2}$/.test(next)) await setClientFollowupDate(id, next);
   revalidatePath("/accounts");
   revalidatePath(`/accounts/${id}`);
   if (next) { revalidatePath("/reminders"); revalidatePath("/"); }

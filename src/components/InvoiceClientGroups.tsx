@@ -90,7 +90,7 @@ export default function InvoiceClientGroups({ rows, hideApproval, canDelete, ope
                         falls back to the follow-up notes of its latest invoice. */}
                     <td className="px-4 py-3">
                       <button onClick={(e) => { e.stopPropagation(); if (g.clientId) setFuClient({ id: g.clientId, name: g.name }); else onFollowup(g.invoices[0]); }} title="Follow-up — Phone / WhatsApp" className="inline-flex items-center gap-1 whitespace-nowrap rounded-[7px] border border-[var(--line-2)] bg-[var(--surface)] px-2.5 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><MessageSquarePlus size={13} /> Follow-up</button>
-                      {g.nextFollowup && <div className="mt-1 whitespace-nowrap text-[10.5px] text-[var(--amber)] tnum">next follow-up {fmtD(g.nextFollowup)}</div>}
+                      {g.nextFollowup && <div className="mt-1 whitespace-nowrap text-[11px] font-bold text-[var(--rose)] tnum">next follow-up {fmtD(g.nextFollowup)}</div>}
                     </td>
                   </tr>
                   {shown && (
@@ -125,7 +125,7 @@ export default function InvoiceClientGroups({ rows, hideApproval, canDelete, ope
                                       <Link href={`/invoices/${r.id}`} prefetch title="Open & edit invoice" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><Pencil size={13} /> Edit</Link>
                                       {canDelete && <button onClick={() => onDelete(r)} title="Delete invoice" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--rose)] hover:bg-[color-mix(in_srgb,var(--rose)_10%,white)]"><Trash2 size={13} /> Delete</button>}
                                     </div>
-                                    {r.nextFollowup && <div className="mt-1 text-[10.5px] text-[var(--amber)] tnum">next follow-up {fmtD(r.nextFollowup)}</div>}
+                                    {r.nextFollowup && r.nextFollowup !== g.nextFollowup && <div className="mt-1 text-[11px] font-bold text-[var(--rose)] tnum">next follow-up {fmtD(r.nextFollowup)}</div>}
                                   </td>
                                 </tr>
                               ))}
