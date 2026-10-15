@@ -964,6 +964,7 @@ export async function deleteSalesInvoice(fd: FormData) {
   }
   revalidatePath("/invoices");
   revalidatePath("/sla");
+  revalidatePath(back.split("?")[0]);
   redirect(back);
 }
 

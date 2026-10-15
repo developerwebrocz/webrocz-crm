@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { recordPayment, createClientInvoice, generateInvoiceFromSla } from "@/app/sales-actions";
+import { recordPayment, createClientInvoice, generateInvoiceFromSla, deleteSalesInvoice } from "@/app/sales-actions";
 import { updateClientFinance } from "@/app/actions";
 import { companyLabel } from "@/lib/domain";
 import AddInvoiceModal from "@/components/AddInvoiceModal";
@@ -17,7 +17,7 @@ import ClientImportantNotes, { parseImportantNotes } from "@/components/ClientIm
 import { todayIST } from "@/lib/india-date";
 import { BackButton } from "@/components/NavTrail";
 import AddWebRoczPvtInvoiceModal from "@/components/AddWebRoczPvtInvoiceModal";
-import { ReceiptText, Wallet, CheckCircle2, Clock, Phone, Mail, IndianRupee, X, Users, Building2, Plus, Pencil, MessageSquarePlus, CalendarClock, Globe, FileSignature, FileText, Download } from "lucide-react";
+import { ReceiptText, Wallet, CheckCircle2, Clock, Phone, Mail, IndianRupee, X, Users, Building2, Plus, Pencil, MessageSquarePlus, CalendarClock, Globe, FileSignature, FileText, Download, Trash2 } from "lucide-react";
 
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmtDate = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split(" ")[0].split("-"); return d ? `${d}-${m}-${y}` : iso; };
@@ -30,7 +30,8 @@ type Followup = { date: string; by: string; note: string; next?: string };
 type Sla = { id: string; title: string; service: string; amount: number; gst: boolean; fileUrl: string; notes: string; status: string; uploadedBy: string; createdAt: string };
 type Totals = { billed: number; received: number; pending: number; overdue: number; invoices: number };
 
-export default function FinanceClientDetail({ client, invoices, payments, totals, clientFollowups, slas, openPayId, company, dmServices = [] }: { client: Client; invoices: Inv[]; payments: Pay[]; totals: Totals; clientFollowups: Followup[]; slas: Sla[]; openPayId?: string; company?: string; dmServices?: { service: string; detail: string | null }[] }) {
+// `canDelete`: Super / Sub Admin — may delete an invoice from this page.
+export default function FinanceClientDetail({ client, invoices, payments, totals, clientFollowups, slas, openPayId, company, dmServices = [], canDelete = false }: { client: Client; invoices: Inv[]; payments: Pay[]; totals: Totals; clientFollowups: Followup[]; slas: Sla[]; openPayId?: string; company?: string; dmServices?: { service: string; detail: string | null }[]; canDelete?: boolean }) {
   const [payInv, setPayInv] = useState<Inv | null>(() => invoices.find((i) => i.id === openPayId && i.balance > 0) ?? null);
   const [newInv, setNewInv] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -255,6 +256,14 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
                       {r.balance > 0 && <button onClick={() => setPayInv(r)} className="btn btn-sm btn-emerald"><IndianRupee size={13} /> Pay</button>}
                       {r.invoiceDoc && <a href={r.invoiceDoc} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm" title="View uploaded invoice document"><FileText size={13} /> Doc</a>}
                       <Link href={`/invoices/${r.id}`} prefetch className="btn btn-ghost btn-sm">Open</Link>
+                      {/* Super Admin: delete the invoice (its recorded payments go with it) — after a confirm */}
+                      {canDelete && (
+                        <form action={deleteSalesInvoice} onSubmit={(e) => { if (!window.confirm(`Delete invoice ${r.number} (₹${r.total.toLocaleString("en-IN")})?\n\nThis removes the invoice and its recorded payments. It cannot be undone.`)) e.preventDefault(); }}>
+                          <input type="hidden" name="invoiceId" value={r.id} />
+                          <input type="hidden" name="return" value={`/accounts/${client.id}${company ? `?company=${company}` : ""}`} />
+                          <button type="submit" className="btn btn-ghost btn-sm" style={{ color: "var(--rose)" }} title="Delete this invoice"><Trash2 size={13} /> Delete</button>
+                        </form>
+                      )}
                     </div>
                   </td>
                 </tr>
