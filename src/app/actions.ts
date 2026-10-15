@@ -1831,7 +1831,8 @@ export async function saveShoot(fd: FormData) {
     endTime: s(fd, "endTime"),
     locationType: s(fd, "locationType") === "ON_LOCATION" ? "ON_LOCATION" : "IN_HOUSE",
     location: s(fd, "location"),
-    rentAmount: category === "STUDIO_RENT" ? n(fd, "rentAmount") : 0,
+    rentAmount: n(fd, "rentAmount"), // the rent (Studio X) or the shoot's amount (WebRocz)
+    reelCount: Math.max(0, n(fd, "reelCount")),
     paid: category === "STUDIO_RENT" ? fd.get("paid") === "on" : false,
     notes: s(fd, "notes"),
     status: SHOOT_STATUS_OK.includes(s(fd, "status")) ? s(fd, "status") : "SCHEDULED",

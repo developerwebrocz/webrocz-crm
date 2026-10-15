@@ -38624,10 +38624,12 @@ export namespace Prisma {
 
   export type ShootAvgAggregateOutputType = {
     rentAmount: number | null
+    reelCount: number | null
   }
 
   export type ShootSumAggregateOutputType = {
     rentAmount: number | null
+    reelCount: number | null
   }
 
   export type ShootMinAggregateOutputType = {
@@ -38646,6 +38648,7 @@ export namespace Prisma {
     assignedToId: string | null
     status: string | null
     rentAmount: number | null
+    reelCount: number | null
     paid: boolean | null
     notes: string | null
     requestedById: string | null
@@ -38672,6 +38675,7 @@ export namespace Prisma {
     assignedToId: string | null
     status: string | null
     rentAmount: number | null
+    reelCount: number | null
     paid: boolean | null
     notes: string | null
     requestedById: string | null
@@ -38698,6 +38702,7 @@ export namespace Prisma {
     assignedToId: number
     status: number
     rentAmount: number
+    reelCount: number
     paid: number
     notes: number
     requestedById: number
@@ -38712,10 +38717,12 @@ export namespace Prisma {
 
   export type ShootAvgAggregateInputType = {
     rentAmount?: true
+    reelCount?: true
   }
 
   export type ShootSumAggregateInputType = {
     rentAmount?: true
+    reelCount?: true
   }
 
   export type ShootMinAggregateInputType = {
@@ -38734,6 +38741,7 @@ export namespace Prisma {
     assignedToId?: true
     status?: true
     rentAmount?: true
+    reelCount?: true
     paid?: true
     notes?: true
     requestedById?: true
@@ -38760,6 +38768,7 @@ export namespace Prisma {
     assignedToId?: true
     status?: true
     rentAmount?: true
+    reelCount?: true
     paid?: true
     notes?: true
     requestedById?: true
@@ -38786,6 +38795,7 @@ export namespace Prisma {
     assignedToId?: true
     status?: true
     rentAmount?: true
+    reelCount?: true
     paid?: true
     notes?: true
     requestedById?: true
@@ -38899,6 +38909,7 @@ export namespace Prisma {
     assignedToId: string | null
     status: string
     rentAmount: number
+    reelCount: number
     paid: boolean
     notes: string
     requestedById: string | null
@@ -38944,6 +38955,7 @@ export namespace Prisma {
     assignedToId?: boolean
     status?: boolean
     rentAmount?: boolean
+    reelCount?: boolean
     paid?: boolean
     notes?: boolean
     requestedById?: boolean
@@ -38973,6 +38985,7 @@ export namespace Prisma {
     assignedToId?: boolean
     status?: boolean
     rentAmount?: boolean
+    reelCount?: boolean
     paid?: boolean
     notes?: boolean
     requestedById?: boolean
@@ -39002,6 +39015,7 @@ export namespace Prisma {
     assignedToId?: boolean
     status?: boolean
     rentAmount?: boolean
+    reelCount?: boolean
     paid?: boolean
     notes?: boolean
     requestedById?: boolean
@@ -39031,6 +39045,7 @@ export namespace Prisma {
     assignedToId?: boolean
     status?: boolean
     rentAmount?: boolean
+    reelCount?: boolean
     paid?: boolean
     notes?: boolean
     requestedById?: boolean
@@ -39041,7 +39056,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ShootOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "category" | "title" | "clientId" | "renterName" | "phone" | "date" | "startTime" | "endTime" | "locationType" | "location" | "assignedToId" | "status" | "rentAmount" | "paid" | "notes" | "requestedById" | "footageLink" | "handedOff" | "followupLog" | "createdAt" | "updatedAt", ExtArgs["result"]["shoot"]>
+  export type ShootOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "category" | "title" | "clientId" | "renterName" | "phone" | "date" | "startTime" | "endTime" | "locationType" | "location" | "assignedToId" | "status" | "rentAmount" | "reelCount" | "paid" | "notes" | "requestedById" | "footageLink" | "handedOff" | "followupLog" | "createdAt" | "updatedAt", ExtArgs["result"]["shoot"]>
   export type ShootInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | Shoot$clientArgs<ExtArgs>
     assignedTo?: boolean | Shoot$assignedToArgs<ExtArgs>
@@ -39081,6 +39096,7 @@ export namespace Prisma {
       assignedToId: string | null
       status: string
       rentAmount: number
+      reelCount: number
       paid: boolean
       notes: string
       requestedById: string | null
@@ -39530,6 +39546,7 @@ export namespace Prisma {
     readonly assignedToId: FieldRef<"Shoot", 'String'>
     readonly status: FieldRef<"Shoot", 'String'>
     readonly rentAmount: FieldRef<"Shoot", 'Int'>
+    readonly reelCount: FieldRef<"Shoot", 'Int'>
     readonly paid: FieldRef<"Shoot", 'Boolean'>
     readonly notes: FieldRef<"Shoot", 'String'>
     readonly requestedById: FieldRef<"Shoot", 'String'>
@@ -55993,6 +56010,7 @@ export namespace Prisma {
     assignedToId: 'assignedToId',
     status: 'status',
     rentAmount: 'rentAmount',
+    reelCount: 'reelCount',
     paid: 'paid',
     notes: 'notes',
     requestedById: 'requestedById',
@@ -59060,6 +59078,7 @@ export namespace Prisma {
     assignedToId?: StringNullableFilter<"Shoot"> | string | null
     status?: StringFilter<"Shoot"> | string
     rentAmount?: IntFilter<"Shoot"> | number
+    reelCount?: IntFilter<"Shoot"> | number
     paid?: BoolFilter<"Shoot"> | boolean
     notes?: StringFilter<"Shoot"> | string
     requestedById?: StringNullableFilter<"Shoot"> | string | null
@@ -59089,6 +59108,7 @@ export namespace Prisma {
     assignedToId?: SortOrderInput | SortOrder
     status?: SortOrder
     rentAmount?: SortOrder
+    reelCount?: SortOrder
     paid?: SortOrder
     notes?: SortOrder
     requestedById?: SortOrderInput | SortOrder
@@ -59121,6 +59141,7 @@ export namespace Prisma {
     assignedToId?: StringNullableFilter<"Shoot"> | string | null
     status?: StringFilter<"Shoot"> | string
     rentAmount?: IntFilter<"Shoot"> | number
+    reelCount?: IntFilter<"Shoot"> | number
     paid?: BoolFilter<"Shoot"> | boolean
     notes?: StringFilter<"Shoot"> | string
     requestedById?: StringNullableFilter<"Shoot"> | string | null
@@ -59150,6 +59171,7 @@ export namespace Prisma {
     assignedToId?: SortOrderInput | SortOrder
     status?: SortOrder
     rentAmount?: SortOrder
+    reelCount?: SortOrder
     paid?: SortOrder
     notes?: SortOrder
     requestedById?: SortOrderInput | SortOrder
@@ -59184,6 +59206,7 @@ export namespace Prisma {
     assignedToId?: StringNullableWithAggregatesFilter<"Shoot"> | string | null
     status?: StringWithAggregatesFilter<"Shoot"> | string
     rentAmount?: IntWithAggregatesFilter<"Shoot"> | number
+    reelCount?: IntWithAggregatesFilter<"Shoot"> | number
     paid?: BoolWithAggregatesFilter<"Shoot"> | boolean
     notes?: StringWithAggregatesFilter<"Shoot"> | string
     requestedById?: StringNullableWithAggregatesFilter<"Shoot"> | string | null
@@ -63562,6 +63585,7 @@ export namespace Prisma {
     location?: string
     status?: string
     rentAmount?: number
+    reelCount?: number
     paid?: boolean
     notes?: string
     footageLink?: string
@@ -63590,6 +63614,7 @@ export namespace Prisma {
     assignedToId?: string | null
     status?: string
     rentAmount?: number
+    reelCount?: number
     paid?: boolean
     notes?: string
     requestedById?: string | null
@@ -63614,6 +63639,7 @@ export namespace Prisma {
     location?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
+    reelCount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
     footageLink?: StringFieldUpdateOperationsInput | string
@@ -63642,6 +63668,7 @@ export namespace Prisma {
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
+    reelCount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
     requestedById?: NullableStringFieldUpdateOperationsInput | string | null
@@ -63668,6 +63695,7 @@ export namespace Prisma {
     assignedToId?: string | null
     status?: string
     rentAmount?: number
+    reelCount?: number
     paid?: boolean
     notes?: string
     requestedById?: string | null
@@ -63692,6 +63720,7 @@ export namespace Prisma {
     location?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
+    reelCount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
     footageLink?: StringFieldUpdateOperationsInput | string
@@ -63717,6 +63746,7 @@ export namespace Prisma {
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
+    reelCount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
     requestedById?: NullableStringFieldUpdateOperationsInput | string | null
@@ -67250,6 +67280,7 @@ export namespace Prisma {
     assignedToId?: SortOrder
     status?: SortOrder
     rentAmount?: SortOrder
+    reelCount?: SortOrder
     paid?: SortOrder
     notes?: SortOrder
     requestedById?: SortOrder
@@ -67262,6 +67293,7 @@ export namespace Prisma {
 
   export type ShootAvgOrderByAggregateInput = {
     rentAmount?: SortOrder
+    reelCount?: SortOrder
   }
 
   export type ShootMaxOrderByAggregateInput = {
@@ -67280,6 +67312,7 @@ export namespace Prisma {
     assignedToId?: SortOrder
     status?: SortOrder
     rentAmount?: SortOrder
+    reelCount?: SortOrder
     paid?: SortOrder
     notes?: SortOrder
     requestedById?: SortOrder
@@ -67306,6 +67339,7 @@ export namespace Prisma {
     assignedToId?: SortOrder
     status?: SortOrder
     rentAmount?: SortOrder
+    reelCount?: SortOrder
     paid?: SortOrder
     notes?: SortOrder
     requestedById?: SortOrder
@@ -67318,6 +67352,7 @@ export namespace Prisma {
 
   export type ShootSumOrderByAggregateInput = {
     rentAmount?: SortOrder
+    reelCount?: SortOrder
   }
 
   export type GoogleAdsCampaignCountOrderByAggregateInput = {
@@ -71583,6 +71618,7 @@ export namespace Prisma {
     location?: string
     status?: string
     rentAmount?: number
+    reelCount?: number
     paid?: boolean
     notes?: string
     footageLink?: string
@@ -71609,6 +71645,7 @@ export namespace Prisma {
     location?: string
     status?: string
     rentAmount?: number
+    reelCount?: number
     paid?: boolean
     notes?: string
     requestedById?: string | null
@@ -71642,6 +71679,7 @@ export namespace Prisma {
     location?: string
     status?: string
     rentAmount?: number
+    reelCount?: number
     paid?: boolean
     notes?: string
     footageLink?: string
@@ -71669,6 +71707,7 @@ export namespace Prisma {
     assignedToId?: string | null
     status?: string
     rentAmount?: number
+    reelCount?: number
     paid?: boolean
     notes?: string
     footageLink?: string
@@ -72149,6 +72188,7 @@ export namespace Prisma {
     assignedToId?: StringNullableFilter<"Shoot"> | string | null
     status?: StringFilter<"Shoot"> | string
     rentAmount?: IntFilter<"Shoot"> | number
+    reelCount?: IntFilter<"Shoot"> | number
     paid?: BoolFilter<"Shoot"> | boolean
     notes?: StringFilter<"Shoot"> | string
     requestedById?: StringNullableFilter<"Shoot"> | string | null
@@ -73891,6 +73931,7 @@ export namespace Prisma {
     location?: string
     status?: string
     rentAmount?: number
+    reelCount?: number
     paid?: boolean
     notes?: string
     footageLink?: string
@@ -73917,6 +73958,7 @@ export namespace Prisma {
     assignedToId?: string | null
     status?: string
     rentAmount?: number
+    reelCount?: number
     paid?: boolean
     notes?: string
     requestedById?: string | null
@@ -84922,6 +84964,7 @@ export namespace Prisma {
     location?: string
     status?: string
     rentAmount?: number
+    reelCount?: number
     paid?: boolean
     notes?: string
     requestedById?: string | null
@@ -84948,6 +84991,7 @@ export namespace Prisma {
     assignedToId?: string | null
     status?: string
     rentAmount?: number
+    reelCount?: number
     paid?: boolean
     notes?: string
     footageLink?: string
@@ -85680,6 +85724,7 @@ export namespace Prisma {
     location?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
+    reelCount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
     footageLink?: StringFieldUpdateOperationsInput | string
@@ -85706,6 +85751,7 @@ export namespace Prisma {
     location?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
+    reelCount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
     requestedById?: NullableStringFieldUpdateOperationsInput | string | null
@@ -85731,6 +85777,7 @@ export namespace Prisma {
     location?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
+    reelCount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
     requestedById?: NullableStringFieldUpdateOperationsInput | string | null
@@ -85755,6 +85802,7 @@ export namespace Prisma {
     location?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
+    reelCount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
     footageLink?: StringFieldUpdateOperationsInput | string
@@ -85782,6 +85830,7 @@ export namespace Prisma {
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
+    reelCount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
     footageLink?: StringFieldUpdateOperationsInput | string
@@ -85807,6 +85856,7 @@ export namespace Prisma {
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
+    reelCount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
     footageLink?: StringFieldUpdateOperationsInput | string
@@ -86206,6 +86256,7 @@ export namespace Prisma {
     assignedToId?: string | null
     status?: string
     rentAmount?: number
+    reelCount?: number
     paid?: boolean
     notes?: string
     requestedById?: string | null
@@ -87179,6 +87230,7 @@ export namespace Prisma {
     location?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
+    reelCount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
     footageLink?: StringFieldUpdateOperationsInput | string
@@ -87205,6 +87257,7 @@ export namespace Prisma {
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
+    reelCount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
     requestedById?: NullableStringFieldUpdateOperationsInput | string | null
@@ -87230,6 +87283,7 @@ export namespace Prisma {
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     rentAmount?: IntFieldUpdateOperationsInput | number
+    reelCount?: IntFieldUpdateOperationsInput | number
     paid?: BoolFieldUpdateOperationsInput | boolean
     notes?: StringFieldUpdateOperationsInput | string
     requestedById?: NullableStringFieldUpdateOperationsInput | string | null

@@ -563,6 +563,7 @@ exports.Prisma.ShootScalarFieldEnum = {
   assignedToId: 'assignedToId',
   status: 'status',
   rentAmount: 'rentAmount',
+  reelCount: 'reelCount',
   paid: 'paid',
   notes: 'notes',
   requestedById: 'requestedById',

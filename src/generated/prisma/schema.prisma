@@ -668,7 +668,8 @@ model Shoot {
   assignedToId  String? // the shooter (Mallesh)
   assignedTo    User?    @relation("ShootAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
   status        String   @default("SCHEDULED") // SCHEDULED | IN_PROGRESS | COMPLETED | CANCELLED
-  rentAmount    Int      @default(0) // ₹ for Studio X rentals
+  rentAmount    Int      @default(0) // ₹ — rent for a Studio X rental, the amount for a WebRocz shoot
+  reelCount     Int      @default(0) // how many reels are to be made from this shoot
   paid          Boolean  @default(false)
   notes         String   @default("")
   requestedById String? // an AM who requested this WebRocz shoot (Raj then assigns a shooter)

@@ -815,7 +815,7 @@ export async function getShootBoard(userId: string, role: string) {
     renterName: s.renterName, phone: s.phone,
     date: s.date, startTime: s.startTime, endTime: s.endTime, locationType: s.locationType, location: s.location,
     assignee: s.assignedTo?.name ?? null, assignedToId: s.assignedToId,
-    status: s.status, rentAmount: s.rentAmount, paid: s.paid, notes: s.notes,
+    status: s.status, rentAmount: s.rentAmount, reelCount: s.reelCount, paid: s.paid, notes: s.notes,
     requestedBy: s.requestedBy?.name ?? null, footageLink: s.footageLink, handedOff: s.handedOff,
     conflict: conflicts[s.id] ?? null,
     followups: (() => { try { const a = JSON.parse(s.followupLog || "[]"); return Array.isArray(a) ? (a as { date: string; time?: string; by: string; note: string; via?: string }[]) : []; } catch { return []; } })(),

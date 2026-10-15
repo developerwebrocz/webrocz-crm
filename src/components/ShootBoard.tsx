@@ -16,7 +16,7 @@ type Row = {
   client: string | null; clientId: string | null; renterName: string; phone: string;
   date: string; startTime: string; endTime: string; locationType: string; location: string;
   assignee: string | null; assignedToId: string | null;
-  status: string; rentAmount: number; paid: boolean; notes: string;
+  status: string; rentAmount: number; reelCount?: number; paid: boolean; notes: string;
   requestedBy: string | null; footageLink: string; handedOff: boolean; conflict: string | null;
   followups?: ClientFollowup[]; // Phone / WhatsApp follow-ups logged on this shoot
 };
@@ -34,7 +34,7 @@ export default function ShootBoard({
 }) {
   const [cat, setCat] = useState<"ALL" | "WEBROCZ" | "STUDIO_RENT">("ALL");
   const [status, setStatus] = useState("ALL");
-  const [view, setView] = useState<"list" | "calendar" | "payments">("list");
+  const [view, setView] = useState<"list" | "calendar" | "payments">("calendar"); // the schedule first
   const [edit, setEdit] = useState<Row | null>(null);
   const [adding, setAdding] = useState(false);
   const [footageFor, setFootageFor] = useState<Row | null>(null);
@@ -100,7 +100,7 @@ export default function ShootBoard({
           ))}
         </div>
         <div className="ml-auto flex items-center gap-1 rounded-xl border border-[var(--line-2)] bg-[var(--surface-2)] p-1">
-          {([["list", List, "List"], ["calendar", CalendarDays, "Calendar"], ...(canManage ? [["payments", IndianRupee, "Payments"] as const] : [])] as const).map(([v, Icon, l]) => (
+          {([["calendar", CalendarDays, "Calendar"], ["list", List, "List"], ...(canManage ? [["payments", IndianRupee, "Payments"] as const] : [])] as const).map(([v, Icon, l]) => (
             <button key={v} onClick={() => setView(v)} className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12.5px] font-semibold transition ${view === v ? "bg-[var(--violet)] text-white shadow-sm" : "text-[var(--ink-2)] hover:bg-white"}`}><Icon size={14} /> {l}</button>
           ))}
         </div>
@@ -183,7 +183,10 @@ function ShootModal({ row, clientOptions, shooters, today, defaultAssignee = "",
             <input type="hidden" name="category" value={category} />
           </div>
 
-          <label className="block"><span className="eyebrow">Shoot title</span><input name="title" required defaultValue={row?.title} placeholder={isRent ? "e.g. Podcast rental — Acme" : "e.g. Product shoot — Bloom Clinic"} className="input mt-1.5" /></label>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <label className="block sm:col-span-2"><span className="eyebrow">Shoot title</span><input name="title" required defaultValue={row?.title} placeholder={isRent ? "e.g. Podcast rental — Acme" : "e.g. Product shoot — Bloom Clinic"} className="input mt-1.5" /></label>
+            <label className="block"><span className="eyebrow">Reel count</span><input type="number" min={0} name="reelCount" defaultValue={row?.reelCount || ""} placeholder="0" className="input mt-1.5" /></label>
+          </div>
 
           {isRent ? (
             <div className="grid gap-3 sm:grid-cols-2">
@@ -219,6 +222,10 @@ function ShootModal({ row, clientOptions, shooters, today, defaultAssignee = "",
           <label className="block"><span className="eyebrow">Assign shooter</span>
             <select name="assignedToId" defaultValue={row?.assignedToId ?? defaultAssignee} className="select mt-1.5"><option value="">— Unassigned —</option>{shooters.filter((m) => m.role !== "EDITOR" || m.shootTeam || m.id === row?.assignedToId || m.id === defaultAssignee).map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}</select>
           </label>
+
+          {!isRent && (
+            <label className="block"><span className="eyebrow">Amount (₹)</span><input type="number" min={0} name="rentAmount" defaultValue={row?.rentAmount || ""} placeholder="0" className="input mt-1.5" /></label>
+          )}
 
           {isRent && (
             <div className="grid items-end gap-3 sm:grid-cols-3">
@@ -495,7 +502,7 @@ function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, o
       </div>
       <div className="overflow-x-auto scroll-thin">
         <table className="w-full min-w-[1200px] text-left">
-          <thead><tr className="border-b border-[var(--line)]">{["Date & time", "Shoot", isRentSection ? "Renter" : "Client", "Location", "Shooter", "Note", "Follow-up", ...(isRentSection ? ["Rent"] : []), "Status", ...(canManage ? [""] : [])].map((h, i) => <th key={i} className="th px-4 py-2.5">{h}</th>)}</tr></thead>
+          <thead><tr className="border-b border-[var(--line)]">{["Date & time", "Shoot", isRentSection ? "Renter" : "Client", "Location", "Shooter", "Note", "Follow-up", isRentSection ? "Rent" : "Amount", "Status", ...(canManage ? [""] : [])].map((h, i) => <th key={i} className="th px-4 py-2.5">{h}</th>)}</tr></thead>
           <tbody>
             {rows.map((r) => {
               const st = SHOOT_STATUS[r.status as keyof typeof SHOOT_STATUS];
@@ -508,7 +515,7 @@ function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, o
                   </td>
                   <td className="px-4 py-3">
                     <div className="text-[13px] font-semibold">{r.title}</div>
-                    <div className="text-[11px] text-[var(--faint)] tnum">{r.code}</div>
+                    <div className="text-[11px] text-[var(--faint)] tnum">{r.code}{r.reelCount ? <span className="font-semibold text-[var(--ink-2)]"> · {r.reelCount} reel{r.reelCount === 1 ? "" : "s"}</span> : null}</div>
                     <div className="mt-1 flex flex-wrap gap-1">
                       {r.conflict && <span className="inline-flex items-center gap-1 rounded-full bg-[color-mix(in_srgb,var(--rose)_12%,white)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--rose)]"><CircleAlert size={9} /> {r.conflict}</span>}
                       {r.requestedBy && <span className="rounded-full bg-[color-mix(in_srgb,var(--violet)_12%,white)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--violet)]">{r.assignedToId ? "Requested by" : "New request ·"} {r.requestedBy}</span>}
@@ -543,6 +550,7 @@ function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, o
                       </div>
                     ) : null; })()}
                   </td>
+                  {!isRentSection && <td className="px-4 py-3 whitespace-nowrap text-[13px] font-semibold tnum">{r.rentAmount ? inr(r.rentAmount) : "—"}</td>}
                   {isRentSection && (
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="flex items-center gap-2">
