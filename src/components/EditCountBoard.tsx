@@ -220,7 +220,7 @@ export default function EditCountBoard({ d, me, clients, names = [], saved, team
             const c = color(e.id);
             const rank = ranked.findIndex((r) => r.id === e.id) + 1;
             return (
-              <button key={e.id} type="button" onClick={() => pick(e.id, maxDate)} className="card card-pad group text-left transition hover:shadow-[var(--shadow-md)]" style={{ borderTop: `3px solid ${c}` }} title={e.active ? "Click to update this count" : ""}>
+              <button key={e.id} type="button" onClick={() => { if (isDesign) window.location.href = `/design-work?designer=${e.id}&period=month`; else pick(e.id, maxDate); }} className="card card-pad group text-left transition hover:shadow-[var(--shadow-md)]" style={{ borderTop: `3px solid ${c}` }} title={isDesign ? `See ${e.name}'s work — clients, designs, assigned work` : e.active ? "Click to update this count" : ""}>
                 <div className="flex items-center gap-2.5">
                   <span className="grid h-9 w-9 flex-none place-items-center rounded-[10px] text-[12.5px] font-extrabold" style={{ background: tint(c, 14), color: c }}>{initials(e.name)}</span>
                   <div className="min-w-0 flex-1">
