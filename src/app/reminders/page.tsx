@@ -13,7 +13,7 @@ export default async function RemindersPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   if (!ROLES.includes(user.role)) redirect("/");
-  const rows = await getPaymentReminders();
+  const rows = await getPaymentReminders(user.role);
   return (
     <div className="space-y-5">
       <div>
@@ -21,7 +21,7 @@ export default async function RemindersPage() {
         <h1 className="mt-1.5 text-[26px] font-extrabold tracking-tight">Payment Reminders</h1>
         <p className="mt-1 max-w-2xl text-sm text-[var(--muted)]">The follow-ups you set, by their date. In a client’s or invoice’s Follow-up, write the note and pick “Follow up again on” (tomorrow, or any date) — it shows here on that day.</p>
       </div>
-      <PaymentReminders rows={rows} pageSize={25} />
+      <PaymentReminders rows={rows} pageSize={25} mineFirst={user.role === "SUPER_ADMIN"} />
     </div>
   );
 }

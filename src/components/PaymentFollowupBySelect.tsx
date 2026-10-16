@@ -7,7 +7,7 @@ export default function PaymentFollowupBySelect({ defaultValue }: { defaultValue
     <label className="block"><span className="eyebrow">Follow-up payment by</span>
       <select name="paymentFollowupBy" defaultValue={defaultValue ?? ""} className="select mt-1">
         <option value="">— Select —</option>
-        {PAYMENT_FOLLOWUP_BY.map((v) => <option key={v} value={v}>{v}</option>)}
+        {PAYMENT_FOLLOWUP_BY.map((v) => <option key={v} value={v}>{v === "Rajesh Sir" ? "Rajesh Sir (Super Admin)" : v}</option>)}
       </select>
     </label>
   );

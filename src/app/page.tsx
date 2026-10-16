@@ -48,19 +48,19 @@ export default async function DashboardPage({ searchParams }: PageProps<"/">) {
   if (user.role === "DM_HEAD") redirect("/dm");
   // Accountant → a dedicated finance dashboard (clients + invoices + employees).
   if (user.role === "ACCOUNTANT") {
-    const [d, reminders] = await Promise.all([getAccountantDashboard(), getPaymentReminders()]);
+    const [d, reminders] = await Promise.all([getAccountantDashboard(), getPaymentReminders(user.role)]);
     return <AccountantDashboard totals={d.totals} invoiceRows={d.invoiceRows} monthlyRows={d.monthlyRows} employees={d.employees} aging={d.aging} userName={user.name} reminders={reminders} />;
   }
   if (ADMIN_ROLES.includes(user.role)) {
     const period = (typeof sp.period === "string" ? sp.period : "month") as PeriodKey;
     // Super Admin sees the agency overview AND the full Accountant / Finance dashboard below it
     // (same view the Accountant gets) — one place for the whole business + finance.
-    const [fin, reminders] = await Promise.all([getAccountantDashboard(), getPaymentReminders()]);
+    const [fin, reminders] = await Promise.all([getAccountantDashboard(), getPaymentReminders(user.role)]);
     return (
       <div className="space-y-10">
         <AgencyDashboard period={period} />
         <div className="border-t-2 border-[var(--line)] pt-8">
-          <AccountantDashboard totals={fin.totals} invoiceRows={fin.invoiceRows} monthlyRows={fin.monthlyRows} employees={fin.employees} aging={fin.aging} userName={user.name} reminders={reminders} />
+          <AccountantDashboard totals={fin.totals} invoiceRows={fin.invoiceRows} monthlyRows={fin.monthlyRows} employees={fin.employees} aging={fin.aging} userName={user.name} reminders={reminders} mineFirst={user.role === "SUPER_ADMIN"} />
         </div>
       </div>
     );

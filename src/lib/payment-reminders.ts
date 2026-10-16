@@ -19,6 +19,7 @@ export type PaymentReminder = {
   contact: string; phone: string; company: string;
   balance: number; total: number; dueDate: string; issueDate: string;
   remindOn: string; // "" = no reminder set
+  followupBy: string; // who follows up the client's payments: "Rajesh Sir" (the Super Admin) | "Accountant" | ""
   lastNote: string; lastBy: string; lastOn: string; // the latest follow-up note, for context
 };
 
@@ -31,9 +32,16 @@ const latest = (json: string): Note => {
   } catch { return {}; }
 };
 
-export async function getPaymentReminders(): Promise<PaymentReminder[]> {
+// Whose follow-ups a person sees: a client marked "Rajesh Sir" (Edit info → Follow-up payment by)
+// is followed up by the Super Admin, so it is not in the accountant's reminders.
+export const RAJESH = "Rajesh Sir";
+export function remindersFor<T extends { followupBy: string }>(rows: T[], role: string): T[] {
+  return role === "ACCOUNTANT" ? rows.filter((r) => r.followupBy !== RAJESH) : rows;
+}
+
+export async function getPaymentReminders(role = ""): Promise<PaymentReminder[]> {
   const [clients, invoices] = await Promise.all([
-    prisma.client.findMany({ select: { id: true, name: true, pocName: true, pocMobile: true, billingCompany: true, nextFollowup: true, followupLog: true } }),
+    prisma.client.findMany({ select: { id: true, name: true, pocName: true, pocMobile: true, billingCompany: true, nextFollowup: true, followupLog: true, paymentFollowupBy: true } }),
     prisma.salesInvoice.findMany({ select: { id: true, clientId: true, number: true, billTo: true, contact: true, phone: true, total: true, received: true, issueDate: true, dueDate: true, nextFollowup: true, notesLog: true, company: true }, orderBy: { issueDate: "asc" } }),
   ]);
   // an invoice with no linked client belongs to the client with exactly its bill-to name
@@ -41,6 +49,7 @@ export async function getPaymentReminders(): Promise<PaymentReminder[]> {
   for (const c of clients) { const k = c.name.trim().toLowerCase(); byName.set(k, byName.has(k) ? "" : c.id); }
   const pending = invoices.filter((i) => i.total - i.received > 0).map((i) => ({ ...i, clientId: i.clientId || byName.get(i.billTo.trim().toLowerCase()) || null }));
   const out: PaymentReminder[] = [];
+  const followupByOf = new Map(clients.map((c) => [c.id, c.paymentFollowupBy] as const));
 
   // reminders set on a client
   const withClientReminder = new Set<string>();
@@ -56,7 +65,7 @@ export async function getPaymentReminders(): Promise<PaymentReminder[]> {
       contact: c.pocName ?? "", phone: c.pocMobile ?? "", company: c.billingCompany || mine[0]?.company || "",
       balance: mine.reduce((s, i) => s + (i.total - i.received), 0), total: mine.reduce((s, i) => s + i.total, 0),
       dueDate: mine.map(dueOf).filter(Boolean).sort()[0] ?? "", issueDate: "",
-      remindOn, lastNote: n.note ?? "", lastBy: n.by ?? "", lastOn: n.date ?? "",
+      remindOn, followupBy: c.paymentFollowupBy, lastNote: n.note ?? "", lastBy: n.by ?? "", lastOn: n.date ?? "",
     });
   }
 
@@ -70,20 +79,16 @@ export async function getPaymentReminders(): Promise<PaymentReminder[]> {
       key: `i-${i.id}`, kind: "invoice", id: i.id, clientId: i.clientId, name: i.billTo, label: i.number,
       contact: i.contact ?? "", phone: i.phone ?? "", company: i.company,
       balance: i.total - i.received, total: i.total, dueDate: dueOf(i), issueDate: i.issueDate,
-      remindOn: own, lastNote: n.note ?? "", lastBy: n.by ?? "", lastOn: (n.date ?? "").slice(0, 10),
+      remindOn: own, followupBy: (i.clientId && followupByOf.get(i.clientId)) || "", lastNote: n.note ?? "", lastBy: n.by ?? "", lastOn: (n.date ?? "").slice(0, 10),
     });
   }
-  return out;
+  return remindersFor(out, role);
 }
 
-// For the menu badge: reminders set for today or earlier (still to be followed up).
-export async function getPaymentReminderCount(): Promise<number> {
+// For the menu badge: reminders set for today or earlier that this person follows up — the
+// accountant's (not Rajesh Sir's), the Super Admin's own (Rajesh Sir's), everything for a Sub Admin.
+export async function getPaymentReminderCount(role = ""): Promise<number> {
   const today = todayIST();
-  const [clients, invoices] = await Promise.all([
-    prisma.client.findMany({ where: { nextFollowup: { not: "" } }, select: { nextFollowup: true, followupLog: true } }),
-    prisma.salesInvoice.findMany({ where: { nextFollowup: { not: null } }, select: { total: true, received: true, nextFollowup: true, notesLog: true } }),
-  ]);
-  const due = (d: string) => !!d && d <= today;
-  return clients.filter((c) => due(chosenClientFollowup(c.nextFollowup, parseNotes(c.followupLog)))).length
-    + invoices.filter((i) => i.total - i.received > 0 && due(chosenInvoiceFollowup(i.nextFollowup, parseNotes(i.notesLog)))).length;
+  const rows = (await getPaymentReminders(role)).filter((r) => role !== "SUPER_ADMIN" || r.followupBy === RAJESH);
+  return rows.filter((r) => r.remindOn && r.remindOn <= today).length;
 }

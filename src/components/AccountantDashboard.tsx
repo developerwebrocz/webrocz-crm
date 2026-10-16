@@ -24,7 +24,7 @@ type Aging = { current: number; d30: number; d60: number; d90: number; d90plus: 
 // Where a client name / Pay button should take you: the client's finance page (deep-open Pay if given).
 const clientHref = (r: Inv, pay = false) => r.clientId ? `/accounts/${r.clientId}${pay ? `?pay=${r.id}` : ""}` : `/invoices/${r.id}`;
 
-export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, employees, aging, userName, reminders = [] }: { totals: any; invoiceRows: Inv[]; monthlyRows: MonthRow[]; employees: Emp[]; aging: Aging; userName: string; reminders?: PaymentReminder[] }) {
+export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, employees, aging, userName, reminders = [], mineFirst = false }: { totals: any; invoiceRows: Inv[]; monthlyRows: MonthRow[]; employees: Emp[]; aging: Aging; userName: string; reminders?: PaymentReminder[]; mineFirst?: boolean }) {
   const [tab, setTab] = useState<"invoices" | "monthly" | "employees">("invoices");
   const [cat, setCat] = useState("ALL");
   // Starts on invoices with payment still pending; a fully paid invoice leaves this view (it is
@@ -102,7 +102,7 @@ export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, 
       </div>
 
       {/* reminder pipeline: the follow-ups the accountant set, by their date */}
-      <PaymentReminders rows={reminders} />
+      <PaymentReminders rows={reminders} mineFirst={mineFirst} />
 
       {/* finance KPIs */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">

@@ -54,7 +54,7 @@ async function AppShell({ user, userId, impersonatedBy, children }: { user: { na
     getMyOpenTaskCount(userId).catch(() => 0),
     getDueReminderCount().catch(() => 0),
     // accounts: payment reminders due today or late (menu badge)
-    (["SUPER_ADMIN", "SUB_ADMIN", "ACCOUNTANT"].includes(user.role) ? getPaymentReminderCount() : Promise.resolve(0)).catch(() => 0),
+    (["SUPER_ADMIN", "SUB_ADMIN", "ACCOUNTANT"].includes(user.role) ? getPaymentReminderCount(user.role) : Promise.resolve(0)).catch(() => 0),
   ]);
   // Designer / Editor: status counts for the sidebar pipeline shortcuts.
   const pipeline = (user.role === "DESIGNER" || user.role === "EDITOR")

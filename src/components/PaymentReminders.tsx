@@ -30,7 +30,11 @@ const STAGES: { key: Stage; label: string; hint: string; tone: string; icon: typ
 ];
 
 // `pageSize`: how many rows of a stage show before "Show all" (more on the full page).
-export default function PaymentReminders({ rows, pageSize: PAGE = 8 }: { rows: PaymentReminder[]; pageSize?: number }) {
+// `mineFirst` (Super Admin): open on the clients marked "Rajesh Sir" in Follow-up payment by, with
+// a switch to see everyone's.
+export default function PaymentReminders({ rows: allRows, pageSize: PAGE = 8, mineFirst = false }: { rows: PaymentReminder[]; pageSize?: number; mineFirst?: boolean }) {
+  const [onlyMine, setOnlyMine] = useState(mineFirst);
+  const rows = useMemo(() => (onlyMine ? allRows.filter((r) => r.followupBy === "Rajesh Sir") : allRows), [allRows, onlyMine]);
   const today = todayIST();
   const weekEnd = addDays(today, 7);
 
@@ -75,6 +79,13 @@ export default function PaymentReminders({ rows, pageSize: PAGE = 8 }: { rows: P
             <p className="text-[11.5px] text-[var(--muted)]">Follow-ups you set — “follow up again on …” in a client’s or invoice’s Follow-up brings it here on that date</p>
           </div>
         </div>
+        {mineFirst && (
+          <div className="inline-flex rounded-[9px] border border-[var(--line-2)] bg-[var(--surface-2)] p-0.5">
+            {([[true, "Rajesh Sir"], [false, "All"]] as const).map(([v, l]) => (
+              <button key={l} type="button" onClick={() => { setOnlyMine(v); setStage(null); }} className={`rounded-[7px] px-3 py-1 text-[12px] font-semibold ${onlyMine === v ? "bg-[var(--violet)] text-white" : "text-[var(--ink-2)]"}`}>{l}</button>
+            ))}
+          </div>
+        )}
         <span className="text-[12px] text-[var(--muted)]"><b className="tnum text-[var(--ink)]">{scheduled.length}</b> reminder{scheduled.length === 1 ? "" : "s"} set · <b className="tnum" style={{ color: "var(--amber)" }}>{by("overdue").length + by("today").length}</b> due now</span>
       </div>
 
