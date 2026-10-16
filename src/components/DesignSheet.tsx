@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { ExternalLink } from "lucide-react";
 import type { DesignSheetData } from "@/lib/design-sheet-queries";
 
 // The team's work as one sheet: pick the day / week / month and a client; click a person's
@@ -11,7 +12,7 @@ import type { DesignSheetData } from "@/lib/design-sheet-queries";
 
 const PERIODS = [["today", "Today"], ["yesterday", "Yesterday"], ["week", "This week"], ["month", "This month"]] as const;
 const fmt = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short", timeZone: "UTC" });
-const TONE: Record<string, string> = { Done: "var(--emerald)", "In progress": "var(--sky)", "In review": "var(--violet)", Pending: "var(--amber)", "No edit needed": "var(--muted)" };
+const TONE: Record<string, string> = { Done: "var(--emerald)", "In progress": "var(--sky)", "In review": "var(--violet)", Pending: "var(--amber)", "Sent for approval": "var(--violet)", Planned: "var(--muted)", "No edit needed": "var(--muted)" };
 const toneOf = (s: string) => TONE[s] ?? (/left$/.test(s) ? "var(--amber)" : "var(--muted)");
 const tint = (c: string, p: number) => `color-mix(in srgb, ${c} ${p}%, white)`;
 
@@ -87,7 +88,11 @@ export default function DesignSheet({ d, path = "/design-team", everyone = "All 
                   {d.showDate && <td className="whitespace-nowrap px-4 py-3 text-[var(--ink-2)]">{fmt(r.date)}</td>}
                   {!mine && <td className="px-4 py-3 font-medium text-[var(--ink)]">{r.designer}</td>}
                   <td className="px-4 py-3 text-[var(--ink)]">{r.client || <span className="text-[var(--faint)]">Not given</span>}</td>
-                  <td className="px-4 py-3 text-[var(--ink-2)]">{r.work}</td>
+                  <td className="px-4 py-3">
+                    <div className="font-medium text-[var(--ink)]">{r.work}</div>
+                    {r.detail && <div className="mt-0.5 text-[13px] text-[var(--muted)]">{r.detail}</div>}
+                    {r.link && <a href={r.link} target="_blank" rel="noopener noreferrer" className="mt-0.5 inline-flex items-center gap-1 text-[12.5px] font-medium text-[var(--violet)] hover:underline">Open files <ExternalLink size={12} /></a>}
+                  </td>
                   <td className="px-4 py-3 text-center font-semibold text-[var(--ink)] tnum">{r.count ?? <span className="font-normal text-[var(--faint)]">—</span>}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-[var(--ink-2)]">{r.by || <span className="text-[var(--faint)]">—</span>}</td>
                   <td className="whitespace-nowrap px-4 py-3"><span className="rounded-full px-2.5 py-1 text-[12px] font-medium" style={{ background: tint(toneOf(r.status), 12), color: toneOf(r.status) }}>{r.status}</span></td>

@@ -1901,8 +1901,8 @@ export async function getMyDashboard(userId: string, role: string) {
 // department -> the workTypes that belong to it (for report filtering)
 const DEPT_WORKTYPES: Record<string, string[]> = {
   SEO: ["blog", "ranking", "backlink", "audit"],
-  DESIGN: ["static", "carousel", "reel", "story"],
-  VIDEO: ["aiVideo", "reelEdit", "longVideo"],
+  DESIGN: ["static", "carousel", "reel", "story", "logo", "banner", "poster", "flyer", "adCreative"],
+  VIDEO: ["aiVideo", "reelEdit", "longVideo", "shortVideo", "adVideo", "podcast"],
   ACCOUNT: ["meeting", "report", "task"],
 };
 

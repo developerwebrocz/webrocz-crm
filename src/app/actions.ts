@@ -1120,6 +1120,10 @@ export async function createUpdate(fd: FormData) {
 
   revalidatePath("/");
   revalidatePath("/updates");
+  revalidatePath("/design-team");
+  revalidatePath("/video-team");
+  // designers / video editors stay on their Update Work page and see the line they just added
+  if (s(fd, "back") === "updates") redirect("/updates?saved=1");
   if (!clientId) redirect("/updates"); // logged for one of our own brands: there is no client page
   revalidatePath(`/clients/${clientId}`);
   redirect(`/clients/${clientId}`);

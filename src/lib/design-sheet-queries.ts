@@ -19,9 +19,9 @@ export const SHEET_PERIODS = [
 
 const shift = (day: string, n: number) => { const d = new Date(`${day}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 const norm = (v: string) => v.toLowerCase().replace(/\s+/g, " ").trim();
-const STATUS: Record<string, string> = { PENDING: "Pending", IN_PROGRESS: "In progress", REVIEW: "In review", COMPLETED: "Done" };
+const STATUS: Record<string, string> = { PENDING: "Pending", IN_PROGRESS: "In progress", REVIEW: "In review", COMPLETED: "Done", APPROVED: "Done", PLANNED: "Planned", PENDING_APPROVAL: "Sent for approval" };
 
-export type SheetRow = { key: string; date: string; designerId: string; designer: string; client: string; work: string; count: number | null; by: string; status: string; planned?: number; done?: number };
+export type SheetRow = { key: string; date: string; designerId: string; designer: string; client: string; work: string; count: number | null; by: string; status: string; planned?: number; done?: number; detail?: string; link?: string };
 
 // `kind`: the designers (default) or the video editors — the same sheet for both teams.
 // Video: "assigned by" comes from the video task, else the client videos (shoots) the lead gave.
@@ -91,11 +91,15 @@ export async function getDesignSheet(f: { period?: string; client?: string; desi
   });
   for (const u of reported) {
     const kindLabel = WORK_TYPES.find((w) => w.v === u.workType)?.l.replace(/ \((SMO|Video)\)$/, "") ?? u.workType;
-    const what = [kindLabel, u.title || u.detail].filter(Boolean).join(": ");
+    const client = u.client?.name ?? u.clientLabel ?? "";
+    const t = taskFor(u.userId, client);
+    if (t) usedTasks.add(t.id);
+    const p = t ? null : postingFor(u.userId, client);
     rows.push({
       key: `upd|${u.id}`, date: todayIST(u.date), designerId: u.userId, designer: nameOf.get(u.userId) ?? "",
-      client: u.client?.name ?? u.clientLabel ?? "", work: what, count: u.quantity, by: "Update Work",
-      status: u.status === "APPROVED" ? "Done" : STATUS[u.status] ?? (WORK_STATUS as Record<string, string>)[u.status] ?? u.status,
+      client, work: u.workType === "task" ? "Other" : kindLabel, detail: u.title || u.detail || "", link: /^https?:\/\//i.test(u.proofLink ?? "") ? u.proofLink! : "", count: u.quantity,
+      by: t ? (t.assignedByUser?.name ?? "") : p ? (p.updatedBy ? `${p.updatedBy} (weekly posts)` : "Weekly posts") : "Own work",
+      status: STATUS[u.status] ?? (WORK_STATUS as Record<string, string>)[u.status] ?? u.status,
     });
   }
 

@@ -7,6 +7,9 @@ import { redirect } from "next/navigation";
 import { createUpdate } from "@/app/actions";
 import { Eyebrow, Card } from "@/components/ui";
 import UpdateForm from "@/components/UpdateForm";
+import CreativeUpdateForm from "@/components/CreativeUpdateForm";
+import DesignSheet from "@/components/DesignSheet";
+import { getDesignSheet } from "@/lib/design-sheet-queries";
 import { WORK_STATUS } from "@/lib/domain";
 import { ClipboardList, CheckCircle2, Clock3 } from "lucide-react";
 
@@ -31,6 +34,24 @@ export default async function UpdatesPage({ searchParams }: PageProps<"/updates"
   const names = teamNames.filter((n) => !taken.has(n.toLowerCase()));
   // Match the report's "today" window (respects DEMO_DATE) so a saved update counts immediately.
   const today = `${now().getFullYear()}-${String(now().getMonth() + 1).padStart(2, "0")}-${String(now().getDate()).padStart(2, "0")}`;
+
+  // designers / video editors: a simple form for their work, and their work as a clear list
+  // (the same lines the Super Admin sees in Design Count / Editing Count)
+  if (user.role === "DESIGNER" || user.role === "EDITOR") {
+    const video = user.role === "EDITOR";
+    const q = (k: string) => (typeof sp[k] === "string" ? (sp[k] as string) : "");
+    const mine = await getDesignSheet({ period: q("period") || "week", client: q("client"), designer: user.id }, video ? "VIDEO" : "DESIGN");
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-[24px] font-semibold tracking-tight text-[var(--ink)]">Update work</h1>
+          <p className="mt-1 text-[14px] text-[var(--muted)]">{video ? "Add the videos you edit — client by client" : "Add the designs you make — client by client"}</p>
+        </div>
+        <CreativeUpdateForm dept={video ? "VIDEO" : "DESIGN"} clients={clients} names={names} today={mine.today} action={createUpdate} saved={q("saved") === "1"} />
+        <DesignSheet d={mine} path="/updates" mine title={video ? "My videos" : "My designs"} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5">
