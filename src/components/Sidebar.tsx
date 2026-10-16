@@ -134,6 +134,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
       { href: "/dm", label: "Marketing Clients", icon: UserCog },
       { href: "/calendar", label: "Calendar", icon: CalendarDays },
     ] });
+    const onVideo = ["/videos", "/client-videos", "/video-team"].some((p) => path === p || path.startsWith(p + "/"));
     const onDesign = ["/designs", "/design-postings", "/design-team"].some((p) => path === p || path.startsWith(p + "/"));
     groups.push({ label: "Delivery", items: [
       // "Designer" (Design Studio) opens its two pages underneath: Assigned Postings, Design Count
@@ -141,9 +142,11 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
         { href: "/design-postings", label: "Assigned Postings", icon: CalendarDays },
         { href: "/design-team", label: "Design Count", icon: ListOrdered },
       ] : [] },
-      { href: "/videos", label: "Video Studio", icon: Clapperboard },
-      { href: "/client-videos", label: "Client Videos", icon: Film },
-      { href: "/video-team", label: "Editing Count", icon: ListOrdered },
+      // "Video Editor" (Video Studio) opens its two pages underneath: Client Videos, Editing Count
+      { href: "/videos", label: "Video Editor", icon: Clapperboard, forceActive: onVideo, subItems: onVideo ? [
+        { href: "/client-videos", label: "Client Videos", icon: Film },
+        { href: "/video-team", label: "Editing Count", icon: ListOrdered },
+      ] : [] },
       { href: "/shoots", label: "Studiox Shoot", icon: Camera },
       { href: "/reports/creative", label: "Creative Report", icon: FileBarChart },
       { href: "/projects", label: "Developer Team", icon: Code2 },
