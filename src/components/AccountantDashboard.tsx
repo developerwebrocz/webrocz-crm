@@ -94,9 +94,9 @@ export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, 
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => setAddClient(true)} className="btn btn-ghost"><UserPlus size={16} /> Add Client</button>
-            <Link href="/accounts" prefetch className="btn btn-ghost"><Users size={16} /> Clients</Link>
-            <Link href="/expenses" prefetch className="btn btn-ghost"><Wallet size={16} /> Expenses</Link>
-            <Link href="/invoices" prefetch className="btn btn-violet"><ReceiptText size={16} /> All Invoices</Link>
+            <Link href="/accounts" className="btn btn-ghost"><Users size={16} /> Clients</Link>
+            <Link href="/expenses" className="btn btn-ghost"><Wallet size={16} /> Expenses</Link>
+            <Link href="/invoices" className="btn btn-violet"><ReceiptText size={16} /> All Invoices</Link>
           </div>
         </div>
       </div>
@@ -161,7 +161,7 @@ export default function AccountantDashboard({ totals, invoiceRows, monthlyRows, 
                 {invPaged.map((r, i) => (
                   <tr key={r.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
                     <td className="px-5 py-3 text-[12.5px] text-[var(--faint)] tnum">{start + i + 1}</td>
-                    <td className="px-5 py-3"><Link href={clientHref(r)} prefetch className="text-left text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.billTo}</Link><div className="text-[11px] text-[var(--faint)]">{r.phone || r.email || ""}</div></td>
+                    <td className="px-5 py-3"><Link href={clientHref(r)} className="text-left text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.billTo}</Link><div className="text-[11px] text-[var(--faint)]">{r.phone || r.email || ""}</div></td>
                     <td className="px-5 py-3"><CatChip c={r.category} /></td>
                     <td className="px-5 py-3 text-[12.5px] font-semibold">{r.number}</td>
                     <td className="px-5 py-3 text-[12.5px] text-[var(--muted)] tnum">{fmtDate(r.issueDate)}</td>

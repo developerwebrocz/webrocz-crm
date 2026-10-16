@@ -53,7 +53,7 @@ export default function SalesDashboard({ rows, dueReminders = [], pipeline: init
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2.5">
-            <Link href="/sales" prefetch className="btn btn-violet"><Plus size={16} /> Open Pipeline</Link>
+            <Link href="/sales" className="btn btn-violet"><Plus size={16} /> Open Pipeline</Link>
           </div>
         </div>
       </div>
@@ -61,7 +61,7 @@ export default function SalesDashboard({ rows, dueReminders = [], pipeline: init
       {/* KPI cards — click a card to open that stage */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-7">
         {SALES_STAGE_KEYS.map((k) => (
-          <Link key={k} href={stageHref(k)} prefetch className="card px-4 py-3.5 transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-sm)]" style={{ borderTop: `3px solid ${SALES_STAGE_TONE[k]}` }}>
+          <Link key={k} href={stageHref(k)} className="card px-4 py-3.5 transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-sm)]" style={{ borderTop: `3px solid ${SALES_STAGE_TONE[k]}` }}>
             <div className="text-[10.5px] font-semibold uppercase tracking-wide" style={{ color: SALES_STAGE_TONE[k] }}>{SALES_STAGES[k]}</div>
             <div className="mt-1.5 text-[26px] font-extrabold leading-none tnum">{counts[k] ?? 0}</div>
             <div className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--faint)]">Open <ArrowRight size={11} /></div>
@@ -71,14 +71,14 @@ export default function SalesDashboard({ rows, dueReminders = [], pipeline: init
 
       {/* category split — Website Development vs Digital Marketing */}
       <div className="grid gap-3 sm:grid-cols-2">
-        <Link href="/sales?category=WEBSITE" prefetch className="card card-pad flex items-center justify-between transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-sm)]" style={{ borderLeft: "4px solid var(--indigo)" }}>
+        <Link href="/sales?category=WEBSITE" className="card card-pad flex items-center justify-between transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-sm)]" style={{ borderLeft: "4px solid var(--indigo)" }}>
           <div>
             <div className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "var(--indigo)" }}>Website Development</div>
             <div className="mt-1 text-[24px] font-extrabold tnum">{cats.web}<span className="ml-1.5 text-[12px] font-semibold text-[var(--muted)]">leads</span></div>
           </div>
           <div className="text-right"><div className="text-[11px] text-[var(--muted)]">Won</div><div className="text-[15px] font-bold tnum" style={{ color: "var(--emerald)" }}>{inr(cats.webRev)}</div></div>
         </Link>
-        <Link href="/sales?category=DM" prefetch className="card card-pad flex items-center justify-between transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-sm)]" style={{ borderLeft: "4px solid var(--magenta)" }}>
+        <Link href="/sales?category=DM" className="card card-pad flex items-center justify-between transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-sm)]" style={{ borderLeft: "4px solid var(--magenta)" }}>
           <div>
             <div className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "var(--magenta)" }}>Digital Marketing</div>
             <div className="mt-1 text-[24px] font-extrabold tnum">{cats.dm}<span className="ml-1.5 text-[12px] font-semibold text-[var(--muted)]">leads</span></div>
@@ -95,7 +95,7 @@ export default function SalesDashboard({ rows, dueReminders = [], pipeline: init
             {onboarded.map((r) => {
               const k = serviceKind(r.services || []);
               return (
-                <Link key={r.id} href={`/sales/${r.id}`} prefetch className="flex flex-wrap items-center gap-x-3 gap-y-1 px-5 py-3 text-[13px] hover:bg-[var(--surface-2)]">
+                <Link key={r.id} href={`/sales/${r.id}`} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-5 py-3 text-[13px] hover:bg-[var(--surface-2)]">
                   <span className="font-semibold">{r.company || r.name}</span>
                   <span className="text-[var(--faint)]">· {r.updatedAt}</span>
                   <span className="ml-auto flex flex-wrap gap-1.5">
@@ -116,7 +116,7 @@ export default function SalesDashboard({ rows, dueReminders = [], pipeline: init
           <div className="mb-2.5 flex items-center gap-2 text-[13.5px] font-bold" style={{ color: "#92600a" }}><BellRing size={16} /> Reminders due ({reminders.length}) — follow up today</div>
           <div className="grid gap-1.5 sm:grid-cols-2">
             {reminders.slice(0, 8).map((rm) => (
-              <Link key={rm.id} href={`/sales/${rm.leadId}`} prefetch className="flex items-center gap-2 rounded-[8px] bg-white/70 px-3 py-2 text-[12.5px] hover:bg-white">
+              <Link key={rm.id} href={`/sales/${rm.leadId}`} className="flex items-center gap-2 rounded-[8px] bg-white/70 px-3 py-2 text-[12.5px] hover:bg-white">
                 <span className="font-semibold">{rm.leadName}</span>
                 <span className="rounded-full px-2 py-0.5 text-[10.5px] font-bold" style={{ background: rm.overdue ? "color-mix(in srgb,var(--rose) 15%,white)" : "color-mix(in srgb,var(--amber) 18%,white)", color: rm.overdue ? "var(--rose)" : "#92600a" }}>{rm.type} · {rm.date}{rm.overdue ? " · overdue" : " · today"}</span>
                 <span className="ml-auto font-semibold text-[var(--violet)]">Open →</span>

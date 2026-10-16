@@ -112,7 +112,7 @@ export default function PaymentReminders({ rows, pageSize: PAGE = 8 }: { rows: P
             <div key={r.key} className="px-5 py-3">
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                 <div className="min-w-0 flex-1 basis-[260px]">
-                  <Link href={open} prefetch className="block truncate text-[13.5px] font-bold text-[var(--violet)] hover:underline">{r.name}</Link>
+                  <Link href={open} className="block truncate text-[13.5px] font-bold text-[var(--violet)] hover:underline">{r.name}</Link>
                   <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11.5px] text-[var(--muted)]">
                     {r.kind === "invoice" ? <Link href={`/invoices/${r.id}`} className="font-semibold text-[var(--ink-2)] hover:underline">{r.label}</Link> : <span className="font-semibold text-[var(--ink-2)]">{r.label}</span>}
                     {COMPANIES[r.company] && <span className="rounded-full bg-[var(--surface-2)] px-1.5 py-px text-[10px] font-semibold">{COMPANIES[r.company].label}</span>}
@@ -138,7 +138,7 @@ export default function PaymentReminders({ rows, pageSize: PAGE = 8 }: { rows: P
                       <button type="submit" className="inline-flex h-8 items-center gap-1.5 rounded-[9px] border border-[var(--line-2)] bg-[var(--surface)] px-2.5 text-[12px] font-bold text-[var(--emerald)] hover:bg-[var(--surface-2)]" title="Followed up — remove this reminder"><Check size={13} /> Done</button>
                     </form>
                   )}
-                  {r.balance > 0 && <Link href={r.clientId ? `/accounts/${r.clientId}${r.kind === "invoice" ? `?pay=${r.id}` : ""}` : `/invoices/${r.id}`} prefetch className="grid h-8 w-8 place-items-center rounded-[9px] border border-[var(--line-2)] bg-[var(--surface)] text-[var(--emerald)] hover:bg-[var(--surface-2)]" title="Record the payment received"><IndianRupee size={13} /></Link>}
+                  {r.balance > 0 && <Link href={r.clientId ? `/accounts/${r.clientId}${r.kind === "invoice" ? `?pay=${r.id}` : ""}` : `/invoices/${r.id}`} className="grid h-8 w-8 place-items-center rounded-[9px] border border-[var(--line-2)] bg-[var(--surface)] text-[var(--emerald)] hover:bg-[var(--surface-2)]" title="Record the payment received"><IndianRupee size={13} /></Link>}
                 </div>
               </div>
               {editing === r.key && <RemindForm r={r} today={today} close={() => setEditing(null)} />}

@@ -31,7 +31,7 @@ export default function TopBar({ user, search, alerts }: {
   return (
     <header className="sticky top-0 z-40 h-16 border-b border-[var(--line)] bg-[var(--surface)]">
       <div className="flex h-16 items-center gap-4 px-4 sm:px-6">
-        <Link href="/" prefetch className="flex items-center">
+        <Link href="/" className="flex items-center">
           <Image src="/webrocz-horizontal.png" alt="WebRocz" width={175} height={45} className="h-[30px] w-auto object-contain" priority />
         </Link>
 
@@ -39,7 +39,7 @@ export default function TopBar({ user, search, alerts }: {
           {search && <GlobalSearch index={search} />}
           {alerts && <Notifications count={alerts.count} items={alerts.items} />}
           {(user.role === "SUPER_ADMIN" || user.role === "SUB_ADMIN" || user.role === "AM_HEAD" || user.role === "ACCOUNT_MANAGER" || user.role === "DM_EXEC") && (
-            <Link href="/clients/new" prefetch className="btn btn-violet !py-2.5 hidden sm:inline-flex">+ New client</Link>
+            <Link href="/clients/new" className="btn btn-violet !py-2.5 hidden sm:inline-flex">+ New client</Link>
           )}
 
           <div className="relative" ref={ref}>

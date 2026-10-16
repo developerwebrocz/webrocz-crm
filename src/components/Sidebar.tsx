@@ -261,7 +261,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
   const Row = ({ it, sub }: { it: Item; sub?: boolean }) => {
     const on = it.forceActive ?? active(it.href);
     return (
-      <Link href={it.href} prefetch aria-current={on ? "page" : undefined}
+      <Link href={it.href} aria-current={on ? "page" : undefined}
         className={`group relative flex items-center gap-3 rounded-[10px] ${sub ? "px-3 py-1.5 text-[12.5px]" : "px-3 py-2 text-[13.5px]"} font-medium transition-colors ${on ? "bg-[var(--sb-panel)] text-white" : "text-[var(--sb-muted-2)] hover:bg-white/[0.05] hover:text-white"}`}>
         {on && <span className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-[var(--violet-soft)]" />}
         <it.icon size={sub ? 15 : 17} className={`flex-none ${!it.iconColor ? (on ? "text-white" : "text-[var(--sb-muted)] group-hover:text-white") : ""}`} style={it.iconColor ? { color: it.iconColor } : undefined} />

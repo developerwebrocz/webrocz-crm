@@ -84,8 +84,8 @@ export default function FinancePayments({ rows }: { rows: Row[] }) {
           </div>
           <div className="flex items-center gap-2">
             <button onClick={exportCsv} className="btn btn-ghost"><Download size={15} /> Export CSV</button>
-            <Link href="/accounts" prefetch className="btn btn-ghost">Clients</Link>
-            <Link href="/" prefetch className="btn btn-ghost">← Dashboard</Link>
+            <Link href="/accounts" className="btn btn-ghost">Clients</Link>
+            <Link href="/" className="btn btn-ghost">← Dashboard</Link>
           </div>
         </div>
       </div>
@@ -122,7 +122,7 @@ export default function FinancePayments({ rows }: { rows: Row[] }) {
                 <tr key={r.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
                   <td className="px-5 py-3 text-[12.5px] text-[var(--faint)] tnum">{start + i + 1}</td>
                   <td className="px-5 py-3 text-[12.5px] tnum">{fmtDate(r.date)}</td>
-                  <td className="px-5 py-3 text-[13px] font-semibold">{r.clientId ? <Link href={`/accounts/${r.clientId}`} prefetch className="text-[var(--violet)] hover:underline">{r.clientName}</Link> : r.clientName}</td>
+                  <td className="px-5 py-3 text-[13px] font-semibold">{r.clientId ? <Link href={`/accounts/${r.clientId}`} className="text-[var(--violet)] hover:underline">{r.clientName}</Link> : r.clientName}</td>
                   <td className="px-5 py-3 text-[12.5px] font-semibold">{r.invoiceNumber || "—"}</td>
                   <td className="px-5 py-3"><CatChip c={r.category} /></td>
                   <td className="px-5 py-3 text-[13px] font-semibold tnum" style={{ color: "var(--emerald)" }}>{inr(r.amount)}</td>

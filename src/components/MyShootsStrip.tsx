@@ -34,7 +34,7 @@ export default async function MyShootsStrip({ userId }: { userId: string }) {
             <div className="text-[12px] text-[var(--muted)]">{shoots.length} shoot{shoots.length === 1 ? "" : "s"} to do — scheduled by Studio X</div>
           </div>
         </div>
-        <Link href="/shoots" prefetch className="btn btn-violet btn-sm">Open My Shoots</Link>
+        <Link href="/shoots" className="btn btn-violet btn-sm">Open My Shoots</Link>
       </div>
       <div className="divide-y divide-[var(--line)]">
         {shoots.map((s) => {

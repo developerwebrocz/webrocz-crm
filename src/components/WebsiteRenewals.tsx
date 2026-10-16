@@ -84,7 +84,7 @@ export default function WebsiteRenewals({ rows, counts, totals, embedded, locked
           <div className="flex items-center gap-2">
             <button onClick={() => setAddOpen(true)} className="btn btn-violet"><Plus size={15} /> Add website</button>
             <button onClick={exportCsv} className="btn btn-ghost"><Download size={15} /> Export CSV</button>
-            <Link href="/" prefetch className="btn btn-ghost">← Dashboard</Link>
+            <Link href="/" className="btn btn-ghost">← Dashboard</Link>
           </div>
         </div>
       </div>
@@ -121,7 +121,7 @@ export default function WebsiteRenewals({ rows, counts, totals, embedded, locked
                 return (
                 <tr key={r.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
                   <td className="px-5 py-3 text-[12.5px] text-[var(--faint)] tnum">{start + i + 1}</td>
-                  <td className="px-5 py-3"><Link href={`/accounts/${r.id}`} prefetch className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.name}</Link><div className="text-[11px] text-[var(--faint)]">{r.code}{r.phone ? ` · ${r.phone}` : ""}</div></td>
+                  <td className="px-5 py-3"><Link href={`/accounts/${r.id}`} className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.name}</Link><div className="text-[11px] text-[var(--faint)]">{r.code}{r.phone ? ` · ${r.phone}` : ""}</div></td>
                   <td className="px-5 py-3 text-[12.5px]">{r.domain ? <a href={r.domain.startsWith("http") ? r.domain : `https://${r.domain}`} target="_blank" rel="noreferrer" className="text-[var(--indigo)] hover:underline">{r.domain}</a> : "—"}</td>
                   <td className="px-5 py-3">{services.length ? <div className="flex flex-wrap gap-1">{services.map((sv) => <span key={sv} className="rounded-full bg-[color-mix(in_srgb,var(--violet)_12%,white)] px-2 py-0.5 text-[10.5px] font-bold text-[var(--violet)]">{sv}</span>)}</div> : <span className="text-[var(--faint)]">—</span>}</td>
                   <td className="px-5 py-3 text-[12.5px] tnum">
@@ -136,7 +136,7 @@ export default function WebsiteRenewals({ rows, counts, totals, embedded, locked
                   </td>
                   <td className="px-5 py-3 text-[13px] font-semibold tnum">{r.renewAmount > 0 ? inr(r.renewAmount) : "—"}</td>
                   <td className="px-5 py-3">
-                    <Link href={`/accounts/${r.id}`} prefetch className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><ReceiptText size={13} /> Invoice</Link>
+                    <Link href={`/accounts/${r.id}`} className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><ReceiptText size={13} /> Invoice</Link>
                   </td>
                   <td className="px-5 py-3">
                     <button onClick={() => setFuRow(r)} className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><MessageSquarePlus size={13} /> Follow-up</button>

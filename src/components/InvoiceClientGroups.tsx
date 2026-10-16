@@ -65,7 +65,7 @@ export default function InvoiceClientGroups({ rows, hideApproval, canDelete, ope
                         <ChevronRight size={15} className={`flex-none text-[var(--muted)] transition-transform ${shown ? "rotate-90" : ""}`} />
                         <div>
                           {g.clientId
-                            ? <Link href={`/accounts/${g.clientId}${g.company ? `?company=${g.company}` : ""}`} prefetch onClick={(e) => e.stopPropagation()} title="Open this client's page (all invoices, payments, notes)" className="whitespace-nowrap font-bold text-[var(--violet)] hover:underline">{g.name}</Link>
+                            ? <Link href={`/accounts/${g.clientId}${g.company ? `?company=${g.company}` : ""}`} onClick={(e) => e.stopPropagation()} title="Open this client's page (all invoices, payments, notes)" className="whitespace-nowrap font-bold text-[var(--violet)] hover:underline">{g.name}</Link>
                             : <div className="whitespace-nowrap font-bold text-[var(--ink)]">{g.name}</div>}
                           {(g.sub || showCompany) && <div className="text-[11.5px] text-[var(--faint)]">{[showCompany && g.company ? companyLabel(g.company) : "", g.sub].filter(Boolean).join(" · ")}</div>}
                         </div>
@@ -98,7 +98,7 @@ export default function InvoiceClientGroups({ rows, hideApproval, canDelete, ope
                       <td colSpan={cols} className="bg-[var(--surface-2)] px-4 pb-4 pt-2">
                         <div className="mb-2 flex items-center justify-between">
                           <span className="text-[11px] font-bold uppercase tracking-wide text-[var(--muted)]">{g.name} · {g.invoices.length} invoice{g.invoices.length === 1 ? "" : "s"}</span>
-                          {g.clientId && <Link href={`/accounts/${g.clientId}${g.company ? `?company=${g.company}` : ""}`} prefetch className="inline-flex items-center gap-1 text-[12px] font-semibold text-[var(--violet)] hover:underline"><ExternalLink size={12} /> Open client page</Link>}
+                          {g.clientId && <Link href={`/accounts/${g.clientId}${g.company ? `?company=${g.company}` : ""}`} className="inline-flex items-center gap-1 text-[12px] font-semibold text-[var(--violet)] hover:underline"><ExternalLink size={12} /> Open client page</Link>}
                         </div>
                         <div className="overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--surface)]">
                           <table className="w-full text-[12.5px]">
@@ -122,7 +122,7 @@ export default function InvoiceClientGroups({ rows, hideApproval, canDelete, ope
                                   <td className="px-4 py-2.5">
                                     <div className="flex items-center gap-1.5 whitespace-nowrap">
                                       <button onClick={() => onFollowup(r)} title="Follow-ups" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><MessageSquarePlus size={13} /> Follow-up{r.followups?.length > 0 && <span className="grid h-4 min-w-[16px] place-items-center rounded-full bg-[var(--violet)] px-1 text-[9px] font-bold text-white">{r.followups.length}</span>}</button>
-                                      <Link href={`/invoices/${r.id}`} prefetch title="Open & edit invoice" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><Pencil size={13} /> Edit</Link>
+                                      <Link href={`/invoices/${r.id}`} title="Open & edit invoice" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><Pencil size={13} /> Edit</Link>
                                       {canDelete && <button onClick={() => onDelete(r)} title="Delete invoice" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--rose)] hover:bg-[color-mix(in_srgb,var(--rose)_10%,white)]"><Trash2 size={13} /> Delete</button>}
                                     </div>
                                     {r.nextFollowup && r.nextFollowup !== g.nextFollowup && <div className="mt-1 text-[11px] font-bold text-[var(--rose)] tnum">next follow-up {fmtD(r.nextFollowup)}</div>}

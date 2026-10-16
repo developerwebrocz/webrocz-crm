@@ -66,7 +66,7 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
           const active = company === t.k;
           const c = companyCounts[t.k || "ALL"] ?? { count: 0, billed: 0 };
           return (
-            <Link key={t.k || "all"} href={tabHref(t.k)} prefetch className={`inline-flex items-center gap-1.5 rounded-[10px] border px-4 py-2 text-[13px] font-semibold transition ${active ? "border-transparent bg-[var(--violet)] text-white shadow-sm" : "border-[var(--line-2)] bg-[var(--surface)] text-[var(--ink-2)] hover:bg-[var(--surface-2)]"}`}>
+            <Link key={t.k || "all"} href={tabHref(t.k)} className={`inline-flex items-center gap-1.5 rounded-[10px] border px-4 py-2 text-[13px] font-semibold transition ${active ? "border-transparent bg-[var(--violet)] text-white shadow-sm" : "border-[var(--line-2)] bg-[var(--surface)] text-[var(--ink-2)] hover:bg-[var(--surface-2)]"}`}>
               {t.label}{t.k && <span className={`text-[10px] font-bold uppercase tracking-wide ${active ? "text-white/70" : "text-[var(--faint)]"}`}>{t.k === "WEB_ROCZ_PVT" ? "GST" : "No GST"}</span>}
               <span className={`grid h-[18px] min-w-[18px] place-items-center rounded-full px-1 text-[10px] font-bold tnum ${active ? "bg-white/25 text-white" : "bg-[var(--surface-2)] text-[var(--ink-2)]"}`}>{c.count}</span>
             </Link>

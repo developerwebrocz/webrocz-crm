@@ -139,7 +139,7 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
                 "All clients": that company's own clients list, not the all-companies page. */}
             <BackButton fallback={hubHref} />
             <button onClick={() => setEditOpen(true)} className="btn btn-ghost btn-sm"><Pencil size={14} /> Edit info</button>
-            <Link href={hubHref} prefetch className="btn btn-ghost btn-sm"><Users size={14} /> All clients</Link>
+            <Link href={hubHref} className="btn btn-ghost btn-sm"><Users size={14} /> All clients</Link>
           </div>
         </div>
       </div>
@@ -255,7 +255,7 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
                     <div className="flex justify-end gap-1.5">
                       {r.balance > 0 && <button onClick={() => setPayInv(r)} className="btn btn-sm btn-emerald"><IndianRupee size={13} /> Pay</button>}
                       {r.invoiceDoc && <a href={r.invoiceDoc} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm" title="View uploaded invoice document"><FileText size={13} /> Doc</a>}
-                      <Link href={`/invoices/${r.id}`} prefetch className="btn btn-ghost btn-sm">Open</Link>
+                      <Link href={`/invoices/${r.id}`} className="btn btn-ghost btn-sm">Open</Link>
                       {/* Super Admin: delete the invoice (its recorded payments go with it) — after a confirm */}
                       {canDelete && (
                         <form action={deleteSalesInvoice} onSubmit={(e) => { if (!window.confirm(`Delete invoice ${r.number} (₹${r.total.toLocaleString("en-IN")})?\n\nThis removes the invoice and its recorded payments. It cannot be undone.`)) e.preventDefault(); }}>
@@ -277,7 +277,7 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
       <div className="card !p-0 overflow-hidden">
         <div className="flex items-center justify-between border-b border-[var(--line)] px-5 py-3">
           <h2 className="flex items-center gap-1.5 text-[14px] font-bold"><FileSignature size={15} className="text-[var(--violet)]" /> SLAs ({slas.length})</h2>
-          <Link href="/sla" prefetch className="btn btn-ghost btn-sm">All SLAs</Link>
+          <Link href="/sla" className="btn btn-ghost btn-sm">All SLAs</Link>
         </div>
         <div className="overflow-x-auto scroll-thin">
           <table className="w-full min-w-[760px] text-left">

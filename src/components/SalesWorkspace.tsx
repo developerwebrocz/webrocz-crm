@@ -233,7 +233,7 @@ export default function SalesWorkspace({
                 {visible.map((r) => (
                   <Fragment key={r.id}>
                   <tr className="border-b border-[var(--line)] hover:bg-[var(--surface-2)]">
-                    <td className="px-5 py-3"><Link href={`/sales/${r.id}`} prefetch className="text-[13.5px] font-semibold hover:text-[var(--violet)]">{r.name}</Link><div className="text-[11px] text-[var(--faint)]">{r.code}{r.company ? ` · ${r.company}` : ""}</div></td>
+                    <td className="px-5 py-3"><Link href={`/sales/${r.id}`} className="text-[13.5px] font-semibold hover:text-[var(--violet)]">{r.name}</Link><div className="text-[11px] text-[var(--faint)]">{r.code}{r.company ? ` · ${r.company}` : ""}</div></td>
                     <td className="px-5 py-3 text-[12.5px] text-[var(--ink-2)]"><div>{r.contact || "—"}</div><div className="text-[11px] text-[var(--muted)] tnum">{r.phone}</div></td>
                     <td className="px-5 py-3"><span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-semibold" style={{ background: `color-mix(in srgb, ${SALES_STAGE_TONE[r.stage]} 12%, white)`, color: SALES_STAGE_TONE[r.stage] }}><span className="h-1.5 w-1.5 rounded-full" style={{ background: SALES_STAGE_TONE[r.stage] }} />{SALES_STAGES[r.stage as keyof typeof SALES_STAGES] ?? r.stage}</span></td>
                     <td className="px-5 py-3 text-[11.5px] text-[var(--muted)]"><CategoryChip services={r.services} /><div className="mt-1">{r.services.slice(0, 2).join(", ")}{r.services.length > 2 ? ` +${r.services.length - 2}` : ""}</div></td>
@@ -249,7 +249,7 @@ export default function SalesWorkspace({
                             {SALES_STAGE_KEYS.map((sk) => <option key={sk} value={sk}>{SALES_STAGES[sk]}</option>)}
                           </select>
                         </form>
-                        <Link href={`/sales/${r.id}`} prefetch className="inline-flex items-center gap-1 text-[12px] font-semibold text-[var(--violet)]">Open <ArrowRight size={13} /></Link>
+                        <Link href={`/sales/${r.id}`} className="inline-flex items-center gap-1 text-[12px] font-semibold text-[var(--violet)]">Open <ArrowRight size={13} /></Link>
                         <form action={deleteLead} onSubmit={(e) => { if (!confirm(`Delete lead "${r.name}"? This cannot be undone.`)) e.preventDefault(); }}>
                           <input type="hidden" name="id" value={r.id} />
                           <button title="Delete lead" className="grid h-7 w-7 place-items-center rounded-md border border-[var(--line-2)] text-[var(--rose)] hover:border-[var(--rose)]"><Trash2 size={13} /></button>

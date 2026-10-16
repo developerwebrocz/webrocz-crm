@@ -217,7 +217,7 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
                       <tbody>
                         {check.off.map((x) => (
                           <tr key={x.inv.id} className="border-b border-[var(--line)] last:border-0">
-                            <td className="px-5 py-2"><Link href={`/invoices/${x.inv.id}`} prefetch className="font-semibold text-[var(--violet)] hover:underline">{x.inv.number}</Link></td>
+                            <td className="px-5 py-2"><Link href={`/invoices/${x.inv.id}`} className="font-semibold text-[var(--violet)] hover:underline">{x.inv.number}</Link></td>
                             <td className="px-5 py-2">{x.inv.clientName}</td>
                             <td className="px-5 py-2 text-right tnum">{inr(x.inv.received)}</td>
                             <td className="px-5 py-2 text-right tnum">{inr(x.entries)}</td>
@@ -327,7 +327,7 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
                   {/* the day of the month the client is invoiced (1, 5, 10 …); else the latest invoice date */}
                   <td className="whitespace-nowrap px-5 py-2.5 tnum">{r.billingDay ? <span className="font-semibold">{r.billingDay}</span> : fmtDate(r.lastInvoiceDate)}</td>
                   <td className="px-5 py-2.5">
-                    {r.id ? <Link href={`/accounts/${r.id}${company !== "ALL" ? `?company=${company}` : r.companies.length === 1 ? `?company=${r.companies[0]}` : ""}`} prefetch className="font-semibold text-[var(--violet)] hover:underline">{r.name}</Link> : <span className="font-semibold">{r.name}</span>}
+                    {r.id ? <Link href={`/accounts/${r.id}${company !== "ALL" ? `?company=${company}` : r.companies.length === 1 ? `?company=${r.companies[0]}` : ""}`} className="font-semibold text-[var(--violet)] hover:underline">{r.name}</Link> : <span className="font-semibold">{r.name}</span>}
                     <div className="text-[11.5px] text-[var(--faint)]">{[r.code, r.phone].filter(Boolean).join(" · ")}</div>
                   </td>
                   <td className="px-5 py-2.5 text-[12px] text-[var(--ink-2)]">{r.companies.map(companyLabel).join(", ")}</td>
@@ -379,7 +379,7 @@ export default function PaymentsPipeline({ invoices, payments, clients, today, c
                   <td className="whitespace-nowrap px-5 py-2.5">{fmtDate(p.date)}</td>
                   <td className="px-5 py-2.5 font-semibold">{p.clientName}</td>
                   <td className="px-5 py-2.5 text-[12px] text-[var(--ink-2)]">{companyLabel(p.company)}</td>
-                  <td className="whitespace-nowrap px-5 py-2.5"><span className="inline-flex items-center gap-2"><Link href={`/invoices/${p.invoiceId}`} prefetch className="text-[var(--violet)] hover:underline">{p.invoiceNumber}</Link>{canDownload && <InvoiceDownloadButton invoiceId={p.invoiceId} number={p.invoiceNumber} clientName={p.clientName} compact />}</span></td>
+                  <td className="whitespace-nowrap px-5 py-2.5"><span className="inline-flex items-center gap-2"><Link href={`/invoices/${p.invoiceId}`} className="text-[var(--violet)] hover:underline">{p.invoiceNumber}</Link>{canDownload && <InvoiceDownloadButton invoiceId={p.invoiceId} number={p.invoiceNumber} clientName={p.clientName} compact />}</span></td>
                   <td className="px-5 py-2.5 text-right font-semibold tnum" style={{ color: "var(--emerald)" }}>{inr(p.amount)}</td>
                   <td className="px-5 py-2.5">{MODE[p.mode] ?? p.mode}</td>
                   <td className="px-5 py-2.5 text-[12px] text-[var(--ink-2)]">{p.ref && !p.ref.startsWith("/uploads/") ? p.ref : p.ref ? <a href={p.ref} target="_blank" rel="noreferrer" className="text-[var(--violet)] hover:underline">Proof</a> : "—"}</td>

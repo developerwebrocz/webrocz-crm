@@ -177,13 +177,13 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {lockedCompany && <Link href={`/invoices?company=${lockedCompany}`} prefetch className="btn btn-ghost"><ReceiptText size={15} /> Invoices</Link>}
+            {lockedCompany && <Link href={`/invoices?company=${lockedCompany}`} className="btn btn-ghost"><ReceiptText size={15} /> Invoices</Link>}
             {/* Add Client only on the company pipelines (company + GST fixed there); hidden on All Clients and DM Clients. */}
             {lockedCompany && <button onClick={() => setAddOpen(true)} className="btn btn-violet"><UserPlus size={15} /> Add Client</button>}
             {(lockedCompany === "WEB_ROCZ" || lockedCompany === "WEB_ROCZ_PVT") && <button onClick={() => setClientImportOpen(true)} title="Add client details from a sheet — no invoices" className="btn btn-ghost"><Upload size={15} /> Import clients</button>}
           {lockedCompany && <button onClick={() => setImportOpen(true)} className="btn btn-ghost"><Upload size={15} /> Import</button>}
             <button onClick={exportCsv} className="btn btn-ghost"><Download size={15} /> Export CSV</button>
-            <Link href="/" prefetch className="btn btn-ghost">← Dashboard</Link>
+            <Link href="/" className="btn btn-ghost">← Dashboard</Link>
           </div>
         </div>
       </div>
@@ -233,7 +233,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
                       ? <span className="font-semibold">{r.billingDay}</span>
                       : fmtDate(r.lastInvoiceDate)}
                   </td>
-                  <td className="px-5 py-3"><Link href={companySel !== "ALL" ? `/accounts/${r.id}?company=${companySel}` : `/accounts/${r.id}`} prefetch className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.name}</Link>{r.companies.length > 0 && lockedCompany !== "WEB_ROCZ" && lockedCompany !== "WEB_ROCZ_PVT" && <div className="text-[11px] text-[var(--faint)]">{r.companies.map(companyLabel).join(", ")}</div>}</td>
+                  <td className="px-5 py-3"><Link href={companySel !== "ALL" ? `/accounts/${r.id}?company=${companySel}` : `/accounts/${r.id}`} className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.name}</Link>{r.companies.length > 0 && lockedCompany !== "WEB_ROCZ" && lockedCompany !== "WEB_ROCZ_PVT" && <div className="text-[11px] text-[var(--faint)]">{r.companies.map(companyLabel).join(", ")}</div>}</td>
                   {showDomain && <td className="px-5 py-3 text-[12px]">{r.domain ? <span className="inline-flex items-center gap-1 font-semibold text-[var(--indigo)]"><Globe size={11} /> {r.domain}</span> : <span className="text-[var(--faint)]">—</span>}</td>}
                   <td className="px-5 py-3 text-[12.5px] tnum">{r.phone || "—"}</td>
                   {showEmail && <td className="px-5 py-3 text-[12.5px]">{r.email ? <a href={`mailto:${r.email}`} className="text-[var(--indigo)] hover:underline">{r.email}</a> : "—"}</td>}
@@ -248,7 +248,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-1.5">
                       <button onClick={() => setFuRow(r)} title="Follow-up" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><MessageSquarePlus size={13} /> Follow-up{r.clientFollowups.length > 0 && <span className="grid h-4 min-w-[16px] place-items-center rounded-full bg-[var(--violet)] px-1 text-[9px] font-bold text-white">{r.clientFollowups.length}</span>}</button>
-                      <Link href={companySel !== "ALL" ? `/accounts/${r.id}?company=${companySel}` : `/accounts/${r.id}`} prefetch title="Edit info & invoices" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><Pencil size={13} /> Edit</Link>
+                      <Link href={companySel !== "ALL" ? `/accounts/${r.id}?company=${companySel}` : `/accounts/${r.id}`} title="Edit info & invoices" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><Pencil size={13} /> Edit</Link>
                       {canDelete && <button onClick={() => setDelRow(r)} title="Delete client" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--rose)] hover:bg-[color-mix(in_srgb,var(--rose)_10%,white)]"><Trash2 size={13} /> Delete</button>}
                     </div>
                     {r.nextFollowup && <div className="mt-1 whitespace-nowrap text-[11px] font-bold text-[var(--rose)] tnum">next follow-up {fmtDate(r.nextFollowup)}</div>}

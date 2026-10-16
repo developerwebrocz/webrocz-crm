@@ -70,7 +70,7 @@ export default function FinanceReports({ monthly, topClients, modes, totals, com
               <span className="text-[12px] text-[var(--muted)]">to</span>
               <input type="date" value={to} onChange={(e) => go("CUSTOM", from, e.target.value)} className="input !w-auto !py-2" aria-label="To date" />
             </>)}
-            <Link href="/" prefetch className="btn btn-ghost">← Dashboard</Link>
+            <Link href="/" className="btn btn-ghost">← Dashboard</Link>
           </div>
         </div>
       </div>

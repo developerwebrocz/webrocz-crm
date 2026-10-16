@@ -53,7 +53,7 @@ export default function SlaBoard({ rows, counts, totals, canUpload, canGenerate 
           <div className="flex items-center gap-2">
             {canUpload && <button onClick={() => setAddOpen(true)} className="btn btn-violet"><Upload size={15} /> Upload SLA</button>}
             <button onClick={exportCsv} className="btn btn-ghost"><Download size={15} /> Export CSV</button>
-            <Link href="/" prefetch className="btn btn-ghost">← Dashboard</Link>
+            <Link href="/" className="btn btn-ghost">← Dashboard</Link>
           </div>
         </div>
       </div>
@@ -84,7 +84,7 @@ export default function SlaBoard({ rows, counts, totals, canUpload, canGenerate 
               {filtered.map((r, i) => (
                 <tr key={r.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
                   <td className="px-5 py-3 text-[12.5px] text-[var(--faint)] tnum">{i + 1}</td>
-                  <td className="px-5 py-3">{r.matched ? <Link href={`/accounts/${r.clientId}`} prefetch className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.clientName}</Link> : <span className="text-[13px] font-semibold">{r.clientName}<span className="ml-1.5 rounded-full bg-[var(--surface-2)] px-1.5 py-0.5 text-[9.5px] font-bold uppercase tracking-wide text-[var(--muted)]">new</span></span>}<div className="text-[11px] text-[var(--faint)]">{r.clientCode ? `${r.clientCode} · ` : ""}{r.uploadedBy ? `by ${r.uploadedBy} · ` : ""}{fmtDate(r.createdAt)}</div></td>
+                  <td className="px-5 py-3">{r.matched ? <Link href={`/accounts/${r.clientId}`} className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.clientName}</Link> : <span className="text-[13px] font-semibold">{r.clientName}<span className="ml-1.5 rounded-full bg-[var(--surface-2)] px-1.5 py-0.5 text-[9.5px] font-bold uppercase tracking-wide text-[var(--muted)]">new</span></span>}<div className="text-[11px] text-[var(--faint)]">{r.clientCode ? `${r.clientCode} · ` : ""}{r.uploadedBy ? `by ${r.uploadedBy} · ` : ""}{fmtDate(r.createdAt)}</div></td>
                   <td className="px-5 py-3 text-[12.5px]">{r.title || "—"}</td>
                   <td className="px-5 py-3 text-[12px]"><span className="rounded-full px-2 py-0.5 text-[10.5px] font-bold" style={{ background: `color-mix(in srgb, ${r.service === "DM" ? "var(--magenta)" : "var(--indigo)"} 12%, white)`, color: r.service === "DM" ? "var(--magenta)" : "var(--indigo)" }}>{r.service === "DM" ? "Digital Marketing" : "Website"}</span></td>
                   <td className="px-5 py-3 text-[13px] font-semibold tnum">{inr(r.amount)}</td>

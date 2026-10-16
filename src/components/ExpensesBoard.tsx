@@ -27,7 +27,7 @@ export default function ExpensesBoard({ expenses, canDelete }: { expenses: Exp; 
         </div>
         <div className="flex gap-2">
           <button onClick={() => setAddOpen(true)} className="btn btn-violet"><Plus size={16} /> Add expense</button>
-          <Link href="/" prefetch className="btn btn-ghost">← Dashboard</Link>
+          <Link href="/" className="btn btn-ghost">← Dashboard</Link>
         </div>
       </div>
 

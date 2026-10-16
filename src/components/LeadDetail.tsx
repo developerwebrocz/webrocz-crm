@@ -55,7 +55,7 @@ export default function LeadDetail({ lead, execs, developers = [], dmPeople = []
 
   return (
     <div className="space-y-5">
-      <Link href="/sales" prefetch className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--muted)] hover:text-[var(--ink)]"><ArrowLeft size={15} /> Back to pipeline</Link>
+      <Link href="/sales" className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--muted)] hover:text-[var(--ink)]"><ArrowLeft size={15} /> Back to pipeline</Link>
 
       {/* what-to-do-next guidance */}
       {STAGE_HINT[lead.stage] && (
@@ -136,7 +136,7 @@ export default function LeadDetail({ lead, execs, developers = [], dmPeople = []
         {lead.stage === "ONBOARDED" && (
           <div className="mt-4 flex flex-wrap items-center gap-3 rounded-[10px] border border-[var(--line)] bg-[color-mix(in_srgb,var(--emerald)_5%,white)] p-3 text-[12.5px]">
             <span><b style={{ color: "var(--emerald)" }}>Onboarded</b> · {inr(lead.finalAmount)} · {lead.paymentStatus || "—"} · start {lead.startDate || "—"} · internal projects created.</span>
-            <Link href={`/sales/${lead.id}/invoice`} prefetch className="btn btn-violet btn-sm ml-auto"><FileText size={14} /> Invoice</Link>
+            <Link href={`/sales/${lead.id}/invoice`} className="btn btn-violet btn-sm ml-auto"><FileText size={14} /> Invoice</Link>
           </div>
         )}
       </div>
