@@ -12,14 +12,15 @@ const fmt = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString("en
 const TONE: Record<string, string> = { Done: "var(--emerald)", "In progress": "var(--sky)", "In review": "var(--violet)", Pending: "var(--amber)" };
 const tint = (c: string, p: number) => `color-mix(in srgb, ${c} ${p}%, white)`;
 
-export default function DesignSheet({ d }: { d: DesignSheetData }) {
+// `path`: the page it sits on (Design Count / Editing Count); `team`: the word for the people.
+export default function DesignSheet({ d, path = "/design-team", everyone = "All designers", person = "Designer" }: { d: DesignSheetData; path?: string; everyone?: string; person?: string }) {
   const router = useRouter();
   const sp = useSearchParams();
   const go = (patch: Record<string, string>) => {
     const p = new URLSearchParams(sp.toString());
     p.delete("saved");
     for (const [k, v] of Object.entries(patch)) { if (v) p.set(k, v); else p.delete(k); }
-    router.push(`/design-team?${p.toString()}`, { scroll: false });
+    router.push(`${path}?${p.toString()}`, { scroll: false });
   };
   const periodLabel = PERIODS.find(([k]) => k === d.period)?.[1] ?? "Today";
 
@@ -40,7 +41,7 @@ export default function DesignSheet({ d }: { d: DesignSheetData }) {
 
       {/* designers — click one to see only their work */}
       <div className="grid gap-2.5" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))" }}>
-        {[{ id: "", name: "All designers", total: d.allTotal, notUpdated: false, lead: false }, ...d.people].map((p) => {
+        {[{ id: "", name: everyone, total: d.allTotal, notUpdated: false, lead: false }, ...d.people].map((p) => {
           const on = d.designerQ === p.id;
           return (
             <button key={p.id || "all"} type="button" onClick={() => go({ designer: p.id })}
@@ -62,7 +63,7 @@ export default function DesignSheet({ d }: { d: DesignSheetData }) {
             <thead>
               <tr className="border-b border-[var(--line)] bg-[var(--surface-2)] text-left text-[12px] font-semibold text-[var(--muted)]">
                 {d.showDate && <th className="px-4 py-2.5">Date</th>}
-                <th className="px-4 py-2.5">Designer</th><th className="px-4 py-2.5">Client</th><th className="px-4 py-2.5">Work</th>
+                <th className="px-4 py-2.5">{person}</th><th className="px-4 py-2.5">Client</th><th className="px-4 py-2.5">Work</th>
                 <th className="px-4 py-2.5 text-center">How many</th><th className="px-4 py-2.5">Assigned by</th><th className="px-4 py-2.5">Status</th>
               </tr>
             </thead>

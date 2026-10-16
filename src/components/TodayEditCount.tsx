@@ -4,7 +4,8 @@ import { todayIST } from "@/lib/india-date";
 import { saveEditCount } from "@/app/edit-count-actions";
 import CountStepper from "@/components/CountStepper";
 import DesignWorkEditor from "@/components/DesignWorkEditor";
-import { parseDesignItems, groupByClient } from "@/lib/design-work";
+import { parseDesignItems, groupByClient, workTypesFor } from "@/lib/design-work";
+import { getVideoTeamNames } from "@/lib/video-job-queries";
 import { TEAMS, cap, type TeamInfo } from "@/lib/team-kinds";
 import { Film, CheckCircle2, Clock3, ArrowRight, Save } from "lucide-react";
 
@@ -19,11 +20,13 @@ export default async function TodayEditCount({ userId, team = TEAMS.VIDEO }: { u
   const month = today.slice(0, 7);
   const weekAgo = new Date(new Date(`${today}T00:00:00Z`).getTime() - 6 * 86400000).toISOString().slice(0, 10);
   const from = weekAgo < `${month}-01` ? weekAgo : `${month}-01`;
-  const isDesign = team.kind === "DESIGN";
-  const [rows, clientRows] = await Promise.all([
+  const isDesign = true; // both teams log today client by client
+  const [rows, clientRows, teamNames] = await Promise.all([
     prisma.editCount.findMany({ where: { userId, date: { gte: from, lte: today } }, select: { date: true, count: true, note: true, items: true } }),
     // designers name the client of each design
-    isDesign ? prisma.client.findMany({ where: { status: { not: "UPCOMING" } }, select: { name: true }, orderBy: { name: "asc" } }) : Promise.resolve([] as { name: string }[]),
+    prisma.client.findMany({ where: { status: { not: "UPCOMING" } }, select: { name: true }, orderBy: { name: "asc" } }),
+    // the video team also works for the agency's own brands and names it added
+    team.kind === "VIDEO" ? getVideoTeamNames() : Promise.resolve([] as string[]),
   ]);
   const by = new Map(rows.map((r) => [r.date, r]));
   const mine = by.get(today);
@@ -61,8 +64,8 @@ export default async function TodayEditCount({ userId, team = TEAMS.VIDEO }: { u
             {/* count + save on one line, the note under it — reads well at any width */}
             {isDesign ? (
               <div>
-                <span className="eyebrow">What did you design today — client by client</span>
-                <div className="mt-1.5"><DesignWorkEditor key={mine ? `${mine.count}|${mineItems.length}` : "new"} clientNames={clientRows.map((c) => c.name)} defaultItems={mineItems} defaultCount={mine && !mineItems.length ? mine.count : null} big /></div>
+                <span className="eyebrow">What did you {team.kind === "DESIGN" ? "design" : "edit"} today — client by client</span>
+                <div className="mt-1.5"><DesignWorkEditor key={mine ? `${mine.count}|${mineItems.length}` : "new"} clientNames={[...teamNames, ...clientRows.map((c) => c.name)]} types={workTypesFor(team.kind)} noun={team.one} defaultItems={mineItems} defaultCount={mine && !mineItems.length ? mine.count : null} big /></div>
               </div>
             ) : (
               <div className="flex flex-wrap items-end gap-3">

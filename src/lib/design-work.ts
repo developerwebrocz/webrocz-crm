@@ -3,6 +3,9 @@
 // Plain module (no server-only): used by the forms in the browser and by the server.
 
 export const DESIGN_WORK_TYPES = ["Post", "Carousel", "Story", "Reel cover", "Banner", "Ad creative", "Logo", "Brochure / Flyer", "Other"] as const;
+// the video team logs its day the same way (client · kind of video · how many)
+export const VIDEO_WORK_TYPES = ["Reel", "Short video", "Intro", "Walkthrough", "Testimonial", "YouTube video", "Ad video", "Podcast", "Other"] as const;
+export const workTypesFor = (kind: string): readonly string[] => (kind === "VIDEO" ? VIDEO_WORK_TYPES : DESIGN_WORK_TYPES);
 
 export type DesignWorkItem = { client: string; type: string; count: number };
 

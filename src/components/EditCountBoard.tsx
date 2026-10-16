@@ -9,7 +9,7 @@ import AssignCreativeForm from "@/components/AssignCreativeForm";
 import { initials } from "@/lib/domain";
 import { TEAMS, cap, type TeamInfo } from "@/lib/team-kinds";
 import DesignWorkEditor from "@/components/DesignWorkEditor";
-import { designItemsLine, groupByClient } from "@/lib/design-work";
+import { designItemsLine, groupByClient, workTypesFor } from "@/lib/design-work";
 
 // A team's daily count — video editors ("Editing Count") or designers ("Design Count"): the
 // month's count-per-day for each member (the old Google
@@ -71,7 +71,7 @@ export default function EditCountBoard({ d, me, clients, names = [], saved, team
   const hasData = Object.keys(d.cells).length > 0;
   const notUpdated = d.isCurrentMonth ? activeEditors.filter((e) => e.today === null && e.id !== me.id) : [];
   const histMax = Math.max(1, ...d.history.map((h) => h.total));
-  const isDesign = tm.kind === "DESIGN";
+  const isDesign = true; // both teams log their day client by client now
   // what a day's entry was: the client lines (designers), else the note
   const workLine = (c?: { note: string; items: { client: string; type: string; count: number }[] }) => (c ? (c.items.length ? designItemsLine(c.items) : c.note) : "");
 
@@ -220,7 +220,7 @@ export default function EditCountBoard({ d, me, clients, names = [], saved, team
             const c = color(e.id);
             const rank = ranked.findIndex((r) => r.id === e.id) + 1;
             return (
-              <button key={e.id} type="button" onClick={() => { if (isDesign) { window.location.href = `/design-team?designer=${e.id}&period=month`; } else pick(e.id, maxDate); }} className="card card-pad group text-left transition hover:shadow-[var(--shadow-md)]" style={{ borderTop: `3px solid ${c}` }} title={isDesign ? `See ${e.name}'s work — clients, designs, assigned work` : e.active ? "Click to update this count" : ""}>
+              <button key={e.id} type="button" onClick={() => { if (isDesign) { window.location.href = `${tm.path}?designer=${e.id}&period=month`; } else pick(e.id, maxDate); }} className="card card-pad group text-left transition hover:shadow-[var(--shadow-md)]" style={{ borderTop: `3px solid ${c}` }} title={isDesign ? `See ${e.name}'s work — clients, designs, assigned work` : e.active ? "Click to update this count" : ""}>
                 <div className="flex items-center gap-2.5">
                   <span className="grid h-9 w-9 flex-none place-items-center rounded-[10px] text-[12.5px] font-extrabold" style={{ background: tint(c, 14), color: c }}>{initials(e.name)}</span>
                   <div className="min-w-0 flex-1">
@@ -281,8 +281,8 @@ export default function EditCountBoard({ d, me, clients, names = [], saved, team
               <>
                 {/* designers: which client, what design, how many — the day's number is the total */}
                 <div className="sm:col-span-2">
-                  <span className="eyebrow">What was designed — client by client</span>
-                  <div className="mt-1.5"><DesignWorkEditor clientNames={clients.map((c) => c.name)} defaultItems={cell?.items ?? []} defaultCount={cell && !cell.items.length ? cell.count : null} /></div>
+                  <span className="eyebrow">What was {tm.kind === "DESIGN" ? "designed" : "edited"} — client by client</span>
+                  <div className="mt-1.5"><DesignWorkEditor clientNames={[...names, ...clients.map((c) => c.name)]} defaultItems={cell?.items ?? []} defaultCount={cell && !cell.items.length ? cell.count : null} types={workTypesFor(tm.kind)} noun={tm.one} /></div>
                 </div>
                 <div className="flex flex-wrap items-end gap-3 sm:col-span-2">
                   <label className="block min-w-[220px] flex-1"><span className="eyebrow">Note (optional)</span><input name="note" maxLength={300} defaultValue={cell?.note ?? ""} placeholder="e.g. half day, waiting for client content…" className="input mt-1.5" /></label>
@@ -394,7 +394,7 @@ export default function EditCountBoard({ d, me, clients, names = [], saved, team
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--line)] px-5 py-3.5">
             <div>
               <div className="text-[14px] font-bold">By client · {d.monthLabel}</div>
-              <div className="text-[11.5px] text-[var(--muted)]">How many designs each client got this month, and from which designer</div>
+              <div className="text-[11.5px] text-[var(--muted)]">How many {tm.many} each client got this month, and from whom</div>
             </div>
             <span className="pill">{d.byClient.length} client{d.byClient.length === 1 ? "" : "s"}</span>
           </div>

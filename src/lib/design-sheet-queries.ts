@@ -22,7 +22,9 @@ const STATUS: Record<string, string> = { PENDING: "Pending", IN_PROGRESS: "In pr
 
 export type SheetRow = { key: string; date: string; designerId: string; designer: string; client: string; work: string; count: number | null; by: string; status: string };
 
-export async function getDesignSheet(f: { period?: string; client?: string; designer?: string }) {
+// `kind`: the designers (default) or the video editors — the same sheet for both teams.
+// Video: "assigned by" comes from the video task, else the client videos (shoots) the lead gave.
+export async function getDesignSheet(f: { period?: string; client?: string; designer?: string }, kind: "DESIGN" | "VIDEO" = "DESIGN") {
   const today = todayIST();
   const period = SHEET_PERIODS.some((p) => p.key === f.period) ? f.period! : "today";
   const dow = (new Date(`${today}T00:00:00Z`).getUTCDay() + 6) % 7; // Monday = 0
@@ -31,19 +33,28 @@ export async function getDesignSheet(f: { period?: string; client?: string; desi
     : period === "month" ? { from: `${today.slice(0, 7)}-01`, to: today }
     : { from: today, to: today };
 
-  const designers = await prisma.user.findMany({ where: { role: "DESIGNER", active: true }, select: { id: true, name: true, teamLead: true }, orderBy: { name: "asc" } });
+  const designers = await prisma.user.findMany({ where: { role: kind === "VIDEO" ? "EDITOR" : "DESIGNER", active: true }, select: { id: true, name: true, teamLead: true }, orderBy: { name: "asc" } });
   const ids = designers.map((d) => d.id);
   const nameOf = new Map(designers.map((d) => [d.id, d.name]));
 
   const [counts, tasks, postings] = await Promise.all([
     prisma.editCount.findMany({ where: { userId: { in: ids }, date: { gte: range.from, lte: range.to } }, select: { userId: true, date: true, count: true, items: true, note: true } }),
     prisma.creativeTask.findMany({
-      where: { kind: "DESIGN", assignedToId: { in: ids }, assignedDate: { lte: range.to }, OR: [{ status: { not: "COMPLETED" } }, { updatedAt: { gte: new Date(`${shift(range.from, -45)}T00:00:00Z`) } }] },
+      where: { kind, assignedToId: { in: ids }, assignedDate: { lte: range.to }, OR: [{ status: { not: "COMPLETED" } }, { updatedAt: { gte: new Date(`${shift(range.from, -45)}T00:00:00Z`) } }] },
       include: { client: { select: { name: true } }, assignedByUser: { select: { name: true } } },
       orderBy: { assignedDate: "desc" },
     }),
-    prisma.designPosting.findMany({ where: { userId: { in: ids }, weekStart: { gte: shift(range.from, -6), lte: range.to } }, select: { userId: true, clientName: true, updatedBy: true } }),
+    kind === "DESIGN"
+      ? prisma.designPosting.findMany({ where: { userId: { in: ids }, weekStart: { gte: shift(range.from, -6), lte: range.to } }, select: { userId: true, clientName: true, updatedBy: true } })
+      : Promise.resolve([] as { userId: string; clientName: string; updatedBy: string }[]),
   ]);
+  // video team: the client videos (shoots) given to the editors, the last 45 days and still open
+  const jobs = kind === "VIDEO"
+    ? await prisma.videoJob.findMany({ where: { date: { lte: range.to }, OR: [{ date: { gte: shift(range.from, -45) } }, { editStatus: { in: ["PENDING", "IN_PROGRESS"] } }] }, select: { id: true, date: true, clientName: true, editorIds: true, editStatus: true, videosShot: true, edited: true, updatedBy: true }, orderBy: { date: "desc" } })
+    : [];
+  const jobEditors = (j: { editorIds: string }) => { try { const a = JSON.parse(j.editorIds || "[]"); return Array.isArray(a) ? a.map(String) : []; } catch { return []; } };
+  const jobFor = (uid: string, client: string) => jobs.find((j) => jobEditors(j).includes(uid) && norm(j.clientName) === norm(client));
+  const usedJobs = new Set<string>();
 
   // who gave this designer work for this client: the design task, else the weekly postings
   const taskFor = (uid: string, client: string) => tasks.find((t) => t.assignedToId === uid && norm(t.client?.name ?? t.clientLabel) === norm(client));
@@ -61,10 +72,12 @@ export async function getDesignSheet(f: { period?: string; client?: string; desi
       const t = taskFor(c.userId, it.client);
       if (t) usedTasks.add(t.id);
       const p = t ? null : postingFor(c.userId, it.client);
+      const j = t || p ? null : jobFor(c.userId, it.client);
+      if (j) usedJobs.add(j.id);
       rows.push({
         key: `${c.userId}|${c.date}|${i}`, date: c.date, designerId: c.userId, designer: nameOf.get(c.userId) ?? "",
-        client: it.client, work: it.type || "Design", count: it.count,
-        by: t ? (t.assignedByUser?.name ?? "") : p ? (p.updatedBy ? `${p.updatedBy} (weekly posts)` : "Weekly posts") : "Own work",
+        client: it.client, work: it.type || (kind === "VIDEO" ? "Video" : "Design"), count: it.count,
+        by: t ? (t.assignedByUser?.name ?? "") : p ? (p.updatedBy ? `${p.updatedBy} (weekly posts)` : "Weekly posts") : j ? (j.updatedBy ? `${j.updatedBy} (client videos)` : "Client videos") : "Own work",
         status: "Done",
       });
     });
@@ -75,6 +88,13 @@ export async function getDesignSheet(f: { period?: string; client?: string; desi
     rows.push({ key: `task|${t.id}`, date: t.assignedDate, designerId: t.assignedToId, designer: nameOf.get(t.assignedToId) ?? "", client: t.client?.name ?? t.clientLabel, work: `${t.type}: ${t.title}`, count: null, by: t.assignedByUser?.name ?? "", status: STATUS[t.status] ?? t.status });
   }
 
+  const JOB_STATUS: Record<string, string> = { PENDING: "Pending", IN_PROGRESS: "In progress", COMPLETED: "Done", NO_EDIT: "No edit needed" };
+  for (const j of jobs) {
+    if (usedJobs.has(j.id) || j.date < range.from || !["PENDING", "IN_PROGRESS"].includes(j.editStatus)) continue;
+    for (const uid of jobEditors(j).filter((u) => nameOf.has(u))) {
+      rows.push({ key: `job|${j.id}|${uid}`, date: j.date, designerId: uid, designer: nameOf.get(uid) ?? "", client: j.clientName, work: `Client videos: ${j.videosShot} shot, ${j.edited} edited`, count: null, by: j.updatedBy || "", status: JOB_STATUS[j.editStatus] ?? j.editStatus });
+    }
+  }
   const clients = [...new Set(rows.map((r) => r.client).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   const clientQ = f.client && clients.some((c) => c === f.client) ? f.client : "";
   const designerQ = designers.some((d) => d.id === f.designer) ? f.designer! : "";

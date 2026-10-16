@@ -40,8 +40,8 @@ export async function saveEditCount(fd: FormData) {
     const count = Math.round(Number(raw));
     if (!Number.isFinite(count) || count < 0 || count > 500) back("badcount");
     const note = str(fd, "note").slice(0, 300);
-    // design team: the day client by client (only when the form sends the lines)
-    const items = team.kind === "DESIGN" && fd.has("items") ? JSON.stringify(parseDesignItems(str(fd, "items"))) : undefined;
+    // the day client by client (only when the form sends the lines)
+    const items = fd.has("items") ? JSON.stringify(parseDesignItems(str(fd, "items"))) : undefined;
     await prisma.editCount.upsert({
       where: { userId_date: { userId, date } },
       create: { userId, date, count, note, updatedBy: me.name, ...(items !== undefined ? { items } : {}) },

@@ -48,11 +48,11 @@ export async function getEditCountBoard(viewer: EditCountViewer, monthParam?: st
     .sort((a, b) => Number(b.lead) - Number(a.lead) || a.name.localeCompare(b.name));
 
   const cells: Record<string, { count: number; note: string; by: string; items: DesignWorkItem[] }> = {};
-  for (const e of entries) cells[`${e.userId}|${e.date}`] = { count: e.count, note: e.note, by: e.updatedBy, items: kind === "DESIGN" ? parseDesignItems(e.items) : [] };
+  for (const e of entries) cells[`${e.userId}|${e.date}`] = { count: e.count, note: e.note, by: e.updatedBy, items: parseDesignItems(e.items) };
 
   // Design team: the month by client — how many designs each client got, and from whom.
   const clientMap = new Map<string, { client: string; total: number; byUser: Record<string, number> }>();
-  if (kind === "DESIGN") for (const e of entries) for (const it of cells[`${e.userId}|${e.date}`].items) {
+  for (const e of entries) for (const it of cells[`${e.userId}|${e.date}`].items) {
     const k = it.client.toLowerCase();
     const c = clientMap.get(k) ?? { client: it.client, total: 0, byUser: {} };
     c.total += it.count; c.byUser[e.userId] = (c.byUser[e.userId] ?? 0) + it.count;
