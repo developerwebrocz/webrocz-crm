@@ -10094,6 +10094,7 @@ export namespace Prisma {
     websiteRenewAmount: number | null
     followupLog: string | null
     nextFollowup: string | null
+    paymentFollowupBy: string | null
     notes: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -10142,6 +10143,7 @@ export namespace Prisma {
     websiteRenewAmount: number | null
     followupLog: string | null
     nextFollowup: string | null
+    paymentFollowupBy: string | null
     notes: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -10190,6 +10192,7 @@ export namespace Prisma {
     websiteRenewAmount: number
     followupLog: number
     nextFollowup: number
+    paymentFollowupBy: number
     notes: number
     createdAt: number
     updatedAt: number
@@ -10270,6 +10273,7 @@ export namespace Prisma {
     websiteRenewAmount?: true
     followupLog?: true
     nextFollowup?: true
+    paymentFollowupBy?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -10318,6 +10322,7 @@ export namespace Prisma {
     websiteRenewAmount?: true
     followupLog?: true
     nextFollowup?: true
+    paymentFollowupBy?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -10366,6 +10371,7 @@ export namespace Prisma {
     websiteRenewAmount?: true
     followupLog?: true
     nextFollowup?: true
+    paymentFollowupBy?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -10501,6 +10507,7 @@ export namespace Prisma {
     websiteRenewAmount: number
     followupLog: string
     nextFollowup: string
+    paymentFollowupBy: string
     notes: string | null
     createdAt: Date
     updatedAt: Date
@@ -10568,6 +10575,7 @@ export namespace Prisma {
     websiteRenewAmount?: boolean
     followupLog?: boolean
     nextFollowup?: boolean
+    paymentFollowupBy?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -10642,6 +10650,7 @@ export namespace Prisma {
     websiteRenewAmount?: boolean
     followupLog?: boolean
     nextFollowup?: boolean
+    paymentFollowupBy?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -10691,6 +10700,7 @@ export namespace Prisma {
     websiteRenewAmount?: boolean
     followupLog?: boolean
     nextFollowup?: boolean
+    paymentFollowupBy?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -10740,13 +10750,14 @@ export namespace Prisma {
     websiteRenewAmount?: boolean
     followupLog?: boolean
     nextFollowup?: boolean
+    paymentFollowupBy?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     accountManagerId?: boolean
   }
 
-  export type ClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "name" | "website" | "industry" | "monthlyRetainer" | "googleBudget" | "seoPriority" | "seoScheduleDays" | "blogTarget" | "backlinkTarget" | "keywordTarget" | "gscLink" | "gaLink" | "domainAuthority" | "pocName" | "pocMobile" | "pocEmail" | "onboardDate" | "renewalDate" | "status" | "gstApplicable" | "gstRate" | "gstin" | "billingCompany" | "billingDay" | "paymentTerm" | "importantNotes" | "websiteName" | "websiteDomain" | "websiteServices" | "domainTaken" | "domainAmount" | "hostingTaken" | "hostingAmount" | "designAmount" | "websiteTakenDate" | "websiteExpiryDate" | "websiteRenewAmount" | "followupLog" | "nextFollowup" | "notes" | "createdAt" | "updatedAt" | "accountManagerId", ExtArgs["result"]["client"]>
+  export type ClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "name" | "website" | "industry" | "monthlyRetainer" | "googleBudget" | "seoPriority" | "seoScheduleDays" | "blogTarget" | "backlinkTarget" | "keywordTarget" | "gscLink" | "gaLink" | "domainAuthority" | "pocName" | "pocMobile" | "pocEmail" | "onboardDate" | "renewalDate" | "status" | "gstApplicable" | "gstRate" | "gstin" | "billingCompany" | "billingDay" | "paymentTerm" | "importantNotes" | "websiteName" | "websiteDomain" | "websiteServices" | "domainTaken" | "domainAmount" | "hostingTaken" | "hostingAmount" | "designAmount" | "websiteTakenDate" | "websiteExpiryDate" | "websiteRenewAmount" | "followupLog" | "nextFollowup" | "paymentFollowupBy" | "notes" | "createdAt" | "updatedAt" | "accountManagerId", ExtArgs["result"]["client"]>
   export type ClientInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     accountManager?: boolean | Client$accountManagerArgs<ExtArgs>
     services?: boolean | Client$servicesArgs<ExtArgs>
@@ -10853,6 +10864,7 @@ export namespace Prisma {
       websiteRenewAmount: number
       followupLog: string
       nextFollowup: string
+      paymentFollowupBy: string
       notes: string | null
       createdAt: Date
       updatedAt: Date
@@ -11346,6 +11358,7 @@ export namespace Prisma {
     readonly websiteRenewAmount: FieldRef<"Client", 'Int'>
     readonly followupLog: FieldRef<"Client", 'String'>
     readonly nextFollowup: FieldRef<"Client", 'String'>
+    readonly paymentFollowupBy: FieldRef<"Client", 'String'>
     readonly notes: FieldRef<"Client", 'String'>
     readonly createdAt: FieldRef<"Client", 'DateTime'>
     readonly updatedAt: FieldRef<"Client", 'DateTime'>
@@ -55586,6 +55599,7 @@ export namespace Prisma {
     websiteRenewAmount: 'websiteRenewAmount',
     followupLog: 'followupLog',
     nextFollowup: 'nextFollowup',
+    paymentFollowupBy: 'paymentFollowupBy',
     notes: 'notes',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -56719,6 +56733,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFilter<"Client"> | number
     followupLog?: StringFilter<"Client"> | string
     nextFollowup?: StringFilter<"Client"> | string
+    paymentFollowupBy?: StringFilter<"Client"> | string
     notes?: StringNullableFilter<"Client"> | string | null
     createdAt?: DateTimeFilter<"Client"> | Date | string
     updatedAt?: DateTimeFilter<"Client"> | Date | string
@@ -56792,6 +56807,7 @@ export namespace Prisma {
     websiteRenewAmount?: SortOrder
     followupLog?: SortOrder
     nextFollowup?: SortOrder
+    paymentFollowupBy?: SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -56868,6 +56884,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFilter<"Client"> | number
     followupLog?: StringFilter<"Client"> | string
     nextFollowup?: StringFilter<"Client"> | string
+    paymentFollowupBy?: StringFilter<"Client"> | string
     notes?: StringNullableFilter<"Client"> | string | null
     createdAt?: DateTimeFilter<"Client"> | Date | string
     updatedAt?: DateTimeFilter<"Client"> | Date | string
@@ -56941,6 +56958,7 @@ export namespace Prisma {
     websiteRenewAmount?: SortOrder
     followupLog?: SortOrder
     nextFollowup?: SortOrder
+    paymentFollowupBy?: SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -56997,6 +57015,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntWithAggregatesFilter<"Client"> | number
     followupLog?: StringWithAggregatesFilter<"Client"> | string
     nextFollowup?: StringWithAggregatesFilter<"Client"> | string
+    paymentFollowupBy?: StringWithAggregatesFilter<"Client"> | string
     notes?: StringNullableWithAggregatesFilter<"Client"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Client"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Client"> | Date | string
@@ -60865,6 +60884,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60937,6 +60957,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61009,6 +61030,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61081,6 +61103,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61153,6 +61176,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61201,6 +61225,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61248,6 +61273,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65810,6 +65836,7 @@ export namespace Prisma {
     websiteRenewAmount?: SortOrder
     followupLog?: SortOrder
     nextFollowup?: SortOrder
+    paymentFollowupBy?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -65873,6 +65900,7 @@ export namespace Prisma {
     websiteRenewAmount?: SortOrder
     followupLog?: SortOrder
     nextFollowup?: SortOrder
+    paymentFollowupBy?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -65921,6 +65949,7 @@ export namespace Prisma {
     websiteRenewAmount?: SortOrder
     followupLog?: SortOrder
     nextFollowup?: SortOrder
+    paymentFollowupBy?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -71078,6 +71107,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -71149,6 +71179,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -71853,6 +71884,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFilter<"Client"> | number
     followupLog?: StringFilter<"Client"> | string
     nextFollowup?: StringFilter<"Client"> | string
+    paymentFollowupBy?: StringFilter<"Client"> | string
     notes?: StringNullableFilter<"Client"> | string | null
     createdAt?: DateTimeFilter<"Client"> | Date | string
     updatedAt?: DateTimeFilter<"Client"> | Date | string
@@ -72555,6 +72587,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -72626,6 +72659,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -72839,6 +72873,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -72910,6 +72945,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74863,6 +74899,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -74934,6 +74971,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -75021,6 +75059,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -75092,6 +75131,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -75163,6 +75203,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -75234,6 +75275,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -75321,6 +75363,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -75392,6 +75435,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -75463,6 +75507,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -75534,6 +75579,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -75621,6 +75667,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -75692,6 +75739,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -75763,6 +75811,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -75834,6 +75883,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -75978,6 +76028,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -76049,6 +76100,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -76183,6 +76235,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -76254,6 +76307,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -76398,6 +76452,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -76469,6 +76524,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -76603,6 +76659,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -76674,6 +76731,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -76761,6 +76819,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -76832,6 +76891,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -76940,6 +77000,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -77011,6 +77072,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -77132,6 +77194,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -77203,6 +77266,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -77454,6 +77518,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -77525,6 +77590,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -77612,6 +77678,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -77683,6 +77750,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -77754,6 +77822,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -77825,6 +77894,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -77912,6 +77982,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -77983,6 +78054,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78054,6 +78126,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -78125,6 +78198,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -78317,6 +78391,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78388,6 +78463,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78769,6 +78845,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -78840,6 +78917,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -78927,6 +79005,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78998,6 +79077,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -79069,6 +79149,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -79140,6 +79221,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -79227,6 +79309,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -79298,6 +79381,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -79369,6 +79453,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -79440,6 +79525,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -79527,6 +79613,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -79598,6 +79685,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -79669,6 +79757,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -79740,6 +79829,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -79827,6 +79917,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -79898,6 +79989,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -79969,6 +80061,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -80040,6 +80133,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -80127,6 +80221,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80198,6 +80293,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80269,6 +80365,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -80340,6 +80437,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -80427,6 +80525,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80498,6 +80597,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80569,6 +80669,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -80640,6 +80741,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -80727,6 +80829,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80798,6 +80901,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80869,6 +80973,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -80940,6 +81045,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -81141,6 +81247,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -81212,6 +81319,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -81409,6 +81517,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -81480,6 +81589,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -81681,6 +81791,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -81752,6 +81863,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -81949,6 +82061,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -82020,6 +82133,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -82107,6 +82221,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -82178,6 +82293,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -82249,6 +82365,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -82320,6 +82437,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -82407,6 +82525,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -82478,6 +82597,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -84064,6 +84184,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -84135,6 +84256,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -84222,6 +84344,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -84293,6 +84416,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -84421,6 +84545,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -84492,6 +84617,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -84642,6 +84768,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -84713,6 +84840,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -84784,6 +84912,7 @@ export namespace Prisma {
     websiteRenewAmount?: number
     followupLog?: string
     nextFollowup?: string
+    paymentFollowupBy?: string
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -85067,6 +85196,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -85138,6 +85268,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -85209,6 +85340,7 @@ export namespace Prisma {
     websiteRenewAmount?: IntFieldUpdateOperationsInput | number
     followupLog?: StringFieldUpdateOperationsInput | string
     nextFollowup?: StringFieldUpdateOperationsInput | string
+    paymentFollowupBy?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

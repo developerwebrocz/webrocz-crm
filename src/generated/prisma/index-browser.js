@@ -208,6 +208,7 @@ exports.Prisma.ClientScalarFieldEnum = {
   websiteRenewAmount: 'websiteRenewAmount',
   followupLog: 'followupLog',
   nextFollowup: 'nextFollowup',
+  paymentFollowupBy: 'paymentFollowupBy',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',

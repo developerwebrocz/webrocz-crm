@@ -97,6 +97,9 @@ export function stateFromGstin(gstin: string | null | undefined): string {
 // Web Rocz Pvt Ltd = GST invoices (Website + DM). The other two are non-GST.
 export type Seller = { name: string; address: string; phone: string; email: string; gstin: string; state: string; bankName: string; bankAccount: string; bankIfsc: string; bankHolder: string; terms: string };
 export type Company = { key: string; label: string; gst: boolean; seller: Seller };
+// Who follows up a client's payments (Edit info of a Web Solutions / Web Rocz / Pvt Ltd client).
+export const PAYMENT_FOLLOWUP_BY = ["Rajesh Sir", "Accountant"] as const;
+
 export const COMPANY_KEYS = ["WEB_ROCZ_PVT", "WEB_SOLUTIONS", "WEB_ROCZ"] as const;
 export const COMPANIES: Record<string, Company> = {
   // GST entity — full seller details incl. GSTIN (reuses the registered company).

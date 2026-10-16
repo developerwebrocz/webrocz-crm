@@ -7,6 +7,7 @@ import { updateClientFinance } from "@/app/actions";
 import { companyLabel } from "@/lib/domain";
 import AddInvoiceModal from "@/components/AddInvoiceModal";
 import EditWebRoczClientModal from "@/components/EditWebRoczClientModal";
+import PaymentFollowupBySelect from "@/components/PaymentFollowupBySelect";
 import EditWebRoczPvtClientModal from "@/components/EditWebRoczPvtClientModal";
 import AddWebRoczInvoiceModal from "@/components/AddWebRoczInvoiceModal";
 import WebRoczClientCard from "@/components/WebRoczClientCard";
@@ -415,6 +416,9 @@ function EditModal({ client, close }: { client: Client; close: () => void }) {
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" defaultValue={client.pocEmail ?? ""} className="input mt-1" /></label>
             <label className="block"><span className="eyebrow">Status</span><select name="status" defaultValue={client.status} className="select mt-1"><option value="ACTIVE">Active</option><option value="ON_HOLD">On hold</option><option value="UPCOMING">Upcoming</option></select></label>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <PaymentFollowupBySelect defaultValue={(client as { paymentFollowupBy?: string }).paymentFollowupBy} />
           </div>
           <div className="rounded-[10px] border border-[var(--line)] p-3">
             <div className="eyebrow mb-2 flex items-center gap-1.5"><Globe size={13} /> Services</div>

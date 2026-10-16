@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { PAYMENT_FOLLOWUP_BY } from "@/lib/domain";
 import { getCurrentUser } from "@/lib/auth";
 import { WEB_ROCZ_CLIENT_SERVICES, detailFromCounts, buildDmInvoiceItems } from "@/lib/webrocz-services";
 import { websiteServiceNames } from "@/lib/webrocz-queries";
@@ -187,6 +188,7 @@ export async function updateWebRoczPvtClient(fd: FormData) {
       name,
       // The domain name is no longer edited here, so the saved one is left as it is.
       ...(amSent && amOk ? { accountManagerId: amId || null } : {}),
+      ...(fd.has("paymentFollowupBy") ? { paymentFollowupBy: (PAYMENT_FOLLOWUP_BY as readonly string[]).includes(s(fd, "paymentFollowupBy")) ? s(fd, "paymentFollowupBy") : "" } : {}),
       ...(fd.has("paymentTerm") ? { paymentTerm: ["PREPAID", "POSTPAID"].includes(s(fd, "paymentTerm")) ? s(fd, "paymentTerm") : "" } : {}),
       ...(fd.has("billingDay") ? { billingDay: Math.min(31, Math.max(0, n(fd, "billingDay"))) } : {}),
       pocName: s(fd, "pocName") || null,

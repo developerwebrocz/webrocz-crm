@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { PAYMENT_FOLLOWUP_BY } from "@/lib/domain";
 import { SERVICES, SERVICE_KEYS, type ServiceKey, companyFor, stateFromGstin, GADS_TYPE_KEYS } from "@/lib/domain";
 import { ownClientsOf, SERVICE_ALIAS, SHARED_AM, managedBy } from "@/lib/am-scope";
 import { managesClient } from "@/lib/am-access";
@@ -849,6 +850,7 @@ export async function updateClientFinance(fd: FormData) {
       status: STATUS_OK.includes(s(fd, "status")) ? s(fd, "status") : "ACTIVE",
       // Industry, monthly retainer, account manager, GST/GSTIN, website URL and the general
       // renewal date are not edited here — left untouched so they keep what was set elsewhere.
+      ...(fd.has("paymentFollowupBy") ? { paymentFollowupBy: (PAYMENT_FOLLOWUP_BY as readonly string[]).includes(s(fd, "paymentFollowupBy")) ? s(fd, "paymentFollowupBy") : "" } : {}),
       websiteDomain: s(fd, "websiteDomain"),
       websiteServices: JSON.stringify(svc),
       domainTaken, domainAmount,

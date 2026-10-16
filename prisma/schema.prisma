@@ -141,6 +141,7 @@ model Client {
   // --- Accountant follow-up log (client level): JSON [{ date, by, note, next }] ---
   followupLog     String   @default("[]")
   nextFollowup    String   @default("") // next planned follow-up date
+  paymentFollowupBy String @default("") // who follows up this client's payments: "Rajesh Sir" | "Accountant" | ""
   notes           String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
