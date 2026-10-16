@@ -141,7 +141,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
       { href: "/videos", label: "Video Studio", icon: Clapperboard },
       { href: "/client-videos", label: "Client Videos", icon: Film },
       { href: "/video-team", label: "Editing Count", icon: ListOrdered },
-      { href: "/shoots", label: "Studio X", icon: Camera },
+      { href: "/shoots", label: "Studiox Shoot", icon: Camera },
       { href: "/reports/creative", label: "Creative Report", icon: FileBarChart },
       { href: "/projects", label: "Developer Team", icon: Code2 },
     ] });
