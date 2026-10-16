@@ -6594,6 +6594,7 @@ export namespace Prisma {
     date: string | null
     count: number | null
     note: string | null
+    items: string | null
     updatedBy: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -6605,6 +6606,7 @@ export namespace Prisma {
     date: string | null
     count: number | null
     note: string | null
+    items: string | null
     updatedBy: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -6616,6 +6618,7 @@ export namespace Prisma {
     date: number
     count: number
     note: number
+    items: number
     updatedBy: number
     createdAt: number
     updatedAt: number
@@ -6637,6 +6640,7 @@ export namespace Prisma {
     date?: true
     count?: true
     note?: true
+    items?: true
     updatedBy?: true
     createdAt?: true
     updatedAt?: true
@@ -6648,6 +6652,7 @@ export namespace Prisma {
     date?: true
     count?: true
     note?: true
+    items?: true
     updatedBy?: true
     createdAt?: true
     updatedAt?: true
@@ -6659,6 +6664,7 @@ export namespace Prisma {
     date?: true
     count?: true
     note?: true
+    items?: true
     updatedBy?: true
     createdAt?: true
     updatedAt?: true
@@ -6757,6 +6763,7 @@ export namespace Prisma {
     date: string
     count: number
     note: string
+    items: string
     updatedBy: string
     createdAt: Date
     updatedAt: Date
@@ -6787,6 +6794,7 @@ export namespace Prisma {
     date?: boolean
     count?: boolean
     note?: boolean
+    items?: boolean
     updatedBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -6799,6 +6807,7 @@ export namespace Prisma {
     date?: boolean
     count?: boolean
     note?: boolean
+    items?: boolean
     updatedBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -6811,6 +6820,7 @@ export namespace Prisma {
     date?: boolean
     count?: boolean
     note?: boolean
+    items?: boolean
     updatedBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -6823,12 +6833,13 @@ export namespace Prisma {
     date?: boolean
     count?: boolean
     note?: boolean
+    items?: boolean
     updatedBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type EditCountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "date" | "count" | "note" | "updatedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["editCount"]>
+  export type EditCountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "date" | "count" | "note" | "items" | "updatedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["editCount"]>
   export type EditCountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -6850,6 +6861,7 @@ export namespace Prisma {
       date: string
       count: number
       note: string
+      items: string
       updatedBy: string
       createdAt: Date
       updatedAt: Date
@@ -7282,6 +7294,7 @@ export namespace Prisma {
     readonly date: FieldRef<"EditCount", 'String'>
     readonly count: FieldRef<"EditCount", 'Int'>
     readonly note: FieldRef<"EditCount", 'String'>
+    readonly items: FieldRef<"EditCount", 'String'>
     readonly updatedBy: FieldRef<"EditCount", 'String'>
     readonly createdAt: FieldRef<"EditCount", 'DateTime'>
     readonly updatedAt: FieldRef<"EditCount", 'DateTime'>
@@ -55518,6 +55531,7 @@ export namespace Prisma {
     date: 'date',
     count: 'count',
     note: 'note',
+    items: 'items',
     updatedBy: 'updatedBy',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -56461,6 +56475,7 @@ export namespace Prisma {
     date?: StringFilter<"EditCount"> | string
     count?: IntFilter<"EditCount"> | number
     note?: StringFilter<"EditCount"> | string
+    items?: StringFilter<"EditCount"> | string
     updatedBy?: StringFilter<"EditCount"> | string
     createdAt?: DateTimeFilter<"EditCount"> | Date | string
     updatedAt?: DateTimeFilter<"EditCount"> | Date | string
@@ -56473,6 +56488,7 @@ export namespace Prisma {
     date?: SortOrder
     count?: SortOrder
     note?: SortOrder
+    items?: SortOrder
     updatedBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -56489,6 +56505,7 @@ export namespace Prisma {
     date?: StringFilter<"EditCount"> | string
     count?: IntFilter<"EditCount"> | number
     note?: StringFilter<"EditCount"> | string
+    items?: StringFilter<"EditCount"> | string
     updatedBy?: StringFilter<"EditCount"> | string
     createdAt?: DateTimeFilter<"EditCount"> | Date | string
     updatedAt?: DateTimeFilter<"EditCount"> | Date | string
@@ -56501,6 +56518,7 @@ export namespace Prisma {
     date?: SortOrder
     count?: SortOrder
     note?: SortOrder
+    items?: SortOrder
     updatedBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -56520,6 +56538,7 @@ export namespace Prisma {
     date?: StringWithAggregatesFilter<"EditCount"> | string
     count?: IntWithAggregatesFilter<"EditCount"> | number
     note?: StringWithAggregatesFilter<"EditCount"> | string
+    items?: StringWithAggregatesFilter<"EditCount"> | string
     updatedBy?: StringWithAggregatesFilter<"EditCount"> | string
     createdAt?: DateTimeWithAggregatesFilter<"EditCount"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"EditCount"> | Date | string
@@ -60600,6 +60619,7 @@ export namespace Prisma {
     date: string
     count?: number
     note?: string
+    items?: string
     updatedBy?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60612,6 +60632,7 @@ export namespace Prisma {
     date: string
     count?: number
     note?: string
+    items?: string
     updatedBy?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60622,6 +60643,7 @@ export namespace Prisma {
     date?: StringFieldUpdateOperationsInput | string
     count?: IntFieldUpdateOperationsInput | number
     note?: StringFieldUpdateOperationsInput | string
+    items?: StringFieldUpdateOperationsInput | string
     updatedBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60634,6 +60656,7 @@ export namespace Prisma {
     date?: StringFieldUpdateOperationsInput | string
     count?: IntFieldUpdateOperationsInput | number
     note?: StringFieldUpdateOperationsInput | string
+    items?: StringFieldUpdateOperationsInput | string
     updatedBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60645,6 +60668,7 @@ export namespace Prisma {
     date: string
     count?: number
     note?: string
+    items?: string
     updatedBy?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60655,6 +60679,7 @@ export namespace Prisma {
     date?: StringFieldUpdateOperationsInput | string
     count?: IntFieldUpdateOperationsInput | number
     note?: StringFieldUpdateOperationsInput | string
+    items?: StringFieldUpdateOperationsInput | string
     updatedBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60666,6 +60691,7 @@ export namespace Prisma {
     date?: StringFieldUpdateOperationsInput | string
     count?: IntFieldUpdateOperationsInput | number
     note?: StringFieldUpdateOperationsInput | string
+    items?: StringFieldUpdateOperationsInput | string
     updatedBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65455,6 +65481,7 @@ export namespace Prisma {
     date?: SortOrder
     count?: SortOrder
     note?: SortOrder
+    items?: SortOrder
     updatedBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -65470,6 +65497,7 @@ export namespace Prisma {
     date?: SortOrder
     count?: SortOrder
     note?: SortOrder
+    items?: SortOrder
     updatedBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -65481,6 +65509,7 @@ export namespace Prisma {
     date?: SortOrder
     count?: SortOrder
     note?: SortOrder
+    items?: SortOrder
     updatedBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -71762,6 +71791,7 @@ export namespace Prisma {
     date: string
     count?: number
     note?: string
+    items?: string
     updatedBy?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -71772,6 +71802,7 @@ export namespace Prisma {
     date: string
     count?: number
     note?: string
+    items?: string
     updatedBy?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -72272,6 +72303,7 @@ export namespace Prisma {
     date?: StringFilter<"EditCount"> | string
     count?: IntFilter<"EditCount"> | number
     note?: StringFilter<"EditCount"> | string
+    items?: StringFilter<"EditCount"> | string
     updatedBy?: StringFilter<"EditCount"> | string
     createdAt?: DateTimeFilter<"EditCount"> | Date | string
     updatedAt?: DateTimeFilter<"EditCount"> | Date | string
@@ -85135,6 +85167,7 @@ export namespace Prisma {
     date: string
     count?: number
     note?: string
+    items?: string
     updatedBy?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -86003,6 +86036,7 @@ export namespace Prisma {
     date?: StringFieldUpdateOperationsInput | string
     count?: IntFieldUpdateOperationsInput | number
     note?: StringFieldUpdateOperationsInput | string
+    items?: StringFieldUpdateOperationsInput | string
     updatedBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -86013,6 +86047,7 @@ export namespace Prisma {
     date?: StringFieldUpdateOperationsInput | string
     count?: IntFieldUpdateOperationsInput | number
     note?: StringFieldUpdateOperationsInput | string
+    items?: StringFieldUpdateOperationsInput | string
     updatedBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -86023,6 +86058,7 @@ export namespace Prisma {
     date?: StringFieldUpdateOperationsInput | string
     count?: IntFieldUpdateOperationsInput | number
     note?: StringFieldUpdateOperationsInput | string
+    items?: StringFieldUpdateOperationsInput | string
     updatedBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

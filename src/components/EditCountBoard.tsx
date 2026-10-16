@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
+import { Fragment, useActionState, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Upload, X, CheckCircle2, Crown, Save, Camera, TrendingUp, TrendingDown, CalendarDays, Trophy, Clock3, Film, PencilLine, Settings2, AlertTriangle, Download, BellRing, BarChart3 } from "lucide-react";
 import type { EditCountBoardData } from "@/lib/edit-count-queries";
 import { saveEditCount, saveVideoTeamSettings, importEditCounts, remindEditCount, type EditCountImportResult } from "@/app/edit-count-actions";
@@ -8,6 +8,8 @@ import CountStepper from "@/components/CountStepper";
 import AssignCreativeForm from "@/components/AssignCreativeForm";
 import { initials } from "@/lib/domain";
 import { TEAMS, cap, type TeamInfo } from "@/lib/team-kinds";
+import DesignWorkEditor from "@/components/DesignWorkEditor";
+import { designItemsLine, groupByClient } from "@/lib/design-work";
 
 // A team's daily count — video editors ("Editing Count") or designers ("Design Count"): the
 // month's count-per-day for each member (the old Google
@@ -69,6 +71,9 @@ export default function EditCountBoard({ d, me, clients, names = [], saved, team
   const hasData = Object.keys(d.cells).length > 0;
   const notUpdated = d.isCurrentMonth ? activeEditors.filter((e) => e.today === null && e.id !== me.id) : [];
   const histMax = Math.max(1, ...d.history.map((h) => h.total));
+  const isDesign = tm.kind === "DESIGN";
+  // what a day's entry was: the client lines (designers), else the note
+  const workLine = (c?: { note: string; items: { client: string; type: string; count: number }[] }) => (c ? (c.items.length ? designItemsLine(c.items) : c.note) : "");
 
   // the month on screen as a sheet (opens in Excel / Google Sheets)
   const download = () => {
@@ -260,7 +265,7 @@ export default function EditCountBoard({ d, me, clients, names = [], saved, team
               {cell ? `Saved for ${fmtDay(date)}: ${cell.count}${cell.by ? ` · by ${cell.by}` : ""}` : `No entry for ${fmtDay(date)} yet`}
             </span>
           </div>
-          <form key={`${userId}|${date}|${cell?.count ?? ""}`} action={saveEditCount} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.1fr_1fr_150px_2fr_auto] lg:items-end">
+          <form key={`${userId}|${date}|${cell?.count ?? ""}|${cell?.items.length ?? 0}`} action={saveEditCount} className={isDesign ? "mt-4 grid gap-3 sm:grid-cols-2" : "mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.1fr_1fr_150px_2fr_auto] lg:items-end"}>
             <input type="hidden" name="team" value={tm.kind} />
             {d.seeAll ? (
               <label className="block"><span className="eyebrow">{cap(tm.person)}</span>
@@ -272,11 +277,27 @@ export default function EditCountBoard({ d, me, clients, names = [], saved, team
               <label className="block"><span className="eyebrow">{cap(tm.person)}</span><input value={me.name} readOnly className="input mt-1.5 bg-[var(--surface-2)]" /></label>
             )}
             <label className="block"><span className="eyebrow">Date</span><input type="date" name="date" required value={date} min={`${d.month}-01`} max={maxDate} onChange={(e) => setDate(e.target.value)} className="input mt-1.5" /></label>
-            <label className="block"><span className="eyebrow">{cap(tm.many)} {tm.did}</span><div className="mt-1.5"><CountStepper defaultValue={cell?.count ?? ""} /></div></label>
-            <label className="block"><span className="eyebrow">Note (optional)</span><input name="note" maxLength={300} defaultValue={cell?.note ?? ""} placeholder={tm.kind === "DESIGN" ? "e.g. 6 posts + 2 banners, half day…" : "e.g. 2 reels for a client, half day…"} className="input mt-1.5" /></label>
-            <button type="submit" className="btn btn-violet"><Save size={15} /> Save</button>
+            {isDesign ? (
+              <>
+                {/* designers: which client, what design, how many — the day's number is the total */}
+                <div className="sm:col-span-2">
+                  <span className="eyebrow">What was designed — client by client</span>
+                  <div className="mt-1.5"><DesignWorkEditor clientNames={clients.map((c) => c.name)} defaultItems={cell?.items ?? []} defaultCount={cell && !cell.items.length ? cell.count : null} /></div>
+                </div>
+                <div className="flex flex-wrap items-end gap-3 sm:col-span-2">
+                  <label className="block min-w-[220px] flex-1"><span className="eyebrow">Note (optional)</span><input name="note" maxLength={300} defaultValue={cell?.note ?? ""} placeholder="e.g. half day, waiting for client content…" className="input mt-1.5" /></label>
+                  <button type="submit" className="btn btn-violet"><Save size={15} /> Save</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <label className="block"><span className="eyebrow">{cap(tm.many)} {tm.did}</span><div className="mt-1.5"><CountStepper defaultValue={cell?.count ?? ""} /></div></label>
+                <label className="block"><span className="eyebrow">Note (optional)</span><input name="note" maxLength={300} defaultValue={cell?.note ?? ""} placeholder="e.g. 2 reels for a client, half day…" className="input mt-1.5" /></label>
+                <button type="submit" className="btn btn-violet"><Save size={15} /> Save</button>
+              </>
+            )}
           </form>
-          <p className="mt-2.5 text-[11.5px] text-[var(--muted)]">Click a day in the table below to load it here. Leave the number empty and save to remove a wrong entry.</p>
+          <p className="mt-2.5 text-[11.5px] text-[var(--muted)]">Click a day in the table below to load it here. {isDesign ? "Remove all the lines and save to delete a wrong entry." : "Leave the number empty and save to remove a wrong entry."}</p>
         </div>
       )}
 
@@ -300,7 +321,8 @@ export default function EditCountBoard({ d, me, clients, names = [], saved, team
             </thead>
             <tbody>
               {shown.map((day) => (
-                <tr key={day.date} className="border-b border-[var(--line)] last:border-0" style={day.isToday ? { background: tint("var(--violet)", 5) } : day.sunday && !day.any ? { background: "var(--surface-2)" } : undefined}>
+                <Fragment key={day.date}>
+                <tr className="border-b border-[var(--line)] last:border-0" style={day.isToday ? { background: tint("var(--violet)", 5) } : day.sunday && !day.any ? { background: "var(--surface-2)" } : undefined}>
                   <td className="whitespace-nowrap px-5 py-1.5">
                     <span className="font-semibold tnum">{fmtDay(day.date)}</span>
                     <span className={`ml-2 text-[11.5px] ${day.sunday ? "font-semibold text-[var(--rose)]" : "text-[var(--muted)]"}`}>{day.weekday}</span>
@@ -313,7 +335,7 @@ export default function EditCountBoard({ d, me, clients, names = [], saved, team
                     const col = color(e.id);
                     return (
                       <td key={e.id} className="px-1.5 py-1 text-center">
-                        <button type="button" disabled={!clickable} onClick={() => pick(e.id, day.date)} title={c?.note || (clickable ? "Click to update" : "")}
+                        <button type="button" disabled={!clickable} onClick={() => pick(e.id, day.date)} title={workLine(c) || (clickable ? "Click to update" : "")}
                           className={`relative mx-auto grid h-8 w-full max-w-[84px] min-w-[44px] place-items-center rounded-[8px] px-2 tnum transition ${clickable ? "hover:brightness-95" : "cursor-default"}`}
                           style={{
                             background: c && c.count > 0 ? tint(col, 9 + Math.round((c.count / maxCell) * 30)) : c ? "var(--surface-2)" : "transparent",
@@ -322,15 +344,37 @@ export default function EditCountBoard({ d, me, clients, names = [], saved, team
                             outline: on ? "2px solid var(--violet)" : undefined, outlineOffset: on ? -2 : undefined,
                           }}>
                           {c ? c.count : "—"}
-                          {c?.note && d.seeAll ? <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-[var(--amber)]" /> : null}
+                          {(c?.note || (c?.items.length ?? 0) > 0) && d.seeAll && !isDesign ? <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-[var(--amber)]" /> : null}
                         </button>
                       </td>
                     );
                   })}
                   {d.seeAll
                     ? <td className="px-5 py-1.5 text-right">{day.any ? <span className="text-[14px] font-extrabold tnum">{day.total}</span> : <span className="text-[11.5px] text-[var(--faint)]">{day.sunday ? "Sunday" : "No entry"}</span>}</td>
-                    : <td className="px-5 py-1.5 text-[12.5px] text-[var(--ink-2)]">{d.cells[`${me.id}|${day.date}`]?.note || <span className="text-[var(--faint)]">{d.cells[`${me.id}|${day.date}`] ? "" : day.sunday ? "Sunday" : "No entry"}</span>}</td>}
+                    : <td className="px-5 py-1.5 text-[12.5px] text-[var(--ink-2)]">{workLine(d.cells[`${me.id}|${day.date}`]) || <span className="text-[var(--faint)]">{d.cells[`${me.id}|${day.date}`] ? "" : day.sunday ? "Sunday" : "No entry"}</span>}</td>}
                 </tr>
+                {isDesign && d.seeAll && d.editors.some((e) => (d.cells[`${e.id}|${day.date}`]?.items.length ?? 0) > 0 || d.cells[`${e.id}|${day.date}`]?.note) && (
+                  <tr className="border-b border-[var(--line)]" style={day.isToday ? { background: tint("var(--violet)", 5) } : undefined}>
+                    <td colSpan={d.editors.length + 2} className="px-5 pb-2.5 pt-0">
+                      <div className="flex flex-wrap gap-x-5 gap-y-1.5">
+                        {d.editors.map((e) => {
+                          const c = d.cells[`${e.id}|${day.date}`];
+                          if (!c || (!c.items.length && !c.note)) return null;
+                          return (
+                            <div key={e.id} className="min-w-[200px] max-w-[420px] text-[12px] leading-snug">
+                              <span className="font-bold" style={{ color: color(e.id) }}>{e.name}:</span>{" "}
+                              {c.items.length
+                                ? groupByClient(c.items).map((g, i) => <span key={g.client}>{i > 0 && <span className="text-[var(--faint)]"> · </span>}<b className="font-semibold text-[var(--ink)]">{g.client}</b> <span className="text-[var(--muted)]">{g.parts}</span></span>)
+                                : <span className="text-[var(--muted)]">{c.count} {c.count === 1 ? tm.one : tm.many} · no client given</span>}
+                              {c.note && <span className="text-[var(--faint)]"> — {c.note}</span>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </td>
+                  </tr>
+                )}
+                </Fragment>
               ))}
               {shown.length === 0 && <tr><td colSpan={d.editors.length + 2} className="px-5 py-10 text-center text-sm text-[var(--muted)]">This month has not started yet.</td></tr>}
             </tbody>
@@ -344,6 +388,31 @@ export default function EditCountBoard({ d, me, clients, names = [], saved, team
           </table>
         </div>
       </div>
+
+      {isDesign && d.seeAll && d.byClient.length > 0 && (
+        <div className="card !p-0 overflow-hidden">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--line)] px-5 py-3.5">
+            <div>
+              <div className="text-[14px] font-bold">By client · {d.monthLabel}</div>
+              <div className="text-[11.5px] text-[var(--muted)]">How many designs each client got this month, and from which designer</div>
+            </div>
+            <span className="pill">{d.byClient.length} client{d.byClient.length === 1 ? "" : "s"}</span>
+          </div>
+          <div className="divide-y divide-[var(--line)]">
+            {d.byClient.map((c) => (
+              <div key={c.client} className="flex flex-wrap items-center gap-x-4 gap-y-1.5 px-5 py-2.5">
+                <div className="min-w-[180px] flex-1 text-[13px] font-semibold">{c.client}</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {d.editors.filter((e) => c.byUser[e.id]).map((e) => (
+                    <span key={e.id} className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11.5px] font-semibold" style={{ background: tint(color(e.id), 12), color: color(e.id) }}>{e.name} · {c.byUser[e.id]}</span>
+                  ))}
+                </div>
+                <div className="w-[70px] text-right text-[15px] font-extrabold tnum">{c.total}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* month by month */}
       {d.history.length > 0 && (

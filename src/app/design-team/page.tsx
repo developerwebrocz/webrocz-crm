@@ -18,6 +18,7 @@ export default async function DesignTeamPage({ searchParams }: { searchParams: P
   const month = typeof sp.month === "string" ? sp.month : undefined;
   const saved = typeof sp.saved === "string" ? sp.saved : "";
   const d = await getEditCountBoard(user, month, "DESIGN");
-  const clients = d.seeAll ? (await getClientOptions()).map((c) => ({ id: c.id, name: c.name })) : [];
+  // designers name the client of each design they log, so everyone gets the client list
+  const clients = (await getClientOptions()).map((c) => ({ id: c.id, name: c.name }));
   return <EditCountBoard team={TEAMS.DESIGN} d={d} me={{ id: user.id, name: user.name, isEditor: user.role === "DESIGNER", isAdmin: isVideoAdmin(user) }} clients={clients} saved={saved} />;
 }

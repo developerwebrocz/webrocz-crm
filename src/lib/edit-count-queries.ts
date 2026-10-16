@@ -2,6 +2,7 @@ import "server-only";
 import { prisma } from "./prisma";
 import { todayIST } from "./india-date";
 import { TEAMS, type TeamKind } from "./team-kinds";
+import { parseDesignItems, type DesignWorkItem } from "./design-work";
 
 // Video team "Editing Count": how many videos each editor finished per day (this replaced the
 // team's Google Sheet). An editor sees and updates their own count; the video team lead and
@@ -34,7 +35,7 @@ export async function getEditCountBoard(viewer: EditCountViewer, monthParam?: st
 
   const entries = await prisma.editCount.findMany({
     where: { date: { startsWith: month }, ...scope(seeAll) },
-    select: { userId: true, date: true, count: true, note: true, updatedBy: true },
+    select: { userId: true, date: true, count: true, note: true, updatedBy: true, items: true },
   });
   // Columns: the active video editors, plus anyone (since left or moved) who has a count this month.
   const withEntry = [...new Set(entries.map((e) => e.userId))];
@@ -46,8 +47,18 @@ export async function getEditCountBoard(viewer: EditCountViewer, monthParam?: st
     .map((p) => ({ id: p.id, name: p.name, lead: p.role === ROLE && p.teamLead, shoots: p.role === "EDITOR" && p.shootTeam, active: p.active && p.role === ROLE }))
     .sort((a, b) => Number(b.lead) - Number(a.lead) || a.name.localeCompare(b.name));
 
-  const cells: Record<string, { count: number; note: string; by: string }> = {};
-  for (const e of entries) cells[`${e.userId}|${e.date}`] = { count: e.count, note: e.note, by: e.updatedBy };
+  const cells: Record<string, { count: number; note: string; by: string; items: DesignWorkItem[] }> = {};
+  for (const e of entries) cells[`${e.userId}|${e.date}`] = { count: e.count, note: e.note, by: e.updatedBy, items: kind === "DESIGN" ? parseDesignItems(e.items) : [] };
+
+  // Design team: the month by client — how many designs each client got, and from whom.
+  const clientMap = new Map<string, { client: string; total: number; byUser: Record<string, number> }>();
+  if (kind === "DESIGN") for (const e of entries) for (const it of cells[`${e.userId}|${e.date}`].items) {
+    const k = it.client.toLowerCase();
+    const c = clientMap.get(k) ?? { client: it.client, total: 0, byUser: {} };
+    c.total += it.count; c.byUser[e.userId] = (c.byUser[e.userId] ?? 0) + it.count;
+    clientMap.set(k, c);
+  }
+  const byClient = [...clientMap.values()].sort((a, b) => b.total - a.total);
 
   const days = Array.from({ length: dayCount }, (_, i) => {
     const date = `${month}-${pad(i + 1)}`;
@@ -115,7 +126,7 @@ export async function getEditCountBoard(viewer: EditCountViewer, monthParam?: st
     prevLabel: new Date(`${shiftMonth(month, -1)}-01T00:00:00Z`).toLocaleDateString("en-IN", { month: "long", timeZone: "UTC" }),
     isCurrentMonth: month === today.slice(0, 7),
     nextMonth: shiftMonth(month, 1) <= today.slice(0, 7) ? shiftMonth(month, 1) : "",
-    seeAll, editors, days, cells, perEditor, grand, history,
+    seeAll, editors, days, cells, perEditor, grand, history, byClient,
     todayTotal: perEditor.reduce((s, e) => s + (e.today ?? 0), 0),
     tasks,
   };

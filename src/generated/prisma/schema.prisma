@@ -49,6 +49,7 @@ model EditCount {
   date      String // "2026-08-24" (India date)
   count     Int      @default(0)
   note      String   @default("")
+  items     String   @default("[]") // design team: what was done — JSON [{client, type, count}]
   updatedBy String   @default("") // who saved it last
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

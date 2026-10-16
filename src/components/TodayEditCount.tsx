@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { todayIST } from "@/lib/india-date";
 import { saveEditCount } from "@/app/edit-count-actions";
 import CountStepper from "@/components/CountStepper";
+import DesignWorkEditor from "@/components/DesignWorkEditor";
+import { parseDesignItems, groupByClient } from "@/lib/design-work";
 import { TEAMS, cap, type TeamInfo } from "@/lib/team-kinds";
 import { Film, CheckCircle2, Clock3, ArrowRight, Save } from "lucide-react";
 
@@ -17,9 +19,15 @@ export default async function TodayEditCount({ userId, team = TEAMS.VIDEO }: { u
   const month = today.slice(0, 7);
   const weekAgo = new Date(new Date(`${today}T00:00:00Z`).getTime() - 6 * 86400000).toISOString().slice(0, 10);
   const from = weekAgo < `${month}-01` ? weekAgo : `${month}-01`;
-  const rows = await prisma.editCount.findMany({ where: { userId, date: { gte: from, lte: today } }, select: { date: true, count: true, note: true } });
+  const isDesign = team.kind === "DESIGN";
+  const [rows, clientRows] = await Promise.all([
+    prisma.editCount.findMany({ where: { userId, date: { gte: from, lte: today } }, select: { date: true, count: true, note: true, items: true } }),
+    // designers name the client of each design
+    isDesign ? prisma.client.findMany({ where: { status: { not: "UPCOMING" } }, select: { name: true }, orderBy: { name: "asc" } }) : Promise.resolve([] as { name: string }[]),
+  ]);
   const by = new Map(rows.map((r) => [r.date, r]));
   const mine = by.get(today);
+  const mineItems = isDesign && mine ? parseDesignItems(mine.items) : [];
   const inMonth = rows.filter((r) => r.date.startsWith(month));
   const total = inMonth.reduce((s, r) => s + r.count, 0);
   const worked = inMonth.filter((r) => r.count > 0).length;
@@ -43,7 +51,7 @@ export default async function TodayEditCount({ userId, team = TEAMS.VIDEO }: { u
               </div>
             </div>
             <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-bold" style={mine ? { background: "color-mix(in srgb, var(--emerald) 11%, white)", color: "var(--emerald)" } : { background: "color-mix(in srgb, var(--amber) 13%, white)", color: "#92600a" }}>
-              {mine ? <><CheckCircle2 size={13} /> Updated · {mine.count} video{mine.count === 1 ? "" : "s"}</> : <><Clock3 size={13} /> Not updated yet</>}
+              {mine ? <><CheckCircle2 size={13} /> Updated · {mine.count} {mine.count === 1 ? team.one : team.many}</> : <><Clock3 size={13} /> Not updated yet</>}
             </span>
           </div>
           <form action={saveEditCount} className="mt-4 space-y-3">
@@ -51,11 +59,31 @@ export default async function TodayEditCount({ userId, team = TEAMS.VIDEO }: { u
             <input type="hidden" name="return" value="home" />
             <input type="hidden" name="team" value={team.kind} />
             {/* count + save on one line, the note under it — reads well at any width */}
-            <div className="flex flex-wrap items-end gap-3">
-              <label className="block w-[200px] max-w-full"><span className="eyebrow">{cap(team.many)} {team.did} today</span><div className="mt-1.5"><CountStepper key={mine?.count ?? "new"} defaultValue={mine?.count ?? ""} big /></div></label>
-              <button type="submit" className="btn btn-violet !h-12 px-6"><Save size={15} /> {mine ? "Update count" : "Save count"}</button>
-            </div>
-            <label className="block"><span className="eyebrow">Note (optional)</span><input name="note" maxLength={300} defaultValue={mine?.note ?? ""} placeholder={team.kind === "DESIGN" ? "What did you design? e.g. 6 posts + 2 banners" : "What did you edit? e.g. 2 reels + 1 testimonial"} className="input mt-1.5" /></label>
+            {isDesign ? (
+              <div>
+                <span className="eyebrow">What did you design today — client by client</span>
+                <div className="mt-1.5"><DesignWorkEditor key={mine ? `${mine.count}|${mineItems.length}` : "new"} clientNames={clientRows.map((c) => c.name)} defaultItems={mineItems} defaultCount={mine && !mineItems.length ? mine.count : null} big /></div>
+              </div>
+            ) : (
+              <div className="flex flex-wrap items-end gap-3">
+                <label className="block w-[200px] max-w-full"><span className="eyebrow">{cap(team.many)} {team.did} today</span><div className="mt-1.5"><CountStepper key={mine?.count ?? "new"} defaultValue={mine?.count ?? ""} big /></div></label>
+                <button type="submit" className="btn btn-violet !h-12 px-6"><Save size={15} /> {mine ? "Update count" : "Save count"}</button>
+              </div>
+            )}
+            {isDesign ? (
+              <div className="flex flex-wrap items-end gap-3">
+                <label className="block min-w-[220px] flex-1"><span className="eyebrow">Note (optional)</span><input name="note" maxLength={300} defaultValue={mine?.note ?? ""} placeholder="e.g. half day, waiting for client content…" className="input mt-1.5" /></label>
+                <button type="submit" className="btn btn-violet px-6"><Save size={15} /> {mine ? "Update" : "Save"}</button>
+              </div>
+            ) : (
+              <label className="block"><span className="eyebrow">Note (optional)</span><input name="note" maxLength={300} defaultValue={mine?.note ?? ""} placeholder={team.kind === "DESIGN" ? "What did you design? e.g. 6 posts + 2 banners" : "What did you edit? e.g. 2 reels + 1 testimonial"} className="input mt-1.5" /></label>
+            )}
+            {mineItems.length > 0 && (
+              <div className="rounded-[10px] bg-[var(--surface-2)] px-3 py-2 text-[12px] leading-relaxed">
+                <span className="font-bold text-[var(--ink-2)]">Saved today: </span>
+                {groupByClient(mineItems).map((g, i) => <span key={g.client}>{i > 0 && " · "}<b className="font-semibold">{g.client}</b> <span className="text-[var(--muted)]">{g.parts}</span></span>)}
+              </div>
+            )}
           </form>
         </div>
         <div className="flex flex-col justify-between gap-4 border-t border-[var(--line)] bg-[var(--surface-2)] p-5 lg:border-l lg:border-t-0">

@@ -136,6 +136,7 @@ exports.Prisma.EditCountScalarFieldEnum = {
   date: 'date',
   count: 'count',
   note: 'note',
+  items: 'items',
   updatedBy: 'updatedBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
