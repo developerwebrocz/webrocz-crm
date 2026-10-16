@@ -2,6 +2,7 @@ import "server-only";
 import { prisma } from "./prisma";
 import { todayIST } from "./india-date";
 import { parseDesignItems } from "./design-work";
+import { WORK_TYPES, WORK_STATUS } from "./domain";
 
 // The design team's work as one simple sheet (Design Count, for the Super Admin / design lead):
 // for a day / week / month — each designer's total, and one line per piece of work:
@@ -82,6 +83,22 @@ export async function getDesignSheet(f: { period?: string; client?: string; desi
       });
     });
   }
+  // the work they reported in Update Work (client, kind of work, how many) — real entries
+  const reported = await prisma.workUpdate.findMany({
+    where: { userId: { in: ids }, date: { gte: new Date(`${range.from}T00:00:00+05:30`), lte: new Date(`${range.to}T23:59:59.999+05:30`) } },
+    include: { client: { select: { name: true } } },
+    orderBy: { date: "desc" },
+  });
+  for (const u of reported) {
+    const kindLabel = WORK_TYPES.find((w) => w.v === u.workType)?.l.replace(/ \((SMO|Video)\)$/, "") ?? u.workType;
+    const what = [kindLabel, u.title || u.detail].filter(Boolean).join(": ");
+    rows.push({
+      key: `upd|${u.id}`, date: todayIST(u.date), designerId: u.userId, designer: nameOf.get(u.userId) ?? "",
+      client: u.client?.name ?? u.clientLabel ?? "", work: what, count: u.quantity, by: "Update Work",
+      status: u.status === "APPROVED" ? "Done" : STATUS[u.status] ?? (WORK_STATUS as Record<string, string>)[u.status] ?? u.status,
+    });
+  }
+
   // the weekly posting plan of each designer: for every client, posts done of the posts planned
   // (shown for the week(s) of the period; not added to the total — the daily lines count the work)
   for (const p of postings) {
