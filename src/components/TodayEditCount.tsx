@@ -43,17 +43,17 @@ export default async function TodayEditCount({ userId, team = TEAMS.VIDEO }: { u
 
   return (
     <div className="card !p-0 overflow-hidden" style={{ borderColor: "color-mix(in srgb, var(--violet) 26%, white)" }}>
-      <div className="grid gap-0 lg:grid-cols-[1.5fr_1fr]">
+      <div className="grid gap-0 xl:grid-cols-[minmax(0,1fr)_280px]">
         <div className="p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2.5">
               <span className="grid h-10 w-10 place-items-center rounded-[11px] text-white" style={{ background: "var(--grad)" }}><Film size={18} /></span>
               <div>
-                <div className="text-[15px] font-bold">Today’s {team.title.toLowerCase()}</div>
+                <div className="text-[15px] font-semibold">Today’s {team.title.toLowerCase()}</div>
                 <div className="text-[12px] text-[var(--muted)]">{fmt(today)}</div>
               </div>
             </div>
-            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-bold" style={mine ? { background: "color-mix(in srgb, var(--emerald) 11%, white)", color: "var(--emerald)" } : { background: "color-mix(in srgb, var(--amber) 13%, white)", color: "#92600a" }}>
+            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-semibold" style={mine ? { background: "color-mix(in srgb, var(--emerald) 11%, white)", color: "var(--emerald)" } : { background: "color-mix(in srgb, var(--amber) 13%, white)", color: "#92600a" }}>
               {mine ? <><CheckCircle2 size={13} /> Updated · {mine.count} {mine.count === 1 ? team.one : team.many}</> : <><Clock3 size={13} /> Not updated yet</>}
             </span>
           </div>
@@ -64,7 +64,7 @@ export default async function TodayEditCount({ userId, team = TEAMS.VIDEO }: { u
             {/* count + save on one line, the note under it — reads well at any width */}
             {isDesign ? (
               <div>
-                <span className="eyebrow">What did you {team.kind === "DESIGN" ? "design" : "edit"} today — client by client</span>
+                <span className="text-[13px] font-medium text-[var(--ink-2)]">What did you {team.kind === "DESIGN" ? "design" : "edit"} today — client by client</span>
                 <div className="mt-1.5"><DesignWorkEditor key={mine ? `${mine.count}|${mineItems.length}` : "new"} clientNames={[...teamNames, ...clientRows.map((c) => c.name)]} types={workTypesFor(team.kind)} noun={team.one} defaultItems={mineItems} defaultCount={mine && !mineItems.length ? mine.count : null} big /></div>
               </div>
             ) : (
@@ -75,7 +75,7 @@ export default async function TodayEditCount({ userId, team = TEAMS.VIDEO }: { u
             )}
             {isDesign ? (
               <div className="flex flex-wrap items-end gap-3">
-                <label className="block min-w-[220px] flex-1"><span className="eyebrow">Note (optional)</span><input name="note" maxLength={300} defaultValue={mine?.note ?? ""} placeholder="e.g. half day, waiting for client content…" className="input mt-1.5" /></label>
+                <label className="block min-w-[220px] flex-1"><span className="text-[13px] font-medium text-[var(--ink-2)]">Note (optional)</span><input name="note" maxLength={300} defaultValue={mine?.note ?? ""} placeholder="e.g. half day, waiting for client content…" className="input mt-1.5" /></label>
                 <button type="submit" className="btn btn-violet px-6"><Save size={15} /> {mine ? "Update" : "Save"}</button>
               </div>
             ) : (
@@ -83,7 +83,7 @@ export default async function TodayEditCount({ userId, team = TEAMS.VIDEO }: { u
             )}
             {mineItems.length > 0 && (
               <div className="rounded-[10px] bg-[var(--surface-2)] px-3 py-2 text-[12px] leading-relaxed">
-                <span className="font-bold text-[var(--ink-2)]">Saved today: </span>
+                <span className="font-semibold text-[var(--ink-2)]">Saved today: </span>
                 {groupByClient(mineItems).map((g, i) => <span key={g.client}>{i > 0 && " · "}<b className="font-semibold">{g.client}</b> <span className="text-[var(--muted)]">{g.parts}</span></span>)}
               </div>
             )}
@@ -92,7 +92,7 @@ export default async function TodayEditCount({ userId, team = TEAMS.VIDEO }: { u
         <div className="flex flex-col justify-between gap-4 border-t border-[var(--line)] bg-[var(--surface-2)] p-5 lg:border-l lg:border-t-0">
           <div className="grid grid-cols-3 gap-2 text-center">
             {[["This month", total], ["Days", worked], ["Avg / day", avg]].map(([l, v]) => (
-              <div key={l} className="rounded-[10px] bg-[var(--surface)] px-2 py-2.5 shadow-[var(--shadow-xs)]"><div className="text-[20px] font-extrabold leading-none tnum">{v}</div><div className="mt-1 text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">{l}</div></div>
+              <div key={l} className="rounded-[10px] bg-[var(--surface)] px-2 py-2.5 shadow-[var(--shadow-xs)]"><div className="text-[20px] font-semibold leading-none tnum">{v}</div><div className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-[var(--muted)]">{l}</div></div>
             ))}
           </div>
           <div>
@@ -103,8 +103,8 @@ export default async function TodayEditCount({ userId, team = TEAMS.VIDEO }: { u
                 </div>
               ))}
             </div>
-            <div className="mt-1 flex gap-1.5">{week.map((w) => <div key={w.date} className={`flex-1 text-center text-[10px] ${w.date === today ? "font-extrabold text-[var(--violet)]" : "text-[var(--faint)]"}`}>{w.letter}</div>)}</div>
-            <Link href={team.path} className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-bold text-[var(--violet)] hover:underline">Open {team.title} <ArrowRight size={13} /></Link>
+            <div className="mt-1 flex gap-1.5">{week.map((w) => <div key={w.date} className={`flex-1 text-center text-[10px] ${w.date === today ? "font-semibold text-[var(--violet)]" : "text-[var(--faint)]"}`}>{w.letter}</div>)}</div>
+            <Link href={team.path} className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--violet)] hover:underline">Open {team.title} <ArrowRight size={13} /></Link>
           </div>
         </div>
       </div>

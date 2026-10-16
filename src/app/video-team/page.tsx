@@ -5,6 +5,8 @@ import { getVideoTeamNames } from "@/lib/video-job-queries";
 import { getEditCountBoard, canOpenEditCount, isVideoAdmin } from "@/lib/edit-count-queries";
 import EditCountBoard from "@/components/EditCountBoard";
 import DesignSheet from "@/components/DesignSheet";
+import DayEntryCard from "@/components/DayEntryCard";
+import { workTypesFor } from "@/lib/design-work";
 import { getDesignSheet } from "@/lib/design-sheet-queries";
 
 export const dynamic = "force-dynamic";
@@ -25,8 +27,23 @@ export default async function VideoTeamPage({ searchParams }: { searchParams: Pr
   const taken = new Set(clients.map((c) => c.name.trim().toLowerCase()));
   const names = (await getVideoTeamNames()).filter((n) => !taken.has(n.toLowerCase()));
   const board = <EditCountBoard d={d} me={{ id: user.id, name: user.name, isEditor: user.role === "EDITOR", isAdmin: isVideoAdmin(user) }} clients={clients} names={names} saved={saved} />;
-  // an editor keeps their own page (enter the day, see their days)
-  if (!d.seeAll) return board;
+  // a video editor: their own page — enter the day client by client, and their work as a sheet
+  if (!d.seeAll) {
+    const q0 = (k: string) => (typeof sp[k] === "string" ? (sp[k] as string) : "");
+    const mineSheet = await getDesignSheet({ period: q0("period") || "week", client: q0("client"), designer: user.id }, "VIDEO");
+    const myDays: Record<string, { count: number; note: string; items: { client: string; type: string; count: number }[] }> = {};
+    for (const [k, c] of Object.entries(d.cells)) { const [uid, day] = k.split("|"); if (uid === user.id) myDays[day] = { count: c.count, note: c.note, items: c.items }; }
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-[24px] font-semibold tracking-tight text-[var(--ink)]">My videos</h1>
+          <p className="mt-1 text-[14px] text-[var(--muted)]">Enter what you edited each day — client by client</p>
+        </div>
+        <DayEntryCard team="VIDEO" today={d.today} firstDay={`${d.month}-01`} days={myDays} clientNames={[...names, ...clients.map((c) => c.name)]} types={workTypesFor("VIDEO")} noun="video" saved={saved === "1"} />
+        <DesignSheet d={mineSheet} path="/video-team" mine title="My videos" />
+      </div>
+    );
+  }
   // Super Admin / video lead: the team's work as one simple sheet first; entering or
   // correcting a day, the month table and assigning work are folded underneath
   const q = (k: string) => (typeof sp[k] === "string" ? (sp[k] as string) : "");
@@ -34,13 +51,13 @@ export default async function VideoTeamPage({ searchParams }: { searchParams: Pr
   return (
     <div className="space-y-5">
       <div>
-        <div className="eyebrow">Video team</div>
-        <h1 className="mt-1.5 text-[26px] font-extrabold tracking-tight">Video work</h1>
-        <p className="mt-1 text-sm text-[var(--muted)]">What each editor did — for which client, how many, and who assigned it</p>
+        <div className="text-[12.5px] font-medium text-[var(--muted)]">Video team</div>
+        <h1 className="mt-1 text-[24px] font-semibold tracking-tight text-[var(--ink)]">Video work</h1>
+        <p className="mt-1 text-[14px] text-[var(--muted)]">What each editor did — for which client, how many, and who assigned it</p>
       </div>
       <DesignSheet d={sheet} path="/video-team" everyone="All editors" person="Editor" />
       <details className="card !p-0 overflow-hidden" open={!!saved || !!month}>
-        <summary className="cursor-pointer px-5 py-3.5 text-[14px] font-bold text-[var(--violet)]">Enter or correct a day · month table · assign work</summary>
+        <summary className="cursor-pointer px-5 py-3.5 text-[14px] font-medium text-[var(--violet)]">Enter or correct a day · month table · assign work</summary>
         <div className="border-t border-[var(--line)] p-5">{board}</div>
       </details>
     </div>
