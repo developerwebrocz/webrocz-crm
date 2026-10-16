@@ -20,7 +20,7 @@ const shift = (day: string, n: number) => { const d = new Date(`${day}T00:00:00Z
 const norm = (v: string) => v.toLowerCase().replace(/\s+/g, " ").trim();
 const STATUS: Record<string, string> = { PENDING: "Pending", IN_PROGRESS: "In progress", REVIEW: "In review", COMPLETED: "Done" };
 
-export type SheetRow = { key: string; date: string; designerId: string; designer: string; client: string; work: string; count: number | null; by: string; status: string };
+export type SheetRow = { key: string; date: string; designerId: string; designer: string; client: string; work: string; count: number | null; by: string; status: string; planned?: number; done?: number };
 
 // `kind`: the designers (default) or the video editors — the same sheet for both teams.
 // Video: "assigned by" comes from the video task, else the client videos (shoots) the lead gave.
@@ -45,8 +45,8 @@ export async function getDesignSheet(f: { period?: string; client?: string; desi
       orderBy: { assignedDate: "desc" },
     }),
     kind === "DESIGN"
-      ? prisma.designPosting.findMany({ where: { userId: { in: ids }, weekStart: { gte: shift(range.from, -6), lte: range.to } }, select: { userId: true, clientName: true, updatedBy: true } })
-      : Promise.resolve([] as { userId: string; clientName: string; updatedBy: string }[]),
+      ? prisma.designPosting.findMany({ where: { userId: { in: ids }, weekStart: { gte: shift(range.from, -6), lte: range.to } }, select: { id: true, weekStart: true, userId: true, clientName: true, updatedBy: true, target: true, done: true } })
+      : Promise.resolve([] as { id: string; weekStart: string; userId: string; clientName: string; updatedBy: string; target: number; done: number }[]),
   ]);
   // video team: the client videos (shoots) given to the editors, the last 45 days and still open
   const jobs = kind === "VIDEO"
@@ -65,7 +65,7 @@ export async function getDesignSheet(f: { period?: string; client?: string; desi
   for (const c of counts) {
     const items = parseDesignItems(c.items);
     if (!items.length) {
-      if (c.count > 0) rows.push({ key: `${c.userId}|${c.date}|n`, date: c.date, designerId: c.userId, designer: nameOf.get(c.userId) ?? "", client: "", work: c.note ? `Not given (${c.note})` : "Not given", count: c.count, by: "", status: "Done" });
+      if (c.count > 0) rows.push({ key: `${c.userId}|${c.date}|n`, date: c.date, designerId: c.userId, designer: nameOf.get(c.userId) ?? "", client: "", work: c.note ? `Designs (no client details) — ${c.note}` : "Designs (no client details)", count: c.count, by: "", status: "Done" });
       continue;
     }
     items.forEach((it, i) => {
@@ -80,6 +80,18 @@ export async function getDesignSheet(f: { period?: string; client?: string; desi
         by: t ? (t.assignedByUser?.name ?? "") : p ? (p.updatedBy ? `${p.updatedBy} (weekly posts)` : "Weekly posts") : j ? (j.updatedBy ? `${j.updatedBy} (client videos)` : "Client videos") : "Own work",
         status: "Done",
       });
+    });
+  }
+  // the weekly posting plan of each designer: for every client, posts done of the posts planned
+  // (shown for the week(s) of the period; not added to the total — the daily lines count the work)
+  for (const p of postings) {
+    if (p.target <= 0 && p.done <= 0) continue;
+    const left = Math.max(0, p.target - p.done);
+    rows.push({
+      key: `post|${p.id}`, date: p.weekStart, designerId: p.userId, designer: nameOf.get(p.userId) ?? "", client: p.clientName,
+      work: `Weekly posts: ${p.done} of ${p.target} done`, count: null, by: p.updatedBy || "Weekly plan",
+      status: p.target > 0 && left === 0 ? "Done" : p.done > 0 ? `${left} left` : "Pending",
+      planned: p.target, done: p.done,
     });
   }
   // work given in this period that has no line yet — with its status

@@ -12,6 +12,7 @@ import type { DesignSheetData } from "@/lib/design-sheet-queries";
 const PERIODS = [["today", "Today"], ["yesterday", "Yesterday"], ["week", "This week"], ["month", "This month"]] as const;
 const fmt = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short", timeZone: "UTC" });
 const TONE: Record<string, string> = { Done: "var(--emerald)", "In progress": "var(--sky)", "In review": "var(--violet)", Pending: "var(--amber)", "No edit needed": "var(--muted)" };
+const toneOf = (s: string) => TONE[s] ?? (/left$/.test(s) ? "var(--amber)" : "var(--muted)");
 const tint = (c: string, p: number) => `color-mix(in srgb, ${c} ${p}%, white)`;
 
 export default function DesignSheet({ d, path = "/design-team", everyone = "All designers", person = "Designer", mine = false, title }: { d: DesignSheetData; path?: string; everyone?: string; person?: string; mine?: boolean; title?: string }) {
@@ -25,6 +26,9 @@ export default function DesignSheet({ d, path = "/design-team", everyone = "All 
   };
   const periodLabel = PERIODS.find(([k]) => k === d.period)?.[1] ?? "Today";
   const cols = (d.showDate ? 1 : 0) + (mine ? 0 : 1) + 5;
+  // the day-to-day work, and (designers) the weekly posting plan per client — two tables
+  const workRows = d.rows.filter((r) => !r.key.startsWith("post|"));
+  const planRows = d.rows.filter((r) => r.key.startsWith("post|"));
 
   return (
     <div className="space-y-4">
@@ -63,6 +67,7 @@ export default function DesignSheet({ d, path = "/design-team", everyone = "All 
 
       {/* the sheet */}
       <div className="card !p-0 overflow-hidden">
+        <div className="border-b border-[var(--line)] px-4 py-3 text-[14px] font-semibold text-[var(--ink)]">Work done</div>
         <div className="overflow-x-auto scroll-thin">
           <table className="w-full min-w-[720px] text-[14px]">
             <thead>
@@ -74,10 +79,10 @@ export default function DesignSheet({ d, path = "/design-team", everyone = "All 
               </tr>
             </thead>
             <tbody>
-              {d.rows.length === 0 && (
+              {workRows.length === 0 && (
                 <tr><td colSpan={cols} className="px-4 py-12 text-center text-[13.5px] text-[var(--muted)]">No work entered for {periodLabel.toLowerCase()}{d.clientQ ? ` for ${d.clientQ}` : ""}.</td></tr>
               )}
-              {d.rows.map((r) => (
+              {workRows.map((r) => (
                 <tr key={r.key} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
                   {d.showDate && <td className="whitespace-nowrap px-4 py-3 text-[var(--ink-2)]">{fmt(r.date)}</td>}
                   {!mine && <td className="px-4 py-3 font-medium text-[var(--ink)]">{r.designer}</td>}
@@ -85,11 +90,11 @@ export default function DesignSheet({ d, path = "/design-team", everyone = "All 
                   <td className="px-4 py-3 text-[var(--ink-2)]">{r.work}</td>
                   <td className="px-4 py-3 text-center font-semibold text-[var(--ink)] tnum">{r.count ?? <span className="font-normal text-[var(--faint)]">—</span>}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-[var(--ink-2)]">{r.by || <span className="text-[var(--faint)]">—</span>}</td>
-                  <td className="whitespace-nowrap px-4 py-3"><span className="rounded-full px-2.5 py-1 text-[12px] font-medium" style={{ background: tint(TONE[r.status] ?? "var(--muted)", 12), color: TONE[r.status] ?? "var(--muted)" }}>{r.status}</span></td>
+                  <td className="whitespace-nowrap px-4 py-3"><span className="rounded-full px-2.5 py-1 text-[12px] font-medium" style={{ background: tint(toneOf(r.status), 12), color: toneOf(r.status) }}>{r.status}</span></td>
                 </tr>
               ))}
             </tbody>
-            {d.rows.length > 0 && (
+            {workRows.length > 0 && (
               <tfoot>
                 <tr className="border-t border-[var(--line-2)] bg-[var(--surface-2)]">
                   <td colSpan={cols - 3} className="px-4 py-3 font-semibold text-[var(--ink)]">Total</td>
@@ -101,6 +106,47 @@ export default function DesignSheet({ d, path = "/design-team", everyone = "All 
           </table>
         </div>
       </div>
+
+      {/* designers: each client's weekly posting plan — planned, done, left */}
+      {planRows.length > 0 && (
+        <div className="card !p-0 overflow-hidden">
+          <div className="border-b border-[var(--line)] px-4 py-3">
+            <div className="text-[14px] font-semibold text-[var(--ink)]">Weekly posting plan</div>
+            <div className="text-[12.5px] text-[var(--muted)]">Posts planned for each client this week, and how many are done</div>
+          </div>
+          <div className="overflow-x-auto scroll-thin">
+            <table className="w-full min-w-[620px] text-[14px]">
+              <thead>
+                <tr className="border-b border-[var(--line)] bg-[var(--surface-2)] text-left text-[12.5px] text-[var(--muted)]">
+                  {!mine && <th className="px-4 py-3 font-medium">{person}</th>}
+                  <th className="px-4 py-3 font-medium">Client</th>
+                  <th className="px-4 py-3 text-center font-medium">Planned</th>
+                  <th className="px-4 py-3 text-center font-medium">Done</th>
+                  <th className="px-4 py-3 text-center font-medium">Left</th>
+                  <th className="px-4 py-3 font-medium">Set by</th>
+                  <th className="px-4 py-3 font-medium">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {planRows.map((r) => {
+                  const left = Math.max(0, (r.planned ?? 0) - (r.done ?? 0));
+                  return (
+                    <tr key={r.key} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
+                      {!mine && <td className="px-4 py-3 font-medium text-[var(--ink)]">{r.designer}</td>}
+                      <td className="px-4 py-3 text-[var(--ink)]">{r.client}</td>
+                      <td className="px-4 py-3 text-center tnum">{r.planned ?? 0}</td>
+                      <td className="px-4 py-3 text-center font-semibold tnum">{r.done ?? 0}</td>
+                      <td className="px-4 py-3 text-center tnum" style={{ color: left > 0 ? "var(--amber)" : "var(--emerald)" }}>{left}</td>
+                      <td className="whitespace-nowrap px-4 py-3 text-[var(--ink-2)]">{r.by}</td>
+                      <td className="whitespace-nowrap px-4 py-3"><span className="rounded-full px-2.5 py-1 text-[12px] font-medium" style={{ background: tint(toneOf(r.status), 12), color: toneOf(r.status) }}>{r.status}</span></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
