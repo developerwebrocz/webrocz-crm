@@ -138,8 +138,6 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
       { href: "/designs", label: "Design Studio", icon: Palette },
       { href: "/design-postings", label: "Assigned Postings", icon: CalendarDays },
       { href: "/design-team", label: "Design Count", icon: ListOrdered },
-      // each designer's work: what they designed, for which client, and who assigned what
-      { href: "/design-work", label: "Designer Work", icon: Palette },
       { href: "/videos", label: "Video Studio", icon: Clapperboard },
       { href: "/client-videos", label: "Client Videos", icon: Film },
       { href: "/video-team", label: "Editing Count", icon: ListOrdered },
@@ -210,7 +208,6 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     // the design team lead sees the whole team in both
     if (isDesigner) work.push({ href: "/design-postings", label: "Assigned Postings", icon: CalendarDays });
     if (isDesigner) work.push({ href: "/design-team", label: "Design Count", icon: ListOrdered });
-    if (isDesigner) work.push({ href: "/design-work", label: (user as { teamLead?: boolean | null }).teamLead ? "Designer Work" : "My Work", icon: Palette });
     if (isEditor) work.push({ href: "/videos", label: "My Videos", icon: Clapperboard });
     // the video team's daily count (was a Google Sheet); the team lead sees the whole team there
     // client shoots and their editing / posting status (was the "Video Shoots Status" sheet)
