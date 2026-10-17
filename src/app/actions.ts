@@ -1093,7 +1093,8 @@ export async function createUpdate(fd: FormData) {
   const picked = s(fd, "clientId");
   // Video team: a pick like "name:Digital Hat" (the agency's own brands, names the team added)
   // is kept as a name on the update — there is no client record for it.
-  const byName = picked.startsWith(NAME_ONLY) && me.role === "EDITOR";
+  // Designers can type a new client name the same way ("+ Add new client" on Update Work).
+  const byName = picked.startsWith(NAME_ONLY) && (me.role === "EDITOR" || me.role === "DESIGNER");
   const clientLabel = byName ? picked.slice(NAME_ONLY.length).replace(/\s+/g, " ").trim().slice(0, 160) : "";
   const clientId = picked.startsWith(NAME_ONLY) ? null : picked;
   // Only the Super Admin may log work on someone else's behalf; everyone else logs as themselves.

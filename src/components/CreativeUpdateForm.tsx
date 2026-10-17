@@ -31,6 +31,12 @@ export default function CreativeUpdateForm({ dept, clients, names = [], today, a
   const [qty, setQty] = useState(1);
   const [status, setStatus] = useState<string>("COMPLETED");
   const noun = dept === "VIDEO" ? "video" : "design";
+  // a client that is not in the list: "+ Add new client" → type the name (kept as a name on the
+  // update; it shows in the list from then on). A name that is already a client picks that client.
+  const [adding, setAdding] = useState(false);
+  const [newName, setNewName] = useState("");
+  const typed = newName.replace(/\s+/g, " ").trim();
+  const known = clients.find((c) => c.name.trim().toLowerCase() === typed.toLowerCase());
 
   return (
     <form action={action} className="card overflow-hidden !p-0">
@@ -47,18 +53,30 @@ export default function CreativeUpdateForm({ dept, clients, names = [], today, a
       <div className="space-y-5 px-5 py-5">
         <div className="grid gap-4 sm:grid-cols-[180px_minmax(0,1fr)]">
           <label className="block"><Label>Date</Label><input name="date" type="date" required max={today} defaultValue={today} className="input" /></label>
-          <label className="block">
-            <Label>Client</Label>
+          <div>
+            <div className="flex items-center justify-between gap-2">
+              <Label>Client</Label>
+              <button type="button" onClick={() => { setAdding((a) => !a); setNewName(""); }} className="mb-1.5 inline-flex items-center gap-1 text-[12.5px] font-medium text-[var(--violet)] hover:underline">
+                {adding ? "Pick from the list" : <><Plus size={13} /> Add new client</>}
+              </button>
+            </div>
+            {adding ? (
+              <>
+                <input type="hidden" name="clientId" value={known ? known.id : typed ? NAME_ONLY + typed : ""} />
+                <input value={newName} onChange={(e) => setNewName(e.target.value)} required maxLength={160} autoFocus className="input" placeholder="Type the new client's name" aria-label="New client name" />
+              </>
+            ) : (
             <select name="clientId" required className="select" defaultValue="">
               <option value="">Select the client</option>
               {names.length > 0 ? (
                 <>
-                  <optgroup label="Our brands">{names.map((n) => <option key={n} value={NAME_ONLY + n}>{n}</option>)}</optgroup>
+                  <optgroup label={dept === "VIDEO" ? "Our brands · added by the team" : "Added by the design team"}>{names.map((n) => <option key={n} value={NAME_ONLY + n}>{n}</option>)}</optgroup>
                   <optgroup label="Clients">{clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</optgroup>
                 </>
               ) : clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
-          </label>
+            )}
+          </div>
         </div>
 
         <div>

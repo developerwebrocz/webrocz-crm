@@ -10,6 +10,7 @@ import UpdateForm from "@/components/UpdateForm";
 import CreativeUpdateForm from "@/components/CreativeUpdateForm";
 import DesignSheet from "@/components/DesignSheet";
 import { getDesignSheet } from "@/lib/design-sheet-queries";
+import { prisma } from "@/lib/prisma";
 import { WORK_STATUS } from "@/lib/domain";
 import { ClipboardList, CheckCircle2, Clock3 } from "lucide-react";
 
@@ -30,8 +31,13 @@ export default async function UpdatesPage({ searchParams }: PageProps<"/updates"
     // video editors also log work for the agency's own brands and the names their team added
     user.role === "EDITOR" ? getVideoTeamNames() : Promise.resolve([] as string[]),
   ]);
+  // designers / editors: the client names their team typed in with "+ Add new client"
+  const typedNames = user.role === "DESIGNER" || user.role === "EDITOR"
+    ? (await prisma.workUpdate.findMany({ where: { clientId: null, clientLabel: { not: "" }, user: { role: user.role } }, select: { clientLabel: true }, distinct: ["clientLabel"] })).map((u) => u.clientLabel.trim())
+    : [];
   const taken = new Set(clients.map((c) => c.name.trim().toLowerCase()));
-  const names = teamNames.filter((n) => !taken.has(n.toLowerCase()));
+  const names = [...teamNames, ...typedNames.sort((a, b) => a.localeCompare(b))]
+    .filter((n) => { const k = n.toLowerCase(); if (!n || taken.has(k)) return false; taken.add(k); return true; });
   // Match the report's "today" window (respects DEMO_DATE) so a saved update counts immediately.
   const today = `${now().getFullYear()}-${String(now().getMonth() + 1).padStart(2, "0")}-${String(now().getDate()).padStart(2, "0")}`;
 
