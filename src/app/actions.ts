@@ -1101,12 +1101,21 @@ export async function createUpdate(fd: FormData) {
   const userId = (me.role === "SUPER_ADMIN" || me.role === "SUB_ADMIN") ? (s(fd, "userId") || me.id) : me.id;
   if ((!clientId && !clientLabel) || !userId) throw new Error("Client and team member are required");
 
-  await prisma.workUpdate.create({
+  // Designers / editors send several kinds at once (Banner 3, Logo 2 …): one update per kind.
+  let kinds: { workType: string; quantity: number }[] = [];
+  try {
+    const arr = JSON.parse(s(fd, "items") || "[]");
+    if (Array.isArray(arr)) kinds = arr.map((x) => ({ workType: String(x?.workType ?? "").slice(0, 40), quantity: Math.round(Number(x?.quantity)) }))
+      .filter((x) => x.workType && Number.isFinite(x.quantity) && x.quantity > 0 && x.quantity <= 200).slice(0, 20);
+  } catch { /* ignore */ }
+  if (!kinds.length) kinds = [{ workType: s(fd, "workType") || "task", quantity: Math.max(1, n(fd, "quantity")) }];
+
+  for (const k of kinds) await prisma.workUpdate.create({
     data: {
       clientId, clientLabel, userId,
       date: s(fd, "date") ? new Date(s(fd, "date")) : new Date(),
-      workType: s(fd, "workType") || "task",
-      quantity: Math.max(1, n(fd, "quantity")),
+      workType: k.workType,
+      quantity: k.quantity,
       status: s(fd, "status") || "COMPLETED",
       title: s(fd, "title") || null,
       detail: s(fd, "detail") || null,

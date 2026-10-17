@@ -142,8 +142,17 @@ export async function getDesignSheet(f: { period?: string; client?: string; desi
     notUpdated: period === "today" && !entered.has(d.id),
   }));
 
+  // the total split by kind of work (Banner 3 · Logo 2 · Poster 4 …) — for the person picked, or everyone
+  const typeMap = new Map<string, number>();
+  for (const r of shown) {
+    if (!r.count) continue;
+    const t = r.key.endsWith("|n") ? "Not specified" : r.work;
+    typeMap.set(t, (typeMap.get(t) ?? 0) + r.count);
+  }
+  const byType = [...typeMap.entries()].map(([type, count]) => ({ type, count })).sort((a, b) => b.count - a.count || a.type.localeCompare(b.type));
+
   return {
-    period, range, today, clients, clientQ, designerQ, people,
+    period, range, today, clients, clientQ, designerQ, people, byType,
     total: shown.reduce((s, r) => s + (r.count ?? 0), 0),
     allTotal: inClient.reduce((s, r) => s + (r.count ?? 0), 0),
     rows: shown, showDate: range.from !== range.to,

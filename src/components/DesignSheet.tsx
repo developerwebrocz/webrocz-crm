@@ -66,6 +66,26 @@ export default function DesignSheet({ d, path = "/design-team", everyone = "All 
         </div>
       )}
 
+      {/* the total split by kind of work — click a person's number above to see theirs */}
+      {d.byType.length > 0 && (
+        <div className="card !p-0 overflow-hidden">
+          <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[var(--line)] px-4 py-3">
+            <div className="text-[14px] font-semibold text-[var(--ink)]">
+              {mine ? "My work by type" : d.designerQ ? `${d.people.find((p) => p.id === d.designerQ)?.name ?? ""} — work by type` : "Work by type"}
+            </div>
+            <div className="text-[13px] text-[var(--muted)]">Total <b className="text-[15px] font-semibold text-[var(--ink)] tnum">{d.total}</b> · {periodLabel}{d.clientQ ? ` · ${d.clientQ}` : ""}</div>
+          </div>
+          <div className="grid gap-3 p-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))" }}>
+            {d.byType.map((t) => (
+              <div key={t.type} className="rounded-[10px] border border-[var(--line)] bg-[var(--surface-2)] px-3.5 py-2.5">
+                <div className="text-[22px] font-semibold leading-tight text-[var(--ink)] tnum">{t.count}</div>
+                <div className="mt-0.5 truncate text-[13px] text-[var(--ink-2)]">{t.type}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* the sheet */}
       <div className="card !p-0 overflow-hidden">
         <div className="border-b border-[var(--line)] px-4 py-3 text-[14px] font-semibold text-[var(--ink)]">Work done</div>
