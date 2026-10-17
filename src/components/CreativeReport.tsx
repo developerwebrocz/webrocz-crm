@@ -23,9 +23,10 @@ function shortDate(d: string) {
 }
 
 export default function CreativeReport({
-  rows, clients, types, days, members, assigners = [], clientOptions, currentUserId,
+  rows, clients, types, days, members, assigners = [], clientOptions, currentUserId, top,
 }: {
   rows: Row[]; clients: string[]; types: string[]; days: string[]; members: Member[]; assigners?: { id: string; name: string }[]; clientOptions: { id: string; name: string }[]; today: string; currentUserId?: string;
+  top?: React.ReactNode; // Super Admin: the work the designers / editors reported, shown above the tasks
 }) {
   const [q, setQ] = useState("");
   const [role, setRole] = useState("ALL");
@@ -125,6 +126,9 @@ export default function CreativeReport({
           <button onClick={download} className="btn btn-dark"><Download size={15} /> Download CSV</button>
         </div>
       </div>
+
+      {top}
+      {top && <h2 className="pt-2 text-[18px] font-semibold tracking-tight text-[var(--ink)]">Assigned tasks</h2>}
 
       {/* filters */}
       <div className="card card-pad">
