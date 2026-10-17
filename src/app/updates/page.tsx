@@ -10,6 +10,7 @@ import UpdateForm from "@/components/UpdateForm";
 import CreativeUpdateForm from "@/components/CreativeUpdateForm";
 import DesignSheet from "@/components/DesignSheet";
 import { getDesignSheet, getTypedClientNames } from "@/lib/design-sheet-queries";
+import { prisma } from "@/lib/prisma";
 import { WORK_STATUS } from "@/lib/domain";
 import { ClipboardList, CheckCircle2, Clock3 } from "lucide-react";
 
@@ -31,7 +32,10 @@ export default async function UpdatesPage({ searchParams }: PageProps<"/updates"
     user.role === "EDITOR" ? getVideoTeamNames() : Promise.resolve([] as string[]),
   ]);
   // designers / editors: the client names their team typed in with "+ Add new client"
-  const typedNames = user.role === "DESIGNER" || user.role === "EDITOR" ? await getTypedClientNames(user.role === "EDITOR" ? "VIDEO" : "DESIGN") : [];
+  // the client names typed in with "＋ Add new client" — designers / editors: their team's;
+  // everyone else: the names people in their role added on their work updates
+  const typedNames = user.role === "DESIGNER" || user.role === "EDITOR" ? await getTypedClientNames(user.role === "EDITOR" ? "VIDEO" : "DESIGN")
+    : (await prisma.workUpdate.findMany({ where: { clientId: null, clientLabel: { not: "" }, user: { role: user.role } }, select: { clientLabel: true }, distinct: ["clientLabel"] })).map((u) => u.clientLabel.replace(/\s+/g, " ").trim()).sort((a, b) => a.localeCompare(b));
   const taken = new Set(clients.map((c) => c.name.trim().toLowerCase()));
   const names = [...teamNames, ...typedNames]
     .filter((n) => { const k = n.toLowerCase(); if (!n || taken.has(k)) return false; taken.add(k); return true; });

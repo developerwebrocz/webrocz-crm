@@ -1,6 +1,6 @@
 import { addCreativeTask } from "@/app/actions";
 import { DESIGN_TYPES, VIDEO_TYPES } from "@/lib/domain";
-import { NAME_ONLY } from "@/lib/team-kinds";
+import ClientPickField from "@/components/ClientPickField";
 import { ArrowLeft } from "lucide-react";
 
 // `names` (video team): the agency's own brands and the names the team added — picked like a
@@ -23,21 +23,8 @@ export default function CreativeNewForm({ kind, clients, names = [] }: { kind: "
           <label className="block"><span className="lbl">Title</span><input name="title" required placeholder={isVideo ? "e.g. Instagram Reel 15 sec" : "e.g. Festival Offer Poster"} className="fld2" /></label>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block"><span className="lbl">Client</span>
-              <select name="clientId" className="fld2">
-                <option value="">— Select client —</option>
-                {names.length > 0 ? (
-                  <>
-                    <optgroup label="Our brands · added by the video team">{names.map((n) => <option key={n} value={NAME_ONLY + n}>{n}</option>)}</optgroup>
-                    <optgroup label="Clients">{clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</optgroup>
-                  </>
-                ) : clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
+              <ClientPickField clients={clients} names={names} namesLabel={isVideo ? "Our brands · added by the video team" : "Added by the design team"} className="fld2" emptyLabel="— Select client —" />
             </label>
-            {isVideo && (
-              <label className="block"><span className="lbl">Or add a new client</span>
-                <input name="newClient" maxLength={160} placeholder="Not in the list? Type the client name" className="fld2" autoComplete="off" />
-              </label>
-            )}
             <label className="block"><span className="lbl">Type</span>
               <select name="type" className="fld2">{types.map((t) => <option key={t} value={t}>{t}</option>)}</select>
             </label>

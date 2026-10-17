@@ -456,18 +456,16 @@ export async function addCreativeTask(fd: FormData) {
   // added) is kept as a name on the video — not a client record.
   let clientLabel = "";
   if (clientId?.startsWith(NAME_ONLY)) {
-    if (kind === "VIDEO" && !newClientName) clientLabel = clientId.slice(NAME_ONLY.length).replace(/\s+/g, " ").trim().slice(0, 160);
+    if (!newClientName) clientLabel = clientId.slice(NAME_ONLY.length).replace(/\s+/g, " ").trim().slice(0, 160);
     clientId = null;
   }
-  if (newClientName && kind === "VIDEO") {
-    // a name the video team adds goes on their own list; if it is a client already, that client is used
+  if (newClientName) {
+    // a name the designer / video team adds ("＋ Add new client") goes on their own list — not
+    // a client record; if it is a client already, that client is used
     const typed = newClientName.replace(/\s+/g, " ").slice(0, 160);
     const same = (await prisma.client.findMany({ select: { id: true, name: true } })).filter((c) => c.name.trim().toLowerCase() === typed.toLowerCase());
     clientId = same.length === 1 ? same[0].id : null;
     clientLabel = same.length === 1 ? "" : typed;
-  } else if (newClientName) {
-    const created = await prisma.client.create({ data: { code: await nextClientCode(), name: newClientName, status: "ACTIVE" } });
-    clientId = created.id;
   }
   await prisma.creativeTask.create({
     data: {
@@ -1093,8 +1091,8 @@ export async function createUpdate(fd: FormData) {
   const picked = s(fd, "clientId");
   // Video team: a pick like "name:Digital Hat" (the agency's own brands, names the team added)
   // is kept as a name on the update — there is no client record for it.
-  // Designers can type a new client name the same way ("+ Add new client" on Update Work).
-  const byName = picked.startsWith(NAME_ONLY) && (me.role === "EDITOR" || me.role === "DESIGNER");
+  // Anyone can type a new client name the same way ("＋ Add new client" on Update Work).
+  const byName = picked.startsWith(NAME_ONLY);
   const clientLabel = byName ? picked.slice(NAME_ONLY.length).replace(/\s+/g, " ").trim().slice(0, 160) : "";
   const clientId = picked.startsWith(NAME_ONLY) ? null : picked;
   // Only the Super Admin may log work on someone else's behalf; everyone else logs as themselves.

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { WORK_STATUS, WORK_TYPES } from "@/lib/domain";
-import { NAME_ONLY } from "@/lib/team-kinds";
+import ClientPickField from "./ClientPickField";
 import { Eyebrow } from "./ui";
 
 type Opt = { id: string; name: string; code?: string };
@@ -49,16 +49,8 @@ export default function UpdateForm({
   return (
     <form action={action} className="card card-pad grid gap-4 sm:grid-cols-2">
       <Field label="Client" required>
-        <select name="clientId" required className="select" defaultValue={defaultClientId ?? ""}>
-          <option value="">Select client</option>
-          {names.length > 0 ? (
-            <>
-              {/* video team: the agency's own brands and the names the team added — not client records */}
-              <optgroup label="Our brands · added by the video team">{names.map((n) => <option key={n} value={NAME_ONLY + n}>{n}</option>)}</optgroup>
-              <optgroup label="Clients">{clients.map((c) => <option key={c.id} value={c.id}>{c.name}{c.code ? ` · ${c.code}` : ""}</option>)}</optgroup>
-            </>
-          ) : clients.map((c) => <option key={c.id} value={c.id}>{c.name}{c.code ? ` · ${c.code}` : ""}</option>)}
-        </select>
+        {/* the names the team added before ("＋ Add new client") — not client records */}
+        <ClientPickField clients={clients} names={names} namesLabel={role === "EDITOR" ? "Our brands · added by the video team" : "Added by the team"} required defaultClientId={defaultClientId ?? ""} />
       </Field>
       <Field label="Team member" required>
         {lockUser && currentUser ? (

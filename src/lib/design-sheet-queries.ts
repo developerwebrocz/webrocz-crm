@@ -164,14 +164,15 @@ export type DesignSheetData = Awaited<ReturnType<typeof getDesignSheet>>;
 // from their daily count lines and their work updates — so a name added once is in the list after.
 export async function getTypedClientNames(kind: "DESIGN" | "VIDEO"): Promise<string[]> {
   const role = kind === "VIDEO" ? "EDITOR" : "DESIGNER";
-  const [counts, updates, clients] = await Promise.all([
+  const [counts, updates, tasks, clients] = await Promise.all([
     prisma.editCount.findMany({ where: { user: { role }, items: { notIn: ["", "[]"] } }, select: { items: true } }),
     prisma.workUpdate.findMany({ where: { clientId: null, clientLabel: { not: "" }, user: { role } }, select: { clientLabel: true }, distinct: ["clientLabel"] }),
+    prisma.creativeTask.findMany({ where: { kind, clientId: null, clientLabel: { not: "" } }, select: { clientLabel: true }, distinct: ["clientLabel"] }),
     prisma.client.findMany({ select: { name: true } }),
   ]);
   const taken = new Set(clients.map((c) => norm(c.name)));
   const out = new Map<string, string>();
-  for (const n of [...counts.flatMap((c) => parseDesignItems(c.items).map((it) => it.client)), ...updates.map((u) => u.clientLabel)]) {
+  for (const n of [...counts.flatMap((c) => parseDesignItems(c.items).map((it) => it.client)), ...updates.map((u) => u.clientLabel), ...tasks.map((t) => t.clientLabel)]) {
     const name = n.replace(/\s+/g, " ").trim();
     if (name && !taken.has(norm(name)) && !out.has(norm(name))) out.set(norm(name), name);
   }
