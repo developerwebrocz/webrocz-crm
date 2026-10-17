@@ -8,32 +8,46 @@ import { DESIGN_WORK_TYPES, type DesignWorkItem } from "@/lib/design-work";
 // worked out from the lines; both go with the form (`items` as JSON, `count` as the total).
 // No lines and saved = the day's entry is removed.
 
-type Row = { key: number; client: string; type: string; count: number };
+// `custom`: the client is typed in ("+ Add new client") instead of picked from the list
+type Row = { key: number; client: string; type: string; count: number; custom?: boolean };
 let next = 1;
 const rowOf = (it?: Partial<DesignWorkItem>, first: string = DESIGN_WORK_TYPES[0]): Row => ({ key: next++, client: it?.client ?? "", type: it?.type || first, count: it?.count && it.count > 0 ? it.count : 1 });
+const NEW = "__new__";
 
 // `types` / `noun`: the team's kinds of work and word (designs by default; the video team passes its own).
 export default function DesignWorkEditor({ clientNames, defaultItems = [], defaultCount = null, big = false, types = DESIGN_WORK_TYPES, noun = "design" }: { clientNames: string[]; defaultItems?: DesignWorkItem[]; defaultCount?: number | null; big?: boolean; types?: readonly string[]; noun?: string }) {
   // a day saved before the client lines existed has only a number: start with one line holding it
-  const [rows, setRows] = useState<Row[]>(() => defaultItems.length ? defaultItems.map((it) => rowOf(it, types[0])) : defaultCount ? [rowOf({ count: defaultCount, client: "" }, types[0])] : [rowOf(undefined, types[0])]);
+  const known = new Set(clientNames.map((n) => n.trim().toLowerCase()));
+  // a saved line whose client is not in the list opens as a typed name
+  const withCustom = (r: Row): Row => ({ ...r, custom: !!r.client && !known.has(r.client.trim().toLowerCase()) });
+  const [rows, setRows] = useState<Row[]>(() => (defaultItems.length ? defaultItems.map((it) => rowOf(it, types[0])) : defaultCount ? [rowOf({ count: defaultCount, client: "" }, types[0])] : [rowOf(undefined, types[0])]).map(withCustom));
   const set = (key: number, patch: Partial<Row>) => setRows((rs) => rs.map((r) => (r.key === key ? { ...r, ...patch } : r)));
   // every line with a number counts; a line without a client name still adds to the day's number
   const filled = rows.filter((r) => r.count > 0);
   const named = filled.filter((r) => r.client.trim());
   const total = filled.reduce((s, r) => s + r.count, 0);
-  const listId = `${noun}-clients-${big ? "home" : "page"}`;
 
   return (
     <div className="space-y-2">
       <input type="hidden" name="items" value={JSON.stringify(named.map((r) => ({ client: r.client.trim(), type: r.type, count: r.count })))} />
       <input type="hidden" name="count" value={filled.length ? String(total) : ""} />
-      <datalist id={listId}>{clientNames.map((n) => <option key={n} value={n} />)}</datalist>
       <div className="hidden gap-2 px-0.5 text-[12px] font-medium text-[var(--muted)] sm:grid sm:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_132px_32px]">
         <span>Client</span><span>{noun === "design" ? "Design type" : "Video type"}</span><span>How many</span><span />
       </div>
       {rows.map((r) => (
         <div key={r.key} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-2 sm:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_132px_32px]">
-          <input list={listId} value={r.client} onChange={(e) => set(r.key, { client: e.target.value })} placeholder="Client name" className="input col-span-2 sm:col-span-1" autoComplete="off" />
+          {r.custom ? (
+            <div className="relative col-span-2 sm:col-span-1">
+              <input value={r.client} onChange={(e) => set(r.key, { client: e.target.value })} placeholder="Type the new client's name" className="input !pr-[92px]" autoComplete="off" autoFocus={!r.client} aria-label="New client name" />
+              <button type="button" onClick={() => set(r.key, { custom: false, client: "" })} className="absolute right-2 top-1/2 -translate-y-1/2 rounded-[6px] px-1.5 py-0.5 text-[12px] font-medium text-[var(--violet)] hover:bg-[var(--surface-2)]">Pick from list</button>
+            </div>
+          ) : (
+            <select value={known.has(r.client.trim().toLowerCase()) ? clientNames.find((n) => n.trim().toLowerCase() === r.client.trim().toLowerCase()) : ""} onChange={(e) => (e.target.value === NEW ? set(r.key, { custom: true, client: "" }) : set(r.key, { client: e.target.value }))} className="select col-span-2 sm:col-span-1" aria-label="Client">
+              <option value="">Select the client</option>
+              <option value={NEW}>＋ Add new client</option>
+              {[...new Set(clientNames)].map((n) => <option key={n} value={n}>{n}</option>)}
+            </select>
+          )}
           <select value={r.type} onChange={(e) => set(r.key, { type: e.target.value })} className="select">
             {[...new Set([...types, r.type])].map((t) => <option key={t} value={t}>{t}</option>)}
           </select>

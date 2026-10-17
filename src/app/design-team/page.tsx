@@ -7,7 +7,7 @@ import EditCountBoard from "@/components/EditCountBoard";
 import DesignSheet from "@/components/DesignSheet";
 import DayEntryCard from "@/components/DayEntryCard";
 import { workTypesFor } from "@/lib/design-work";
-import { getDesignSheet } from "@/lib/design-sheet-queries";
+import { getDesignSheet, getTypedClientNames } from "@/lib/design-sheet-queries";
 
 export const dynamic = "force-dynamic";
 
@@ -37,7 +37,7 @@ export default async function DesignTeamPage({ searchParams }: { searchParams: P
           <h1 className="text-[24px] font-semibold tracking-tight text-[var(--ink)]">My designs</h1>
           <p className="mt-1 text-[14px] text-[var(--muted)]">Enter what you designed each day — client by client</p>
         </div>
-        <DayEntryCard team="DESIGN" today={d.today} firstDay={`${d.month}-01`} days={myDays} clientNames={clients.map((c) => c.name)} types={workTypesFor("DESIGN")} noun="design" saved={saved === "1"} />
+        <DayEntryCard team="DESIGN" today={d.today} firstDay={`${d.month}-01`} days={myDays} clientNames={[...(await getTypedClientNames("DESIGN")), ...clients.map((c) => c.name)]} types={workTypesFor("DESIGN")} noun="design" saved={saved === "1"} />
         <DesignSheet d={mineSheet} path="/design-team" mine title="My designs" />
       </div>
     );

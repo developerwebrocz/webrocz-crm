@@ -6,6 +6,7 @@ import CountStepper from "@/components/CountStepper";
 import DesignWorkEditor from "@/components/DesignWorkEditor";
 import { parseDesignItems, groupByClient, workTypesFor } from "@/lib/design-work";
 import { getVideoTeamNames } from "@/lib/video-job-queries";
+import { getTypedClientNames } from "@/lib/design-sheet-queries";
 import { TEAMS, cap, type TeamInfo } from "@/lib/team-kinds";
 import { Film, CheckCircle2, Clock3, ArrowRight, Save } from "lucide-react";
 
@@ -28,6 +29,10 @@ export default async function TodayEditCount({ userId, team = TEAMS.VIDEO }: { u
     // the video team also works for the agency's own brands and names it added
     team.kind === "VIDEO" ? getVideoTeamNames() : Promise.resolve([] as string[]),
   ]);
+  // and the client names the team typed in themselves ("+ Add new client")
+  const typed = await getTypedClientNames(team.kind);
+  const listed = new Set([...teamNames, ...clientRows.map((c) => c.name)].map((n) => n.trim().toLowerCase()));
+  teamNames.push(...typed.filter((n) => !listed.has(n.toLowerCase())));
   const by = new Map(rows.map((r) => [r.date, r]));
   const mine = by.get(today);
   const mineItems = isDesign && mine ? parseDesignItems(mine.items) : [];

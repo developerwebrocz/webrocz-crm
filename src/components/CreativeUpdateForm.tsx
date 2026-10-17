@@ -70,8 +70,9 @@ export default function CreativeUpdateForm({ dept, clients, names = [], today, a
                 <input value={newName} onChange={(e) => setNewName(e.target.value)} required maxLength={160} autoFocus className="input" placeholder="Type the new client's name" aria-label="New client name" />
               </>
             ) : (
-            <select name="clientId" required className="select" defaultValue="">
+            <select name="clientId" required className="select" defaultValue="" onChange={(e) => { if (e.target.value === "__new__") { setAdding(true); setNewName(""); } }}>
               <option value="">Select the client</option>
+              <option value="__new__">＋ Add new client</option>
               {names.length > 0 ? (
                 <>
                   <optgroup label={dept === "VIDEO" ? "Our brands · added by the team" : "Added by the design team"}>{names.map((n) => <option key={n} value={NAME_ONLY + n}>{n}</option>)}</optgroup>

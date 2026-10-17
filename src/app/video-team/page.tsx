@@ -7,7 +7,7 @@ import EditCountBoard from "@/components/EditCountBoard";
 import DesignSheet from "@/components/DesignSheet";
 import DayEntryCard from "@/components/DayEntryCard";
 import { workTypesFor } from "@/lib/design-work";
-import { getDesignSheet } from "@/lib/design-sheet-queries";
+import { getDesignSheet, getTypedClientNames } from "@/lib/design-sheet-queries";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +25,7 @@ export default async function VideoTeamPage({ searchParams }: { searchParams: Pr
   const clients = (await getClientOptions()).map((c) => ({ id: c.id, name: c.name }));
   // the agency's own brands and the names the video team added, for "Assign work"
   const taken = new Set(clients.map((c) => c.name.trim().toLowerCase()));
-  const names = (await getVideoTeamNames()).filter((n) => !taken.has(n.toLowerCase()));
+  const names = [...(await getVideoTeamNames()), ...(await getTypedClientNames("VIDEO"))].filter((n) => { const k = n.toLowerCase(); if (taken.has(k)) return false; taken.add(k); return true; });
   const board = <EditCountBoard d={d} me={{ id: user.id, name: user.name, isEditor: user.role === "EDITOR", isAdmin: isVideoAdmin(user) }} clients={clients} names={names} saved={saved} />;
   // a video editor: their own page — enter the day client by client, and their work as a sheet
   if (!d.seeAll) {

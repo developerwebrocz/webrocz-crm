@@ -159,3 +159,21 @@ export async function getDesignSheet(f: { period?: string; client?: string; desi
   };
 }
 export type DesignSheetData = Awaited<ReturnType<typeof getDesignSheet>>;
+
+// Client names the team typed in themselves ("+ Add new client") that are not client records —
+// from their daily count lines and their work updates — so a name added once is in the list after.
+export async function getTypedClientNames(kind: "DESIGN" | "VIDEO"): Promise<string[]> {
+  const role = kind === "VIDEO" ? "EDITOR" : "DESIGNER";
+  const [counts, updates, clients] = await Promise.all([
+    prisma.editCount.findMany({ where: { user: { role }, items: { notIn: ["", "[]"] } }, select: { items: true } }),
+    prisma.workUpdate.findMany({ where: { clientId: null, clientLabel: { not: "" }, user: { role } }, select: { clientLabel: true }, distinct: ["clientLabel"] }),
+    prisma.client.findMany({ select: { name: true } }),
+  ]);
+  const taken = new Set(clients.map((c) => norm(c.name)));
+  const out = new Map<string, string>();
+  for (const n of [...counts.flatMap((c) => parseDesignItems(c.items).map((it) => it.client)), ...updates.map((u) => u.clientLabel)]) {
+    const name = n.replace(/\s+/g, " ").trim();
+    if (name && !taken.has(norm(name)) && !out.has(norm(name))) out.set(norm(name), name);
+  }
+  return [...out.values()].sort((a, b) => a.localeCompare(b));
+}
