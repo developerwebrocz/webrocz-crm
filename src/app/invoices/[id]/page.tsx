@@ -26,10 +26,11 @@ export default async function InvoiceByIdPage({ params, searchParams }: { params
   return (
     <>
       {/* before payment the client gets the invoice; after payment, the receipt */}
-      {canManage && <InvoiceReceiptNotice invoiceId={id} total={Number((d.invoice as { total?: number } | null)?.total ?? 0)} received={Number((d.invoice as { received?: number } | null)?.received ?? 0)} />}
+      {canManage && !approvalOff && <InvoiceReceiptNotice invoiceId={id} total={Number((d.invoice as { total?: number } | null)?.total ?? 0)} received={Number((d.invoice as { received?: number } | null)?.received ?? 0)} />}
       <InvoiceView lead={lead} invoice={d.invoice} canManage={canManage} isSuperAdmin={isSuperAdmin} approvalOff={approvalOff} sent={sent} backHref="/invoices" />
       {/* payments received on this invoice, each with its receipt to send */}
-      <InvoiceReceipts invoiceId={id} />
+      {/* (receipts are hidden from the accountant for now) */}
+      {!approvalOff && <InvoiceReceipts invoiceId={id} />}
     </>
   );
 }

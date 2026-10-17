@@ -45,7 +45,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 }
 
 async function AppShell({ user, userId, impersonatedBy, children }: { user: { name: string; role: string; shootTeam?: boolean; teamLead?: boolean }; userId: string; impersonatedBy?: string | null; children: React.ReactNode }) {
-  const [clientCount, search, alerts, approvalsCount, taskCount, reminderCount, payReminderCount] = await Promise.all([
+  const [clientCount, search, alerts, approvalsCount, taskCount, reminderCount, payReminderCount, holdCount] = await Promise.all([
     prisma.client.count({ where: user.role === "ACCOUNT_MANAGER" || user.role === "DM_EXEC" ? managedBy(userId) : {} }).catch(() => 0),
     getSearchIndex({ id: userId, role: user.role }).catch(() => ({ clients: [], projects: [], team: [] })),
     getAlerts(userId, user.role).catch(() => ({ count: 0, items: [] })),
@@ -55,6 +55,8 @@ async function AppShell({ user, userId, impersonatedBy, children }: { user: { na
     getDueReminderCount().catch(() => 0),
     // accounts: payment reminders due today or late (menu badge)
     (["SUPER_ADMIN", "SUB_ADMIN", "ACCOUNTANT"].includes(user.role) ? getPaymentReminderCount(user.role) : Promise.resolve(0)).catch(() => 0),
+    // accounts: invoices on hold (menu badge)
+    (["SUPER_ADMIN", "SUB_ADMIN", "ACCOUNTANT"].includes(user.role) ? prisma.salesInvoice.count({ where: { onHold: true } }) : Promise.resolve(0)).catch(() => 0),
   ]);
   // Designer / Editor: status counts for the sidebar pipeline shortcuts.
   const pipeline = (user.role === "DESIGNER" || user.role === "EDITOR")
@@ -79,7 +81,7 @@ async function AppShell({ user, userId, impersonatedBy, children }: { user: { na
       <TopBar user={user} search={search} alerts={alerts} />
       <MobileNav role={user.role} />
       <div className="flex">
-        <Sidebar clientCount={clientCount} approvalsCount={approvalsCount} taskCount={taskCount} reminderCount={reminderCount} payReminderCount={payReminderCount} pipeline={pipeline} user={user} myShoots={myShoots} videoPipe={videoPipe} />
+        <Sidebar clientCount={clientCount} approvalsCount={approvalsCount} taskCount={taskCount} reminderCount={reminderCount} payReminderCount={payReminderCount} holdCount={holdCount} pipeline={pipeline} user={user} myShoots={myShoots} videoPipe={videoPipe} />
         <main className="min-w-0 flex-1 px-5 py-7 sm:px-8">
           <div className="mx-auto w-full max-w-[1600px]">{children}</div>
         </main>

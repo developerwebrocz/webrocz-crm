@@ -59,3 +59,16 @@ export async function clearPaymentReminder(fd: FormData) {
   else await setInvoiceFollowupDate(id, "");
   refresh();
 }
+
+// Hold (accounts): put an invoice on hold — it leaves Payment Reminders and waits in the Hold
+// list — or take it off hold, back into the reminders.
+export async function setInvoiceHold(fd: FormData) {
+  const me = await getCurrentUser();
+  if (!me || !CAN_REMIND.includes(me.role)) return;
+  const id = String(fd.get("id") ?? "");
+  if (!id) return;
+  const hold = String(fd.get("hold") ?? "") === "1";
+  await prisma.salesInvoice.update({ where: { id }, data: hold ? { onHold: true, holdOn: todayIST(), holdBy: me.name } : { onHold: false, holdOn: "", holdBy: "" } });
+  refresh();
+  revalidatePath("/hold");
+}

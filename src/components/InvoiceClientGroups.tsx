@@ -2,9 +2,10 @@
 
 import { Fragment, useMemo, useState } from "react";
 import Link from "next/link";
-import { ChevronRight, ShieldCheck, Clock, MessageSquarePlus, Pencil, Trash2, ExternalLink } from "lucide-react";
+import { ChevronRight, ShieldCheck, Clock, MessageSquarePlus, Pencil, Trash2, ExternalLink, PauseCircle, PlayCircle } from "lucide-react";
 import WebRoczPvtFollowupModal from "@/components/WebRoczPvtFollowupModal";
 import { companyLabel } from "@/lib/domain";
+import { setInvoiceHold } from "@/app/reminder-actions";
 import { SIR_ROW, SirTag, followupRank } from "@/components/RajeshSirTag";
 
 // The invoices list, grouped by client: one row per client with its totals; clicking the row
@@ -115,7 +116,7 @@ export default function InvoiceClientGroups({ rows, hideApproval, canDelete, ope
                                   <td className="px-4 py-2.5 text-right tnum">{inr(r.total)}</td>
                                   <td className="px-4 py-2.5 text-right tnum">{inr(r.total - r.balance)}</td>
                                   <td className="px-4 py-2.5 text-right tnum" style={{ color: r.balance > 0 ? "var(--amber)" : "var(--emerald)" }}>{inr(r.balance)}</td>
-                                  <td className="whitespace-nowrap py-2.5 pl-8 pr-4">{r.paymentStatus}</td>
+                                  <td className="whitespace-nowrap py-2.5 pl-8 pr-4">{r.paymentStatus}{r.onHold && <span className="ml-1.5 rounded-full bg-[color-mix(in_srgb,var(--amber)_16%,white)] px-1.5 py-px text-[10.5px] font-bold text-[#8a5a00]">On hold</span>}</td>
                                   {!hideApproval && <td className="px-4 py-2.5">
                                     {r.approved
                                       ? <span className="inline-flex items-center gap-1 text-[12px] font-semibold" style={{ color: "var(--emerald)" }}><ShieldCheck size={13} /> Approved</span>
@@ -125,6 +126,16 @@ export default function InvoiceClientGroups({ rows, hideApproval, canDelete, ope
                                     <div className="flex items-center gap-1.5 whitespace-nowrap">
                                       <button onClick={() => onFollowup(r)} title="Follow-ups" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><MessageSquarePlus size={13} /> Follow-up{r.followups?.length > 0 && <span className="grid h-4 min-w-[16px] place-items-center rounded-full bg-[var(--violet)] px-1 text-[9px] font-bold text-white">{r.followups.length}</span>}</button>
                                       <Link href={`/invoices/${r.id}`} title="Open & edit invoice" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--ink-2)] hover:bg-[var(--surface-2)]"><Pencil size={13} /> Edit</Link>
+                                      {/* Hold: the invoice leaves Payment Reminders and waits in the Hold list */}
+                                      {(r.onHold || r.balance > 0) && (
+                                        <form action={setInvoiceHold} className="contents">
+                                          <input type="hidden" name="id" value={r.id} />
+                                          <input type="hidden" name="hold" value={r.onHold ? "0" : "1"} />
+                                          <button type="submit" title={r.onHold ? "Take off hold — back to Payment Reminders" : "Move to Hold"} className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[#8a5a00] hover:bg-[color-mix(in_srgb,var(--amber)_10%,white)]">
+                                            {r.onHold ? <><PlayCircle size={13} /> Remove hold</> : <><PauseCircle size={13} /> Hold</>}
+                                          </button>
+                                        </form>
+                                      )}
                                       {canDelete && <button onClick={() => onDelete(r)} title="Delete invoice" className="inline-flex items-center gap-1 rounded-[7px] border border-[var(--line-2)] px-2 py-1 text-[12px] font-semibold text-[var(--rose)] hover:bg-[color-mix(in_srgb,var(--rose)_10%,white)]"><Trash2 size={13} /> Delete</button>}
                                     </div>
                                     {r.nextFollowup && r.nextFollowup !== g.nextFollowup && <div className="mt-1 text-[11px] font-bold text-[var(--rose)] tnum">next follow-up {fmtD(r.nextFollowup)}</div>}

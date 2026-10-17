@@ -2672,6 +2672,7 @@ export async function getInvoices(opts: { q?: string; status?: string; company?:
       approved: r.approved, issueDate: r.issueDate, dueDate, overdue: balance > 0 && !!dueDate && dueDate < today,
       pipeline: r.pipeline, company, gst: r.taxPct > 0, leadId: r.leadId, nextFollowup: (clientId && clientNext.get(clientId)) || chosenInvoiceFollowup(r.nextFollowup, followups), followups,
       clientFollowupCount: (clientId && clientFu.get(clientId)?.count) || 0,
+      onHold: r.onHold, holdOn: r.holdOn,
       followupBy: (clientId && followupByOf.get(clientId)) || "",
     };
   });

@@ -19154,6 +19154,9 @@ export namespace Prisma {
     clientState: string | null
     clientAddress: string | null
     placeOfSupply: string | null
+    onHold: boolean | null
+    holdOn: string | null
+    holdBy: string | null
     approved: boolean | null
     approvedBy: string | null
     approvedAt: Date | null
@@ -19195,6 +19198,9 @@ export namespace Prisma {
     clientState: string | null
     clientAddress: string | null
     placeOfSupply: string | null
+    onHold: boolean | null
+    holdOn: string | null
+    holdBy: string | null
     approved: boolean | null
     approvedBy: string | null
     approvedAt: Date | null
@@ -19236,6 +19242,9 @@ export namespace Prisma {
     clientState: number
     clientAddress: number
     placeOfSupply: number
+    onHold: number
+    holdOn: number
+    holdBy: number
     approved: number
     approvedBy: number
     approvedAt: number
@@ -19295,6 +19304,9 @@ export namespace Prisma {
     clientState?: true
     clientAddress?: true
     placeOfSupply?: true
+    onHold?: true
+    holdOn?: true
+    holdBy?: true
     approved?: true
     approvedBy?: true
     approvedAt?: true
@@ -19336,6 +19348,9 @@ export namespace Prisma {
     clientState?: true
     clientAddress?: true
     placeOfSupply?: true
+    onHold?: true
+    holdOn?: true
+    holdBy?: true
     approved?: true
     approvedBy?: true
     approvedAt?: true
@@ -19377,6 +19392,9 @@ export namespace Prisma {
     clientState?: true
     clientAddress?: true
     placeOfSupply?: true
+    onHold?: true
+    holdOn?: true
+    holdBy?: true
     approved?: true
     approvedBy?: true
     approvedAt?: true
@@ -19505,6 +19523,9 @@ export namespace Prisma {
     clientState: string | null
     clientAddress: string | null
     placeOfSupply: string | null
+    onHold: boolean
+    holdOn: string
+    holdBy: string
     approved: boolean
     approvedBy: string | null
     approvedAt: Date | null
@@ -19565,6 +19586,9 @@ export namespace Prisma {
     clientState?: boolean
     clientAddress?: boolean
     placeOfSupply?: boolean
+    onHold?: boolean
+    holdOn?: boolean
+    holdBy?: boolean
     approved?: boolean
     approvedBy?: boolean
     approvedAt?: boolean
@@ -19609,6 +19633,9 @@ export namespace Prisma {
     clientState?: boolean
     clientAddress?: boolean
     placeOfSupply?: boolean
+    onHold?: boolean
+    holdOn?: boolean
+    holdBy?: boolean
     approved?: boolean
     approvedBy?: boolean
     approvedAt?: boolean
@@ -19651,6 +19678,9 @@ export namespace Prisma {
     clientState?: boolean
     clientAddress?: boolean
     placeOfSupply?: boolean
+    onHold?: boolean
+    holdOn?: boolean
+    holdBy?: boolean
     approved?: boolean
     approvedBy?: boolean
     approvedAt?: boolean
@@ -19693,6 +19723,9 @@ export namespace Prisma {
     clientState?: boolean
     clientAddress?: boolean
     placeOfSupply?: boolean
+    onHold?: boolean
+    holdOn?: boolean
+    holdBy?: boolean
     approved?: boolean
     approvedBy?: boolean
     approvedAt?: boolean
@@ -19702,7 +19735,7 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type SalesInvoiceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "number" | "leadId" | "clientId" | "pipeline" | "company" | "billTo" | "contact" | "phone" | "email" | "items" | "openReceiptNo" | "openReceiptSentAt" | "openReceiptSentBy" | "subtotal" | "taxPct" | "taxAmount" | "total" | "received" | "paymentStatus" | "paymentProof" | "invoiceDoc" | "projectDate" | "paymentTerm" | "notes" | "issueDate" | "dueDate" | "clientGstin" | "clientState" | "clientAddress" | "placeOfSupply" | "approved" | "approvedBy" | "approvedAt" | "notesLog" | "nextFollowup" | "emailedAt" | "createdAt", ExtArgs["result"]["salesInvoice"]>
+  export type SalesInvoiceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "number" | "leadId" | "clientId" | "pipeline" | "company" | "billTo" | "contact" | "phone" | "email" | "items" | "openReceiptNo" | "openReceiptSentAt" | "openReceiptSentBy" | "subtotal" | "taxPct" | "taxAmount" | "total" | "received" | "paymentStatus" | "paymentProof" | "invoiceDoc" | "projectDate" | "paymentTerm" | "notes" | "issueDate" | "dueDate" | "clientGstin" | "clientState" | "clientAddress" | "placeOfSupply" | "onHold" | "holdOn" | "holdBy" | "approved" | "approvedBy" | "approvedAt" | "notesLog" | "nextFollowup" | "emailedAt" | "createdAt", ExtArgs["result"]["salesInvoice"]>
   export type SalesInvoiceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     payments?: boolean | SalesInvoice$paymentsArgs<ExtArgs>
     client?: boolean | SalesInvoice$clientArgs<ExtArgs>
@@ -19753,6 +19786,9 @@ export namespace Prisma {
       clientState: string | null
       clientAddress: string | null
       placeOfSupply: string | null
+      onHold: boolean
+      holdOn: string
+      holdBy: string
       approved: boolean
       approvedBy: string | null
       approvedAt: Date | null
@@ -20216,6 +20252,9 @@ export namespace Prisma {
     readonly clientState: FieldRef<"SalesInvoice", 'String'>
     readonly clientAddress: FieldRef<"SalesInvoice", 'String'>
     readonly placeOfSupply: FieldRef<"SalesInvoice", 'String'>
+    readonly onHold: FieldRef<"SalesInvoice", 'Boolean'>
+    readonly holdOn: FieldRef<"SalesInvoice", 'String'>
+    readonly holdBy: FieldRef<"SalesInvoice", 'String'>
     readonly approved: FieldRef<"SalesInvoice", 'Boolean'>
     readonly approvedBy: FieldRef<"SalesInvoice", 'String'>
     readonly approvedAt: FieldRef<"SalesInvoice", 'DateTime'>
@@ -55736,6 +55775,9 @@ export namespace Prisma {
     clientState: 'clientState',
     clientAddress: 'clientAddress',
     placeOfSupply: 'placeOfSupply',
+    onHold: 'onHold',
+    holdOn: 'holdOn',
+    holdBy: 'holdBy',
     approved: 'approved',
     approvedBy: 'approvedBy',
     approvedAt: 'approvedAt',
@@ -57497,6 +57539,9 @@ export namespace Prisma {
     clientState?: StringNullableFilter<"SalesInvoice"> | string | null
     clientAddress?: StringNullableFilter<"SalesInvoice"> | string | null
     placeOfSupply?: StringNullableFilter<"SalesInvoice"> | string | null
+    onHold?: BoolFilter<"SalesInvoice"> | boolean
+    holdOn?: StringFilter<"SalesInvoice"> | string
+    holdBy?: StringFilter<"SalesInvoice"> | string
     approved?: BoolFilter<"SalesInvoice"> | boolean
     approvedBy?: StringNullableFilter<"SalesInvoice"> | string | null
     approvedAt?: DateTimeNullableFilter<"SalesInvoice"> | Date | string | null
@@ -57540,6 +57585,9 @@ export namespace Prisma {
     clientState?: SortOrderInput | SortOrder
     clientAddress?: SortOrderInput | SortOrder
     placeOfSupply?: SortOrderInput | SortOrder
+    onHold?: SortOrder
+    holdOn?: SortOrder
+    holdBy?: SortOrder
     approved?: SortOrder
     approvedBy?: SortOrderInput | SortOrder
     approvedAt?: SortOrderInput | SortOrder
@@ -57586,6 +57634,9 @@ export namespace Prisma {
     clientState?: StringNullableFilter<"SalesInvoice"> | string | null
     clientAddress?: StringNullableFilter<"SalesInvoice"> | string | null
     placeOfSupply?: StringNullableFilter<"SalesInvoice"> | string | null
+    onHold?: BoolFilter<"SalesInvoice"> | boolean
+    holdOn?: StringFilter<"SalesInvoice"> | string
+    holdBy?: StringFilter<"SalesInvoice"> | string
     approved?: BoolFilter<"SalesInvoice"> | boolean
     approvedBy?: StringNullableFilter<"SalesInvoice"> | string | null
     approvedAt?: DateTimeNullableFilter<"SalesInvoice"> | Date | string | null
@@ -57629,6 +57680,9 @@ export namespace Prisma {
     clientState?: SortOrderInput | SortOrder
     clientAddress?: SortOrderInput | SortOrder
     placeOfSupply?: SortOrderInput | SortOrder
+    onHold?: SortOrder
+    holdOn?: SortOrder
+    holdBy?: SortOrder
     approved?: SortOrder
     approvedBy?: SortOrderInput | SortOrder
     approvedAt?: SortOrderInput | SortOrder
@@ -57678,6 +57732,9 @@ export namespace Prisma {
     clientState?: StringNullableWithAggregatesFilter<"SalesInvoice"> | string | null
     clientAddress?: StringNullableWithAggregatesFilter<"SalesInvoice"> | string | null
     placeOfSupply?: StringNullableWithAggregatesFilter<"SalesInvoice"> | string | null
+    onHold?: BoolWithAggregatesFilter<"SalesInvoice"> | boolean
+    holdOn?: StringWithAggregatesFilter<"SalesInvoice"> | string
+    holdBy?: StringWithAggregatesFilter<"SalesInvoice"> | string
     approved?: BoolWithAggregatesFilter<"SalesInvoice"> | boolean
     approvedBy?: StringNullableWithAggregatesFilter<"SalesInvoice"> | string | null
     approvedAt?: DateTimeNullableWithAggregatesFilter<"SalesInvoice"> | Date | string | null
@@ -61770,6 +61827,9 @@ export namespace Prisma {
     clientState?: string | null
     clientAddress?: string | null
     placeOfSupply?: string | null
+    onHold?: boolean
+    holdOn?: string
+    holdBy?: string
     approved?: boolean
     approvedBy?: string | null
     approvedAt?: Date | string | null
@@ -61813,6 +61873,9 @@ export namespace Prisma {
     clientState?: string | null
     clientAddress?: string | null
     placeOfSupply?: string | null
+    onHold?: boolean
+    holdOn?: string
+    holdBy?: string
     approved?: boolean
     approvedBy?: string | null
     approvedAt?: Date | string | null
@@ -61854,6 +61917,9 @@ export namespace Prisma {
     clientState?: NullableStringFieldUpdateOperationsInput | string | null
     clientAddress?: NullableStringFieldUpdateOperationsInput | string | null
     placeOfSupply?: NullableStringFieldUpdateOperationsInput | string | null
+    onHold?: BoolFieldUpdateOperationsInput | boolean
+    holdOn?: StringFieldUpdateOperationsInput | string
+    holdBy?: StringFieldUpdateOperationsInput | string
     approved?: BoolFieldUpdateOperationsInput | boolean
     approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
     approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -61897,6 +61963,9 @@ export namespace Prisma {
     clientState?: NullableStringFieldUpdateOperationsInput | string | null
     clientAddress?: NullableStringFieldUpdateOperationsInput | string | null
     placeOfSupply?: NullableStringFieldUpdateOperationsInput | string | null
+    onHold?: BoolFieldUpdateOperationsInput | boolean
+    holdOn?: StringFieldUpdateOperationsInput | string
+    holdBy?: StringFieldUpdateOperationsInput | string
     approved?: BoolFieldUpdateOperationsInput | boolean
     approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
     approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -61939,6 +62008,9 @@ export namespace Prisma {
     clientState?: string | null
     clientAddress?: string | null
     placeOfSupply?: string | null
+    onHold?: boolean
+    holdOn?: string
+    holdBy?: string
     approved?: boolean
     approvedBy?: string | null
     approvedAt?: Date | string | null
@@ -61979,6 +62051,9 @@ export namespace Prisma {
     clientState?: NullableStringFieldUpdateOperationsInput | string | null
     clientAddress?: NullableStringFieldUpdateOperationsInput | string | null
     placeOfSupply?: NullableStringFieldUpdateOperationsInput | string | null
+    onHold?: BoolFieldUpdateOperationsInput | boolean
+    holdOn?: StringFieldUpdateOperationsInput | string
+    holdBy?: StringFieldUpdateOperationsInput | string
     approved?: BoolFieldUpdateOperationsInput | boolean
     approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
     approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -62020,6 +62095,9 @@ export namespace Prisma {
     clientState?: NullableStringFieldUpdateOperationsInput | string | null
     clientAddress?: NullableStringFieldUpdateOperationsInput | string | null
     placeOfSupply?: NullableStringFieldUpdateOperationsInput | string | null
+    onHold?: BoolFieldUpdateOperationsInput | boolean
+    holdOn?: StringFieldUpdateOperationsInput | string
+    holdBy?: StringFieldUpdateOperationsInput | string
     approved?: BoolFieldUpdateOperationsInput | boolean
     approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
     approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -66313,6 +66391,9 @@ export namespace Prisma {
     clientState?: SortOrder
     clientAddress?: SortOrder
     placeOfSupply?: SortOrder
+    onHold?: SortOrder
+    holdOn?: SortOrder
+    holdBy?: SortOrder
     approved?: SortOrder
     approvedBy?: SortOrder
     approvedAt?: SortOrder
@@ -66362,6 +66443,9 @@ export namespace Prisma {
     clientState?: SortOrder
     clientAddress?: SortOrder
     placeOfSupply?: SortOrder
+    onHold?: SortOrder
+    holdOn?: SortOrder
+    holdBy?: SortOrder
     approved?: SortOrder
     approvedBy?: SortOrder
     approvedAt?: SortOrder
@@ -66403,6 +66487,9 @@ export namespace Prisma {
     clientState?: SortOrder
     clientAddress?: SortOrder
     placeOfSupply?: SortOrder
+    onHold?: SortOrder
+    holdOn?: SortOrder
+    holdBy?: SortOrder
     approved?: SortOrder
     approvedBy?: SortOrder
     approvedAt?: SortOrder
@@ -73391,6 +73478,9 @@ export namespace Prisma {
     clientState?: string | null
     clientAddress?: string | null
     placeOfSupply?: string | null
+    onHold?: boolean
+    holdOn?: string
+    holdBy?: string
     approved?: boolean
     approvedBy?: string | null
     approvedAt?: Date | string | null
@@ -73432,6 +73522,9 @@ export namespace Prisma {
     clientState?: string | null
     clientAddress?: string | null
     placeOfSupply?: string | null
+    onHold?: boolean
+    holdOn?: string
+    holdBy?: string
     approved?: boolean
     approvedBy?: string | null
     approvedAt?: Date | string | null
@@ -74394,6 +74487,9 @@ export namespace Prisma {
     clientState?: StringNullableFilter<"SalesInvoice"> | string | null
     clientAddress?: StringNullableFilter<"SalesInvoice"> | string | null
     placeOfSupply?: StringNullableFilter<"SalesInvoice"> | string | null
+    onHold?: BoolFilter<"SalesInvoice"> | boolean
+    holdOn?: StringFilter<"SalesInvoice"> | string
+    holdBy?: StringFilter<"SalesInvoice"> | string
     approved?: BoolFilter<"SalesInvoice"> | boolean
     approvedBy?: StringNullableFilter<"SalesInvoice"> | string | null
     approvedAt?: DateTimeNullableFilter<"SalesInvoice"> | Date | string | null
@@ -77359,6 +77455,9 @@ export namespace Prisma {
     clientState?: string | null
     clientAddress?: string | null
     placeOfSupply?: string | null
+    onHold?: boolean
+    holdOn?: string
+    holdBy?: string
     approved?: boolean
     approvedBy?: string | null
     approvedAt?: Date | string | null
@@ -77401,6 +77500,9 @@ export namespace Prisma {
     clientState?: string | null
     clientAddress?: string | null
     placeOfSupply?: string | null
+    onHold?: boolean
+    holdOn?: string
+    holdBy?: string
     approved?: boolean
     approvedBy?: string | null
     approvedAt?: Date | string | null
@@ -77457,6 +77559,9 @@ export namespace Prisma {
     clientState?: NullableStringFieldUpdateOperationsInput | string | null
     clientAddress?: NullableStringFieldUpdateOperationsInput | string | null
     placeOfSupply?: NullableStringFieldUpdateOperationsInput | string | null
+    onHold?: BoolFieldUpdateOperationsInput | boolean
+    holdOn?: StringFieldUpdateOperationsInput | string
+    holdBy?: StringFieldUpdateOperationsInput | string
     approved?: BoolFieldUpdateOperationsInput | boolean
     approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
     approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -77499,6 +77604,9 @@ export namespace Prisma {
     clientState?: NullableStringFieldUpdateOperationsInput | string | null
     clientAddress?: NullableStringFieldUpdateOperationsInput | string | null
     placeOfSupply?: NullableStringFieldUpdateOperationsInput | string | null
+    onHold?: BoolFieldUpdateOperationsInput | boolean
+    holdOn?: StringFieldUpdateOperationsInput | string
+    holdBy?: StringFieldUpdateOperationsInput | string
     approved?: BoolFieldUpdateOperationsInput | boolean
     approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
     approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -86198,6 +86306,9 @@ export namespace Prisma {
     clientState?: string | null
     clientAddress?: string | null
     placeOfSupply?: string | null
+    onHold?: boolean
+    holdOn?: string
+    holdBy?: string
     approved?: boolean
     approvedBy?: string | null
     approvedAt?: Date | string | null
@@ -86683,6 +86794,9 @@ export namespace Prisma {
     clientState?: NullableStringFieldUpdateOperationsInput | string | null
     clientAddress?: NullableStringFieldUpdateOperationsInput | string | null
     placeOfSupply?: NullableStringFieldUpdateOperationsInput | string | null
+    onHold?: BoolFieldUpdateOperationsInput | boolean
+    holdOn?: StringFieldUpdateOperationsInput | string
+    holdBy?: StringFieldUpdateOperationsInput | string
     approved?: BoolFieldUpdateOperationsInput | boolean
     approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
     approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -86724,6 +86838,9 @@ export namespace Prisma {
     clientState?: NullableStringFieldUpdateOperationsInput | string | null
     clientAddress?: NullableStringFieldUpdateOperationsInput | string | null
     placeOfSupply?: NullableStringFieldUpdateOperationsInput | string | null
+    onHold?: BoolFieldUpdateOperationsInput | boolean
+    holdOn?: StringFieldUpdateOperationsInput | string
+    holdBy?: StringFieldUpdateOperationsInput | string
     approved?: BoolFieldUpdateOperationsInput | boolean
     approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
     approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -86765,6 +86882,9 @@ export namespace Prisma {
     clientState?: NullableStringFieldUpdateOperationsInput | string | null
     clientAddress?: NullableStringFieldUpdateOperationsInput | string | null
     placeOfSupply?: NullableStringFieldUpdateOperationsInput | string | null
+    onHold?: BoolFieldUpdateOperationsInput | boolean
+    holdOn?: StringFieldUpdateOperationsInput | string
+    holdBy?: StringFieldUpdateOperationsInput | string
     approved?: BoolFieldUpdateOperationsInput | boolean
     approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
     approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

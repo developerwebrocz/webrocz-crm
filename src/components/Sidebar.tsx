@@ -5,7 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { initials, roleLabel } from "@/lib/domain";
 import {
-  LayoutDashboard, Users, UserCog, Megaphone, ClipboardList, BellRing,
+  LayoutDashboard, Users, UserCog, Megaphone, ClipboardList, BellRing, PauseCircle,
   FileBarChart, Search, UsersRound, Wallet, Images, Code2,
   CalendarDays, ClipboardCheck, ListChecks, Target, Palette, Clapperboard,
   Contact, CalendarClock, ReceiptText, FileText, CheckCircle2, XCircle, UserPlus, Repeat, Landmark, Building2, Globe, FileSignature, ChevronDown, PieChart,
@@ -16,7 +16,7 @@ type Item = { href: string; label: string; icon: React.ElementType; badge?: numb
 type Group = { label?: string; items: Item[] };
 
 type Pipeline = { total: number; dueToday: number; inProgress: number; review: number; completed: number; overdue: number };
-export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0, reminderCount = 0, payReminderCount = 0, pipeline, user, myShoots = false, videoPipe }: { clientCount: number; approvalsCount?: number; taskCount?: number; reminderCount?: number; payReminderCount?: number; pipeline?: Pipeline; user: { name: string; role: string }; myShoots?: boolean; videoPipe?: { toEdit: number; editing: number; done: number; notPosted: number; team: boolean; members?: { id: string; name: string; open: number }[] } }) {
+export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0, reminderCount = 0, payReminderCount = 0, holdCount = 0, pipeline, user, myShoots = false, videoPipe }: { clientCount: number; approvalsCount?: number; taskCount?: number; reminderCount?: number; payReminderCount?: number; holdCount?: number; pipeline?: Pipeline; user: { name: string; role: string }; myShoots?: boolean; videoPipe?: { toEdit: number; editing: number; done: number; notPosted: number; team: boolean; members?: { id: string; name: string; open: number }[] } }) {
   const path = usePathname();
   const sp = useSearchParams();
   const curStage = sp.get("stage") ?? "";
@@ -100,7 +100,8 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     const subItems: Item[] = activeCo ? [
       { href: `/pipeline/${c.slug}`, label: c.clientsLabel, icon: Users, forceActive: path === `/pipeline/${c.slug}` },
       { href: `/invoices?company=${c.key}&hub=1`, label: "Invoices", icon: ReceiptText, forceActive: path.startsWith("/invoices") && companyParam === c.key },
-      { href: `/receipts?company=${c.key}`, label: "Receipts", icon: FileText, forceActive: path.startsWith("/receipts") && companyParam === c.key },
+      // receipts are hidden from the accountant for now
+      ...(isAccountant ? [] : [{ href: `/receipts?company=${c.key}`, label: "Receipts", icon: FileText, forceActive: path.startsWith("/receipts") && companyParam === c.key }]),
       ...(c.renewals ? [{ href: `/renewals?company=${c.slug}`, label: "Website renewals", icon: Repeat, forceActive: path.startsWith("/renewals") && companyParam === c.slug }] : []),
     ] : [];
     return { href: `/pipeline/${c.slug}`, label: c.label, icon: c.icon, forceActive: activeCo, subItems };
@@ -108,7 +109,8 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
   // Accountant finance suite — also shown to Super/Sub Admin (they oversee finance).
   const financeGroups: Group[] = [
     // payment reminders due today or late — the accounts team's reminder pipeline
-    { label: "Accountants", items: [{ href: "/reminders", label: "Payment Reminders", icon: BellRing, badge: payReminderCount || undefined, badgeTone: "red" as const }, ...companyItems, ...(paymentsOnTop ? [] : [{ href: "/payments", label: "Payments", icon: Wallet }])] },
+    // Hold: invoices put on hold (out of the reminders)
+    { label: "Accountants", items: [{ href: "/reminders", label: "Payment Reminders", icon: BellRing, badge: payReminderCount || undefined, badgeTone: "red" as const }, { href: "/hold", label: "Hold", icon: PauseCircle, badge: holdCount || undefined }, ...companyItems, ...(paymentsOnTop ? [] : [{ href: "/payments", label: "Payments", icon: Wallet }])] },
     { label: "Finance", items: [
       { href: "/dm-clients", label: "All DM Clients", icon: Megaphone },
       { href: "/sla", label: "SLAs", icon: FileSignature },
@@ -119,7 +121,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
       { href: "/gst", label: "GST Report", icon: Landmark },
       { href: "/invoices", label: "Invoices", icon: ReceiptText },
       // a receipt for every payment received, to send to the client
-      { href: "/receipts", label: "Receipts", icon: FileText, forceActive: path.startsWith("/receipts") && !companyParam },
+      ...(isAccountant ? [] : [{ href: "/receipts", label: "Receipts", icon: FileText, forceActive: path.startsWith("/receipts") && !companyParam }]),
     ] },
   ];
   if (isAccountant) groups.push(...financeGroups);

@@ -32,7 +32,7 @@ type Sla = { id: string; title: string; service: string; amount: number; gst: bo
 type Totals = { billed: number; received: number; pending: number; overdue: number; invoices: number };
 
 // `canDelete`: Super / Sub Admin — may delete an invoice from this page.
-export default function FinanceClientDetail({ client, invoices, payments, totals, clientFollowups, slas, openPayId, company, dmServices = [], canDelete = false }: { client: Client; invoices: Inv[]; payments: Pay[]; totals: Totals; clientFollowups: Followup[]; slas: Sla[]; openPayId?: string; company?: string; dmServices?: { service: string; detail: string | null }[]; canDelete?: boolean }) {
+export default function FinanceClientDetail({ client, invoices, payments, totals, clientFollowups, slas, openPayId, company, dmServices = [], canDelete = false, hideReceipts = false }: { client: Client; invoices: Inv[]; payments: Pay[]; totals: Totals; clientFollowups: Followup[]; slas: Sla[]; openPayId?: string; company?: string; dmServices?: { service: string; detail: string | null }[]; canDelete?: boolean; hideReceipts?: boolean }) {
   const [payInv, setPayInv] = useState<Inv | null>(() => invoices.find((i) => i.id === openPayId && i.balance > 0) ?? null);
   const [newInv, setNewInv] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -310,9 +310,9 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
         <div className="border-b border-[var(--line)] px-5 py-3"><h2 className="text-[14px] font-bold">Payment history ({fPayments.length})</h2></div>
         <div className="overflow-x-auto scroll-thin">
           <table className="w-full min-w-[720px] text-left">
-            <thead><tr className="border-b border-[var(--line)]">{["Date", "Invoice", "Amount", "Mode", "Ref", "Note", "By", "Receipt"].map((h) => <th key={h} className="th px-5 py-2.5">{h}</th>)}</tr></thead>
+            <thead><tr className="border-b border-[var(--line)]">{["Date", "Invoice", "Amount", "Mode", "Ref", "Note", "By", ...(hideReceipts ? [] : ["Receipt"])].map((h) => <th key={h} className="th px-5 py-2.5">{h}</th>)}</tr></thead>
             <tbody>
-              {fPayments.length === 0 && <tr><td colSpan={8} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No payments recorded yet.</td></tr>}
+              {fPayments.length === 0 && <tr><td colSpan={hideReceipts ? 7 : 8} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No payments recorded yet.</td></tr>}
               {fPayments.map((p) => (
                 <tr key={p.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
                   <td className="px-5 py-3 text-[12.5px] tnum">{fmtDate(p.date)}</td>
@@ -323,7 +323,7 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
                   <td className="px-5 py-3 text-[12px] text-[var(--muted)]">{p.note || "—"}</td>
                   <td className="px-5 py-3 text-[12px] text-[var(--muted)]">{p.by || "—"}</td>
                   {/* payment receipt for the client (a minus correction has none) */}
-                  <td className="px-5 py-3 text-[12px]">{p.amount > 0 ? <a href={`/receipts/${p.id}`} className="font-bold text-[var(--violet)] hover:underline">Receipt</a> : "—"}</td>
+                  {!hideReceipts && <td className="px-5 py-3 text-[12px]">{p.amount > 0 ? <a href={`/receipts/${p.id}`} className="font-bold text-[var(--violet)] hover:underline">Receipt</a> : "—"}</td>}
                 </tr>
               ))}
             </tbody>

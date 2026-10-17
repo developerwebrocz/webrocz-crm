@@ -42,12 +42,13 @@ export function remindersFor<T extends { followupBy: string }>(rows: T[], role: 
 export async function getPaymentReminders(role = ""): Promise<PaymentReminder[]> {
   const [clients, invoices] = await Promise.all([
     prisma.client.findMany({ select: { id: true, name: true, pocName: true, pocMobile: true, billingCompany: true, nextFollowup: true, followupLog: true, paymentFollowupBy: true } }),
-    prisma.salesInvoice.findMany({ select: { id: true, clientId: true, number: true, billTo: true, contact: true, phone: true, total: true, received: true, issueDate: true, dueDate: true, nextFollowup: true, notesLog: true, company: true }, orderBy: { issueDate: "asc" } }),
+    prisma.salesInvoice.findMany({ select: { id: true, clientId: true, number: true, billTo: true, contact: true, phone: true, total: true, received: true, issueDate: true, dueDate: true, nextFollowup: true, notesLog: true, company: true, onHold: true }, orderBy: { issueDate: "asc" } }),
   ]);
   // an invoice with no linked client belongs to the client with exactly its bill-to name
   const byName = new Map<string, string>();
   for (const c of clients) { const k = c.name.trim().toLowerCase(); byName.set(k, byName.has(k) ? "" : c.id); }
-  const pending = invoices.filter((i) => i.total - i.received > 0).map((i) => ({ ...i, clientId: i.clientId || byName.get(i.billTo.trim().toLowerCase()) || null }));
+  // an invoice put on Hold is out of the reminders (it waits in the Hold list)
+  const pending = invoices.filter((i) => i.total - i.received > 0 && !i.onHold).map((i) => ({ ...i, clientId: i.clientId || byName.get(i.billTo.trim().toLowerCase()) || null }));
   const out: PaymentReminder[] = [];
   const followupByOf = new Map(clients.map((c) => [c.id, c.paymentFollowupBy] as const));
 

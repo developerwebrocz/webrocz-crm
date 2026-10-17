@@ -321,6 +321,10 @@ model SalesInvoice {
   clientState   String?   @default("36-Telangana")
   clientAddress String?
   placeOfSupply String?   @default("36-Telangana")
+  // Accounts "Hold" pipeline: an invoice put on hold (payment on hold) — out of Payment Reminders
+  onHold        Boolean   @default(false)
+  holdOn        String    @default("") // YYYY-MM-DD it was put on hold
+  holdBy        String    @default("")
   // Super Admin approval gate — download only allowed once approved
   approved      Boolean   @default(false)
   approvedBy    String?
