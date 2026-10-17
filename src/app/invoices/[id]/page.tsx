@@ -2,7 +2,6 @@ import { getInvoiceById } from "@/lib/queries";
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import InvoiceView from "@/components/InvoiceView";
-import InvoiceReceipts, { InvoiceReceiptNotice } from "@/components/InvoiceReceipts";
 
 export const dynamic = "force-dynamic";
 
@@ -25,12 +24,8 @@ export default async function InvoiceByIdPage({ params, searchParams }: { params
   const approvalOff = user.role === "ACCOUNTANT"; // accountant CRM has no approval gate
   return (
     <>
-      {/* before payment the client gets the invoice; after payment, the receipt */}
-      {canManage && !approvalOff && <InvoiceReceiptNotice invoiceId={id} total={Number((d.invoice as { total?: number } | null)?.total ?? 0)} received={Number((d.invoice as { received?: number } | null)?.received ?? 0)} />}
       <InvoiceView lead={lead} invoice={d.invoice} canManage={canManage} isSuperAdmin={isSuperAdmin} approvalOff={approvalOff} sent={sent} backHref="/invoices" />
-      {/* payments received on this invoice, each with its receipt to send */}
-      {/* (receipts are hidden from the accountant for now) */}
-      {!approvalOff && <InvoiceReceipts invoiceId={id} />}
+      {/* (receipts are hidden for now) */}
     </>
   );
 }

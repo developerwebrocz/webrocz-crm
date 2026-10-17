@@ -100,8 +100,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
     const subItems: Item[] = activeCo ? [
       { href: `/pipeline/${c.slug}`, label: c.clientsLabel, icon: Users, forceActive: path === `/pipeline/${c.slug}` },
       { href: `/invoices?company=${c.key}&hub=1`, label: "Invoices", icon: ReceiptText, forceActive: path.startsWith("/invoices") && companyParam === c.key },
-      // receipts are hidden from the accountant for now
-      ...(isAccountant ? [] : [{ href: `/receipts?company=${c.key}`, label: "Receipts", icon: FileText, forceActive: path.startsWith("/receipts") && companyParam === c.key }]),
+      // (Receipts are hidden from the menus for now)
       ...(c.renewals ? [{ href: `/renewals?company=${c.slug}`, label: "Website renewals", icon: Repeat, forceActive: path.startsWith("/renewals") && companyParam === c.slug }] : []),
     ] : [];
     return { href: `/pipeline/${c.slug}`, label: c.label, icon: c.icon, forceActive: activeCo, subItems };
@@ -120,8 +119,6 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
       ...(isAdmin ? [{ href: "/profit-loss", label: "Profit & Loss", icon: PieChart }] : []),
       { href: "/gst", label: "GST Report", icon: Landmark },
       { href: "/invoices", label: "Invoices", icon: ReceiptText },
-      // a receipt for every payment received, to send to the client
-      ...(isAccountant ? [] : [{ href: "/receipts", label: "Receipts", icon: FileText, forceActive: path.startsWith("/receipts") && !companyParam }]),
     ] },
   ];
   if (isAccountant) groups.push(...financeGroups);

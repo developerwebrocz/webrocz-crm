@@ -20,5 +20,5 @@ export default async function FinanceClientDetailPage({ params, searchParams }: 
   if (!d) redirect("/accounts");
   // Digital-marketing services for the Web Rocz edit form (unused by Web Solutions clients).
   const dmServices = await getWebRoczClientServices(id);
-  return <FinanceClientDetail client={d.client} invoices={d.invoices} payments={d.payments} totals={d.totals} clientFollowups={d.clientFollowups} slas={d.slas} openPayId={openPayId} company={company} dmServices={dmServices} canDelete={["SUPER_ADMIN", "SUB_ADMIN"].includes(user.role)} hideReceipts={user.role === "ACCOUNTANT"} />;
+  return <FinanceClientDetail client={d.client} invoices={d.invoices} payments={d.payments} totals={d.totals} clientFollowups={d.clientFollowups} slas={d.slas} openPayId={openPayId} company={company} dmServices={dmServices} canDelete={["SUPER_ADMIN", "SUB_ADMIN"].includes(user.role)} hideReceipts />;
 }
