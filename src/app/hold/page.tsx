@@ -1,37 +1,36 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { companyLabel } from "@/lib/domain";
+import { getHeldInvoices } from "@/lib/queries";
+import { companyLabel, COMPANY_KEYS } from "@/lib/domain";
 import { setInvoiceHold } from "@/app/reminder-actions";
 import { Eyebrow } from "@/components/ui";
 import { PauseCircle, PlayCircle, Pencil } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-// Hold — the accounts team's invoices put on hold (Invoices → an invoice → Hold). They are out of
-// Payment Reminders until taken off hold here or on the invoice.
+// Hold — under each company (Web Solutions / Web Rocz / Web Rocz Pvt Ltd → Hold): the invoices
+// moved to hold (Invoices → open the client → Move to Hold). They are out of Payment Reminders
+// until taken off hold here or on the invoice.
 const ROLES = ["SUPER_ADMIN", "SUB_ADMIN", "ACCOUNTANT"];
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const fmt = (iso: string) => { if (!iso) return "—"; const [y, m, d] = iso.split("-"); return `${d}-${m}-${y}`; };
 
-export default async function HoldPage() {
+export default async function HoldPage({ searchParams }: { searchParams: Promise<{ [k: string]: string | string[] | undefined }> }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   if (!ROLES.includes(user.role)) redirect("/");
-  const rows = await prisma.salesInvoice.findMany({
-    where: { onHold: true },
-    select: { id: true, number: true, billTo: true, company: true, total: true, received: true, issueDate: true, holdOn: true, holdBy: true },
-    orderBy: [{ holdOn: "desc" }, { issueDate: "desc" }],
-  });
+  const sp = await searchParams;
+  const company = typeof sp.company === "string" && (COMPANY_KEYS as readonly string[]).includes(sp.company) ? sp.company : "";
+  const rows = (await getHeldInvoices()).filter((r) => !company || r.company === company);
   const balance = rows.reduce((s, r) => s + Math.max(0, r.total - r.received), 0);
 
   return (
     <div className="space-y-5">
       <div>
-        <Eyebrow>Accounts · invoices on hold</Eyebrow>
+        <Eyebrow>{company ? companyLabel(company) : "Accounts"} · invoices on hold</Eyebrow>
         <h1 className="mt-1.5 text-[26px] font-extrabold tracking-tight">Hold</h1>
-        <p className="mt-1 max-w-2xl text-sm text-[var(--muted)]">Invoices moved to Hold (Invoices → open the client → Hold). They are out of Payment Reminders until you remove the hold.</p>
+        <p className="mt-1 max-w-2xl text-sm text-[var(--muted)]">Invoices moved to Hold (Invoices → open the client → Move to Hold). They are out of Payment Reminders until you remove the hold.</p>
       </div>
 
       <div className="card !p-0 overflow-hidden">

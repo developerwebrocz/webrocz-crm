@@ -16,7 +16,7 @@ type Item = { href: string; label: string; icon: React.ElementType; badge?: numb
 type Group = { label?: string; items: Item[] };
 
 type Pipeline = { total: number; dueToday: number; inProgress: number; review: number; completed: number; overdue: number };
-export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0, reminderCount = 0, payReminderCount = 0, holdCount = 0, pipeline, user, myShoots = false, videoPipe }: { clientCount: number; approvalsCount?: number; taskCount?: number; reminderCount?: number; payReminderCount?: number; holdCount?: number; pipeline?: Pipeline; user: { name: string; role: string }; myShoots?: boolean; videoPipe?: { toEdit: number; editing: number; done: number; notPosted: number; team: boolean; members?: { id: string; name: string; open: number }[] } }) {
+export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0, reminderCount = 0, payReminderCount = 0, holdCounts = {}, pipeline, user, myShoots = false, videoPipe }: { clientCount: number; approvalsCount?: number; taskCount?: number; reminderCount?: number; payReminderCount?: number; holdCounts?: Record<string, number>; pipeline?: Pipeline; user: { name: string; role: string }; myShoots?: boolean; videoPipe?: { toEdit: number; editing: number; done: number; notPosted: number; team: boolean; members?: { id: string; name: string; open: number }[] } }) {
   const path = usePathname();
   const sp = useSearchParams();
   const curStage = sp.get("stage") ?? "";
@@ -91,7 +91,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
   const activeCoKey = (() => {
     const byPipe = companyMeta.find((c) => path === `/pipeline/${c.slug}`);
     if (byPipe) return byPipe.key;
-    if (path.startsWith("/invoices") || path.startsWith("/receipts")) { const c = companyMeta.find((c) => c.key === companyParam); if (c) return c.key; }
+    if (path.startsWith("/invoices") || path.startsWith("/receipts") || path.startsWith("/hold")) { const c = companyMeta.find((c) => c.key === companyParam); if (c) return c.key; }
     if (path.startsWith("/renewals")) { const c = companyMeta.find((c) => c.slug === companyParam); if (c) return c.key; }
     return null;
   })();
@@ -101,6 +101,8 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
       { href: `/pipeline/${c.slug}`, label: c.clientsLabel, icon: Users, forceActive: path === `/pipeline/${c.slug}` },
       { href: `/invoices?company=${c.key}&hub=1`, label: "Invoices", icon: ReceiptText, forceActive: path.startsWith("/invoices") && companyParam === c.key },
       // (Receipts are hidden from the menus for now)
+      // Hold: this company's invoices moved to hold (out of Payment Reminders)
+      { href: `/hold?company=${c.key}`, label: "Hold", icon: PauseCircle, badge: holdCounts[c.key] || undefined, forceActive: path.startsWith("/hold") && companyParam === c.key },
       ...(c.renewals ? [{ href: `/renewals?company=${c.slug}`, label: "Website renewals", icon: Repeat, forceActive: path.startsWith("/renewals") && companyParam === c.slug }] : []),
     ] : [];
     return { href: `/pipeline/${c.slug}`, label: c.label, icon: c.icon, forceActive: activeCo, subItems };
@@ -108,8 +110,7 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
   // Accountant finance suite — also shown to Super/Sub Admin (they oversee finance).
   const financeGroups: Group[] = [
     // payment reminders due today or late — the accounts team's reminder pipeline
-    // Hold: invoices put on hold (out of the reminders)
-    { label: "Accountants", items: [{ href: "/reminders", label: "Payment Reminders", icon: BellRing, badge: payReminderCount || undefined, badgeTone: "red" as const }, { href: "/hold", label: "Hold", icon: PauseCircle, badge: holdCount || undefined }, ...companyItems, ...(paymentsOnTop ? [] : [{ href: "/payments", label: "Payments", icon: Wallet }])] },
+    { label: "Accountants", items: [{ href: "/reminders", label: "Payment Reminders", icon: BellRing, badge: payReminderCount || undefined, badgeTone: "red" as const }, ...companyItems, ...(paymentsOnTop ? [] : [{ href: "/payments", label: "Payments", icon: Wallet }])] },
     { label: "Finance", items: [
       { href: "/dm-clients", label: "All DM Clients", icon: Megaphone },
       { href: "/sla", label: "SLAs", icon: FileSignature },

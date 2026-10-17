@@ -2641,6 +2641,23 @@ export async function getAdminSalesFinance() {
 }
 
 // All invoices for the accountant / finance dashboard.
+// Accounts → <company> → Hold: the invoices put on hold, with their company (an old invoice with
+// no company saved gets it the same way the invoice list works it out).
+export async function getHeldInvoices() {
+  const rows = await prisma.salesInvoice.findMany({
+    where: { onHold: true },
+    select: { id: true, number: true, billTo: true, company: true, total: true, received: true, issueDate: true, holdOn: true, holdBy: true, taxPct: true, leadId: true, items: true },
+    orderBy: [{ holdOn: "desc" }, { issueDate: "desc" }],
+  });
+  const leadSvc = rows.some((r) => !r.company && !(r.taxPct > 0))
+    ? new Map((await prisma.lead.findMany({ select: { id: true, services: true } })).map((l) => [l.id, parseServices(l.services)]))
+    : new Map<string, string[]>();
+  return rows.map(({ taxPct, leadId, items, ...r }) => ({
+    ...r,
+    company: r.company || (taxPct > 0 ? "WEB_ROCZ_PVT" : (catOfInvoice({ leadId, items }, leadSvc) === "Digital Marketing" ? "WEB_ROCZ" : "WEB_SOLUTIONS")),
+  }));
+}
+
 export async function getInvoices(opts: { q?: string; status?: string; company?: string } = {}) {
   const today = salesToday();
   const [rows, invLeads, clients] = await Promise.all([

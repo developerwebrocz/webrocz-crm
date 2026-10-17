@@ -10,7 +10,7 @@ import { managedBy } from "@/lib/am-scope";
 import { prisma } from "@/lib/prisma";
 import { editorHasShoots } from "@/lib/shoot-team";
 import { getVideoJobPipeline } from "@/lib/video-job-queries";
-import { getSearchIndex, getAlerts, getApprovalsCount, getMyOpenTaskCount, deptForRole, getDueReminderCount, getCreativeBoard } from "@/lib/queries";
+import { getSearchIndex, getAlerts, getApprovalsCount, getMyOpenTaskCount, deptForRole, getDueReminderCount, getCreativeBoard, getHeldInvoices } from "@/lib/queries";
 import { getPaymentReminderCount } from "@/lib/payment-reminders";
 import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/auth";
@@ -56,7 +56,9 @@ async function AppShell({ user, userId, impersonatedBy, children }: { user: { na
     // accounts: payment reminders due today or late (menu badge)
     (["SUPER_ADMIN", "SUB_ADMIN", "ACCOUNTANT"].includes(user.role) ? getPaymentReminderCount(user.role) : Promise.resolve(0)).catch(() => 0),
     // accounts: invoices on hold (menu badge)
-    (["SUPER_ADMIN", "SUB_ADMIN", "ACCOUNTANT"].includes(user.role) ? prisma.salesInvoice.count({ where: { onHold: true } }) : Promise.resolve(0)).catch(() => 0),
+    (["SUPER_ADMIN", "SUB_ADMIN", "ACCOUNTANT"].includes(user.role)
+      ? getHeldInvoices().then((rs) => rs.reduce<Record<string, number>>((m, r) => ({ ...m, [r.company]: (m[r.company] ?? 0) + 1 }), {}))
+      : Promise.resolve({} as Record<string, number>)).catch(() => ({} as Record<string, number>)),
   ]);
   // Designer / Editor: status counts for the sidebar pipeline shortcuts.
   const pipeline = (user.role === "DESIGNER" || user.role === "EDITOR")
@@ -81,7 +83,7 @@ async function AppShell({ user, userId, impersonatedBy, children }: { user: { na
       <TopBar user={user} search={search} alerts={alerts} />
       <MobileNav role={user.role} />
       <div className="flex">
-        <Sidebar clientCount={clientCount} approvalsCount={approvalsCount} taskCount={taskCount} reminderCount={reminderCount} payReminderCount={payReminderCount} holdCount={holdCount} pipeline={pipeline} user={user} myShoots={myShoots} videoPipe={videoPipe} />
+        <Sidebar clientCount={clientCount} approvalsCount={approvalsCount} taskCount={taskCount} reminderCount={reminderCount} payReminderCount={payReminderCount} holdCounts={holdCount} pipeline={pipeline} user={user} myShoots={myShoots} videoPipe={videoPipe} />
         <main className="min-w-0 flex-1 px-5 py-7 sm:px-8">
           <div className="mx-auto w-full max-w-[1600px]">{children}</div>
         </main>
