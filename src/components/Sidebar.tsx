@@ -134,18 +134,20 @@ export default function Sidebar({ clientCount, approvalsCount = 0, taskCount = 0
       { href: "/dm", label: "Marketing Clients", icon: UserCog },
       { href: "/calendar", label: "Calendar", icon: CalendarDays },
     ] });
-    const onVideo = ["/videos", "/client-videos", "/video-team"].some((p) => path === p || path.startsWith(p + "/"));
-    const onDesign = ["/designs", "/design-postings", "/design-team"].some((p) => path === p || path.startsWith(p + "/"));
+    const onVideo = ["/videos", "/client-videos", "/video-team", "/video-report"].some((p) => path === p || path.startsWith(p + "/"));
+    const onDesign = ["/designs", "/design-postings", "/design-team", "/design-report"].some((p) => path === p || path.startsWith(p + "/"));
     groups.push({ label: "Delivery", items: [
-      // "Designer" (Design Studio) opens its two pages underneath: Assigned Postings, Design Count
+      // "Designer" (Design Studio) opens its pages underneath: Assigned Postings, Design Count, Work Report
       { href: "/designs", label: "Designer", icon: Palette, forceActive: onDesign, subItems: onDesign ? [
         { href: "/design-postings", label: "Assigned Postings", icon: CalendarDays },
         { href: "/design-team", label: "Design Count", icon: ListOrdered },
+        { href: "/design-report", label: "Work Report", icon: FileBarChart },
       ] : [] },
-      // "Video Editor" (Video Studio) opens its two pages underneath: Client Videos, Editing Count
+      // "Video Editor" (Video Studio) opens its pages underneath: Client Videos, Editing Count, Work Report
       { href: "/videos", label: "Video Editor", icon: Clapperboard, forceActive: onVideo, subItems: onVideo ? [
         { href: "/client-videos", label: "Client Videos", icon: Film },
         { href: "/video-team", label: "Editing Count", icon: ListOrdered },
+        { href: "/video-report", label: "Work Report", icon: FileBarChart },
       ] : [] },
       { href: "/shoots", label: "Studiox Shoot", icon: Camera },
       { href: "/reports/creative", label: "Creative Report", icon: FileBarChart },
