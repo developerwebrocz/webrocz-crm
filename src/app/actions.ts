@@ -471,7 +471,8 @@ export async function addCreativeTask(fd: FormData) {
     data: {
       kind, code: `${prefix}-${String(count + 1).padStart(3, "0")}`, title,
       clientId, clientLabel, assignedToId: u.id, assignedById: u.id,
-      type: s(fd, "type") || (kind === "VIDEO" ? "Reel" : "Social Creative"),
+      // "Other" picked: the type they typed in
+      type: (s(fd, "type") === "Other" && s(fd, "otherType").replace(/\s+/g, " ").trim().slice(0, 40)) || s(fd, "type") || (kind === "VIDEO" ? "Reel" : "Social Creative"),
       priority: ["HIGH", "MEDIUM", "LOW"].includes(s(fd, "priority")) ? s(fd, "priority") : "MEDIUM",
       status: "PENDING", source: "ADDITIONAL",
       assignedDate: s(fd, "assignedDate"), dueDate: s(fd, "dueDate"),

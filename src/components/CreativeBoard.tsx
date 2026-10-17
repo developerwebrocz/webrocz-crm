@@ -113,7 +113,9 @@ export default function CreativeBoard({
   const [modal, setModal] = useState(false);
   const [addingClient, setAddingClient] = useState(false);
   // Reset the "add new client" sub-form each time the Add modal is closed.
-  useEffect(() => { if (!modal) setAddingClient(false); }, [modal]);
+  // "Other" type picked: a field to type what it is
+  const [otherType, setOtherType] = useState(false);
+  useEffect(() => { if (!modal) { setAddingClient(false); setOtherType(false); } }, [modal]);
   const [drawer, setDrawer] = useState(false);
   const [viewMode, setViewMode] = useState<"board" | "table">("table");
   const [sort, setSort] = useState("DEFAULT");
@@ -447,8 +449,9 @@ export default function CreativeBoard({
                   </select>
                 )}
               </Field>
-              <Field label={`${L.nounOne} Type`}><select name="type" className="cb-fld">{modalTypes.map((t) => <option key={t} value={t}>{t}</option>)}</select></Field>
+              <Field label={`${L.nounOne} Type`}><select name="type" className="cb-fld" onChange={(e) => setOtherType(e.target.value === "Other")}>{modalTypes.map((t) => <option key={t} value={t}>{t}</option>)}</select></Field>
             </div>
+            {otherType && <Field label={`Type of ${L.nounOne.toLowerCase()}`}><input name="otherType" required autoFocus maxLength={40} placeholder={isVideo ? "Ex: Podcast, Event highlights, Product demo" : "Ex: Menu card, Visiting card"} className="cb-fld" /></Field>}
             <Field label={`${L.nounOne} Title`}><input name="title" required placeholder={isVideo ? "Ex: Product Launch Reel 15 sec" : "Ex: Instagram Post — Offer Creative"} className="cb-fld" /></Field>
             <div className="cb-three">
               <Field label={L.dim}><input name="dimensions" placeholder={L.dimPh} className="cb-fld" /></Field>
