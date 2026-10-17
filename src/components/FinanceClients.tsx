@@ -15,6 +15,7 @@ import ImportWebRoczClientsModal from "@/components/ImportWebRoczClientsModal";
 import ImportWebRoczPvtClientsModal from "@/components/ImportWebRoczPvtClientsModal";
 import ClientFollowupChannels, { latestFollowup, followupWhen } from "@/components/ClientFollowupChannels";
 import { companyLabel, COMPANY_KEYS } from "@/lib/domain";
+import { SIR_ROW, SirTag } from "@/components/RajeshSirTag";
 import { Users, Search, ReceiptText, Wallet, CheckCircle2, ChevronRight, ChevronLeft, MessageSquarePlus, Pencil, Trash2, X, Download, UserPlus, Upload, Plus, Globe } from "lucide-react";
 
 const PAGE_SIZE = 10;
@@ -36,7 +37,7 @@ function monthsPending(invs: { balance: number; issueDate: string }[]): number {
 type MiniInv = { category: string; total: number; received: number; balance: number; overdue: boolean; issueDate: string; company: string };
 type Note = { invId: string; invNumber: string; date: string; by: string; note: string };
 type Followup = { date: string; by: string; note: string; next?: string };
-type Row = { id: string; code: string; name: string; billingDay?: number; domain: string; contact: string; phone: string; email: string; accountManager: string; slaUrl: string; slaTitle: string; slaBy: string; services: string[]; status: string; retainer: number; category: string; invs: MiniInv[]; lastInvoiceDate: string; billed: number; received: number; pending: number; companies: string[]; clientFollowups: Followup[]; nextFollowup: string; notes: Note[]; noteTarget: { id: string; number: string } | null };
+type Row = { id: string; code: string; name: string; billingDay?: number; domain: string; contact: string; phone: string; email: string; accountManager: string; followupBy?: string; slaUrl: string; slaTitle: string; slaBy: string; services: string[]; status: string; retainer: number; category: string; invs: MiniInv[]; lastInvoiceDate: string; billed: number; received: number; pending: number; companies: string[]; clientFollowups: Followup[]; nextFollowup: string; notes: Note[]; noteTarget: { id: string; number: string } | null };
 
 export default function FinanceClients({ rows, lockedCompany, lockedCategory, embedded, canDelete }: { rows: Row[]; lockedCompany?: string; lockedCategory?: string; embedded?: boolean; canDelete?: boolean }) {
   const [q, setQ] = useState("");
@@ -224,7 +225,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
             <tbody>
               {filtered.length === 0 && <tr><td colSpan={(showAM ? 11 : 10) - (showDomain ? 0 : 1) - (showEmail ? 0 : 1) + (showSno ? 1 : 0)} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No clients found.</td></tr>}
               {paged.map((r, i) => (
-                <tr key={r.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
+                <tr key={r.id} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]" style={r.followupBy === "Rajesh Sir" ? SIR_ROW : undefined}>
                   {showSno && <td className="px-5 py-3 text-[12.5px] font-semibold tnum text-[var(--muted)]">{start + i + 1}</td>}
                   <td className="px-5 py-3 text-[12px] font-semibold tnum text-[var(--ink-2)]">{r.code || "—"}</td>
                   <td className="px-5 py-3 text-[12.5px] tnum">
@@ -233,7 +234,7 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
                       ? <span className="font-semibold">{r.billingDay}</span>
                       : fmtDate(r.lastInvoiceDate)}
                   </td>
-                  <td className="px-5 py-3"><Link href={companySel !== "ALL" ? `/accounts/${r.id}?company=${companySel}` : `/accounts/${r.id}`} className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.name}</Link>{r.companies.length > 0 && lockedCompany !== "WEB_ROCZ" && lockedCompany !== "WEB_ROCZ_PVT" && <div className="text-[11px] text-[var(--faint)]">{r.companies.map(companyLabel).join(", ")}</div>}</td>
+                  <td className="px-5 py-3"><Link href={companySel !== "ALL" ? `/accounts/${r.id}?company=${companySel}` : `/accounts/${r.id}`} className="text-[13px] font-semibold text-[var(--violet)] hover:underline">{r.name}</Link>{r.followupBy === "Rajesh Sir" && <SirTag />}{r.companies.length > 0 && lockedCompany !== "WEB_ROCZ" && lockedCompany !== "WEB_ROCZ_PVT" && <div className="text-[11px] text-[var(--faint)]">{r.companies.map(companyLabel).join(", ")}</div>}</td>
                   {showDomain && <td className="px-5 py-3 text-[12px]">{r.domain ? <span className="inline-flex items-center gap-1 font-semibold text-[var(--indigo)]"><Globe size={11} /> {r.domain}</span> : <span className="text-[var(--faint)]">—</span>}</td>}
                   <td className="px-5 py-3 text-[12.5px] tnum">{r.phone || "—"}</td>
                   {showEmail && <td className="px-5 py-3 text-[12.5px]">{r.email ? <a href={`mailto:${r.email}`} className="text-[var(--indigo)] hover:underline">{r.email}</a> : "—"}</td>}

@@ -6,6 +6,7 @@ import { COMPANIES } from "@/lib/domain";
 import { todayIST } from "@/lib/india-date";
 import { setPaymentReminder, clearPaymentReminder } from "@/app/reminder-actions";
 import type { PaymentReminder } from "@/lib/payment-reminders";
+import { SIR_ROW, SirTag } from "@/components/RajeshSirTag";
 import { BellRing, AlertTriangle, CalendarClock, CalendarDays, CalendarRange, Phone, MessageCircle, IndianRupee, Clock3, X, ChevronDown, Check, BellOff, MessageSquareText } from "lucide-react";
 
 // Payment Reminders — the follow-ups the accountant set by hand ("follow up again tomorrow"),
@@ -120,10 +121,10 @@ export default function PaymentReminders({ rows: allRows, pageSize: PAGE = 8, mi
           const tel = r.phone.replace(/[^\d+]/g, "");
           const open = r.clientId ? `/accounts/${r.clientId}` : `/invoices/${r.id}`;
           return (
-            <div key={r.key} className="px-5 py-3">
+            <div key={r.key} className="px-5 py-3" style={r.followupBy === "Rajesh Sir" ? SIR_ROW : undefined}>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                 <div className="min-w-0 flex-1 basis-[260px]">
-                  <Link href={open} className="block truncate text-[13.5px] font-bold text-[var(--violet)] hover:underline">{r.name}</Link>
+                  <div className="flex min-w-0 items-center"><Link href={open} className="truncate text-[13.5px] font-bold text-[var(--violet)] hover:underline">{r.name}</Link>{r.followupBy === "Rajesh Sir" && <SirTag />}</div>
                   <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11.5px] text-[var(--muted)]">
                     {r.kind === "invoice" ? <Link href={`/invoices/${r.id}`} className="font-semibold text-[var(--ink-2)] hover:underline">{r.label}</Link> : <span className="font-semibold text-[var(--ink-2)]">{r.label}</span>}
                     {COMPANIES[r.company] && <span className="rounded-full bg-[var(--surface-2)] px-1.5 py-px text-[10px] font-semibold">{COMPANIES[r.company].label}</span>}
