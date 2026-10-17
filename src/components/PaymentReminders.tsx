@@ -6,7 +6,7 @@ import { COMPANIES } from "@/lib/domain";
 import { todayIST } from "@/lib/india-date";
 import { setPaymentReminder, clearPaymentReminder } from "@/app/reminder-actions";
 import type { PaymentReminder } from "@/lib/payment-reminders";
-import { SIR_ROW, SirTag } from "@/components/RajeshSirTag";
+import { SIR_ROW, SirTag, followupRank } from "@/components/RajeshSirTag";
 import { BellRing, AlertTriangle, CalendarClock, CalendarDays, CalendarRange, Phone, MessageCircle, IndianRupee, Clock3, X, ChevronDown, Check, BellOff, MessageSquareText } from "lucide-react";
 
 // Payment Reminders — the follow-ups the accountant set by hand ("follow up again tomorrow"),
@@ -42,7 +42,7 @@ export default function PaymentReminders({ rows: allRows, pageSize: PAGE = 8, mi
   const items = useMemo(() => rows.map((r) => {
     const stage: Stage = !r.remindOn ? "none" : r.remindOn < today ? "overdue" : r.remindOn === today ? "today" : r.remindOn <= weekEnd ? "week" : "later";
     return { ...r, stage, lateDays: r.balance > 0 && r.dueDate && r.dueDate < today ? daysFrom(r.dueDate, today) : 0 };
-  }).sort((a, b) => (a.remindOn !== b.remindOn ? (a.remindOn < b.remindOn ? -1 : 1) : b.balance - a.balance)), [rows, today, weekEnd]);
+  }).sort((a, b) => followupRank(a.followupBy) - followupRank(b.followupBy) || (a.remindOn !== b.remindOn ? (a.remindOn < b.remindOn ? -1 : 1) : b.balance - a.balance)), [rows, today, weekEnd]);
 
   const by = (s: Stage) => items.filter((r) => r.stage === s);
   const scheduled = items.filter((r) => r.stage !== "none");

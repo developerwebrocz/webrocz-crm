@@ -2646,8 +2646,9 @@ export async function getInvoices(opts: { q?: string; status?: string; company?:
   const [rows, invLeads, clients] = await Promise.all([
     prisma.salesInvoice.findMany({ orderBy: { createdAt: "desc" } }),
     prisma.lead.findMany({ select: { id: true, services: true } }),
-    prisma.client.findMany({ select: { id: true, name: true, nextFollowup: true, followupLog: true } }),
+    prisma.client.findMany({ select: { id: true, name: true, nextFollowup: true, followupLog: true, paymentFollowupBy: true } }),
   ]);
+  const followupByOf = new Map(clients.map((c) => [c.id, c.paymentFollowupBy] as const));
   // One next follow-up date per client (set from the client's or an invoice's follow-up) — only
   // a date somebody chose, not one an old form filled in with "today" by itself.
   const clientNext = new Map(clients.map((c) => [c.id, chosenClientFollowup(c.nextFollowup, parseNotes(c.followupLog))] as const).filter(([, d]) => d));
@@ -2671,6 +2672,7 @@ export async function getInvoices(opts: { q?: string; status?: string; company?:
       approved: r.approved, issueDate: r.issueDate, dueDate, overdue: balance > 0 && !!dueDate && dueDate < today,
       pipeline: r.pipeline, company, gst: r.taxPct > 0, leadId: r.leadId, nextFollowup: (clientId && clientNext.get(clientId)) || chosenInvoiceFollowup(r.nextFollowup, followups), followups,
       clientFollowupCount: (clientId && clientFu.get(clientId)?.count) || 0,
+      followupBy: (clientId && followupByOf.get(clientId)) || "",
     };
   });
   const q = (opts.q || "").toLowerCase().trim();

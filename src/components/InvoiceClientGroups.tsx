@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronRight, ShieldCheck, Clock, MessageSquarePlus, Pencil, Trash2, ExternalLink } from "lucide-react";
 import WebRoczPvtFollowupModal from "@/components/WebRoczPvtFollowupModal";
 import { companyLabel } from "@/lib/domain";
+import { SIR_ROW, SirTag, followupRank } from "@/components/RajeshSirTag";
 
 // The invoices list, grouped by client: one row per client with its totals; clicking the row
 // opens all of that client's invoices underneath. Used for every billing company (Web Solutions,
@@ -38,7 +39,7 @@ export default function InvoiceClientGroups({ rows, hideApproval, canDelete, ope
       // the nearest follow-up date set on any of the client's invoices
       const nextFollowup = invoices.map((i) => i.nextFollowup).filter(Boolean).sort()[0] ?? "";
       return { ...g, invoices, total, balance, received: total - balance, pending, nextFollowup, first: invoices[invoices.length - 1]?.issueDate ?? "", last: invoices[0]?.issueDate ?? "" };
-    }).sort((a, b) => (a.last < b.last ? 1 : -1));
+    }).sort((a, b) => followupRank(a.invoices[0]?.followupBy) - followupRank(b.invoices[0]?.followupBy) || (a.last < b.last ? 1 : -1));
   }, [rows, showCompany]);
   const [open, setOpen] = useState<Record<string, boolean>>({});
   // Client whose Follow-up popup (Phone / WhatsApp) is open.
@@ -59,7 +60,7 @@ export default function InvoiceClientGroups({ rows, hideApproval, canDelete, ope
               const unapproved = g.invoices.filter((i) => !i.approved).length;
               return (
                 <Fragment key={g.key}>
-                  <tr onClick={() => setOpen((p) => ({ ...p, [g.key]: !shown }))} className="cursor-pointer border-b border-[var(--line)] hover:bg-[var(--surface-2)]" title={shown ? "Hide invoices" : "Show all invoices of this client"}>
+                  <tr onClick={() => setOpen((p) => ({ ...p, [g.key]: !shown }))} className="cursor-pointer border-b border-[var(--line)] hover:bg-[var(--surface-2)]" style={g.invoices[0]?.followupBy === "Rajesh Sir" ? SIR_ROW : undefined} title={shown ? "Hide invoices" : "Show all invoices of this client"}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <ChevronRight size={15} className={`flex-none text-[var(--muted)] transition-transform ${shown ? "rotate-90" : ""}`} />
@@ -67,6 +68,7 @@ export default function InvoiceClientGroups({ rows, hideApproval, canDelete, ope
                           {g.clientId
                             ? <Link href={`/accounts/${g.clientId}${g.company ? `?company=${g.company}` : ""}`} onClick={(e) => e.stopPropagation()} title="Open this client's page (all invoices, payments, notes)" className="whitespace-nowrap font-bold text-[var(--violet)] hover:underline">{g.name}</Link>
                             : <div className="whitespace-nowrap font-bold text-[var(--ink)]">{g.name}</div>}
+                          {g.invoices[0]?.followupBy === "Rajesh Sir" && <SirTag />}
                           {(g.sub || showCompany) && <div className="text-[11.5px] text-[var(--faint)]">{[showCompany && g.company ? companyLabel(g.company) : "", g.sub].filter(Boolean).join(" · ")}</div>}
                         </div>
                       </div>

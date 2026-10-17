@@ -15,7 +15,7 @@ import ImportWebRoczClientsModal from "@/components/ImportWebRoczClientsModal";
 import ImportWebRoczPvtClientsModal from "@/components/ImportWebRoczPvtClientsModal";
 import ClientFollowupChannels, { latestFollowup, followupWhen } from "@/components/ClientFollowupChannels";
 import { companyLabel, COMPANY_KEYS } from "@/lib/domain";
-import { SIR_ROW, SirTag } from "@/components/RajeshSirTag";
+import { SIR_ROW, SirTag, followupRank } from "@/components/RajeshSirTag";
 import { Users, Search, ReceiptText, Wallet, CheckCircle2, ChevronRight, ChevronLeft, MessageSquarePlus, Pencil, Trash2, X, Download, UserPlus, Upload, Plus, Globe } from "lucide-react";
 
 const PAGE_SIZE = 10;
@@ -119,8 +119,10 @@ export default function FinanceClients({ rows, lockedCompany, lockedCategory, em
     // Web Rocz: in invoice-day order (1st, 5th, 10th …), clients without a day last; within
     // the same day by name. Every other list keeps newest first.
     // Web Rocz Pvt Ltd is listed the same way.
-    if (lockedCompany === "WEB_ROCZ" || lockedCompany === "WEB_ROCZ_PVT") list.sort((a, b) => (a.billingDay || 99) - (b.billingDay || 99) || a.name.localeCompare(b.name));
-    else list.sort((a, b) => codeNum(b.code) - codeNum(a.code) || a.name.localeCompare(b.name));
+    // Rajesh Sir's clients first, then the Accountant's, then the rest — each group in the order above
+    const rank = (r: { followupBy?: string }) => followupRank(r.followupBy);
+    if (lockedCompany === "WEB_ROCZ" || lockedCompany === "WEB_ROCZ_PVT") list.sort((a, b) => rank(a) - rank(b) || (a.billingDay || 99) - (b.billingDay || 99) || a.name.localeCompare(b.name));
+    else list.sort((a, b) => rank(a) - rank(b) || codeNum(b.code) - codeNum(a.code) || a.name.localeCompare(b.name));
     return list;
   }, [computed, nq, payStatus, clientSel, companySel]);
 
