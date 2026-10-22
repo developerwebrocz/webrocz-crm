@@ -531,7 +531,7 @@ export default function EditCountBoard({ d, me, clients, names = [], saved, team
           </div>
           <p className="mt-3 text-[11.5px] leading-relaxed text-[var(--muted)]">
             <b>Team lead</b> sees every {tm.person}’s count and work here, assigns {tm.many} to the team and can import the sheet — other {tm.person}s see only their own.
-            {tm.kind === "VIDEO" && <><br /><b>Goes on shoots</b>: only the ticked editors can be chosen as the shooter in Studiox Shoot and have “My Shoots” in their menu.</>}
+            {tm.kind === "VIDEO" && <><br /><b>Goes on shoots</b>: the ticked editors always have “My Shoots” in their menu. Any editor given a shoot in Studiox Shoot sees it there too.</>}
           </p>
         </form>
       )}

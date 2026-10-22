@@ -130,13 +130,13 @@ export default function ShootBoard({
           {/* two clearly-separated categories */}
           {showWebrocz && (
             <ShootSection
-              title="WebRocz Client Shoots" desc="WebRocz clients who need a shoot — Mallesh travels to the client's location."
+              title="WebRocz Client Shoots" desc="WebRocz clients who need a shoot — the assigned shooter goes to the location."
               icon={Camera} tone="violet" rows={webroczRows} canManage={canManage} today={today} onEdit={onEdit} onFootage={setFootageFor} onFollowup={setFollowFor}
               empty={canAdd ? "No WebRocz client shoots yet — add one above." : "No WebRocz shoots assigned to you."} />
           )}
           {showRent && (
             <ShootSection
-              title="Studio X Rentals" desc="People who book Studio X for rent — Mallesh shoots their content at the studio."
+              title="Studio X Rentals" desc="People who book Studio X for rent — the assigned shooter shoots their content at the studio."
               icon={Video} tone="amber" rows={rentRows} canManage={canManage} today={today} onEdit={onEdit} onFootage={setFootageFor} onFollowup={setFollowFor}
               empty={canAdd ? "No studio rentals yet — add one above." : "No studio rentals assigned to you."} />
           )}
@@ -220,7 +220,7 @@ function ShootModal({ row, clientOptions, shooters, today, defaultAssignee = "",
           </div>
 
           <label className="block"><span className="eyebrow">Assign shooter</span>
-            <select name="assignedToId" defaultValue={row?.assignedToId ?? defaultAssignee} className="select mt-1.5"><option value="">— Unassigned —</option>{shooters.filter((m) => m.role !== "EDITOR" || m.shootTeam || m.id === row?.assignedToId || m.id === defaultAssignee).map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}</select>
+            <select name="assignedToId" defaultValue={row?.assignedToId ?? defaultAssignee} className="select mt-1.5"><option value="">— Unassigned —</option>{/* every video editor can be given a shoot — it shows in their "My Shoots" */}<optgroup label="Video editors">{shooters.filter((m) => m.role === "EDITOR").map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}</optgroup>{shooters.some((m) => m.role !== "EDITOR") && <optgroup label="Videographers">{shooters.filter((m) => m.role !== "EDITOR").map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}</optgroup>}</select>
           </label>
 
           {!isRent && (
