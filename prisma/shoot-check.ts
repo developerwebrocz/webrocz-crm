@@ -27,14 +27,19 @@ const DB = (process.env.DATABASE_URL ?? "file:./prisma/dev.db").replace(/^file:/
 const prisma = new PrismaClient({ adapter: new PrismaBetterSqlite3({ url: `file:${DB}` }) });
 
 async function main() {
-  const people = await prisma.user.findMany({ where: { role: { in: ["EDITOR", "VIDEOGRAPHER", "STUDIO_HEAD"] } }, select: { name: true, role: true, active: true, shootTeam: true }, orderBy: [{ role: "asc" }, { name: "asc" }] });
+  // each person with a short id and whether they can log in — two records with the same name
+  // (one with a login, one without) would mean a shoot can go to the wrong one
+  const people = await prisma.user.findMany({ where: { role: { in: ["EDITOR", "VIDEOGRAPHER", "STUDIO_HEAD"] } }, select: { id: true, name: true, role: true, active: true, shootTeam: true, email: true, passwordHash: true }, orderBy: [{ role: "asc" }, { name: "asc" }] });
+  const tag = (id: string) => `#${id.slice(-5)}`;
   console.log("Video team / Studio X people:");
-  for (const p of people) console.log(`  ${p.name} · ${p.role}${p.active ? "" : " (inactive)"}${p.role === "EDITOR" ? (p.shootTeam ? " · goes on shoots: YES" : " · goes on shoots: no") : ""}`);
+  for (const p of people) console.log(`  ${p.name} ${tag(p.id)} · ${p.role}${p.active ? "" : " (inactive)"} · login: ${p.email ? (p.passwordHash ? "yes" : "email set, no password yet") : "NO LOGIN"}${p.role === "EDITOR" ? (p.shootTeam ? " · goes on shoots: YES" : " · goes on shoots: no") : ""}`);
 
   const from = new Date(Date.now() - 30 * 86400000).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
-  const shoots = await prisma.shoot.findMany({ where: { date: { gte: from } }, select: { code: true, title: true, date: true, status: true, category: true, assignedTo: { select: { name: true, role: true } }, requestedBy: { select: { name: true } } }, orderBy: { date: "asc" } });
+  const shoots = await prisma.shoot.findMany({ where: { date: { gte: from } }, select: { code: true, title: true, date: true, status: true, category: true, assignedToId: true, assignedTo: { select: { name: true, role: true } }, requestedBy: { select: { name: true } } }, orderBy: { date: "asc" } });
   console.log(`\nShoots from ${from} on: ${shoots.length}`);
-  for (const s of shoots) console.log(`  ${s.date} · ${s.code} · ${s.title} · ${s.category} · ${s.status} · shooter: ${s.assignedTo ? `${s.assignedTo.name} (${s.assignedTo.role})` : "NOT ASSIGNED"}${s.requestedBy ? ` · requested by ${s.requestedBy.name}` : ""}`);
+  for (const s of shoots) console.log(`  ${s.date} · ${s.code} · ${s.title} · ${s.category} · ${s.status} · shooter: ${s.assignedTo ? `${s.assignedTo.name} ${tag(s.assignedToId!)} (${s.assignedTo.role})` : "NOT ASSIGNED"}${s.requestedBy ? ` · requested by ${s.requestedBy.name}` : ""}`);
+  const all = await prisma.shoot.count();
+  console.log(`\nAll shoots ever: ${all}`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); }).finally(() => prisma.$disconnect());
