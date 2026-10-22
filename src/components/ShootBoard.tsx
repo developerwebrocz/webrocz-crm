@@ -20,7 +20,7 @@ type Row = {
   requestedBy: string | null; footageLink: string; handedOff: boolean; conflict: string | null;
   followups?: ClientFollowup[]; // Phone / WhatsApp follow-ups logged on this shoot
 };
-type Kpis = { todayShoots: number; upcoming: number; rentalsThisMonth: number; rentalRevenue: number; rentalUnpaid: number; webroczCount: number; rentCount: number; completed: number; conflicts: number; requests: number };
+type Kpis = { todayShoots: number; upcoming: number; rentalsThisMonth: number; rentalRevenue: number; rentalUnpaid: number; webroczCount: number; rentCount: number; completed: number; conflicts: number; requests: number; unassigned: number };
 type Opt = { id: string; name: string };
 type Shooter = { id: string; name: string; role: string; shootTeam?: boolean };
 
@@ -28,9 +28,9 @@ const TONE: Record<string, string> = { violet: "var(--violet)", amber: "var(--am
 function fmtDate(d: string) { return d ? new Date(d + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short" }) : "—"; }
 
 export default function ShootBoard({
-  rows, kpis, clientOptions, shooters, canManage, canAdd = false, selfId, today, userName,
+  rows, kpis, clientOptions, shooters, canManage, canAdd = false, selfId, today, userName, teamView = false,
 }: {
-  rows: Row[]; kpis: Kpis; clientOptions: Opt[]; shooters: Shooter[]; canManage: boolean; canAdd?: boolean; selfId?: string; today: string; userName?: string;
+  rows: Row[]; kpis: Kpis; clientOptions: Opt[]; shooters: Shooter[]; canManage: boolean; canAdd?: boolean; selfId?: string; today: string; userName?: string; teamView?: boolean;
 }) {
   const [cat, setCat] = useState<"ALL" | "WEBROCZ" | "STUDIO_RENT">("ALL");
   const [status, setStatus] = useState("ALL");
@@ -62,7 +62,7 @@ export default function ShootBoard({
         <div>
           <span className="eyebrow">{canManage ? "Shoots & rentals" : "My shoots"}</span>
           <h1 className="mt-1.5 text-[26px] font-extrabold tracking-tight">Studiox Shoot</h1>
-          <p className="mt-1 text-sm text-[var(--muted)]">{canManage ? "Schedule WebRocz client shoots and Studio X rentals, assign the shooter and track rent." : `Your assigned shoots, ${userName ?? ""}.`}</p>
+          <p className="mt-1 text-sm text-[var(--muted)]">{canManage ? "Schedule WebRocz client shoots and Studio X rentals, assign the shooter and track rent." : teamView ? "Your video team’s shoots — who goes, date, time and location. Shoots with no shooter yet show “Not assigned”." : `Your assigned shoots, ${userName ?? ""}.`}</p>
         </div>
         {canAdd && <button onClick={() => { setEdit(null); setAdding(true); }} className="btn btn-violet"><Plus size={15} /> Add shoot / booking</button>}
       </div>
@@ -76,12 +76,19 @@ export default function ShootBoard({
       </div>
 
       {/* alerts: double-booking + pending requests (managers) */}
-      {canManage && (kpis.conflicts > 0 || kpis.requests > 0) && (
+      {canManage && (kpis.conflicts > 0 || kpis.requests > 0 || kpis.unassigned > 0) && (
         <div className="flex flex-wrap gap-2">
           {kpis.conflicts > 0 && (
             <div className="flex items-center gap-2 rounded-[var(--r-md)] border border-[color-mix(in_srgb,var(--rose)_30%,white)] bg-[color-mix(in_srgb,var(--rose)_7%,white)] px-3.5 py-2 text-[12.5px] font-semibold text-[var(--rose)]">
               <CircleAlert size={15} /> {kpis.conflicts} scheduling conflict{kpis.conflicts > 1 ? "s" : ""} — check overlapping times below.
             </div>
+          )}
+          {/* upcoming shoots with no shooter — nobody sees them in "My Shoots" until one is picked */}
+          {kpis.unassigned > 0 && (
+            <button type="button" onClick={() => { setCat("ALL"); setStatus("ALL"); setView("list"); }}
+              className="flex items-center gap-2 rounded-[var(--r-md)] border border-[color-mix(in_srgb,var(--rose)_30%,white)] bg-[color-mix(in_srgb,var(--rose)_7%,white)] px-3.5 py-2 text-[12.5px] font-semibold text-[var(--rose)]">
+              <CircleAlert size={15} /> {kpis.unassigned} upcoming shoot{kpis.unassigned > 1 ? "s have" : " has"} no shooter — open it (Edit) and pick a video editor in “Assign shooter”.
+            </button>
           )}
           {kpis.requests > 0 && (
             <button type="button" onClick={() => { setCat("WEBROCZ"); setStatus("ALL"); setView("list"); }}
@@ -535,7 +542,9 @@ function ShootSection({ title, desc, icon: Icon, tone, rows, canManage, today, o
                   </td>
                   <td className="px-4 py-3 text-[12.5px]">{r.assignee
                     ? <span className="inline-flex items-center gap-1.5"><span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--surface-3)] text-[10px] font-bold text-[var(--ink-2)]">{initials(r.assignee)}</span> {r.assignee}</span>
-                    : <span className="text-[var(--faint)]">Unassigned</span>}</td>
+                    : r.status === "SCHEDULED" || r.status === "IN_PROGRESS"
+                      ? <span className="rounded-full bg-[color-mix(in_srgb,var(--rose)_10%,white)] px-2 py-0.5 text-[11.5px] font-bold text-[var(--rose)]">Not assigned</span>
+                      : <span className="text-[var(--faint)]">Unassigned</span>}</td>
                   {/* the brief / note written when the shoot was requested or scheduled */}
                   <td className="max-w-[240px] px-4 py-3 text-[12px] leading-snug text-[var(--ink-2)]">
                     {r.notes ? <div className="line-clamp-3 whitespace-pre-wrap" title={r.notes}>{r.notes}</div> : <span className="text-[var(--faint)]">—</span>}

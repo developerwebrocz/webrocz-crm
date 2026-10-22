@@ -778,11 +778,14 @@ export async function getCreativeBoard(userId: string, role: string, kind: "DESI
 const STUDIO_MANAGERS = ["STUDIO_HEAD", "SUPER_ADMIN", "SUB_ADMIN"];
 function ymd(d: Date) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
 
-export async function getShootBoard(userId: string, role: string) {
+// `teamLead`: the video team lead also sees the team's shoots — every shoot given to a video
+// editor, and the ones with no shooter yet — read only.
+export async function getShootBoard(userId: string, role: string, teamLead = false) {
   const canManage = STUDIO_MANAGERS.includes(role);
   const canAdd = canManage || role === "VIDEOGRAPHER";
+  const leadView = !canManage && role === "EDITOR" && teamLead;
   const shoots = await prisma.shoot.findMany({
-    where: canManage ? {} : { assignedToId: userId },
+    where: canManage ? {} : leadView ? { OR: [{ assignedToId: userId }, { assignedTo: { role: "EDITOR" } }, { assignedToId: null }] } : { assignedToId: userId },
     include: { client: true, assignedTo: { select: { name: true } }, requestedBy: { select: { name: true } } },
     orderBy: [{ date: "asc" }, { startTime: "asc" }],
   });
@@ -835,6 +838,7 @@ export async function getShootBoard(userId: string, role: string) {
     completed: rows.filter((r) => r.status === "COMPLETED").length,
     conflicts: Object.keys(conflicts).length,
     requests: active.filter((r) => r.requestedBy && !r.assignedToId).length,
+    unassigned: active.filter((r) => !r.assignedToId && r.date >= today && (r.status === "SCHEDULED" || r.status === "IN_PROGRESS")).length,
   };
 
   const clientOptions = canAdd
@@ -844,7 +848,7 @@ export async function getShootBoard(userId: string, role: string) {
     ? await prisma.user.findMany({ where: { active: true, role: { in: ["VIDEOGRAPHER", "EDITOR"] } }, select: { id: true, name: true, role: true, shootTeam: true }, orderBy: { name: "asc" } })
     : [];
 
-  return { rows, kpis, clientOptions, shooters, canManage, canAdd, selfId: userId, today };
+  return { rows, kpis, clientOptions, shooters, canManage, canAdd, selfId: userId, today, leadView };
 }
 
 // Next SHT- code (numeric max over existing codes).
