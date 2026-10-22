@@ -4,6 +4,7 @@ import { getClientOptions } from "@/lib/queries";
 import { getVideoTeamNames } from "@/lib/video-job-queries";
 import { getEditCountBoard, canOpenEditCount, isVideoAdmin } from "@/lib/edit-count-queries";
 import EditCountBoard from "@/components/EditCountBoard";
+import OpenVideoTeamSettings from "@/components/OpenVideoTeamSettings";
 import DesignSheet from "@/components/DesignSheet";
 import DayEntryCard from "@/components/DayEntryCard";
 import { workTypesFor } from "@/lib/design-work";
@@ -50,10 +51,14 @@ export default async function VideoTeamPage({ searchParams }: { searchParams: Pr
   const sheet = await getDesignSheet({ period: q("period"), client: q("client"), designer: q("designer") }, "VIDEO");
   return (
     <div className="space-y-5">
-      <div>
-        <div className="text-[12.5px] font-medium text-[var(--muted)]">Video team</div>
-        <h1 className="mt-1 text-[24px] font-semibold tracking-tight text-[var(--ink)]">Video work</h1>
-        <p className="mt-1 text-[14px] text-[var(--muted)]">What each editor did — for which client, how many, and who assigned it</p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <div className="text-[12.5px] font-medium text-[var(--muted)]">Video team</div>
+          <h1 className="mt-1 text-[24px] font-semibold tracking-tight text-[var(--ink)]">Video work</h1>
+          <p className="mt-1 text-[14px] text-[var(--muted)]">What each editor did — for which client, how many, and who assigned it</p>
+        </div>
+        {/* the team lead and who goes on shoots (Studiox Shoot shooter / "My Shoots") */}
+        {isVideoAdmin(user) && <OpenVideoTeamSettings />}
       </div>
       <DesignSheet d={sheet} path="/video-team" everyone="All editors" person="Editor" />
       <details className="card !p-0 overflow-hidden" open={!!saved || !!month}>
