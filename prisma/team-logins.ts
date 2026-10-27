@@ -5,6 +5,7 @@
 //   npx tsx prisma/team-logins.ts 'team=design'          (all designers)
 //   npx tsx prisma/team-logins.ts 'team=video'           (all video editors)
 //   npx tsx prisma/team-logins.ts 'names=Venkat,Poorna'  (these people)
+//   npx tsx prisma/team-logins.ts 'team=admin'           (Super Admin / Sub Admin — they log in on /login)
 //
 // Passwords are never shown (they are stored scrambled) and are never set from here: each
 // person sets their own on the link. Uses the same Prisma + SQLite adapter as the app.
@@ -36,7 +37,8 @@ const args = new Map(process.argv.slice(2).map((a) => { const i = a.indexOf("=")
 async function main() {
   const team = (args.get("team") ?? "").toLowerCase();
   const role = team.startsWith("design") ? "DESIGNER" : team.startsWith("video") ? "EDITOR" : "";
-  const all = await prisma.user.findMany({ where: role ? { role } : {}, select: { id: true, name: true, role: true, email: true, active: true, teamLead: true, passwordHash: true }, orderBy: { name: "asc" } });
+  const admins = team.startsWith("admin");
+  const all = await prisma.user.findMany({ where: admins ? { role: { in: ["SUPER_ADMIN", "SUB_ADMIN"] } } : role ? { role } : {}, select: { id: true, name: true, role: true, email: true, active: true, teamLead: true, passwordHash: true }, orderBy: { name: "asc" } });
   let people = all;
   if (args.has("names")) {
     people = [];
@@ -46,7 +48,7 @@ async function main() {
     }
   }
   if (!people.length) { console.log("No team members found."); return; }
-  console.log(`Login page for team members: ${SITE}/staff\n`);
+  console.log(admins ? `Login page for Super Admin: ${SITE}/login\n` : `Login page for team members: ${SITE}/staff\n`);
   for (const u of people) {
     console.log(`${u.name}  (${u.role}${u.teamLead ? ", team lead" : ""}${u.active ? "" : ", DISABLED"})`);
     if (!u.email) { console.log("  Login ID : none — add an email for this person in Team (Edit), then run this again.\n"); continue; }
