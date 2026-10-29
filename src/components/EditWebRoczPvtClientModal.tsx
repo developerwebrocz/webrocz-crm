@@ -11,7 +11,7 @@ import WebRoczAccountManagerSelect from "@/components/WebRoczAccountManager";
 // add-client form: details, client GSTIN and the digital-marketing services. Domain / hosting
 // amounts and renewal dates are not shown. Kept in its own file so the Web Rocz and Web
 // Solutions edit forms are never affected.
-type EditClient = { id: string; code: string; name: string; paymentFollowupBy?: string; accountManagerId: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; status: string; notes: string | null; gstin: string; paymentTerm?: string; billingDay?: number };
+type EditClient = { id: string; code: string; name: string; paymentFollowupBy?: string; accountManagerId: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; status: string; notes: string | null; gstin: string; paymentTerm?: string; billingDay?: number; monthlyGross?: number };
 
 export default function EditWebRoczPvtClientModal({ client, services, close }: { client: EditClient; services: { service: string; detail: string | null }[]; close: () => void }) {
   return (
@@ -41,6 +41,11 @@ export default function EditWebRoczPvtClientModal({ client, services, close }: {
             <label className="block"><span className="eyebrow">Email</span><input name="pocEmail" type="email" defaultValue={client.pocEmail ?? ""} className="input mt-1" /></label>
             <label className="block"><span className="eyebrow">Invoice date</span><select name="billingDay" defaultValue={String(client.billingDay ?? 0)} className="select mt-1"><option value="0">Not set</option>{[...new Set([1, 5, 10, 15, 20, 25, ...(client.billingDay ? [client.billingDay] : [])])].sort((a, b) => a - b).map((d) => <option key={d} value={d}>{d}</option>)}</select></label>
           </div>
+          <label className="block">
+            <span className="eyebrow">Monthly amount (incl. GST)</span>
+            <input name="monthlyGross" type="number" min={0} defaultValue={client.monthlyGross ? String(client.monthlyGross) : ""} className="input mt-1" placeholder="Empty = amount of the last invoice" />
+            <span className="mt-1.5 block text-[11px] text-[var(--faint)]">Shown as the monthly amount under Registration &amp; monthly renewal.</span>
+          </label>
           <label className="block">
             <span className="eyebrow">Client GSTIN</span>
             <input name="gstin" defaultValue={client.gstin ?? ""} className="input mt-1 uppercase" placeholder="e.g. 36AABC…" />

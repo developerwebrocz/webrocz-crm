@@ -191,6 +191,8 @@ export async function updateWebRoczPvtClient(fd: FormData) {
       ...(fd.has("paymentFollowupBy") ? { paymentFollowupBy: (PAYMENT_FOLLOWUP_BY as readonly string[]).includes(s(fd, "paymentFollowupBy")) ? s(fd, "paymentFollowupBy") : "" } : {}),
       ...(fd.has("paymentTerm") ? { paymentTerm: ["PREPAID", "POSTPAID"].includes(s(fd, "paymentTerm")) ? s(fd, "paymentTerm") : "" } : {}),
       ...(fd.has("billingDay") ? { billingDay: Math.min(31, Math.max(0, n(fd, "billingDay"))) } : {}),
+      // the monthly amount incl. GST shown under "Registration & monthly renewal" (empty = from the last invoice)
+      ...(fd.has("monthlyGross") ? { monthlyGross: Math.max(0, n(fd, "monthlyGross")) } : {}),
       pocName: s(fd, "pocName") || null,
       pocMobile: s(fd, "pocMobile") || null,
       pocEmail: s(fd, "pocEmail") || null,

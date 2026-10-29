@@ -174,6 +174,7 @@ exports.Prisma.ClientScalarFieldEnum = {
   website: 'website',
   industry: 'industry',
   monthlyRetainer: 'monthlyRetainer',
+  monthlyGross: 'monthlyGross',
   googleBudget: 'googleBudget',
   seoPriority: 'seoPriority',
   seoScheduleDays: 'seoScheduleDays',

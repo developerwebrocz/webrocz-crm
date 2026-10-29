@@ -19,7 +19,7 @@ const addMonth = (iso: string) => {
 };
 const daysBetween = (fromIso: string, toIso: string) => Math.round((Date.parse(toIso + "T00:00:00Z") - Date.parse(fromIso + "T00:00:00Z")) / 86400000);
 
-type CardClient = { accountManagerId: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; onboardDate: string; gstin: string; paymentTerm?: string; billingDay?: number; monthlyRetainer?: number };
+type CardClient = { accountManagerId: string | null; pocName: string | null; pocMobile: string | null; pocEmail: string | null; onboardDate: string; gstin: string; paymentTerm?: string; billingDay?: number; monthlyRetainer?: number; monthlyGross?: number };
 type CardInvoice = { issueDate: string; total: number; balance: number; company: string; projectDate?: string; paymentTerm?: string };
 
 export default function WebRoczPvtClientCard({ client, services, slaUrl, invoices }: { client: CardClient; services: { service: string; detail: string | null }[]; slaUrl: string; invoices: CardInvoice[] }) {
@@ -92,7 +92,7 @@ export default function WebRoczPvtClientCard({ client, services, slaUrl, invoice
           <Row label="Pending amount" value={inr(pending)} />
           <div className="mt-1.5 flex items-center justify-between gap-3 rounded-[8px] px-2.5 py-2" style={{ background: "color-mix(in srgb, var(--violet) 6%, white)" }}>
             <span className="text-[12px] font-semibold text-[var(--muted)]">Monthly amount <span className="font-normal text-[var(--faint)]">(incl. GST)</span></span>
-            <span className="text-[15px] font-extrabold tnum text-[var(--violet)]">{last ? inr(last.total) : client.monthlyRetainer ? inr(Math.round(client.monthlyRetainer * 1.18)) : "—"}</span>
+            <span className="text-[15px] font-extrabold tnum text-[var(--violet)]">{client.monthlyGross ? inr(client.monthlyGross) : last ? inr(last.total) : client.monthlyRetainer ? inr(Math.round(client.monthlyRetainer * 1.18)) : "—"}</span>
           </div>
         </div>
       </div>

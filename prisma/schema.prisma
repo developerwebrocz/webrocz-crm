@@ -101,6 +101,7 @@ model Client {
   website         String?
   industry        String? // Real Estate, Healthcare, ...
   monthlyRetainer Int      @default(0) // INR / month
+  monthlyGross    Int      @default(0) // Web Rocz Pvt Ltd: monthly amount incl. GST set in Edit info (0 = from the last invoice)
   googleBudget    Int      @default(0) // monthly Google Ads budget (INR)
   // --- SEO master fields (mirror the SEO team's Google Sheet) ---
   seoPriority     String   @default("") // A | B | C

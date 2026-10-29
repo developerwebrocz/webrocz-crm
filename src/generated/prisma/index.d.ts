@@ -10037,6 +10037,7 @@ export namespace Prisma {
 
   export type ClientAvgAggregateOutputType = {
     monthlyRetainer: number | null
+    monthlyGross: number | null
     googleBudget: number | null
     blogTarget: number | null
     backlinkTarget: number | null
@@ -10052,6 +10053,7 @@ export namespace Prisma {
 
   export type ClientSumAggregateOutputType = {
     monthlyRetainer: number | null
+    monthlyGross: number | null
     googleBudget: number | null
     blogTarget: number | null
     backlinkTarget: number | null
@@ -10072,6 +10074,7 @@ export namespace Prisma {
     website: string | null
     industry: string | null
     monthlyRetainer: number | null
+    monthlyGross: number | null
     googleBudget: number | null
     seoPriority: string | null
     seoScheduleDays: string | null
@@ -10121,6 +10124,7 @@ export namespace Prisma {
     website: string | null
     industry: string | null
     monthlyRetainer: number | null
+    monthlyGross: number | null
     googleBudget: number | null
     seoPriority: string | null
     seoScheduleDays: string | null
@@ -10170,6 +10174,7 @@ export namespace Prisma {
     website: number
     industry: number
     monthlyRetainer: number
+    monthlyGross: number
     googleBudget: number
     seoPriority: number
     seoScheduleDays: number
@@ -10216,6 +10221,7 @@ export namespace Prisma {
 
   export type ClientAvgAggregateInputType = {
     monthlyRetainer?: true
+    monthlyGross?: true
     googleBudget?: true
     blogTarget?: true
     backlinkTarget?: true
@@ -10231,6 +10237,7 @@ export namespace Prisma {
 
   export type ClientSumAggregateInputType = {
     monthlyRetainer?: true
+    monthlyGross?: true
     googleBudget?: true
     blogTarget?: true
     backlinkTarget?: true
@@ -10251,6 +10258,7 @@ export namespace Prisma {
     website?: true
     industry?: true
     monthlyRetainer?: true
+    monthlyGross?: true
     googleBudget?: true
     seoPriority?: true
     seoScheduleDays?: true
@@ -10300,6 +10308,7 @@ export namespace Prisma {
     website?: true
     industry?: true
     monthlyRetainer?: true
+    monthlyGross?: true
     googleBudget?: true
     seoPriority?: true
     seoScheduleDays?: true
@@ -10349,6 +10358,7 @@ export namespace Prisma {
     website?: true
     industry?: true
     monthlyRetainer?: true
+    monthlyGross?: true
     googleBudget?: true
     seoPriority?: true
     seoScheduleDays?: true
@@ -10485,6 +10495,7 @@ export namespace Prisma {
     website: string | null
     industry: string | null
     monthlyRetainer: number
+    monthlyGross: number
     googleBudget: number
     seoPriority: string
     seoScheduleDays: string
@@ -10553,6 +10564,7 @@ export namespace Prisma {
     website?: boolean
     industry?: boolean
     monthlyRetainer?: boolean
+    monthlyGross?: boolean
     googleBudget?: boolean
     seoPriority?: boolean
     seoScheduleDays?: boolean
@@ -10628,6 +10640,7 @@ export namespace Prisma {
     website?: boolean
     industry?: boolean
     monthlyRetainer?: boolean
+    monthlyGross?: boolean
     googleBudget?: boolean
     seoPriority?: boolean
     seoScheduleDays?: boolean
@@ -10678,6 +10691,7 @@ export namespace Prisma {
     website?: boolean
     industry?: boolean
     monthlyRetainer?: boolean
+    monthlyGross?: boolean
     googleBudget?: boolean
     seoPriority?: boolean
     seoScheduleDays?: boolean
@@ -10728,6 +10742,7 @@ export namespace Prisma {
     website?: boolean
     industry?: boolean
     monthlyRetainer?: boolean
+    monthlyGross?: boolean
     googleBudget?: boolean
     seoPriority?: boolean
     seoScheduleDays?: boolean
@@ -10770,7 +10785,7 @@ export namespace Prisma {
     accountManagerId?: boolean
   }
 
-  export type ClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "name" | "website" | "industry" | "monthlyRetainer" | "googleBudget" | "seoPriority" | "seoScheduleDays" | "blogTarget" | "backlinkTarget" | "keywordTarget" | "gscLink" | "gaLink" | "domainAuthority" | "pocName" | "pocMobile" | "pocEmail" | "onboardDate" | "renewalDate" | "status" | "gstApplicable" | "gstRate" | "gstin" | "billingCompany" | "billingDay" | "paymentTerm" | "importantNotes" | "websiteName" | "websiteDomain" | "websiteServices" | "domainTaken" | "domainAmount" | "hostingTaken" | "hostingAmount" | "designAmount" | "websiteTakenDate" | "websiteExpiryDate" | "websiteRenewAmount" | "followupLog" | "nextFollowup" | "paymentFollowupBy" | "notes" | "createdAt" | "updatedAt" | "accountManagerId", ExtArgs["result"]["client"]>
+  export type ClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "name" | "website" | "industry" | "monthlyRetainer" | "monthlyGross" | "googleBudget" | "seoPriority" | "seoScheduleDays" | "blogTarget" | "backlinkTarget" | "keywordTarget" | "gscLink" | "gaLink" | "domainAuthority" | "pocName" | "pocMobile" | "pocEmail" | "onboardDate" | "renewalDate" | "status" | "gstApplicable" | "gstRate" | "gstin" | "billingCompany" | "billingDay" | "paymentTerm" | "importantNotes" | "websiteName" | "websiteDomain" | "websiteServices" | "domainTaken" | "domainAmount" | "hostingTaken" | "hostingAmount" | "designAmount" | "websiteTakenDate" | "websiteExpiryDate" | "websiteRenewAmount" | "followupLog" | "nextFollowup" | "paymentFollowupBy" | "notes" | "createdAt" | "updatedAt" | "accountManagerId", ExtArgs["result"]["client"]>
   export type ClientInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     accountManager?: boolean | Client$accountManagerArgs<ExtArgs>
     services?: boolean | Client$servicesArgs<ExtArgs>
@@ -10842,6 +10857,7 @@ export namespace Prisma {
       website: string | null
       industry: string | null
       monthlyRetainer: number
+      monthlyGross: number
       googleBudget: number
       seoPriority: string
       seoScheduleDays: string
@@ -11336,6 +11352,7 @@ export namespace Prisma {
     readonly website: FieldRef<"Client", 'String'>
     readonly industry: FieldRef<"Client", 'String'>
     readonly monthlyRetainer: FieldRef<"Client", 'Int'>
+    readonly monthlyGross: FieldRef<"Client", 'Int'>
     readonly googleBudget: FieldRef<"Client", 'Int'>
     readonly seoPriority: FieldRef<"Client", 'String'>
     readonly seoScheduleDays: FieldRef<"Client", 'String'>
@@ -55617,6 +55634,7 @@ export namespace Prisma {
     website: 'website',
     industry: 'industry',
     monthlyRetainer: 'monthlyRetainer',
+    monthlyGross: 'monthlyGross',
     googleBudget: 'googleBudget',
     seoPriority: 'seoPriority',
     seoScheduleDays: 'seoScheduleDays',
@@ -56759,6 +56777,7 @@ export namespace Prisma {
     website?: StringNullableFilter<"Client"> | string | null
     industry?: StringNullableFilter<"Client"> | string | null
     monthlyRetainer?: IntFilter<"Client"> | number
+    monthlyGross?: IntFilter<"Client"> | number
     googleBudget?: IntFilter<"Client"> | number
     seoPriority?: StringFilter<"Client"> | string
     seoScheduleDays?: StringFilter<"Client"> | string
@@ -56833,6 +56852,7 @@ export namespace Prisma {
     website?: SortOrderInput | SortOrder
     industry?: SortOrderInput | SortOrder
     monthlyRetainer?: SortOrder
+    monthlyGross?: SortOrder
     googleBudget?: SortOrder
     seoPriority?: SortOrder
     seoScheduleDays?: SortOrder
@@ -56910,6 +56930,7 @@ export namespace Prisma {
     website?: StringNullableFilter<"Client"> | string | null
     industry?: StringNullableFilter<"Client"> | string | null
     monthlyRetainer?: IntFilter<"Client"> | number
+    monthlyGross?: IntFilter<"Client"> | number
     googleBudget?: IntFilter<"Client"> | number
     seoPriority?: StringFilter<"Client"> | string
     seoScheduleDays?: StringFilter<"Client"> | string
@@ -56984,6 +57005,7 @@ export namespace Prisma {
     website?: SortOrderInput | SortOrder
     industry?: SortOrderInput | SortOrder
     monthlyRetainer?: SortOrder
+    monthlyGross?: SortOrder
     googleBudget?: SortOrder
     seoPriority?: SortOrder
     seoScheduleDays?: SortOrder
@@ -57041,6 +57063,7 @@ export namespace Prisma {
     website?: StringNullableWithAggregatesFilter<"Client"> | string | null
     industry?: StringNullableWithAggregatesFilter<"Client"> | string | null
     monthlyRetainer?: IntWithAggregatesFilter<"Client"> | number
+    monthlyGross?: IntWithAggregatesFilter<"Client"> | number
     googleBudget?: IntWithAggregatesFilter<"Client"> | number
     seoPriority?: StringWithAggregatesFilter<"Client"> | string
     seoScheduleDays?: StringWithAggregatesFilter<"Client"> | string
@@ -60932,6 +60955,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -61005,6 +61029,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -61078,6 +61103,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -61151,6 +61177,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -61224,6 +61251,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -61273,6 +61301,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -61321,6 +61350,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -65908,6 +65938,7 @@ export namespace Prisma {
     website?: SortOrder
     industry?: SortOrder
     monthlyRetainer?: SortOrder
+    monthlyGross?: SortOrder
     googleBudget?: SortOrder
     seoPriority?: SortOrder
     seoScheduleDays?: SortOrder
@@ -65952,6 +65983,7 @@ export namespace Prisma {
 
   export type ClientAvgOrderByAggregateInput = {
     monthlyRetainer?: SortOrder
+    monthlyGross?: SortOrder
     googleBudget?: SortOrder
     blogTarget?: SortOrder
     backlinkTarget?: SortOrder
@@ -65972,6 +66004,7 @@ export namespace Prisma {
     website?: SortOrder
     industry?: SortOrder
     monthlyRetainer?: SortOrder
+    monthlyGross?: SortOrder
     googleBudget?: SortOrder
     seoPriority?: SortOrder
     seoScheduleDays?: SortOrder
@@ -66021,6 +66054,7 @@ export namespace Prisma {
     website?: SortOrder
     industry?: SortOrder
     monthlyRetainer?: SortOrder
+    monthlyGross?: SortOrder
     googleBudget?: SortOrder
     seoPriority?: SortOrder
     seoScheduleDays?: SortOrder
@@ -66065,6 +66099,7 @@ export namespace Prisma {
 
   export type ClientSumOrderByAggregateInput = {
     monthlyRetainer?: SortOrder
+    monthlyGross?: SortOrder
     googleBudget?: SortOrder
     blogTarget?: SortOrder
     backlinkTarget?: SortOrder
@@ -71188,6 +71223,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -71260,6 +71296,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -71967,6 +72004,7 @@ export namespace Prisma {
     website?: StringNullableFilter<"Client"> | string | null
     industry?: StringNullableFilter<"Client"> | string | null
     monthlyRetainer?: IntFilter<"Client"> | number
+    monthlyGross?: IntFilter<"Client"> | number
     googleBudget?: IntFilter<"Client"> | number
     seoPriority?: StringFilter<"Client"> | string
     seoScheduleDays?: StringFilter<"Client"> | string
@@ -72671,6 +72709,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -72743,6 +72782,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -72957,6 +72997,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -73029,6 +73070,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -74992,6 +75034,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -75064,6 +75107,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -75152,6 +75196,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -75224,6 +75269,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -75296,6 +75342,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -75368,6 +75415,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -75456,6 +75504,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -75528,6 +75577,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -75600,6 +75650,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -75672,6 +75723,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -75760,6 +75812,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -75832,6 +75885,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -75904,6 +75958,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -75976,6 +76031,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -76121,6 +76177,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -76193,6 +76250,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -76328,6 +76386,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -76400,6 +76459,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -76545,6 +76605,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -76617,6 +76678,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -76752,6 +76814,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -76824,6 +76887,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -76912,6 +76976,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -76984,6 +77049,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -77093,6 +77159,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -77165,6 +77232,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -77287,6 +77355,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -77359,6 +77428,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -77623,6 +77693,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -77695,6 +77766,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -77783,6 +77855,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -77855,6 +77928,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -77927,6 +78001,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -77999,6 +78074,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -78087,6 +78163,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -78159,6 +78236,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -78231,6 +78309,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -78303,6 +78382,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -78496,6 +78576,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -78568,6 +78649,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -78950,6 +79032,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -79022,6 +79105,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -79110,6 +79194,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -79182,6 +79267,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -79254,6 +79340,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -79326,6 +79413,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -79414,6 +79502,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -79486,6 +79575,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -79558,6 +79648,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -79630,6 +79721,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -79718,6 +79810,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -79790,6 +79883,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -79862,6 +79956,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -79934,6 +80029,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -80022,6 +80118,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -80094,6 +80191,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -80166,6 +80264,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -80238,6 +80337,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -80326,6 +80426,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -80398,6 +80499,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -80470,6 +80572,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -80542,6 +80645,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -80630,6 +80734,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -80702,6 +80807,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -80774,6 +80880,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -80846,6 +80953,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -80934,6 +81042,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -81006,6 +81115,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -81078,6 +81188,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -81150,6 +81261,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -81352,6 +81464,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -81424,6 +81537,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -81622,6 +81736,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -81694,6 +81809,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -81896,6 +82012,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -81968,6 +82085,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -82166,6 +82284,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -82238,6 +82357,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -82326,6 +82446,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -82398,6 +82519,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -82470,6 +82592,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -82542,6 +82665,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -82630,6 +82754,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -82702,6 +82827,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -84289,6 +84415,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -84361,6 +84488,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -84449,6 +84577,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -84521,6 +84650,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -84650,6 +84780,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -84722,6 +84853,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -84873,6 +85005,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -84945,6 +85078,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -85017,6 +85151,7 @@ export namespace Prisma {
     website?: string | null
     industry?: string | null
     monthlyRetainer?: number
+    monthlyGross?: number
     googleBudget?: number
     seoPriority?: string
     seoScheduleDays?: string
@@ -85302,6 +85437,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -85374,6 +85510,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
@@ -85446,6 +85583,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyRetainer?: IntFieldUpdateOperationsInput | number
+    monthlyGross?: IntFieldUpdateOperationsInput | number
     googleBudget?: IntFieldUpdateOperationsInput | number
     seoPriority?: StringFieldUpdateOperationsInput | string
     seoScheduleDays?: StringFieldUpdateOperationsInput | string
