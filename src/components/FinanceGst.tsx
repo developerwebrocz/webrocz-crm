@@ -25,6 +25,11 @@ function fyLabel(offset = 0) {
 
 export default function FinanceGst({ rows, invoiceRows = [], supplierState }: { rows: Row[]; invoiceRows?: InvRow[]; supplierState: string }) {
   const [period, setPeriod] = useState("THIS_FY");
+  // "Custom": From – To dates picked on the calendar (invoice date, both days included)
+  const [cFrom, setCFrom] = useState("");
+  const [cTo, setCTo] = useState("");
+  const custom = period === "CUSTOM";
+  const inCustom = (d: string) => (!cFrom || (d || "") >= cFrom) && (!cTo || (d || "") <= cTo);
   const now = new Date();
 
   const [pFrom, pTo] = useMemo(() => {
@@ -34,7 +39,20 @@ export default function FinanceGst({ rows, invoiceRows = [], supplierState }: { 
     return ["", ""] as [string, string];
   }, [period]);
 
-  const filtered = useMemo(() => rows.filter((r) => (!pFrom || r.month >= pFrom) && (!pTo || r.month <= pTo)), [rows, pFrom, pTo]);
+  // custom dates: the month rows are added up from the invoices inside the dates
+  const filtered = useMemo(() => {
+    if (!custom) return rows.filter((r) => (!pFrom || r.month >= pFrom) && (!pTo || r.month <= pTo));
+    const byMonth = new Map<string, Row>();
+    for (const i of invoiceRows) {
+      if (!i.date || !inCustom(i.date)) continue;
+      const month = i.date.slice(0, 7);
+      const m = byMonth.get(month) ?? { month, count: 0, taxable: 0, cgst: 0, sgst: 0, igst: 0, tax: 0, total: 0 };
+      m.count += 1; m.taxable += i.taxable; m.cgst += i.cgst; m.sgst += i.sgst; m.igst += i.igst; m.tax += i.cgst + i.sgst + i.igst; m.total += i.total;
+      byMonth.set(month, m);
+    }
+    return [...byMonth.values()].sort((a, b) => (a.month < b.month ? 1 : -1));
+  }, [rows, invoiceRows, pFrom, pTo, custom, cFrom, cTo]); // eslint-disable-line react-hooks/exhaustive-deps
+  const fileTag = custom ? `${cFrom || "start"}-to-${cTo || "today"}` : period.toLowerCase();
 
   const totals = useMemo(() => filtered.reduce((a, r) => ({
     count: a.count + r.count, taxable: a.taxable + r.taxable, cgst: a.cgst + r.cgst, sgst: a.sgst + r.sgst,
@@ -48,22 +66,22 @@ export default function FinanceGst({ rows, invoiceRows = [], supplierState }: { 
     const csv = [head.join(","), ...lines, totalLine].join("\n");
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
     const a = document.createElement("a");
-    a.href = url; a.download = `gst-summary-${period.toLowerCase()}.csv`; a.click();
+    a.href = url; a.download = `gst-summary-${fileTag}.csv`; a.click();
     URL.revokeObjectURL(url);
   };
 
   // GSTR-1 (B2B) invoice-wise export — the format a CA needs for filing.
   const exportGstr1 = () => {
-    const inv = invoiceRows.filter((r) => { const m = (r.date || "").slice(0, 7); return (!pFrom || m >= pFrom) && (!pTo || m <= pTo); });
+    const inv = invoiceRows.filter((r) => { if (custom) return inCustom(r.date); const m = (r.date || "").slice(0, 7); return (!pFrom || m >= pFrom) && (!pTo || m <= pTo); });
     const head = ["Invoice No", "Invoice Date", "Client", "Client GSTIN", "Place of Supply", "Rate %", "Taxable Value", "CGST", "SGST", "IGST", "Invoice Total"];
     const esc = (v: string | number) => { const s = String(v ?? ""); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
     const lines = inv.map((r) => [r.number, fmtD(r.date), r.billTo, r.gstin, r.placeOfSupply, r.rate, r.taxable, r.cgst, r.sgst, r.igst, r.total].map(esc).join(","));
     const csv = [head.join(","), ...lines].join("\n");
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
-    const a = document.createElement("a"); a.href = url; a.download = `gstr1-b2b-${period.toLowerCase()}.csv`; a.click(); URL.revokeObjectURL(url);
+    const a = document.createElement("a"); a.href = url; a.download = `gstr1-b2b-${fileTag}.csv`; a.click(); URL.revokeObjectURL(url);
   };
 
-  const periodName = period === "THIS_FY" ? fyLabel(0) : period === "LAST_FY" ? fyLabel(-1) : period === "THIS_YEAR" ? String(now.getFullYear()) : "All time";
+  const periodName = custom ? `${cFrom ? fmtD(cFrom) : "Start"} – ${cTo ? fmtD(cTo) : "today"}` : period === "THIS_FY" ? fyLabel(0) : period === "LAST_FY" ? fyLabel(-1) : period === "THIS_YEAR" ? String(now.getFullYear()) : "All time";
 
   return (
     <div className="space-y-5">
@@ -79,13 +97,24 @@ export default function FinanceGst({ rows, invoiceRows = [], supplierState }: { 
               <p className="mt-0.5 text-[12.5px] text-[var(--muted)]">{periodName} · GST collected <b style={{ color: "var(--indigo)" }}>{inr(totals.tax)}</b> · Supplier state {supplierState}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <select value={period} onChange={(e) => setPeriod(e.target.value)} className="select !w-auto">
               <option value="THIS_FY">{fyLabel(0)}</option>
               <option value="LAST_FY">{fyLabel(-1)}</option>
               <option value="THIS_YEAR">This year ({now.getFullYear()})</option>
               <option value="ALL">All time</option>
+              <option value="CUSTOM">Custom</option>
             </select>
+            {custom && (
+              <>
+                <label className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-[var(--muted)]">From
+                  <input type="date" value={cFrom} max={cTo || undefined} onChange={(e) => setCFrom(e.target.value)} className="input !w-auto" />
+                </label>
+                <label className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-[var(--muted)]">To
+                  <input type="date" value={cTo} min={cFrom || undefined} onChange={(e) => setCTo(e.target.value)} className="input !w-auto" />
+                </label>
+              </>
+            )}
             <button onClick={exportCsv} className="btn btn-ghost"><Download size={15} /> Summary CSV</button>
             <button onClick={exportGstr1} className="btn btn-violet"><ReceiptText size={15} /> GSTR-1 (invoice-wise)</button>
           </div>
