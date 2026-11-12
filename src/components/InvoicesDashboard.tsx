@@ -29,7 +29,7 @@ const STATUS = [
 
 const COMPANY_TABS = [{ k: "", label: "All companies" }, ...COMPANY_KEYS.map((k) => ({ k, label: companyLabel(k) }))];
 
-export default function InvoicesDashboard({ rows, totals, companyCounts, clientNames = [], clientDomains, q, status, company, month = "", from = "", to = "", hideApproval, embedded, canDelete }: { clientDomains?: Record<string, string>; rows: any[]; totals: any; companyCounts: Record<string, { count: number; billed: number }>; clientNames?: string[]; q: string; status: string; company: string; month?: string; from?: string; to?: string; hideApproval?: boolean; embedded?: boolean; canDelete?: boolean }) {
+export default function InvoicesDashboard({ rows, totals, companyCounts, clientNames = [], clientDomains, q, status, company, from = "", to = "", hideApproval, embedded, canDelete }: { clientDomains?: Record<string, string>; rows: any[]; totals: any; companyCounts: Record<string, { count: number; billed: number }>; clientNames?: string[]; q: string; status: string; company: string; from?: string; to?: string; hideApproval?: boolean; embedded?: boolean; canDelete?: boolean }) {
   const statusOptions = hideApproval ? STATUS.filter((s) => s.k !== "pending_approval" && s.k !== "approved") : STATUS;
   const [fuInv, setFuInv] = useState<any>(null); // invoice whose follow-ups modal is open
   const [delInv, setDelInv] = useState<any>(null); // invoice pending delete confirmation
@@ -43,7 +43,6 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
     const p = new URLSearchParams();
     if (q) p.set("q", q);
     if (status) p.set("status", status);
-    if (month) p.set("month", month);
     if (from) p.set("from", from);
     if (to) p.set("to", to);
     if (co) p.set("company", co);
@@ -93,11 +92,7 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
         {keepHub && <input type="hidden" name="hub" value="1" />}
         <input name="q" defaultValue={q} placeholder="Search invoice no. / client / phone…" className="input !w-auto min-w-[240px]" />
         <select name="status" defaultValue={status} className="select !w-auto">{statusOptions.map((s) => <option key={s.k} value={s.k}>{s.label}</option>)}</select>
-        {/* invoice date: a calendar month, or From – To dates (the dates win when both are given) */}
-        <label className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-[var(--muted)]">Month
-          <input type="month" name="month" defaultValue={month} className="input !w-auto" />
-        </label>
-        <span className="text-[12px] text-[var(--faint)]">or</span>
+        {/* invoice date: From – To */}
         <label className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-[var(--muted)]">From
           <input type="date" name="from" defaultValue={from} className="input !w-auto" />
         </label>
@@ -105,14 +100,14 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
           <input type="date" name="to" defaultValue={to} className="input !w-auto" />
         </label>
         <button className="btn btn-ghost btn-sm">Apply</button>
-        {(q || status || month || from || to) && <Link href={keepHub ? hubHref : company ? `/invoices?company=${company}` : "/invoices"} className="btn btn-ghost btn-sm">Clear</Link>}
+        {(q || status || from || to) && <Link href={keepHub ? hubHref : company ? `/invoices?company=${company}` : "/invoices"} className="btn btn-ghost btn-sm">Clear</Link>}
       </form>
 
       {/* fully paid invoices are not in the default list — say so, with a way to see them */}
       {!status && totals.paidHidden > 0 && (
         <p className="rounded-[10px] bg-[var(--surface-2)] px-3.5 py-2 text-[12.5px] text-[var(--muted)]">
           Showing invoices with payment pending. <b className="text-[var(--ink-2)]">{totals.paidHidden} fully paid invoice{totals.paidHidden === 1 ? "" : "s"}</b> {totals.paidHidden === 1 ? "is" : "are"} on the client&apos;s page.{" "}
-          <Link href={`/invoices?${new URLSearchParams({ ...(company ? { company } : {}), ...(keepHub || (embedded && company) ? { hub: "1" } : {}), ...(q ? { q } : {}), ...(month ? { month } : {}), ...(from ? { from } : {}), ...(to ? { to } : {}), status: "paid" }).toString()}`} className="font-semibold text-[var(--violet)] hover:underline">Show fully paid</Link>
+          <Link href={`/invoices?${new URLSearchParams({ ...(company ? { company } : {}), ...(keepHub || (embedded && company) ? { hub: "1" } : {}), ...(q ? { q } : {}), ...(from ? { from } : {}), ...(to ? { to } : {}), status: "paid" }).toString()}`} className="font-semibold text-[var(--violet)] hover:underline">Show fully paid</Link>
         </p>
       )}
 

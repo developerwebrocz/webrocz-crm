@@ -2662,7 +2662,7 @@ export async function getHeldInvoices() {
   }));
 }
 
-// from / to: invoice date range (YYYY-MM-DD, both ends included) — the Month / From–To filter
+// from / to: invoice date range (YYYY-MM-DD, both ends included) — the From – To filter
 export async function getInvoices(opts: { q?: string; status?: string; company?: string; from?: string; to?: string } = {}) {
   const today = salesToday();
   const [rows, invLeads, clients] = await Promise.all([
