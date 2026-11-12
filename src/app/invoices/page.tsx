@@ -18,7 +18,12 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
   const q = typeof sp.q === "string" ? sp.q : "";
   const status = typeof sp.status === "string" ? sp.status : "";
   const company = typeof sp.company === "string" ? sp.company : "";
-  const d = await getInvoices({ q, status, company });
+  // invoice date filter: From–To dates, else a calendar month
+  const isDay = (v: unknown): v is string => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v);
+  const from = isDay(sp.from) ? sp.from : "";
+  const to = isDay(sp.to) ? sp.to : "";
+  const month = !from && !to && typeof sp.month === "string" && /^\d{4}-\d{2}$/.test(sp.month) ? sp.month : "";
+  const d = await getInvoices({ q, status, company, from: from || (month ? `${month}-01` : ""), to: to || (month ? `${month}-31` : "") });
   const hideApproval = user.role === "ACCOUNTANT";
   // Opened from a company's sidebar (hub=1) → stay inside that company: a CompanyNav header and
   // the invoices scoped to it (no cross-company tabs). Otherwise the normal tabbed dashboard,
@@ -26,7 +31,7 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
   const inHub = sp.hub === "1" && (COMPANY_KEYS as readonly string[]).includes(company);
   // Web Rocz only: client → domain map so its invoice form fills the domain automatically.
   const clientDomains = company === "WEB_ROCZ" ? await getClientDomains() : undefined;
-  const dash = <InvoicesDashboard rows={d.rows} totals={d.totals} companyCounts={d.companyCounts} clientNames={d.clientNames} clientDomains={clientDomains} q={q} status={status} company={company} hideApproval={hideApproval} embedded={inHub} canDelete={["SUPER_ADMIN", "SUB_ADMIN"].includes(user.role)} />;
+  const dash = <InvoicesDashboard rows={d.rows} totals={d.totals} companyCounts={d.companyCounts} clientNames={d.clientNames} clientDomains={clientDomains} q={q} status={status} company={company} month={month} from={from} to={to} hideApproval={hideApproval} embedded={inHub} canDelete={["SUPER_ADMIN", "SUB_ADMIN"].includes(user.role)} />;
   if (!inHub) return dash;
   return (
     <div className="space-y-5">

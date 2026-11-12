@@ -2662,7 +2662,8 @@ export async function getHeldInvoices() {
   }));
 }
 
-export async function getInvoices(opts: { q?: string; status?: string; company?: string } = {}) {
+// from / to: invoice date range (YYYY-MM-DD, both ends included) — the Month / From–To filter
+export async function getInvoices(opts: { q?: string; status?: string; company?: string; from?: string; to?: string } = {}) {
   const today = salesToday();
   const [rows, invLeads, clients] = await Promise.all([
     prisma.salesInvoice.findMany({ orderBy: { createdAt: "desc" } }),
@@ -2711,8 +2712,10 @@ export async function getInvoices(opts: { q?: string; status?: string; company?:
     if (opts.status === "overdue" && !r.overdue) return false;
     return true;
   };
+  // invoice date inside the chosen month / dates
+  const inDates = (r: (typeof list)[number]) => (!opts.from || r.issueDate >= opts.from) && (!opts.to || r.issueDate <= opts.to);
   // Rows matching search + status but NOT the company tab — used for per-tab counts.
-  const scoped = list.filter((r) => (!q || `${r.number} ${r.billTo} ${r.contact ?? ""} ${r.phone ?? ""}`.toLowerCase().includes(q)) && matchStatus(r));
+  const scoped = list.filter((r) => (!q || `${r.number} ${r.billTo} ${r.contact ?? ""} ${r.phone ?? ""}`.toLowerCase().includes(q)) && matchStatus(r) && inDates(r));
   const companyCounts: Record<string, { count: number; billed: number }> = {
     ALL: { count: scoped.length, billed: scoped.reduce((s, r) => s + r.total, 0) },
   };
@@ -2724,7 +2727,7 @@ export async function getInvoices(opts: { q?: string; status?: string; company?:
   // The cards keep counting every invoice of the company (paid ones included) in the default
   // view, so "Total billed" and "Received" stay the real figures; with a status chosen they
   // follow that status.
-  const inScope = (r: (typeof list)[number]) => (!q || `${r.number} ${r.billTo} ${r.contact ?? ""} ${r.phone ?? ""}`.toLowerCase().includes(q)) && (!opts.company || opts.company === "ALL" || r.company === opts.company);
+  const inScope = (r: (typeof list)[number]) => (!q || `${r.number} ${r.billTo} ${r.contact ?? ""} ${r.phone ?? ""}`.toLowerCase().includes(q)) && (!opts.company || opts.company === "ALL" || r.company === opts.company) && inDates(r);
   const forTotals = opts.status ? filtered : list.filter(inScope);
   const totals = {
     count: forTotals.length,
