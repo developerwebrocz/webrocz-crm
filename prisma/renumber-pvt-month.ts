@@ -7,8 +7,8 @@
 //   npx tsx prisma/renumber-pvt-month.ts 'month=2026-11' 'from=180' 'set=183:150,188:151'
 //   … add  --apply  at the end to change the numbers.
 //
-// • month's invoices are put in order of invoice date (then when they were made in the CRM) and
-//   numbered from 'from' on. 'set=OLD:NEW,…' gives other invoices (by their current number) a new number.
+// • month's invoices, and every invoice already numbered from 'from' on (whatever its date), are put in
+//   order of invoice date (then when they were made in the CRM) and numbered from 'from' on. 'set=OLD:NEW,…' gives other invoices (by their current number) a new number.
 // • If two invoices would end up with the same number, nothing changes and the clash is listed.
 // • Invoices of other months numbered at or above 'from' are listed, so they can be given a number.
 // • Before changing, the old numbers are written to a file in /tmp, so they can be put back.
@@ -53,7 +53,8 @@ async function main() {
 
   // new number per invoice id
   const plan = new Map<string, number>();
-  const ofMonth = all.filter((r) => r.issueDate.startsWith(month)).sort((a, b) => a.issueDate.localeCompare(b.issueDate) || +a.createdAt - +b.createdAt || a.n - b.n);
+  // the month's invoices AND every invoice already numbered from 'from' on (not in the last filing)
+  const ofMonth = all.filter((r) => r.issueDate.startsWith(month) || r.n >= from).sort((a, b) => a.issueDate.localeCompare(b.issueDate) || +a.createdAt - +b.createdAt || a.n - b.n);
   ofMonth.forEach((r, k) => plan.set(r.id, from + k));
   for (const pair of (args.get("set") ?? "").split(",").map((x) => x.trim()).filter(Boolean)) {
     const [o, nw] = pair.split(":").map((x) => parseInt(x, 10));
@@ -68,14 +69,15 @@ async function main() {
   for (const r of after) if (r.to > 0) seen.set(r.to, [...(seen.get(r.to) ?? []), r]);
   const clashes = [...seen.entries()].filter(([, g]) => g.length > 1);
 
-  console.log(`Web Rocz Pvt Ltd series ${prefix.slice(0, -1)} — ${all.length} invoices. ${month} invoices: ${ofMonth.length}, numbered from ${prefix}${from}.\n`);
+  console.log(`Web Rocz Pvt Ltd series ${prefix.slice(0, -1)} — ${all.length} invoices. ${month} invoices + those numbered from ${from} on: ${ofMonth.length}, numbered from ${prefix}${from} in invoice-date order.\n`);
   const changing = after.filter((r) => r.to !== r.n).sort((a, b) => a.to - b.to);
   console.log(changing.length ? "Numbers that change:" : "No number changes.");
   for (const r of changing) console.log(`  ${r.number.padEnd(13)} →  ${prefix}${r.to}   · ${r.billTo} · invoice date ${fmt(r.issueDate)}`);
   const unchangedMonth = ofMonth.filter((r) => plan.get(r.id) === r.n);
   if (unchangedMonth.length) console.log(`  (already right: ${unchangedMonth.map((r) => r.number).join(", ")})`);
 
-  const otherHigh = after.filter((r) => !r.issueDate.startsWith(month) && r.to >= from);
+  const picked = new Set(ofMonth.map((r) => r.id));
+  const otherHigh = after.filter((r) => !picked.has(r.id) && r.to >= from);
   if (otherHigh.length) {
     console.log(`\nInvoices of other months that would still have a number from ${from} on — give each one its number with 'set=OLD:NEW':`);
     for (const r of otherHigh) console.log(`  ${prefix}${r.to} · ${r.billTo} · invoice date ${fmt(r.issueDate)}`);
