@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileText, Clock, MessageSquarePlus, X, Trash2, Plus, CheckCircle2 } from "lucide-react";
+import { FileText, Clock, MessageSquarePlus, X, Trash2, Plus, CheckCircle2, Download } from "lucide-react";
+import { downloadCsv } from "@/lib/csv";
 import { companyLabel, COMPANY_KEYS } from "@/lib/domain";
 import { addInvoiceNote, deleteSalesInvoice } from "@/app/sales-actions";
 import AddInvoiceModal from "@/components/AddInvoiceModal";
@@ -39,6 +40,12 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
   // companies' tabs.
   const keepHub = !!embedded && (company === "WEB_SOLUTIONS" || company === "WEB_ROCZ" || company === "WEB_ROCZ_PVT");
   const hubHref = `/invoices?company=${company}&hub=1`;
+  const dmy = (iso: string) => { const [y, m, d] = (iso || "").split("-"); return d ? `${d}-${m}-${y}` : iso || ""; };
+  const exportCsv = () => downloadCsv(
+    `invoices${company ? `-${company.toLowerCase()}` : ""}${from ? `-from-${from}` : ""}${to ? `-to-${to}` : ""}.csv`,
+    ["Invoice no", "Invoice date", "Due date", "Client", "Company", "Phone", "Total", "Received", "Balance", "Payment"],
+    rows.map((r) => [r.number, dmy(r.issueDate), dmy(r.dueDate), r.billTo, companyLabel(r.company), r.phone ?? "", r.total, r.total - r.balance, r.balance, r.paymentStatus]),
+  );
   const tabHref = (co: string) => {
     const p = new URLSearchParams();
     if (q) p.set("q", q);
@@ -100,6 +107,8 @@ export default function InvoicesDashboard({ rows, totals, companyCounts, clientN
           <input type="date" name="to" defaultValue={to} className="input !w-auto" />
         </label>
         <button className="btn btn-ghost btn-sm">Apply</button>
+        {/* the invoices in the list now (company tab, search, status, From – To) as a CSV for Excel */}
+        <button type="button" onClick={exportCsv} disabled={!rows.length} className="btn btn-ghost btn-sm disabled:opacity-50"><Download size={14} /> Export</button>
         {(q || status || from || to) && <Link href={keepHub ? hubHref : company ? `/invoices?company=${company}` : "/invoices"} className="btn btn-ghost btn-sm">Clear</Link>}
       </form>
 

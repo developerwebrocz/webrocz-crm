@@ -43,7 +43,8 @@ async function main() {
   for (const [label, prefix, gst] of [["Web Rocz Pvt Ltd (GST)", `${fy}/`, true], ["Web Solutions + Web Rocz (no GST)", `NG/${fy}/`, false]] as const) {
     const used = await prisma.salesInvoice.findMany({ where: { number: { startsWith: prefix } }, select: { number: true, billTo: true, issueDate: true, createdAt: true } });
     const numbered = used.map((u) => ({ ...u, n: /^\d+$/.test(u.number.slice(prefix.length)) ? parseInt(u.number.slice(prefix.length), 10) : 0 })).filter((u) => u.n > 0).sort((a, b) => b.n - a.n);
-    const max = numbered[0]?.n ?? 0;
+    // Web Rocz Pvt Ltd 2026-27 continues from 180 (as in src/lib/invoice-number.ts)
+    const max = Math.max(numbered[0]?.n ?? 0, gst && fy === "2026-27" ? 179 : 0);
     const next = gst ? `${prefix}${max + 1}` : `${prefix}${String(max + 1).padStart(3, "0")}`;
     console.log(`${label} — financial year ${fy}`);
     console.log(`  Invoices in this series: ${numbered.length}`);
