@@ -5,6 +5,7 @@
 //
 //   npx tsx prisma/invoice-numbers.ts
 //   npx tsx prisma/invoice-numbers.ts 'date=2027-04-01'   (the series of that date's financial year)
+//   npx tsx prisma/invoice-numbers.ts 'list=180'          (every invoice from number 180 on)
 //
 // Same rule as src/lib/invoice-number.ts. Same Prisma + SQLite adapter as the app.
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
@@ -49,7 +50,10 @@ async function main() {
     console.log(`${label} — financial year ${fy}`);
     console.log(`  Invoices in this series: ${numbered.length}`);
     console.log("  Last numbers:");
-    for (const u of numbered.slice(0, 5)) console.log(`    ${u.number} · ${u.billTo} · invoice date ${u.issueDate || "—"}`);
+    // 'list=180': every invoice of the series from that number on (with when it was made in the CRM)
+    const listFrom = parseInt(args.get("list") ?? "", 10);
+    const shown = listFrom > 0 ? numbered.filter((u) => u.n >= listFrom).sort((a, b) => a.n - b.n) : numbered.slice(0, 5);
+    for (const u of shown) console.log(`    ${u.number} · ${u.billTo} · invoice date ${u.issueDate || "—"}${listFrom > 0 ? ` · made in CRM ${u.createdAt.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })}` : ""}`);
     if (!numbered.length) console.log("    none yet");
     console.log(`  NEXT invoice will get: ${next}\n`);
   }
