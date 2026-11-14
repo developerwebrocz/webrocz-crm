@@ -71,8 +71,12 @@ export default function FinanceGst({ rows, invoiceRows = [], supplierState }: { 
   };
 
   // GSTR-1 (B2B) invoice-wise export — the format a CA needs for filing.
+  // the GST invoices of the chosen period (custom dates or months) — the list below and the GSTR-1 file
+  const periodInvoices = invoiceRows
+    .filter((r) => { if (custom) return inCustom(r.date); const m = (r.date || "").slice(0, 7); return (!pFrom || m >= pFrom) && (!pTo || m <= pTo); })
+    .sort((a, b) => (a.date || "").localeCompare(b.date || "") || a.number.localeCompare(b.number, undefined, { numeric: true }));
   const exportGstr1 = () => {
-    const inv = invoiceRows.filter((r) => { if (custom) return inCustom(r.date); const m = (r.date || "").slice(0, 7); return (!pFrom || m >= pFrom) && (!pTo || m <= pTo); });
+    const inv = periodInvoices;
     const head = ["Invoice No", "Invoice Date", "Client", "Client GSTIN", "Place of Supply", "Rate %", "Taxable Value", "CGST", "SGST", "IGST", "Invoice Total"];
     const esc = (v: string | number) => { const s = String(v ?? ""); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
     const lines = inv.map((r) => [r.number, fmtD(r.date), r.billTo, r.gstin, r.placeOfSupply, r.rate, r.taxable, r.cgst, r.sgst, r.igst, r.total].map(esc).join(","));
@@ -163,6 +167,39 @@ export default function FinanceGst({ rows, invoiceRows = [], supplierState }: { 
                 <td className="px-4 py-3 text-right text-[13px] tnum">{inr(totals.total)}</td>
               </tr></tfoot>
             )}
+          </table>
+        </div>
+      </div>
+
+      {/* every GST invoice of the period, with the count — what makes up the figures above */}
+      <div className="card !p-0 overflow-hidden">
+        <div className="flex items-center justify-between gap-3 border-b border-[var(--line)] px-5 py-3.5">
+          <h2 className="text-[13.5px] font-bold">Invoices · {periodName}</h2>
+          <span className="rounded-full bg-[var(--surface-2)] px-2.5 py-1 text-[12px] font-bold tnum">{periodInvoices.length} invoice{periodInvoices.length === 1 ? "" : "s"}</span>
+        </div>
+        <div className="max-h-[560px] overflow-auto scroll-thin">
+          <table className="w-full min-w-[980px]">
+            <thead className="sticky top-0 bg-[var(--surface)]"><tr className="border-b border-[var(--line)] text-left text-[11px] font-bold uppercase tracking-wide text-[var(--muted)]">
+              <th className="px-4 py-2.5">#</th><th className="px-4 py-2.5">Invoice no</th><th className="px-4 py-2.5">Date</th><th className="px-4 py-2.5">Client</th><th className="px-4 py-2.5">GSTIN</th>
+              <th className="px-4 py-2.5 text-right">Taxable</th><th className="px-4 py-2.5 text-right">CGST</th><th className="px-4 py-2.5 text-right">SGST</th><th className="px-4 py-2.5 text-right">IGST</th><th className="px-4 py-2.5 text-right">Total</th>
+            </tr></thead>
+            <tbody>
+              {periodInvoices.length === 0 && <tr><td colSpan={10} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No invoices in this period.</td></tr>}
+              {periodInvoices.map((r, i) => (
+                <tr key={r.number} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
+                  <td className="px-4 py-2.5 text-[12px] text-[var(--muted)] tnum">{i + 1}</td>
+                  <td className="whitespace-nowrap px-4 py-2.5 text-[13px] font-semibold">{r.number}</td>
+                  <td className="whitespace-nowrap px-4 py-2.5 text-[12.5px] tnum">{fmtD(r.date)}</td>
+                  <td className="px-4 py-2.5 text-[13px]">{r.billTo}</td>
+                  <td className="whitespace-nowrap px-4 py-2.5 text-[12px] text-[var(--muted)]">{r.gstin || "—"}</td>
+                  <td className="px-4 py-2.5 text-right text-[13px] tnum">{inr(r.taxable)}</td>
+                  <td className="px-4 py-2.5 text-right text-[12.5px] tnum text-[var(--muted)]">{inr(r.cgst)}</td>
+                  <td className="px-4 py-2.5 text-right text-[12.5px] tnum text-[var(--muted)]">{inr(r.sgst)}</td>
+                  <td className="px-4 py-2.5 text-right text-[12.5px] tnum text-[var(--muted)]">{inr(r.igst)}</td>
+                  <td className="px-4 py-2.5 text-right text-[13px] font-semibold tnum">{inr(r.total)}</td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
       </div>
