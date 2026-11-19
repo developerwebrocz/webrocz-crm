@@ -1,7 +1,7 @@
 import "server-only";
 import { prisma } from "./prisma";
 import { todayIST } from "./india-date";
-import { OWN_BRANDS } from "./team-kinds";
+import { OWN_BRANDS, brandName } from "./team-kinds";
 
 // Video team "Client Videos" tracker: one row per client shoot — videos shot, who edits them,
 // how many are edited, whether the account manager was told and whether they are posted.
@@ -91,7 +91,8 @@ export async function getVideoTeamNames(): Promise<string[]> {
     prisma.creativeTask.findMany({ where: { kind: "VIDEO", clientLabel: { not: "" } }, select: { clientLabel: true }, distinct: ["clientLabel"] }),
     prisma.videoJob.findMany({ where: { clientId: null }, select: { clientName: true }, distinct: ["clientName"] }),
   ]);
-  const added = [...tasks.map((t) => t.clientLabel), ...jobs.map((j) => j.clientName)].map((n) => n.trim()).filter(Boolean).sort((a, b) => a.localeCompare(b));
+  // brand names only — "Studio X ( Jay )" and "Studio X ( Sahithi )" are both listed as "Studio X"
+  const added = [...tasks.map((t) => t.clientLabel), ...jobs.map((j) => j.clientName)].map(brandName).filter(Boolean).sort((a, b) => a.localeCompare(b));
   const seen = new Set<string>();
   return [...OWN_BRANDS, ...added].filter((n) => { const k = n.toLowerCase().replace(/\s+/g, ""); if (seen.has(k)) return false; seen.add(k); return true; });
 }

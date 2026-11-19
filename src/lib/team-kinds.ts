@@ -7,6 +7,8 @@
 // the same way, as a name on the video.
 export const OWN_BRANDS = ["Web Rocz", "Digital Hat", "Studio X", "Show Yours", "Talk X", "Rajesh Sir (Personal Branding)", "Prathibha IAS", "Prathibha Degree"];
 export const NAME_ONLY = "name:"; // pick-list value prefix: "name:Digital Hat" = this name, no client record
+// The brand only, for the client pick lists: "Studio X ( Actor Bhargav )" → "Studio X" (the person in brackets is dropped)
+export const brandName = (n: string) => n.replace(/\s*\([^)]*\)?/g, " ").replace(/\s+/g, " ").trim();
 
 export type TeamKind = "VIDEO" | "DESIGN";
 export type TeamInfo = {

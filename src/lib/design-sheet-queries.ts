@@ -3,6 +3,7 @@ import { prisma } from "./prisma";
 import { todayIST } from "./india-date";
 import { parseDesignItems } from "./design-work";
 import { WORK_TYPES, WORK_STATUS } from "./domain";
+import { brandName } from "./team-kinds";
 
 // The design team's work as one simple sheet (Design Count, for the Super Admin / design lead):
 // for a day / week / month — each designer's total, and one line per piece of work:
@@ -173,7 +174,7 @@ export async function getTypedClientNames(kind: "DESIGN" | "VIDEO"): Promise<str
   const taken = new Set(clients.map((c) => norm(c.name)));
   const out = new Map<string, string>();
   for (const n of [...counts.flatMap((c) => parseDesignItems(c.items).map((it) => it.client)), ...updates.map((u) => u.clientLabel), ...tasks.map((t) => t.clientLabel)]) {
-    const name = n.replace(/\s+/g, " ").trim();
+    const name = brandName(n); // brand only — the person in brackets is dropped
     if (name && !taken.has(norm(name)) && !out.has(norm(name))) out.set(norm(name), name);
   }
   return [...out.values()].sort((a, b) => a.localeCompare(b));
