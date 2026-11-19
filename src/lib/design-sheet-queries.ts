@@ -174,7 +174,7 @@ export async function getTypedClientNames(kind: "DESIGN" | "VIDEO"): Promise<str
   const taken = new Set(clients.map((c) => norm(c.name)));
   const out = new Map<string, string>();
   for (const n of [...counts.flatMap((c) => parseDesignItems(c.items).map((it) => it.client)), ...updates.map((u) => u.clientLabel), ...tasks.map((t) => t.clientLabel)]) {
-    const name = brandName(n); // brand only — the person in brackets is dropped
+    const name = brandName(n, clients.map((c) => c.name)); // brand only — the person in brackets is dropped
     if (name && !taken.has(norm(name)) && !out.has(norm(name))) out.set(norm(name), name);
   }
   return [...out.values()].sort((a, b) => a.localeCompare(b));

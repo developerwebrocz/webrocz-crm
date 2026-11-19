@@ -7,8 +7,19 @@
 // the same way, as a name on the video.
 export const OWN_BRANDS = ["Web Rocz", "Digital Hat", "Studio X", "Show Yours", "Talk X", "Rajesh Sir (Personal Branding)", "Prathibha IAS", "Prathibha Degree"];
 export const NAME_ONLY = "name:"; // pick-list value prefix: "name:Digital Hat" = this name, no client record
-// The brand only, for the client pick lists: "Studio X ( Actor Bhargav )" → "Studio X" (the person in brackets is dropped)
-export const brandName = (n: string) => n.replace(/\s*\([^)]*\)?/g, " ").replace(/\s+/g, " ").trim();
+// The brand only, for the client pick lists: "Studio X ( Actor Bhargav )" → "Studio X" (the person in
+// brackets is dropped), and a name that starts with a known brand / client becomes that brand
+// ("Star Homeopathy Dr Aishwarya" → "Star Homeopathy", "Studio X Podacast" / "Studio" → "Studio X").
+const key = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+const ALIASES: Record<string, string> = { studio: "Studio X" };
+export function brandName(n: string, known: string[] = []): string {
+  const name = n.replace(/\s*\([^)]*\)?/g, " ").replace(/\s+/g, " ").trim();
+  const k = key(name);
+  if (ALIASES[k]) return ALIASES[k];
+  // the longest known brand the name starts with
+  const hit = [...known, ...OWN_BRANDS].map((b) => ({ b, kb: key(b) })).filter(({ kb }) => kb.length >= 4 && (k === kb || k.startsWith(kb + " "))).sort((a, b) => b.kb.length - a.kb.length)[0];
+  return hit ? hit.b : name;
+}
 
 export type TeamKind = "VIDEO" | "DESIGN";
 export type TeamInfo = {

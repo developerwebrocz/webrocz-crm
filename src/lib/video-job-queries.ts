@@ -87,12 +87,14 @@ export async function getVideoJobBoard(viewer: VideoJobViewer, monthParam?: stri
 // Names the video team works for that are not client records: the agency's own brands first,
 // then the names the team added themselves (on a video, or typed on Client Videos).
 export async function getVideoTeamNames(): Promise<string[]> {
-  const [tasks, jobs] = await Promise.all([
+  const [tasks, jobs, clients] = await Promise.all([
     prisma.creativeTask.findMany({ where: { kind: "VIDEO", clientLabel: { not: "" } }, select: { clientLabel: true }, distinct: ["clientLabel"] }),
     prisma.videoJob.findMany({ where: { clientId: null }, select: { clientName: true }, distinct: ["clientName"] }),
+    prisma.client.findMany({ select: { name: true } }),
   ]);
+  const known = clients.map((c) => c.name);
   // brand names only — "Studio X ( Jay )" and "Studio X ( Sahithi )" are both listed as "Studio X"
-  const added = [...tasks.map((t) => t.clientLabel), ...jobs.map((j) => j.clientName)].map(brandName).filter(Boolean).sort((a, b) => a.localeCompare(b));
+  const added = [...tasks.map((t) => t.clientLabel), ...jobs.map((j) => j.clientName)].map((n) => brandName(n, known)).filter(Boolean).sort((a, b) => a.localeCompare(b));
   const seen = new Set<string>();
   return [...OWN_BRANDS, ...added].filter((n) => { const k = n.toLowerCase().replace(/\s+/g, ""); if (seen.has(k)) return false; seen.add(k); return true; });
 }
