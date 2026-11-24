@@ -2303,12 +2303,12 @@ const GST_SUPPLIER_STATE_CODE = "36"; // Telangana
 export async function getGstSummary(opts: { from?: string; to?: string } = {}) {
   const from = opts.from || "", to = opts.to || "";
   const inRange = (d: string) => (!from || d >= from) && (!to || d <= to);
-  const all = await prisma.salesInvoice.findMany({ orderBy: { issueDate: "asc" }, select: { number: true, billTo: true, subtotal: true, taxPct: true, taxAmount: true, total: true, placeOfSupply: true, clientState: true, clientGstin: true, issueDate: true } });
+  const all = await prisma.salesInvoice.findMany({ orderBy: { issueDate: "asc" }, select: { id: true, number: true, billTo: true, subtotal: true, taxPct: true, taxAmount: true, total: true, placeOfSupply: true, clientState: true, clientGstin: true, issueDate: true } });
   const stateCode = (s: string) => { const m = (s || "").trim().match(/^(\d+)/); return m ? m[1] : ""; };
   type M = { month: string; count: number; taxable: number; cgst: number; sgst: number; igst: number; tax: number; total: number };
   const byMonth = new Map<string, M>();
   // Invoice-level detail (GSTR-1 B2B style) for the CA export.
-  const invoiceRows: { number: string; date: string; billTo: string; gstin: string; placeOfSupply: string; rate: number; taxable: number; cgst: number; sgst: number; igst: number; total: number }[] = [];
+  const invoiceRows: { id: string; number: string; date: string; billTo: string; gstin: string; placeOfSupply: string; rate: number; taxable: number; cgst: number; sgst: number; igst: number; total: number }[] = [];
   for (const i of all) {
     // Only GST invoices belong in a GST return — non-GST (exempt) supplies are excluded.
     if (i.taxPct <= 0) continue;
@@ -2322,7 +2322,7 @@ export async function getGstSummary(opts: { from?: string; to?: string } = {}) {
     const m = byMonth.get(month) ?? { month, count: 0, taxable: 0, cgst: 0, sgst: 0, igst: 0, tax: 0, total: 0 };
     m.count += 1; m.taxable += i.subtotal; m.tax += i.taxAmount; m.total += i.total; m.cgst += cgst; m.sgst += sgst; m.igst += igst;
     byMonth.set(month, m);
-    invoiceRows.push({ number: i.number, date: i.issueDate, billTo: i.billTo, gstin: i.clientGstin || "", placeOfSupply: i.placeOfSupply || i.clientState || "36-Telangana", rate: i.taxPct, taxable: i.subtotal, cgst, sgst, igst, total: i.total });
+    invoiceRows.push({ id: i.id, number: i.number, date: i.issueDate, billTo: i.billTo, gstin: i.clientGstin || "", placeOfSupply: i.placeOfSupply || i.clientState || "36-Telangana", rate: i.taxPct, taxable: i.subtotal, cgst, sgst, igst, total: i.total });
   }
   const rows = [...byMonth.values()].sort((a, b) => (a.month < b.month ? 1 : -1));
   const totals = rows.reduce((t, m) => ({ taxable: t.taxable + m.taxable, cgst: t.cgst + m.cgst, sgst: t.sgst + m.sgst, igst: t.igst + m.igst, tax: t.tax + m.tax, total: t.total + m.total, count: t.count + m.count }), { taxable: 0, cgst: 0, sgst: 0, igst: 0, tax: 0, total: 0, count: 0 });

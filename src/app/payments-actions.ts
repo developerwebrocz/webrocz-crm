@@ -42,7 +42,8 @@ export async function reassignPaymentCollector(_prev: ReassignResult, fd: FormDa
 // invoice" buttons on the Payments pipeline (Super Admin only).
 export async function getInvoiceForDownload(invoiceId: string) {
   const me = await getCurrentUser();
-  if (!me || me.role !== "SUPER_ADMIN" || !invoiceId) return null;
+  // Super Admin (Payments) and the accounts team (GST report) download invoice PDFs
+  if (!me || !["SUPER_ADMIN", "SUB_ADMIN", "ACCOUNTANT"].includes(me.role) || !invoiceId) return null;
   const { getPublicInvoice } = await import("@/lib/queries");
   return getPublicInvoice(invoiceId);
 }

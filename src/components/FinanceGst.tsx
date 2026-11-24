@@ -2,12 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { Landmark, Download, ReceiptText } from "lucide-react";
+import { InvoiceDownloadButton } from "@/components/PaymentsInvoiceDownload";
 
 const inr = (v: number) => "₹" + (v || 0).toLocaleString("en-IN");
 const monthLabel = (m: string) => { if (!m) return "—"; const [y, mo] = m.split("-"); const names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; return `${names[parseInt(mo, 10) - 1] ?? mo} ${y}`; };
 
 type Row = { month: string; count: number; taxable: number; cgst: number; sgst: number; igst: number; tax: number; total: number };
-type InvRow = { number: string; date: string; billTo: string; gstin: string; placeOfSupply: string; rate: number; taxable: number; cgst: number; sgst: number; igst: number; total: number };
+type InvRow = { id?: string; number: string; date: string; billTo: string; gstin: string; placeOfSupply: string; rate: number; taxable: number; cgst: number; sgst: number; igst: number; total: number };
 const fmtD = (iso: string) => { if (!iso) return ""; const [y, m, d] = iso.split("-"); return d ? `${d}-${m}-${y}` : iso; };
 
 // Indian financial year (Apr–Mar) month-string range, offset 0 = current FY.
@@ -178,13 +179,13 @@ export default function FinanceGst({ rows, invoiceRows = [], supplierState }: { 
           <span className="rounded-full bg-[var(--surface-2)] px-2.5 py-1 text-[12px] font-bold tnum">{periodInvoices.length} invoice{periodInvoices.length === 1 ? "" : "s"}</span>
         </div>
         <div className="max-h-[560px] overflow-auto scroll-thin">
-          <table className="w-full min-w-[980px]">
+          <table className="w-full min-w-[1080px]">
             <thead className="sticky top-0 bg-[var(--surface)]"><tr className="border-b border-[var(--line)] text-left text-[11px] font-bold uppercase tracking-wide text-[var(--muted)]">
               <th className="px-4 py-2.5">#</th><th className="px-4 py-2.5">Invoice no</th><th className="px-4 py-2.5">Date</th><th className="px-4 py-2.5">Client</th><th className="px-4 py-2.5">GSTIN</th>
-              <th className="px-4 py-2.5 text-right">Taxable</th><th className="px-4 py-2.5 text-right">CGST</th><th className="px-4 py-2.5 text-right">SGST</th><th className="px-4 py-2.5 text-right">IGST</th><th className="px-4 py-2.5 text-right">Total</th>
+              <th className="px-4 py-2.5 text-right">Taxable</th><th className="px-4 py-2.5 text-right">CGST</th><th className="px-4 py-2.5 text-right">SGST</th><th className="px-4 py-2.5 text-right">IGST</th><th className="px-4 py-2.5 text-right">Total</th><th className="px-4 py-2.5 text-center">Invoice</th>
             </tr></thead>
             <tbody>
-              {periodInvoices.length === 0 && <tr><td colSpan={10} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No invoices in this period.</td></tr>}
+              {periodInvoices.length === 0 && <tr><td colSpan={11} className="px-5 py-10 text-center text-sm text-[var(--muted)]">No invoices in this period.</td></tr>}
               {periodInvoices.map((r, i) => (
                 <tr key={r.number} className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--surface-2)]">
                   <td className="px-4 py-2.5 text-[12px] text-[var(--muted)] tnum">{i + 1}</td>
@@ -197,6 +198,8 @@ export default function FinanceGst({ rows, invoiceRows = [], supplierState }: { 
                   <td className="px-4 py-2.5 text-right text-[12.5px] tnum text-[var(--muted)]">{inr(r.sgst)}</td>
                   <td className="px-4 py-2.5 text-right text-[12.5px] tnum text-[var(--muted)]">{inr(r.igst)}</td>
                   <td className="px-4 py-2.5 text-right text-[13px] font-semibold tnum">{inr(r.total)}</td>
+                  {/* this one invoice as a PDF, named "<client> - <invoice no>.pdf" */}
+                  <td className="px-4 py-2.5 text-center">{r.id ? <InvoiceDownloadButton invoiceId={r.id} number={r.number} clientName={r.billTo} /> : null}</td>
                 </tr>
               ))}
             </tbody>
