@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { attachClientSla } from "@/lib/client-sla";
 import { PAYMENT_FOLLOWUP_BY } from "@/lib/domain";
 import { getCurrentUser } from "@/lib/auth";
 import { WEB_ROCZ_CLIENT_SERVICES, detailFromCounts, buildDmInvoiceItems } from "@/lib/webrocz-services";
@@ -207,6 +208,8 @@ export async function updateWebRoczPvtClient(fd: FormData) {
   });
   revalidatePath("/accounts");
   revalidatePath(`/accounts/${id}`);
+  // accountants can upload the client's signed SLA from Edit info
+  if (u.role === "ACCOUNTANT") await attachClientSla(fd, id, name, u.name);
   revalidatePath("/pipeline/web-rocz-pvt");
   redirect(`${back}&saved=1`);
 }

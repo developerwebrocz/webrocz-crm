@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { attachClientSla } from "@/lib/client-sla";
 import { PAYMENT_FOLLOWUP_BY } from "@/lib/domain";
 import { SERVICES, SERVICE_KEYS, type ServiceKey, companyFor, stateFromGstin, GADS_TYPE_KEYS } from "@/lib/domain";
 import { ownClientsOf, SERVICE_ALIAS, SHARED_AM, managedBy } from "@/lib/am-scope";
@@ -860,6 +861,8 @@ export async function updateClientFinance(fd: FormData) {
       notes: s(fd, "notes") || null,
     },
   });
+  // accountants can upload the client's signed SLA from Edit info
+  if (u.role === "ACCOUNTANT") await attachClientSla(fd, id, name, u.name);
   revalidatePath("/accounts");
   revalidatePath(`/accounts/${id}`);
   redirect(`/accounts/${id}?saved=1`);

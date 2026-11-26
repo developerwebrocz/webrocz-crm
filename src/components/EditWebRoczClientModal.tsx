@@ -3,6 +3,7 @@
 import PaymentFollowupBySelect from "@/components/PaymentFollowupBySelect";
 import { X, Pencil } from "lucide-react";
 import { updateWebRoczClient } from "@/app/webrocz-actions";
+import SlaUploadField from "@/components/SlaUploadField";
 import WebRoczServicePicker from "@/components/WebRoczServicePicker";
 import WebRoczPaymentType from "@/components/WebRoczPaymentType";
 import WebRoczAccountManagerSelect from "@/components/WebRoczAccountManager";
@@ -12,7 +13,7 @@ import WebRoczAccountManagerSelect from "@/components/WebRoczAccountManager";
 // shown here; the Web Solutions edit form (EditModal in FinanceClientDetail) is untouched.
 type EditClient = { id: string; code: string; name: string; paymentFollowupBy?: string; website: string | null; websiteDomain: string; pocName: string | null; pocMobile: string | null; pocEmail: string | null; status: string; notes: string | null; accountManagerId: string | null; billingDay?: number; paymentTerm?: string };
 
-export default function EditWebRoczClientModal({ client, services, close }: { client: EditClient; services: { service: string; detail: string | null }[]; close: () => void }) {
+export default function EditWebRoczClientModal({ client, services, close, canUploadSla = false }: { client: EditClient; canUploadSla?: boolean; services: { service: string; detail: string | null }[]; close: () => void }) {
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(16,19,34,.5)", backdropFilter: "blur(4px)" }} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
       <div className="flex max-h-[92vh] w-full max-w-[520px] flex-col overflow-hidden rounded-[16px] border border-[var(--line-2)] bg-[var(--surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
@@ -47,6 +48,7 @@ export default function EditWebRoczClientModal({ client, services, close }: { cl
           <WebRoczServicePicker initial={services} />
 
           <label className="block"><span className="eyebrow">Notes</span><textarea name="notes" rows={2} defaultValue={client.notes ?? ""} className="input mt-1" placeholder="optional" /></label>
+          {canUploadSla && <SlaUploadField />}
           <div className="flex justify-end gap-2 pt-1">
             <button type="button" onClick={close} className="btn btn-ghost">Cancel</button>
             <button type="submit" className="btn btn-violet"><Pencil size={15} /> Save changes</button>

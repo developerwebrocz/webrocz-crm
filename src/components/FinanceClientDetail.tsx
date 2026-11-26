@@ -12,6 +12,7 @@ import EditWebRoczPvtClientModal from "@/components/EditWebRoczPvtClientModal";
 import AddWebRoczInvoiceModal from "@/components/AddWebRoczInvoiceModal";
 import WebRoczClientCard from "@/components/WebRoczClientCard";
 import WebRoczPvtClientCard from "@/components/WebRoczPvtClientCard";
+import SlaUploadField from "@/components/SlaUploadField";
 import ClientFollowupChannels, { latestFollowup, followupWhen } from "@/components/ClientFollowupChannels";
 import { chosenClientFollowup } from "@/lib/followup-shown";
 import ClientImportantNotes, { parseImportantNotes } from "@/components/ClientImportantNotes";
@@ -32,7 +33,7 @@ type Sla = { id: string; title: string; service: string; amount: number; gst: bo
 type Totals = { billed: number; received: number; pending: number; overdue: number; invoices: number };
 
 // `canDelete`: Super / Sub Admin — may delete an invoice from this page.
-export default function FinanceClientDetail({ client, invoices, payments, totals, clientFollowups, slas, openPayId, company, dmServices = [], canDelete = false, hideReceipts = false }: { client: Client; invoices: Inv[]; payments: Pay[]; totals: Totals; clientFollowups: Followup[]; slas: Sla[]; openPayId?: string; company?: string; dmServices?: { service: string; detail: string | null }[]; canDelete?: boolean; hideReceipts?: boolean }) {
+export default function FinanceClientDetail({ client, invoices, payments, totals, clientFollowups, slas, openPayId, company, dmServices = [], canDelete = false, hideReceipts = false, isAccountant = false }: { client: Client; invoices: Inv[]; payments: Pay[]; totals: Totals; clientFollowups: Followup[]; slas: Sla[]; openPayId?: string; company?: string; dmServices?: { service: string; detail: string | null }[]; canDelete?: boolean; hideReceipts?: boolean; isAccountant?: boolean }) {
   const [payInv, setPayInv] = useState<Inv | null>(() => invoices.find((i) => i.id === openPayId && i.balance > 0) ?? null);
   const [newInv, setNewInv] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -368,18 +369,18 @@ export default function FinanceClientDetail({ client, invoices, payments, totals
         ? <AddWebRoczPvtInvoiceModal clientNames={[]} lockClientName={client.name} returnTo={`${backUrl}?company=WEB_ROCZ_PVT`} close={() => setNewInv(false)} />
         : <NewInvoiceModal clientId={client.id} clientName={client.name} defaultTaxPct={client.gstApplicable ? client.gstRate : 0} defaultGstin={client.gstin} close={() => setNewInv(false)} />)}
       {editOpen && (company === "WEB_ROCZ_PVT"
-        ? <EditWebRoczPvtClientModal client={client} services={dmServices} close={() => setEditOpen(false)} />
+        ? <EditWebRoczPvtClientModal client={client} services={dmServices} close={() => setEditOpen(false)} canUploadSla={isAccountant} />
         : isWebRoczClient
-        ? <EditWebRoczClientModal client={client} services={dmServices} close={() => setEditOpen(false)} />
+        ? <EditWebRoczClientModal client={client} services={dmServices} close={() => setEditOpen(false)} canUploadSla={isAccountant} />
         : isWebRoczPvtClient
-        ? <EditWebRoczPvtClientModal client={client} services={dmServices} close={() => setEditOpen(false)} />
-        : <EditModal client={client} close={() => setEditOpen(false)} />)}
+        ? <EditWebRoczPvtClientModal client={client} services={dmServices} close={() => setEditOpen(false)} canUploadSla={isAccountant} />
+        : <EditModal client={client} close={() => setEditOpen(false)} canUploadSla={isAccountant} />)}
     </div>
   );
 }
 
 const FIXED_SERVICES = ["Domain", "Hosting + SSL", "Website Designing"];
-function EditModal({ client, close }: { client: Client; close: () => void }) {
+function EditModal({ client, close, canUploadSla = false }: { client: Client; close: () => void; canUploadSla?: boolean }) {
   const initServices = (() => { try { const a = JSON.parse(client.websiteServices || "[]"); return Array.isArray(a) ? a.map(String) : []; } catch { return []; } })();
   const [domainOn, setDomainOn] = useState(client.domainTaken || initServices.includes("Domain"));
   const [hostingOn, setHostingOn] = useState(client.hostingTaken || initServices.includes("Hosting + SSL"));
@@ -454,6 +455,7 @@ function EditModal({ client, close }: { client: Client; close: () => void }) {
               <input name="websiteRenewAmount" type="number" value={renewal} readOnly className="input mt-1 bg-[var(--surface-2)] font-semibold" /></label>
           </div>
           <label className="block"><span className="eyebrow">Notes</span><textarea name="notes" rows={2} defaultValue={client.notes ?? ""} className="input mt-1" placeholder="optional" /></label>
+          {canUploadSla && <SlaUploadField />}
           <div className="flex justify-end gap-2 pt-1">
             <button type="button" onClick={close} className="btn btn-ghost">Cancel</button>
             <button type="submit" className="btn btn-violet"><Pencil size={15} /> Save changes</button>
